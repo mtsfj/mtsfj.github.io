@@ -261,6 +261,17 @@
     comps.push(p);
   }
 
+  // mount Fuji and its sakura in the sky gap, behind the skyline and the flying events
+  plane('assets/fuji_night.webp', 376, 45, 640, 640, -1.5);
+
+  // Luffy gear 5 racing along the left facade, 12-frame sheet stepped by texture offset
+  const luffyTex = crisp('assets/luffy_sheet.webp'); luffyTex.repeat.set(1 / 12, 1);
+  const luffy = new THREE.Mesh(new THREE.PlaneGeometry(35, 48), new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
+  luffy.position.set(343 + 17.5, -(144 + 24), 1.2); scene.add(luffy);
+
+  // ramen sign resting on the right cornice
+  plane('assets/ramen_sign.webp', 1159, 370, 28, 35, 1.15);
+
   // stars: a handful of pixels in the dark upper sky, twinkling
   const NS = 40, sp = new Float32Array(NS * 3);
   for (let i = 0; i < NS; i++) { sp[i * 3] = Math.random() * IW; sp[i * 3 + 1] = -(10 + Math.random() * 170); sp[i * 3 + 2] = -2; }
@@ -314,6 +325,15 @@
     const f = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: fogTex, transparent: true, opacity: o, depthWrite: false }));
     f.position.set(cx, -cy, z); f.userData = { x0: cx, o, dr, ph: fogs.length * 2.1 }; scene.add(f); fogs.push(f);
   }
+
+  // thin steam over the ramen bowl
+  const puffs2 = [];
+  for (let i = 0; i < 5; i++) { const p = pxq(2, 2, 0xd8c8c8, 0, 1.18); p.userData = { t: i * 0.6 }; puffs2.push(p); }
+  const STEAM2 = { x: 1172, y: 372 };
+
+  // sakura petals carried across the street by the wind
+  const petals = [], PCOL = [0xffb3d9, 0xff8ad1, 0xffd1e8];
+  for (let i = 0; i < 14; i++) { const p = pxq(2, 2, PCOL[i % 3], 0, 2.8); p.userData = { life: 0, t: 9 }; petals.push(p); }
 
   // rain gusts: every so often the wind picks up for a few seconds
   const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
@@ -599,6 +619,25 @@
     rain.material.opacity = 0.36 + 0.2 * gust.k;
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
+    // Luffy: 12 frames at 10 fps
+    luffyTex.offset.x = Math.floor(t * 10) % 12 / 12;
+    // ramen steam
+    for (const p of puffs2) {
+      const u = p.userData; u.t += dt; if (u.t > 3) u.t = 0;
+      const k = u.t / 3;
+      p.position.set(STEAM2.x + Math.sin(t * 1.6 + k * 7) * 1.5, -(STEAM2.y - 16 * k), 1.18);
+      const s = 1 + 2.2 * k; p.scale.set(s, s, 1);
+      p.material.opacity = 0.22 * Math.sin(Math.PI * k);
+    }
+    // sakura petals: slow drift, sway, pushed harder during gusts
+    for (const p of petals) {
+      const u = p.userData; u.t += dt;
+      if (u.t > u.life) { u.t = 0; u.life = 6 + Math.random() * 5; u.x = 640 + Math.random() * 816; u.y = 40 + Math.random() * 400; u.vx = -(14 + Math.random() * 22); u.vy = 9 + Math.random() * 12; u.ph = Math.random() * 6.3; }
+      u.x += (u.vx - 110 * gust.k) * dt; u.y += u.vy * dt;
+      p.position.set(u.x + Math.sin(t * 1.8 + u.ph) * 5, -u.y, 2.8);
+      const k = u.t / u.life;
+      p.material.opacity = 0.8 * Math.min(1, u.t) * (k > 0.8 ? (1 - k) * 5 : 1);
+    }
     // neon colour drift
     hue.t += dt;
     if (signL) { const a = 0.5 + 0.5 * Math.sin(hue.t * 0.12); signL.material.color.setRGB(1, 0.86 + 0.14 * a, 0.9 + 0.1 * (1 - a)); } // pink ↔ pale lavender
