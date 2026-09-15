@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://mtsfj.github.io/sitemap.xml
