@@ -223,7 +223,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/shop_r.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/neon_sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/shop_r.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -279,6 +279,8 @@
   const luffyScr = new THREE.Mesh(new THREE.PlaneGeometry(35, 47), new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
   luffyScr.position.set(343 + 17.5, -(144 + 23.5), 1.2); scene.add(luffyScr);
   plane('assets/cables_front.webp', 328, 180, 74, 42, 1.4);
+  // the cables baked in the original sign_left sprite, re-drawn over the rebuilt screen
+  plane('assets/sign_left_wires.webp', 421, 64, 65, 413, 1.3);
 
   // ramen sign warped onto the cornice: hand-placed corners, extended for the 6 px neon margin
   const RC = [[1149.9, 378.9], [1195.4, 353.9], [1204.0, 393.0], [1154.7, 413.7]];
