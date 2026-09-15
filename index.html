@@ -223,7 +223,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/shop_r.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/om_sign.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -296,7 +296,12 @@
 
   // stars: a handful of pixels in the dark upper sky, twinkling
   const NS = 40, sp = new Float32Array(NS * 3);
-  for (let i = 0; i < NS; i++) { sp[i * 3] = Math.random() * IW; sp[i * 3 + 1] = -(10 + Math.random() * 170); sp[i * 3 + 2] = -2; }
+  for (let i = 0; i < NS; i++) {
+    let sx, sy;
+    do { sx = Math.random() * IW; sy = 10 + Math.random() * 170; }
+    while (Math.hypot(sx - (MOONP.x + MOONP.s / 2), sy - (MOONP.y + MOONP.s / 2)) < MOONP.s / 2 + 3);   // jamais dans le disque lunaire
+    sp[i * 3] = sx; sp[i * 3 + 1] = -sy; sp[i * 3 + 2] = -2;
+  }
   const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
   const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffe9f2, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.8 }));
   scene.add(stars);
@@ -387,7 +392,7 @@
 
   // ---- the lit window (x 513-551, y 513-535): someone comes in, sits down and codes ----
   // drawn at 3× the image resolution so its grain matches the illustration rather than looking blockier
-  const WIN = { x: 513, y: 513, w: 39, h: 23 }, K = 3, CW = WIN.w * K, CH = WIN.h * K;
+  const WIN = { x: 513, y: 513, w: 39, h: 23 }, K = 6, CW = WIN.w * K, CH = WIN.h * K;
   const wc = document.createElement('canvas'); wc.width = CW; wc.height = CH; const wg = wc.getContext('2d');
   const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
@@ -402,14 +407,25 @@
     const SKIN = '#d8a27c', HAIR = '#6a4a2f', HAIR2 = '#8a6440', KNIT = '#2b2542', KNIT2 = '#3d3560', JEANS = '#2f3b5e', RIM = 'rgba(140,200,255,.55)';
     if (pose === 'sit') {
       rr(x - 2.4, 11.2, 1.4, 9.5, 0.5, '#4a3a52');                          // chair back
+      rr(x - 2.1, 10.5, 0.9, 1.2, 0.3, '#3a2e44');                          // headrest
       rr(x - 1, 16.2, 4.4, 6, 0.8, JEANS);                                    // lap
-      rr(x - 0.6, 11.2 - bob, 4.4, 5.4, 1.2, KNIT);                          // sweater
-      rr(x + 2.6, 11.6 - bob, 1.4, 4.6, 0.6, KNIT2);                         // lit edge of the sweater (screen side)
-      rr(x + 2.2, 13.7, 3.4, 1.1, 0.5, KNIT); rr(x + 5, 13.9, 0.9, 0.8, 0.3, SKIN);   // forearm, hand on the keyboard
-      el(x + 1.5, 9.4 - bob, 1.6, 1.8, SKIN);                                // face
-      el(x + 1.2, 8.3 - bob, 1.75, 1.2, HAIR); rr(x - 0.4, 8.2 - bob, 2.4, 1.6, 0.6, HAIR);   // hair, fringe over the forehead
-      rr(x + 0.1, 7.6 - bob, 1.2, 0.5, 0.2, HAIR2);                          // highlight in the hair
-      rr(x + 2.9, 8.6 - bob, 0.5, 2.2, 0.2, RIM);                            // blue rim light from the screen on the cheek
+      rr(x - 0.6, 11.0 - bob, 4.4, 5.6, 1.2, KNIT);                          // sweater
+      rr(x - 0.55, 12.4 - bob, 0.8, 2.8, 0.35, '#241f38');                   // fold in shadow
+      rr(x + 2.6, 11.4 - bob, 1.4, 4.8, 0.6, KNIT2);                         // lit edge of the sweater (screen side)
+      rr(x + 0.2, 11.05 - bob, 3.0, 0.65, 0.3, '#4a4370');                   // collar
+      el(x + 1.5, 10.55 - bob, 0.65, 0.5, SKIN);                             // neck
+      rr(x + 2.2, 13.7, 3.4, 1.1, 0.5, KNIT); rr(x + 2.35, 13.85, 2.6, 0.5, 0.25, KNIT2);   // forearm, sleeve catching the light
+      rr(x + 4.95, 13.9, 0.55, 0.75, 0.2, SKIN); rr(x + 5.55, 14.0, 0.5, 0.68, 0.2, SKIN);  // two fingers on the keys
+      el(x + 1.5, 9.35 - bob, 1.6, 1.85, SKIN);                              // face
+      el(x + 0.55, 9.6 - bob, 0.35, 0.5, '#c08a66');                         // ear
+      rr(x + 2.1, 8.95 - bob, 0.6, 0.28, 0.1, '#4a3320');                    // brow
+      rr(x + 2.18, 9.42 - bob, 0.5, 0.42, 0.12, '#2a1c12');                  // eye on the screen
+      rr(x + 2.32, 9.5 - bob, 0.18, 0.18, 0.05, 'rgba(160,220,255,.85)');    // screen glint in the eye
+      el(x + 1.2, 8.25 - bob, 1.8, 1.25, HAIR); rr(x - 0.5, 8.1 - bob, 2.5, 1.7, 0.6, HAIR);   // hair, fringe
+      rr(x - 0.1, 7.5 - bob, 1.3, 0.45, 0.2, HAIR2);                         // highlight strand
+      rr(x + 1.0, 7.15 - bob, 0.8, 0.35, 0.15, HAIR2);                       // second strand
+      rr(x - 0.5, 9.25 - bob, 0.55, 1.2, 0.25, HAIR);                        // sideburn
+      rr(x + 2.9, 8.55 - bob, 0.5, 2.3, 0.2, RIM);                           // blue rim light from the screen on the cheek
     } else {
       const step = pose === 'walk1' ? 0.9 : 0;
       rr(x - 0.4 - step, 14, 2, 8, 0.6, JEANS); rr(x + 1.8 + step, 14, 2, 8, 0.6, JEANS);
@@ -436,6 +452,9 @@
     // back wall details: a pink poster and a shelf
     R(7.5, 3.5, 5.5, 6.5, '#e57fb9'); R(8.3, 4.3, 3.9, 2.2, '#f7cfe5'); R(8.3, 7.2, 2.5, 0.7, '#c95e98');
     R(2.5, 9.5, 6, 0.7, '#8a5a3a'); R(3, 7.4, 1.6, 2.1, '#5c7fb8'); R(5, 7.9, 1.2, 1.6, '#c9573f');
+    R(6.5, 8.1, 0.55, 1.4, '#7a4a6a'); R(7.15, 7.85, 0.55, 1.65, '#4a6a5a'); R(7.8, 8.35, 0.5, 1.15, '#9a7a3a');   // books on the shelf
+    R(15.2, 4.4, 2.6, 3.2, '#5a4030'); R(15.6, 4.8, 1.8, 2.4, '#26324a'); R(16.0, 5.2, 0.9, 0.7, '#6c8fb8');       // framed picture
+    R(21.0, 13.8, 1.7, 1.2, '#8a4a3f'); R(22.7, 14.0, 0.5, 0.7, '#8a4a3f'); R(21.2, 13.55, 1.3, 0.35, '#3a2618'); // coffee mug
     // desk with its shadow, legs
     R(14, 15, 22, 1, '#b5793f'); R(14, 16, 22, 0.6, 'rgba(60,30,20,.35)'); R(15, 16.5, 0.8, 5.5, '#6e4630'); R(34.2, 16.5, 0.8, 5.5, '#6e4630');
     // monitor: bezel, stand, screen
@@ -532,7 +551,7 @@
   const sc = document.createElement('canvas'); sc.width = SG.w * SK; sc.height = SG.h * SK; const sg = sc.getContext('2d');
   const stex = new THREE.CanvasTexture(sc); stex.magFilter = stex.minFilter = THREE.LinearFilter; stex.generateMipmaps = false;
   const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(SG.w, SG.h), new THREE.MeshBasicMaterial({ map: stex, transparent: true, depthWrite: false }));
-  signMesh.position.set(SG.x + SG.w / 2, -(SG.y + SG.h / 2), 0.65); scene.add(signMesh);   // far-building sign: behind the car and the cat
+  signMesh.position.set(SG.x + SG.w / 2, -(SG.y + SG.h / 2), 0.55); scene.add(signMesh);   // far-building sign: behind the car (0.65) and the cat (0.7)
   const signS = { flick: 1, next: 6 + Math.random() * 12, hold: 0 };
   function drawSign() {
     const W = SG.w * SK, H = SG.h * SK; sg.clearRect(0, 0, W, H);
