@@ -307,12 +307,13 @@
   const skyTop = (x) => SKYLINE[Math.max(0, Math.min(181, Math.floor(x / 8)))];
   for (let i = 0; i < NS; i++) {
     let sx, sy;
-    do { sx = Math.random() * IW; sy = 8 + Math.random() * 165; } while (sy > skyTop(sx) - 10);
+    do { sx = Math.random() * IW; sy = 8 + Math.random() * 165; }
+    while (sy > skyTop(sx) - 10 || Math.hypot(sx - (MOONP.x + MOONP.s / 2), sy - (MOONP.y + MOONP.s / 2)) < MOONP.s / 2 + 3);
     sp[i * 3] = sx; sp[i * 3 + 1] = -sy; sp[i * 3 + 2] = 0;
   }
   const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
   const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffe9f2, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.8 }));
-  stars.position.z = -2;   // le z du tri est celui de l'objet : les étoiles passent sous la ville
+  stars.position.z = -2.8;   // plus loin que tout, lune comprise : elle les occulte
   scene.add(stars);
 
   // rain: thin drops, slightly slanted, in front of everything
@@ -656,7 +657,7 @@
       if (u >= 1) { plane_.active = false; setPlane(0, 0, false); plane_.next = 40 + Math.random() * 80; }
     }
     // shooting star
-    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { shoot.active = true; shoot.t = 0; let hx, hy, hk = 0; do { hx = 200 + Math.random() * 900; hy = 20 + Math.random() * 150; } while (hy > skyTop(hx) - 20 && ++hk < 30); streak.position.set(hx, -hy, -1); } }
+    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { shoot.active = true; shoot.t = 0; let hx, hy, hk = 0; do { hx = 200 + Math.random() * 900; hy = 20 + Math.random() * 150; } while (hy > skyTop(hx) - 20 && ++hk < 30); streak.position.set(hx, -hy, -2.75); } }
     else { shoot.t += dt; const u = shoot.t / 0.7; streak.position.x += 260 * dt; streak.position.y -= 105 * dt; streak.material.opacity = u < 0.25 ? u * 4 : Math.max(0, 1 - (u - 0.25) / 0.75); if (u >= 1) { shoot.active = false; streak.material.opacity = 0; shoot.next = 20 + Math.random() * 45; } }
     // skyline apartments
     for (const m of dots) { const u = m.userData; u.next -= dt; if (u.next < 0) { u.on = !u.on; u.next = u.on ? 15 + Math.random() * 40 : 6 + Math.random() * 25; } m.material.opacity += ((u.on ? 0.95 : 0) - m.material.opacity) * Math.min(1, dt * 3); }
