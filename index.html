@@ -342,10 +342,6 @@
     f.position.set(cx, -cy, z); f.userData = { x0: cx, o, dr, ph: fogs.length * 2.1 }; scene.add(f); fogs.push(f);
   }
 
-  // sakura petals carried across the street by the wind
-  const petals = [], PCOL = [0xffb3d9, 0xff8ad1, 0xffd1e8];
-  for (let i = 0; i < 14; i++) { const p = pxq(2, 2, PCOL[i % 3], 0, 0.65); p.userData = { life: 0, t: 9 }; petals.push(p); }
-
   // rain gusts: every so often the wind picks up for a few seconds
   const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
 
@@ -635,15 +631,6 @@
     luffyScr.material.opacity = 0.95 + 0.05 * Math.sin(t * 9.7);
     // ramen neon edge: slow breath
     ramenGlow.material.opacity = 0.5 + 0.14 * Math.sin(t * 2.1);
-    // sakura petals: slow drift, sway, pushed harder during gusts
-    for (const p of petals) {
-      const u = p.userData; u.t += dt;
-      if (u.t > u.life) { u.t = 0; u.life = 6 + Math.random() * 5; u.x = 640 + Math.random() * 816; u.y = 40 + Math.random() * 400; u.vx = -(14 + Math.random() * 22); u.vy = 9 + Math.random() * 12; u.ph = Math.random() * 6.3; }
-      u.x += (u.vx - 110 * gust.k) * dt; u.y += u.vy * dt;
-      p.position.set(u.x + Math.sin(t * 1.8 + u.ph) * 5, -u.y, 0.65);
-      const k = u.t / u.life;
-      p.material.opacity = 0.8 * Math.min(1, u.t) * (k > 0.8 ? (1 - k) * 5 : 1);
-    }
     // neon colour drift
     hue.t += dt;
     if (signL) { const a = 0.5 + 0.5 * Math.sin(hue.t * 0.12); signL.material.color.setRGB(1, 0.86 + 0.14 * a, 0.9 + 0.1 * (1 - a)); } // pink ↔ pale lavender
