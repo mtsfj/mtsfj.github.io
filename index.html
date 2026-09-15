@@ -82,15 +82,16 @@
   .article .links a.live { color: var(--sodium); text-decoration-color: var(--sodium); }
   .article .date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); margin-bottom: 8px; display: block; }
   .tl-wrap { margin: 34px calc(-1 * clamp(20px, 6vw, 96px)) 0; }
-  .tl-sticky { position: sticky; top: 120px; overflow: hidden; padding: 12px 0 22px; }
+  .tl-sticky { position: sticky; top: max(120px, calc(50vh - 140px)); overflow: hidden; padding: 22px 0 34px; }
   .tl-track { display: flex; margin: 0; padding: 0 clamp(20px, 6vw, 96px); list-style: none; width: max-content; will-change: transform; }
-  .tl-track li { position: relative; min-width: 235px; padding: 20px 36px 0 0; }
-  .tl-track li::before { content: ""; position: absolute; top: 5px; left: 10px; right: -10px; height: 2px; background: var(--rule); }
-  .tl-track li:last-child::before { right: 36px; }
-  .tl-track li::after { content: ""; position: absolute; top: 2px; left: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px rgba(255,138,209,.55); }
-  .tl-date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); display: block; margin-bottom: 4px; }
-  .tl-label { display: block; font-size: 15px; font-weight: 500; }
-  .tl-sub { display: block; font-size: 13px; color: var(--paper-dim); max-width: 26ch; }
+  .tl-track li { position: relative; min-width: 380px; padding: 44px 56px 0 0; }
+  .tl-track li::before { content: ""; position: absolute; top: 8px; left: 22px; right: -22px; height: 2px; background: var(--rule); }
+  .tl-track li:last-child::before { right: 56px; }
+  .tl-track li::after { content: ""; position: absolute; top: 1px; left: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 16px rgba(255,138,209,.7), 0 0 40px rgba(255,138,209,.25); }
+  .tl-track li:last-child::after { background: var(--sodium); box-shadow: 0 0 16px rgba(255,195,107,.7), 0 0 40px rgba(255,195,107,.25); }
+  .tl-date { font-family: var(--pixel); font-size: 13px; color: var(--sodium); display: block; margin-bottom: 8px; }
+  .tl-label { display: block; font-size: 22px; font-weight: 500; line-height: 1.2; margin-bottom: 4px; }
+  .tl-sub { display: block; font-size: 15px; color: var(--paper-dim); max-width: 30ch; }
   .drives { margin: 30px 0 0; }
   .drives .k { font-family: var(--pixel); font-size: 11px; color: var(--pink); display: block; margin-bottom: 8px; }
   .drives p { margin: 0; max-width: var(--measure); }
@@ -245,7 +246,7 @@
     <div class="grid">
       <h2>Contact</h2>
       <ul class="contact-list">
-        <li><a href="mailto:fajeaumathis8@gmail.com">fajeaumathis8@gmail.com</a></li>
+        <li><span>nomprenom8@gmail.com</span></li>
         <li><a href="https://github.com/mtsfj">GitHub</a></li>
         <li><a href="https://scholar.google.com/citations?user=kMFBjk4AAAAJ">Google Scholar</a></li>
         <li><a href="https://www.linkedin.com/in/mathis-fajeau/">LinkedIn</a></li>
