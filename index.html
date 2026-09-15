@@ -81,15 +81,16 @@
   .article .links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; }
   .article .links a.live { color: var(--sodium); text-decoration-color: var(--sodium); }
   .article .date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); margin-bottom: 8px; display: block; }
-  .timeline { margin: 26px 0 4px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
-  .timeline ol { display: flex; margin: 0; padding: 0 0 12px; list-style: none; min-width: max-content; }
-  .timeline li { position: relative; min-width: 150px; padding: 20px 26px 0 0; }
-  .timeline li::before { content: ""; position: absolute; top: 5px; left: 10px; right: -10px; height: 2px; background: var(--rule); }
-  .timeline li:last-child::before { right: 26px; }
-  .timeline li::after { content: ""; position: absolute; top: 2px; left: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px rgba(255,138,209,.55); }
+  .tl-wrap { margin: 34px calc(-1 * clamp(20px, 6vw, 96px)) 0; }
+  .tl-sticky { position: sticky; top: 120px; overflow: hidden; padding: 12px 0 22px; }
+  .tl-track { display: flex; margin: 0; padding: 0 clamp(20px, 6vw, 96px); list-style: none; width: max-content; will-change: transform; }
+  .tl-track li { position: relative; min-width: 235px; padding: 20px 36px 0 0; }
+  .tl-track li::before { content: ""; position: absolute; top: 5px; left: 10px; right: -10px; height: 2px; background: var(--rule); }
+  .tl-track li:last-child::before { right: 36px; }
+  .tl-track li::after { content: ""; position: absolute; top: 2px; left: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px rgba(255,138,209,.55); }
   .tl-date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); display: block; margin-bottom: 4px; }
   .tl-label { display: block; font-size: 15px; font-weight: 500; }
-  .tl-sub { display: block; font-size: 13px; color: var(--paper-dim); max-width: 24ch; }
+  .tl-sub { display: block; font-size: 13px; color: var(--paper-dim); max-width: 26ch; }
   .drives { margin: 30px 0 0; }
   .drives .k { font-family: var(--pixel); font-size: 11px; color: var(--pink); display: block; margin-bottom: 8px; }
   .drives p { margin: 0; max-width: var(--measure); }
@@ -103,7 +104,7 @@
   .contact-list li a:hover { border-color: #a8e6ff; color: #a8e6ff; box-shadow: 0 0 12px rgba(168,230,255,.22); }
   footer { padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   footer .pixel { font-family: var(--pixel); font-size: 10px; }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; gap: 20px; } section { padding: 60px 0; } .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; } .article { flex-direction: column; gap: 16px; } .article .thumb { width: 100%; height: auto; } }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; gap: 20px; } section { padding: 60px 0; } .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; } .article { flex-direction: column; gap: 16px; } .article .thumb { width: 100%; height: auto; } .tl-wrap { overflow-x: auto; } .tl-sticky { position: static; } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 </head>
@@ -130,17 +131,6 @@
       <h2>Bio</h2>
       <div class="prose" data-lang="fr">
         <p>Je prépare une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer, sur l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs : plutôt que des benchmarks figés, des agents qui se fixent leurs propres objectifs pour découvrir et cartographier les capacités et vulnérabilités d'un modèle.</p>
-        <div class="timeline" aria-label="Parcours">
-          <ol>
-            <li><span class="tl-date">2020 – 2022</span><span class="tl-label">CPGE MP</span><span class="tl-sub">mathématiques théoriques</span></li>
-            <li><span class="tl-date">2024</span><span class="tl-label">Thales</span><span class="tl-sub">quantization INT8/FP8, R&amp;D deep learning</span></li>
-            <li><span class="tl-date">2025</span><span class="tl-label">Airbus</span><span class="tl-sub">RAG et validation de LLM en milieu critique</span></li>
-            <li><span class="tl-date">déc. 2025</span><span class="tl-label">Georgia Tech</span><span class="tl-sub">M.Sc. CS, systèmes et machine learning</span></li>
-            <li><span class="tl-date">mars 2026</span><span class="tl-label">IMT Atlantique</span><span class="tl-sub">ingénieur IA et systèmes embarqués</span></li>
-            <li><span class="tl-date">fév. 2026</span><span class="tl-label">MPI-IS / ELLIS Tübingen</span><span class="tl-sub">groupe Schölkopf, Pinductor</span></li>
-            <li><span class="tl-date">nov. 2026</span><span class="tl-label">Thèse, Inria Flowers</span><span class="tl-sub">exploration autotélique, jusqu'en 2029</span></li>
-          </ol>
-        </div>
         <div class="drives">
           <span class="k">Ce qui m'anime</span>
           <p>La sécurité de l'IA, à commencer par celle de l'auto-amélioration récursive, et la compréhension fine des LLM : rendre l'IA aussi bénéfique que possible pour les humains en limitant ses défauts et ses risques, autant que possible en open source.</p>
@@ -154,17 +144,6 @@
       </div>
       <div class="prose" data-lang="en" lang="en" hidden>
         <p>I am doing my PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer, on autotelic exploration for the automatic evaluation of large generative models: instead of fixed benchmarks, agents that set their own goals to discover and map a model's capabilities and vulnerabilities.</p>
-        <div class="timeline" aria-label="Timeline">
-          <ol>
-            <li><span class="tl-date">2020 – 2022</span><span class="tl-label">CPGE MP</span><span class="tl-sub">theoretical mathematics</span></li>
-            <li><span class="tl-date">2024</span><span class="tl-label">Thales</span><span class="tl-sub">INT8/FP8 quantization, deep learning R&amp;D</span></li>
-            <li><span class="tl-date">2025</span><span class="tl-label">Airbus</span><span class="tl-sub">RAG and LLM validation in safety-critical settings</span></li>
-            <li><span class="tl-date">Dec 2025</span><span class="tl-label">Georgia Tech</span><span class="tl-sub">M.Sc. CS, systems and machine learning</span></li>
-            <li><span class="tl-date">Mar 2026</span><span class="tl-label">IMT Atlantique</span><span class="tl-sub">M.Eng. AI and embedded systems</span></li>
-            <li><span class="tl-date">Feb 2026</span><span class="tl-label">MPI-IS / ELLIS Tübingen</span><span class="tl-sub">Schölkopf group, Pinductor</span></li>
-            <li><span class="tl-date">Nov 2026</span><span class="tl-label">PhD, Inria Flowers</span><span class="tl-sub">autotelic exploration, through 2029</span></li>
-          </ol>
-        </div>
         <div class="drives">
           <span class="k">What drives me</span>
           <p>AI safety, starting with the safety of recursive self-improvement, and a fine-grained understanding of LLMs: making AI as beneficial as possible for humans while limiting its flaws and risks, in the open as much as possible.</p>
@@ -176,6 +155,28 @@
           <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
         </ul>
       </div>
+    </div>
+    <div class="tl-wrap" data-lang="fr" aria-label="Parcours">
+      <div class="tl-sticky"><ol class="tl-track">
+        <li><span class="tl-date">2020 – 2022</span><span class="tl-label">CPGE MP</span><span class="tl-sub">mathématiques théoriques</span></li>
+        <li><span class="tl-date">2024</span><span class="tl-label">Thales</span><span class="tl-sub">quantization INT8/FP8, R&amp;D deep learning</span></li>
+        <li><span class="tl-date">2025</span><span class="tl-label">Airbus</span><span class="tl-sub">RAG et validation de LLM en milieu critique</span></li>
+        <li><span class="tl-date">déc. 2025</span><span class="tl-label">Georgia Tech</span><span class="tl-sub">M.Sc. CS, systèmes et machine learning</span></li>
+        <li><span class="tl-date">mars 2026</span><span class="tl-label">IMT Atlantique</span><span class="tl-sub">ingénieur IA et systèmes embarqués</span></li>
+        <li><span class="tl-date">fév. 2026</span><span class="tl-label">MPI-IS / ELLIS Tübingen</span><span class="tl-sub">groupe Schölkopf, Pinductor</span></li>
+        <li><span class="tl-date">nov. 2026</span><span class="tl-label">Thèse, Inria Flowers</span><span class="tl-sub">exploration autotélique, jusqu'en 2029</span></li>
+      </ol></div>
+    </div>
+    <div class="tl-wrap" data-lang="en" lang="en" hidden aria-label="Timeline">
+      <div class="tl-sticky"><ol class="tl-track">
+        <li><span class="tl-date">2020 – 2022</span><span class="tl-label">CPGE MP</span><span class="tl-sub">theoretical mathematics</span></li>
+        <li><span class="tl-date">2024</span><span class="tl-label">Thales</span><span class="tl-sub">INT8/FP8 quantization, deep learning R&amp;D</span></li>
+        <li><span class="tl-date">2025</span><span class="tl-label">Airbus</span><span class="tl-sub">RAG and LLM validation in safety-critical settings</span></li>
+        <li><span class="tl-date">Dec 2025</span><span class="tl-label">Georgia Tech</span><span class="tl-sub">M.Sc. CS, systems and machine learning</span></li>
+        <li><span class="tl-date">Mar 2026</span><span class="tl-label">IMT Atlantique</span><span class="tl-sub">M.Eng. AI and embedded systems</span></li>
+        <li><span class="tl-date">Feb 2026</span><span class="tl-label">MPI-IS / ELLIS Tübingen</span><span class="tl-sub">Schölkopf group, Pinductor</span></li>
+        <li><span class="tl-date">Nov 2026</span><span class="tl-label">PhD, Inria Flowers</span><span class="tl-sub">autotelic exploration, through 2029</span></li>
+      </ol></div>
     </div>
   </section>
 
@@ -244,7 +245,7 @@
     <div class="grid">
       <h2>Contact</h2>
       <ul class="contact-list">
-        <li><span>prénom.nom@inria.fr</span></li>
+        <li><a href="mailto:fajeaumathis8@gmail.com">fajeaumathis8@gmail.com</a></li>
         <li><a href="https://github.com/mtsfj">GitHub</a></li>
         <li><a href="https://scholar.google.com/citations?user=kMFBjk4AAAAJ">Google Scholar</a></li>
         <li><a href="https://www.linkedin.com/in/mathis-fajeau/">LinkedIn</a></li>
@@ -269,9 +270,40 @@
       document.querySelectorAll('[data-lang]').forEach(el => { el.hidden = el.dataset.lang !== lang; });
       btn.textContent = lang === 'fr' ? 'EN' : 'FR';
       document.title = lang === 'fr' ? 'Mathis Fajeau · Doctorant, Inria Bordeaux' : 'Mathis Fajeau · PhD student, Inria Bordeaux';
+      if (window.recalcTimeline) window.recalcTimeline();
     }
     btn.addEventListener('click', () => { lang = lang === 'fr' ? 'en' : 'fr'; apply(); });
     apply();
+  })();
+  // frise du parcours : collée à l'écran, le scroll vertical la fait défiler horizontalement
+  (function () {
+    const wraps = Array.from(document.querySelectorAll('.tl-wrap'));
+    if (!wraps.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let state = [];
+    function measure() {
+      state = [];
+      for (const w of wraps) {
+        const track = w.querySelector('.tl-track'), sticky = w.querySelector('.tl-sticky');
+        track.style.transform = ''; w.style.height = '';
+        if (w.hidden || innerWidth <= 720) continue;
+        const dist = Math.max(0, track.offsetWidth - sticky.clientWidth);
+        if (dist > 0) {
+          w.style.height = (sticky.offsetHeight + dist) + 'px';
+          state.push({ w, track, dist, top: parseFloat(getComputedStyle(sticky).top) || 0 });
+        }
+      }
+      onScroll();
+    }
+    function onScroll() {
+      for (const s of state) {
+        const p = Math.min(1, Math.max(0, (s.top - s.w.getBoundingClientRect().top) / s.dist));
+        s.track.style.transform = 'translateX(' + (-p * s.dist) + 'px)';
+      }
+    }
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', measure);
+    window.recalcTimeline = measure;
+    measure();
   })();
 </script>
 
