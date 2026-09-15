@@ -1655,7 +1655,7 @@ def reward_func(s, a, n):
   }
   function selectModel(i) {
     st.model = i; document.querySelectorAll('#model-tabs .btn').forEach((b, j) => b.setAttribute('aria-pressed', j === i));
-    $('model-blurb').textContent = MODELS[i].name + ' — ' + MODELS[i].short + '. ' + MODELS[i].blurb;
+    $('model-blurb').textContent = MODELS[i].name + ' · ' + MODELS[i].short + '. ' + MODELS[i].blurb;
     $('model-code').textContent = MODELS[i].code;
     if (st.scene === 'proposal' && stage) { stage.setGhosts(ghostsFromSamples(MODELS[i], 10, 11 + i)); }
   }
@@ -1665,7 +1665,7 @@ def reward_func(s, a, n):
   /* ===================== filter lab ===================== */
   const PF = { pf: null, frames: null, fi: 0, model: 0, ep: 5, kappa: 0.2, K: 10, timer: null };
   demos.lava.forEach((d, i) => { const o = document.createElement('option'); o.value = i; const row = d.grid.find(r => r.includes('~')); o.textContent = `#${i + 1} · ${d.actions.length} steps · ${d.outcome === 'win' ? 'reaches goal' : d.outcome === 'die' ? 'dies in lava' : 'times out'} (lava column ${row ? row.indexOf('~') : '?'})`; $('pf-episode').appendChild(o); });
-  MODELS.forEach((m, i) => { const o = document.createElement('option'); o.value = i; o.textContent = m.name + ' — ' + m.short; $('pf-model').appendChild(o); });
+  MODELS.forEach((m, i) => { const o = document.createElement('option'); o.value = i; o.textContent = m.name + ' · ' + m.short; $('pf-model').appendChild(o); });
   $('pf-episode').value = PF.ep; $('pf-model').value = PF.model;
   function pfReset(keepWorld) {
     if (PF.timer) { clearInterval(PF.timer); PF.timer = null; $('pf-play').textContent = 'Play'; }
@@ -1788,7 +1788,7 @@ def reward_func(s, a, n):
       const s = pf.summary(); res.push({ m, s, i });
     });
     const best = Math.max.apply(null, res.map(r => r.s.score));
-    res.forEach(r => { const tr = document.createElement('tr'); const verdict = r.s.collapsed ? 'collapsed' : (r.s.score >= best - 1e-9 ? 'best fit' : (best - r.s.score < 1 ? 'near-best (within 1 nat)' : 'rejected')); [r.m.name + ' — ' + r.m.short, fmt(r.s.score, 2), fmt(r.s.minESS, 1), fmt(r.s.medianD, 2), verdict].forEach((v, k) => { const td = document.createElement('td'); if (k === 1 || k === 2 || k === 3) td.className = 'num'; td.textContent = v; tr.appendChild(td); }); tb.appendChild(tr); });
+    res.forEach(r => { const tr = document.createElement('tr'); const verdict = r.s.collapsed ? 'collapsed' : (r.s.score >= best - 1e-9 ? 'best fit' : (best - r.s.score < 1 ? 'near-best (within 1 nat)' : 'rejected')); [r.m.name + ' · ' + r.m.short, fmt(r.s.score, 2), fmt(r.s.minESS, 1), fmt(r.s.medianD, 2), verdict].forEach((v, k) => { const td = document.createElement('td'); if (k === 1 || k === 2 || k === 3) td.className = 'num'; td.textContent = v; tr.appendChild(td); }); tb.appendChild(tr); });
     const d = demos.lava[PF.ep];
     $('pf-lesson').textContent = d.outcome === 'die'
       ? 'On a trajectory that ends in lava, A and B stay close: the agent enters the lava cell once, so the observation score sees a single graded mismatch. The score alone barely separates a fatal rule from a blocking rule; the reward and termination mismatch in the feedback block below is what exposes B. This is why the datasets mix failures with successes (Appendix D.2).'

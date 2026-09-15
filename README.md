@@ -1,4 +1,4 @@
-# mathis-fajeau.github.io — site perso
+# mathisfajeau.github.io · site perso
 
 Site statique, aucun build : ouvrir `index.html` suffit.
 
