@@ -406,7 +406,7 @@
   const wcB = document.createElement('canvas'); wcB.width = CW; wcB.height = CH; const wgB = wcB.getContext('2d');
   const wtex = new THREE.CanvasTexture(wcB); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
   // the drawn interior is blitted through a strong blur so the window melts into the illustration
-  const blitWindow = () => { wgB.filter = 'none'; wgB.clearRect(0, 0, CW, CH); wgB.filter = 'blur(13px) brightness(0.8) saturate(0.92)'; wgB.drawImage(wc, 0, 0); wgB.filter = 'none'; wtex.needsUpdate = true; };
+  const blitWindow = () => { wgB.filter = 'none'; wgB.clearRect(0, 0, CW, CH); wgB.filter = 'blur(9px) brightness(0.8) saturate(0.92)'; wgB.drawImage(wc, 0, 0); wgB.filter = 'none'; wtex.needsUpdate = true; };
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.8); scene.add(winMesh);
   const ws = { state: 'empty', t: 0, light: true, px: -6, screen: false, blink: 0, next: 5 + Math.random() * 60, sitX: 18 };
@@ -583,7 +583,7 @@
     // a wet highlight along the top edge and the mounting bracket
     sg.fillStyle = 'rgba(255,255,255,.22)'; sg.fillRect(2 * SK, 2 * SK, W - 4 * SK, 0.8 * SK);
     sg.fillStyle = '#0e0b1c'; sg.fillRect(W / 2 - 1.5 * SK, 0, 3 * SK, 1.2 * SK);
-    sgB.filter = 'none'; sgB.clearRect(0, 0, sc.width, sc.height); sgB.filter = 'blur(8px) brightness(0.72)'; sgB.drawImage(sc, 0, 0); sgB.filter = 'none';
+    sgB.filter = 'none'; sgB.clearRect(0, 0, sc.width, sc.height); sgB.filter = 'blur(5.5px) brightness(0.72)'; sgB.drawImage(sc, 0, 0); sgB.filter = 'none';
     stex.needsUpdate = true;
   }
   drawSign();
