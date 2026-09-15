@@ -348,9 +348,12 @@
     f.position.set(cx, -cy, z); f.userData = { x0: cx, o, dr, ph: fogs.length * 2.1 }; scene.add(f); fogs.push(f);
   }
 
-  // a tiny human station glinting on the dark limb of the moon
-  const station = pxq(3, 3, 0xffe9c8, 0, -1.75);
-  station.position.set(MOONP.x + 0.62 * MOONP.s, -(MOONP.y + 0.38 * MOONP.s), -1.75);
+  // a tiny human station glinting on the dark limb of the moon: soft radial dot
+  const stC = document.createElement('canvas'); stC.width = stC.height = 16;
+  (function () { const c = stC.getContext('2d'); const r = c.createRadialGradient(8, 8, 0, 8, 8, 8); r.addColorStop(0, 'rgba(255,233,200,1)'); r.addColorStop(0.35, 'rgba(255,233,200,.55)'); r.addColorStop(1, 'rgba(255,233,200,0)'); c.fillStyle = r; c.fillRect(0, 0, 16, 16); })();
+  const stTex = new THREE.CanvasTexture(stC); stTex.magFilter = stTex.minFilter = THREE.LinearFilter; stTex.generateMipmaps = false;
+  const station = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({ map: stTex, transparent: true, opacity: 0, depthWrite: false }));
+  station.position.set(MOONP.x + 0.62 * MOONP.s, -(MOONP.y + 0.38 * MOONP.s), -1.75); scene.add(station);
 
   // rain gusts: every so often the wind picks up for a few seconds
   const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
@@ -422,9 +425,13 @@
       const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#2a2046'); g.addColorStop(1, '#171230');
       wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K); frame(); wtex.needsUpdate = true; return;
     }
+    // the interior is drawn zoomed in: seen from the street below, only the upper half shows
+    wg.save();
+    wg.translate(19.5 * K * (1 - 1.65), -3 * K * 1.65);
+    wg.scale(1.65, 1.65);
     // warm room in the street's palette: pale amber up top sinking into the neon rose
     const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#f0c497'); g.addColorStop(0.35, '#f6cfa8'); g.addColorStop(1, '#c8879b');
-    wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K);
+    wg.fillStyle = g; wg.fillRect(0, 0, CW, CH);
     R(1, 1, WIN.w - 2, 1.2, 'rgba(80,45,75,.35)');                                  // ceiling shadow
     // back wall details: a pink poster and a shelf
     R(7.5, 3.5, 5.5, 6.5, '#e57fb9'); R(8.3, 4.3, 3.9, 2.2, '#f7cfe5'); R(8.3, 7.2, 2.5, 0.7, '#c95e98');
@@ -445,6 +452,7 @@
     wg.fillStyle = '#5fb07a'; wg.beginPath(); wg.ellipse(4.2 * K, 12.4 * K, 1.1 * K, 0.9 * K, 0, 0, Math.PI * 2); wg.fill();
     if (ws.state === 'in' || ws.state === 'out') drawPerson(ws.px, Math.floor(ws.t * 6) % 2 ? 'walk1' : 'walk0', 0);
     if (ws.state === 'sit') drawPerson(ws.sitX, 'sit', Math.floor(ws.t) % 5 === 0 && (ws.t % 1) < 0.35 ? 0.5 : 0);
+    wg.restore();
     // glass: a faint diagonal sheen, then the frame
     const sh = wg.createLinearGradient(0, 0, CW, CH); sh.addColorStop(0.15, 'rgba(255,255,255,0)'); sh.addColorStop(0.3, 'rgba(255,255,255,.14)'); sh.addColorStop(0.42, 'rgba(255,255,255,0)');
     wg.fillStyle = sh; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K);
