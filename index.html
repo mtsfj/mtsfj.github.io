@@ -261,8 +261,9 @@
     comps.push(p);
   }
 
-  // the moon, sunset-lit, partly hidden by the mountain slope
-  plane('assets/moon.webp', 693, 274, 46, 46, -1.8);
+  // the moon, sunset-lit, ghostly in the upper sky (position, size and opacity hand-tuned)
+  const MOONP = { x: 532, y: 42, s: 90 };
+  plane('assets/moon.webp', MOONP.x, MOONP.y, MOONP.s, MOONP.s, -1.8, { opacity: 0.45 });
 
   // mount Fuji and its sakura in the sky gap, behind the skyline and the flying events
   plane('assets/fuji_night.webp', 376, 66, 640, 640, -1.5);
@@ -346,6 +347,10 @@
     const f = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: fogTex, transparent: true, opacity: o, depthWrite: false }));
     f.position.set(cx, -cy, z); f.userData = { x0: cx, o, dr, ph: fogs.length * 2.1 }; scene.add(f); fogs.push(f);
   }
+
+  // a tiny human station glinting on the dark limb of the moon
+  const station = pxq(3, 3, 0xffe9c8, 0, -1.75);
+  station.position.set(MOONP.x + 0.62 * MOONP.s, -(MOONP.y + 0.38 * MOONP.s), -1.75);
 
   // rain gusts: every so often the wind picks up for a few seconds
   const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
@@ -631,6 +636,8 @@
     rain.material.opacity = 0.36 + 0.2 * gust.k;
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
+    // moon station: slow warm pulse
+    station.material.opacity = 0.15 + 0.6 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.1), 3);
     // Luffy billboard: 12 frames at 10 fps, faint screen flicker
     luffyTex.offset.x = Math.floor(t * 10) % 12 / 12;
     luffyScr.material.opacity = 0.95 + 0.05 * Math.sin(t * 9.7);
