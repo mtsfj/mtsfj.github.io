@@ -82,8 +82,7 @@
   .article .links a.live { color: var(--sodium); text-decoration-color: var(--sodium); }
   .article .date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); margin-bottom: 8px; display: block; }
   .tl-wrap { margin: 34px calc(-1 * clamp(20px, 6vw, 96px)) 0; }
-  .tl-sticky { position: sticky; top: max(120px, calc(50vh - 140px)); overflow: hidden; padding: 22px 0 34px; }
-  .tl-active .tl-sticky { top: 0; height: 100svh; display: flex; align-items: center; padding: 0; background: var(--night); }
+  .tl-sticky { overflow: hidden; padding: 26px 0 36px; }
   .tl-track { display: flex; margin: 0; padding: 0 clamp(20px, 6vw, 96px); list-style: none; width: max-content; will-change: transform; }
   .tl-track li { position: relative; min-width: 380px; padding: 44px 56px 0 0; }
   .tl-track li::before { content: ""; position: absolute; top: 8px; left: 22px; right: -22px; height: 2px; background: var(--rule); }
@@ -106,7 +105,7 @@
   .contact-list li a:hover { border-color: #a8e6ff; color: #a8e6ff; box-shadow: 0 0 12px rgba(168,230,255,.22); }
   footer { padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   footer .pixel { font-family: var(--pixel); font-size: 10px; }
-  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; gap: 20px; } section { padding: 60px 0; } .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; } .article { flex-direction: column; gap: 16px; } .article .thumb { width: 100%; height: auto; } .tl-wrap { overflow-x: auto; } .tl-sticky { position: static; } }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; gap: 20px; } section { padding: 60px 0; } .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; } .article { flex-direction: column; gap: 16px; } .article .thumb { width: 100%; height: auto; } .tl-sticky { overflow-x: auto; } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
 </head>
@@ -284,36 +283,32 @@
     btn.addEventListener('click', () => { lang = lang === 'fr' ? 'en' : 'fr'; apply(); });
     apply();
   })();
-  // frise du parcours : collée à l'écran, le scroll vertical la fait défiler horizontalement
+  // frise du parcours : quand elle est en prise, la molette est capturée et ne fait défiler qu'elle ;
+  // au bout, la descente est relâchée ; en remontant, elle recule jusqu'au début avant de libérer
   (function () {
     const wraps = Array.from(document.querySelectorAll('.tl-wrap'));
     if (!wraps.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    let state = [];
-    function measure() {
-      state = [];
-      for (const w of wraps) {
-        const track = w.querySelector('.tl-track'), sticky = w.querySelector('.tl-sticky');
-        track.style.transform = ''; w.style.height = ''; w.classList.remove('tl-active');
-        if (w.hidden || innerWidth <= 720) continue;
-        const dist = Math.max(0, track.offsetWidth - sticky.clientWidth);
-        if (dist > 0) {
-          w.classList.add('tl-active');   // la frise occupe tout l'écran pendant la traversée
-          w.style.height = (sticky.offsetHeight + dist) + 'px';
-          state.push({ w, track, dist, top: parseFloat(getComputedStyle(sticky).top) || 0 });
-        }
+    const prog = new Map();
+    let centered = null;
+    addEventListener('wheel', (e) => {
+      if (innerWidth <= 720) return;
+      const w = wraps.find(x => !x.hidden);
+      if (!w) return;
+      const track = w.querySelector('.tl-track');
+      const dist = Math.max(0, track.offsetWidth - w.querySelector('.tl-sticky').clientWidth);
+      if (dist <= 0) return;
+      const r = w.getBoundingClientRect();
+      if (!(r.top < innerHeight * 0.7 && r.bottom > innerHeight * 0.3)) return;
+      let p = prog.get(w) || 0;
+      if ((e.deltaY > 0 && p < dist) || (e.deltaY < 0 && p > 0)) {
+        e.preventDefault();
+        if (centered !== w) { centered = w; w.scrollIntoView({ block: 'center' }); }
+        p = Math.min(dist, Math.max(0, p + e.deltaY));
+        prog.set(w, p);
+        track.style.transform = 'translateX(' + (-p) + 'px)';
       }
-      onScroll();
-    }
-    function onScroll() {
-      for (const s of state) {
-        const p = Math.min(1, Math.max(0, (s.top - s.w.getBoundingClientRect().top) / s.dist));
-        s.track.style.transform = 'translateX(' + (-p * s.dist) + 'px)';
-      }
-    }
-    addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', measure);
-    window.recalcTimeline = measure;
-    measure();
+    }, { passive: false });
+    window.recalcTimeline = () => { prog.clear(); centered = null; wraps.forEach(w => { w.querySelector('.tl-track').style.transform = ''; }); };
   })();
 </script>
 
