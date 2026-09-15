@@ -271,8 +271,15 @@
   luffyScr.position.set(343 + 17.5, -(144 + 23.5), 1.2); scene.add(luffyScr);
   plane('assets/cables_front.webp', 328, 180, 74, 42, 1.4);
 
-  // ramen sign resting on the right cornice
-  plane('assets/ramen_sign.webp', 1159, 370, 28, 35, 1.15);
+  // ramen sign warped onto the cornice: the four corners were placed by hand with the ramen tool
+  const RC = [[1154.3, 379.3], [1192, 359], [1199, 392], [1158.7, 409.3]];
+  const ramenGeo = new THREE.BufferGeometry();
+  ramenGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
+    RC[0][0], -RC[0][1], 0, RC[1][0], -RC[1][1], 0, RC[2][0], -RC[2][1], 0, RC[3][0], -RC[3][1], 0]), 3));
+  ramenGeo.setAttribute('uv', new THREE.BufferAttribute(new Float32Array([0, 1, 1, 1, 1, 0, 0, 0]), 2));
+  ramenGeo.setIndex([0, 3, 1, 1, 3, 2]);
+  const ramen = new THREE.Mesh(ramenGeo, new THREE.MeshBasicMaterial({ map: crisp('assets/ramen_sign.webp'), transparent: true, depthWrite: false, side: THREE.DoubleSide }));
+  ramen.position.z = 1.15; scene.add(ramen);
 
   // stars: a handful of pixels in the dark upper sky, twinkling
   const NS = 40, sp = new Float32Array(NS * 3);
@@ -331,7 +338,7 @@
   // thin steam over the ramen bowl
   const puffs2 = [];
   for (let i = 0; i < 5; i++) { const p = pxq(2, 2, 0xd8c8c8, 0, 1.18); p.userData = { t: i * 0.6 }; puffs2.push(p); }
-  const STEAM2 = { x: 1172, y: 372 };
+  const STEAM2 = { x: 1176, y: 374 };
 
   // sakura petals carried across the street by the wind
   const petals = [], PCOL = [0xffb3d9, 0xff8ad1, 0xffd1e8];
