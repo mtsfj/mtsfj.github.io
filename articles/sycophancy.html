@@ -42,7 +42,7 @@
   .top a { text-decoration: none; color: var(--paper-dim); } .top a:hover { color: var(--paper); }
   .top .brand { font-family: var(--pixel); font-size: 13px; color: var(--paper); }
 
-  .masthead { padding: 44px clamp(20px, 6vw, 96px) 30px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 40px; }
+  .masthead { max-width: 1112px; margin: 0 auto; padding: 44px clamp(20px, 6vw, 96px) 30px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 40px; }
   .eyebrow { font-family: var(--pixel); font-size: 10px; color: var(--pink); margin-bottom: 14px; }
   h1 { font-family: var(--pixel); font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.05; margin: 0 0 16px; text-shadow: 0 0 26px rgba(255,138,209,.45); }
   .lede { font-size: clamp(18px, 1.6vw, 22px); color: var(--paper-dim); max-width: 34ch; margin: 0; }
@@ -51,7 +51,7 @@
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
   .chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid var(--rule-2); border-radius: 999px; font-size: 13px; text-decoration: none; color: var(--paper); }
   .chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sodium); }
-  .tldr { margin: 0 clamp(20px, 6vw, 96px); padding: 22px 24px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; }
+  .tldr { margin: 0 auto; width: calc(100% - 2 * clamp(20px, 6vw, 96px)); max-width: 920px; padding: 22px 24px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; }
   .tldr p { margin: 0; max-width: 70ch; }
   .numbers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .tile { background: var(--panel-2); border-radius: 10px; padding: 12px; }
@@ -62,8 +62,8 @@
   nav.toc a { text-decoration: none; color: var(--paper-dim); } nav.toc a:hover { color: var(--pink); }
   @media (max-width: 800px) { .masthead, .tldr { grid-template-columns: 1fr; } .numbers { grid-template-columns: 1fr; } }
 
-  main { padding: 0 clamp(20px, 6vw, 96px) 60px; }
-  section { padding: 60px 0 6px; max-width: 920px; border-top: 1px solid var(--rule); margin-top: 40px; }
+  main { max-width: 1112px; margin: 0 auto; padding: 0 clamp(20px, 6vw, 96px) 60px; }
+  section { padding: 60px 0 6px; max-width: 920px; border-top: 1px solid var(--rule); margin: 40px auto 0; }
   section:first-of-type { border-top: 0; margin-top: 0; }
   h2 { font-size: clamp(24px, 2.6vw, 32px); font-weight: 500; line-height: 1.15; margin: 0 0 18px; }
   h3 { font-size: 19px; font-weight: 500; margin: 28px 0 8px; }
@@ -132,7 +132,7 @@
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   @media (max-width: 760px) { .chat, .chan, .two { grid-template-columns: 1fr; } .loop { grid-template-columns: 1fr 1fr; } .findings li { grid-template-columns: 1fr; } }
 
-  footer { padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  footer { max-width: 1112px; margin: 0 auto; padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   footer .pixel { font-family: var(--pixel); font-size: 10px; }
 </style>
 </head>
