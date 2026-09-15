@@ -15,6 +15,14 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="preload" as="image" href="assets/layer_city_off.webp">
+<link rel="preload" as="script" href="assets/three.min.js">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
+<meta name="theme-color" content="#0f0c22">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"Mathis Fajeau","jobTitle":"PhD student","affiliation":{"@type":"Organization","name":"Inria Bordeaux, Flowers team"},"url":"https://mtsfj.github.io/","image":"https://mtsfj.github.io/og.png","sameAs":["https://github.com/mtsfj","https://scholar.google.com/citations?user=kMFBjk4AAAAJ","https://www.linkedin.com/in/mathis-fajeau/"]}
+</script>
 <style>
   :root {
     --night: #17132c;
@@ -36,7 +44,7 @@
   a:hover { text-decoration-color: var(--coral); }
   :focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
 
-  .hero { position: relative; height: 100svh; min-height: 540px; overflow: hidden; background: var(--night-deep); }
+  .hero { position: relative; height: 100svh; min-height: 540px; overflow: hidden; background: var(--night-deep) url(data:image/webp;base64,UklGRswAAABXRUJQVlA4IMAAAAAwBgCdASolABUAPp1GnUolo6KhqrgKALATiUAW2QRtyQZORMzabqpo4QTswM/WnJ6x1wSTFVFIX7awAP75I5hpEaV0mv2COHAcjVTyT7O/YN9FYIFz+fOHscxpkx5K4b00dIDDK9ow6m14G2wamwD17M6h11h14pAcJig8sQ1+5KEQ7f7E4xAZzHQ6S7zEP/u8pKM0IhMTj3VDWQl7t59OnO9X1kZhuiZEmZGo+QPHvD0Bjhv6rh/t21XFJ05IAAA=) center 55% / cover no-repeat; }
   .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
   .hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 42%; background: linear-gradient(to top, rgba(15,12,34,.92), rgba(15,12,34,0)); pointer-events: none; }
   .hero-text { position: absolute; z-index: 1; left: clamp(20px, 6vw, 96px); bottom: clamp(28px, 9vh, 110px); max-width: 640px; }
@@ -89,16 +97,16 @@
 <header class="hero" id="top">
   <canvas id="street" aria-hidden="true"></canvas>
   <nav class="hero-nav" aria-label="Navigation">
-    <a href="#bio">Bio</a><a href="#articles" data-lang="fr">Articles</a><a href="#articles" data-lang="en">Articles</a><a href="#publications">Publications</a><a href="#contact">Contact</a>
+    <a href="#bio">Bio</a><a href="#articles" data-lang="fr">Articles</a><a href="#articles" data-lang="en" lang="en" hidden>Articles</a><a href="#publications">Publications</a><a href="#contact">Contact</a>
     <button class="lang" id="lang-toggle" type="button" aria-label="Switch language">EN</button>
   </nav>
   <div class="hero-text">
     <h1>Mathis Fajeau</h1>
     <p data-lang="fr"><strong>Doctorant à Inria Bordeaux, équipe Flowers.</strong> J'explore comment des agents curieux peuvent cartographier ce que les grands modèles génératifs savent faire, et où ils échouent.</p>
-    <p data-lang="en"><strong>PhD student at Inria Bordeaux, Flowers team.</strong> I study how curious agents can map what large generative models can do, and where they fail.</p>
+    <p data-lang="en" lang="en" hidden><strong>PhD student at Inria Bordeaux, Flowers team.</strong> I study how curious agents can map what large generative models can do, and where they fail.</p>
   </div>
   <div class="scroll-hint" data-lang="fr">↓ défiler</div>
-  <div class="scroll-hint" data-lang="en">↓ scroll</div>
+  <div class="scroll-hint" data-lang="en" lang="en" hidden>↓ scroll</div>
 </header>
 
 <main>
@@ -115,7 +123,7 @@
           <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
         </ul>
       </div>
-      <div class="prose" data-lang="en">
+      <div class="prose" data-lang="en" lang="en" hidden>
         <p>I am doing my PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer, on autotelic exploration for the automatic evaluation of large generative models: instead of fixed benchmarks, agents that set their own goals to discover and map a model's capabilities and vulnerabilities.</p>
         <p>Before that: an M.Sc. at Georgia Tech (systems and machine learning), an engineering degree from IMT Atlantique, and time at Thales writing CUDA/Triton attention kernels and quantizing models to INT8/FP8. What I like most is where theory (information theory, stochastic processes) meets the low level (GPUs, memory).</p>
         <ul class="bio-meta">
@@ -148,7 +156,7 @@
           </li>
         </ul>
       </div>
-      <div data-lang="en">
+      <div data-lang="en" lang="en" hidden>
         <p class="prose" style="color:var(--paper-dim);margin:0 0 34px">Each article comes in two forms: an interactive page where you can play with the ideas, and the classic document.</p>
         <ul class="articles">
           <li class="article">
@@ -172,7 +180,7 @@
     <div class="grid">
       <h2>Publications</h2>
       <ul class="pubs">
-        <li><div><a href="https://arxiv.org/abs/2605.13740">Pinductor: Learning POMDP World Models from Observations with Language-Model Priors</a></div><div class="authors">V. Six*, F. Panse*, <strong>M. Fajeau</strong>*, L. Da Costa*, M. Sharma, A. Amayuelas, T. Z. Xiao, D. Hyland, P. Hennig, B. Schölkopf · <span data-lang="fr">* co-premiers auteurs</span><span data-lang="en">* equal first authors</span></div><div class="venue" data-lang="fr">arXiv 2605.13740 · soumis à NeurIPS 2026</div><div class="venue" data-lang="en">arXiv 2605.13740 · submitted to NeurIPS 2026</div></li>
+        <li><div><a href="https://arxiv.org/abs/2605.13740">Pinductor: Learning POMDP World Models from Observations with Language-Model Priors</a></div><div class="authors">V. Six*, F. Panse*, <strong>M. Fajeau</strong>*, L. Da Costa*, M. Sharma, A. Amayuelas, T. Z. Xiao, D. Hyland, P. Hennig, B. Schölkopf · <span data-lang="fr">* co-premiers auteurs</span><span data-lang="en" lang="en" hidden>* equal first authors</span></div><div class="venue" data-lang="fr">arXiv 2605.13740 · soumis à NeurIPS 2026</div><div class="venue" data-lang="en" lang="en" hidden>arXiv 2605.13740 · submitted to NeurIPS 2026</div></li>
       </ul>
     </div>
   </section>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>404 · Mathis Fajeau</title>
 <meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f0c22">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <style>
@@ -22,6 +23,7 @@
     animation: rain 0.9s linear infinite; pointer-events: none;
   }
   @keyframes rain { to { transform: translateY(48px); } }
+  @media (prefers-reduced-motion: reduce) { body::before { animation: none; } }
   main { text-align: center; padding: 24px; position: relative; }
   h1 {
     font-family: 'Silkscreen', monospace; font-size: clamp(64px, 18vw, 160px); line-height: 1;
