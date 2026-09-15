@@ -264,10 +264,12 @@
   // mount Fuji and its sakura in the sky gap, behind the skyline and the flying events
   plane('assets/fuji_night.webp', 376, 45, 640, 640, -1.5);
 
-  // Luffy gear 5 racing along the left facade, 12-frame sheet stepped by texture offset
-  const luffyTex = crisp('assets/luffy_sheet.webp'); luffyTex.repeat.set(1 / 12, 1);
-  const luffy = new THREE.Mesh(new THREE.PlaneGeometry(35, 48), new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
-  luffy.position.set(343 + 17.5, -(144 + 24), 1.2); scene.add(luffy);
+  // billboard on the left facade playing the Luffy loop, times-square style; street cables pass in front
+  const luffyBez = pxq(41, 53, 0x141026, 1, 1.19); luffyBez.position.set(343 + 17.5, -(144 + 23.5), 1.19);
+  const luffyTex = crisp('assets/luffy_screen.webp'); luffyTex.repeat.set(1 / 12, 1);
+  const luffyScr = new THREE.Mesh(new THREE.PlaneGeometry(35, 47), new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
+  luffyScr.position.set(343 + 17.5, -(144 + 23.5), 1.2); scene.add(luffyScr);
+  plane('assets/cables_front.webp', 328, 180, 74, 42, 1.4);
 
   // ramen sign resting on the right cornice
   plane('assets/ramen_sign.webp', 1159, 370, 28, 35, 1.15);
@@ -333,7 +335,7 @@
 
   // sakura petals carried across the street by the wind
   const petals = [], PCOL = [0xffb3d9, 0xff8ad1, 0xffd1e8];
-  for (let i = 0; i < 14; i++) { const p = pxq(2, 2, PCOL[i % 3], 0, 2.8); p.userData = { life: 0, t: 9 }; petals.push(p); }
+  for (let i = 0; i < 14; i++) { const p = pxq(2, 2, PCOL[i % 3], 0, 0.65); p.userData = { life: 0, t: 9 }; petals.push(p); }
 
   // rain gusts: every so often the wind picks up for a few seconds
   const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
@@ -619,8 +621,9 @@
     rain.material.opacity = 0.36 + 0.2 * gust.k;
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
-    // Luffy: 12 frames at 10 fps
+    // Luffy billboard: 12 frames at 10 fps, faint screen flicker
     luffyTex.offset.x = Math.floor(t * 10) % 12 / 12;
+    luffyScr.material.opacity = 0.95 + 0.05 * Math.sin(t * 9.7);
     // ramen steam
     for (const p of puffs2) {
       const u = p.userData; u.t += dt; if (u.t > 3) u.t = 0;
@@ -634,7 +637,7 @@
       const u = p.userData; u.t += dt;
       if (u.t > u.life) { u.t = 0; u.life = 6 + Math.random() * 5; u.x = 640 + Math.random() * 816; u.y = 40 + Math.random() * 400; u.vx = -(14 + Math.random() * 22); u.vy = 9 + Math.random() * 12; u.ph = Math.random() * 6.3; }
       u.x += (u.vx - 110 * gust.k) * dt; u.y += u.vy * dt;
-      p.position.set(u.x + Math.sin(t * 1.8 + u.ph) * 5, -u.y, 2.8);
+      p.position.set(u.x + Math.sin(t * 1.8 + u.ph) * 5, -u.y, 0.65);
       const k = u.t / u.life;
       p.material.opacity = 0.8 * Math.min(1, u.t) * (k > 0.8 ? (1 - k) * 5 : 1);
     }
