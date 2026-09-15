@@ -306,17 +306,19 @@
     let sx, sy;
     do { sx = Math.random() * IW; sy = 10 + Math.random() * 170; }
     while (Math.hypot(sx - (MOONP.x + MOONP.s / 2), sy - (MOONP.y + MOONP.s / 2)) < MOONP.s / 2 + 3);   // jamais dans le disque lunaire
-    sp[i * 3] = sx; sp[i * 3 + 1] = -sy; sp[i * 3 + 2] = -2;
+    sp[i * 3] = sx; sp[i * 3 + 1] = -sy; sp[i * 3 + 2] = 0;
   }
   const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
   const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffe9f2, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.8 }));
+  stars.position.z = -2;   // le z du tri est celui de l'objet : les étoiles passent sous la ville
   scene.add(stars);
 
   // rain: thin drops, slightly slanted, in front of everything
   const NR = 650, rp = new Float32Array(NR * 3);
-  for (let i = 0; i < NR; i++) { rp[i * 3] = Math.random() * IW; rp[i * 3 + 1] = -Math.random() * IH; rp[i * 3 + 2] = 3; }
+  for (let i = 0; i < NR; i++) { rp[i * 3] = Math.random() * IW; rp[i * 3 + 1] = -Math.random() * IH; rp[i * 3 + 2] = 0; }
   const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(rp, 3));
   const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xd8d0ff, size: 2.0, sizeAttenuation: false, transparent: true, opacity: 0.36 }));
+  rain.position.z = 3;   // même correction de tri que les étoiles : le z porté par l'objet
   scene.add(rain);
 
   // ---- procedural events (all sky objects sit at z=-1, behind the buildings and wires) ----
@@ -329,7 +331,7 @@
   setPlane(0, 0, false);
 
   // shooting stars: a short streak that fades, every 20–60 s
-  const streak = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, -1), new THREE.Vector3(22, -9, -1)]), new THREE.LineBasicMaterial({ color: 0xfff1d8, transparent: true, opacity: 0 }));
+  const streak = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(22, -9, 0)]), new THREE.LineBasicMaterial({ color: 0xfff1d8, transparent: true, opacity: 0 }));
   scene.add(streak); const shoot = { active: false, t: 0, next: 5 + Math.random() * 50 };
 
   // distant apartment lights on the skyline towers: each one has its own slow on/off rhythm
@@ -403,7 +405,7 @@
   const wcB = document.createElement('canvas'); wcB.width = CW; wcB.height = CH; const wgB = wcB.getContext('2d');
   const wtex = new THREE.CanvasTexture(wcB); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
   // the drawn interior is blitted through a strong blur so the window melts into the illustration
-  const blitWindow = () => { wgB.filter = 'none'; wgB.clearRect(0, 0, CW, CH); wgB.filter = 'blur(5px)'; wgB.drawImage(wc, 0, 0); wgB.filter = 'none'; wtex.needsUpdate = true; };
+  const blitWindow = () => { wgB.filter = 'none'; wgB.clearRect(0, 0, CW, CH); wgB.filter = 'blur(13px) brightness(0.8) saturate(0.92)'; wgB.drawImage(wc, 0, 0); wgB.filter = 'none'; wtex.needsUpdate = true; };
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.8); scene.add(winMesh);
   const ws = { state: 'empty', t: 0, light: true, px: -6, screen: false, blink: 0, next: 5 + Math.random() * 60, sitX: 18 };
@@ -580,7 +582,7 @@
     // a wet highlight along the top edge and the mounting bracket
     sg.fillStyle = 'rgba(255,255,255,.22)'; sg.fillRect(2 * SK, 2 * SK, W - 4 * SK, 0.8 * SK);
     sg.fillStyle = '#0e0b1c'; sg.fillRect(W / 2 - 1.5 * SK, 0, 3 * SK, 1.2 * SK);
-    sgB.filter = 'none'; sgB.clearRect(0, 0, sc.width, sc.height); sgB.filter = 'blur(3.5px)'; sgB.drawImage(sc, 0, 0); sgB.filter = 'none';
+    sgB.filter = 'none'; sgB.clearRect(0, 0, sc.width, sc.height); sgB.filter = 'blur(8px) brightness(0.72)'; sgB.drawImage(sc, 0, 0); sgB.filter = 'none';
     stex.needsUpdate = true;
   }
   drawSign();
@@ -654,7 +656,7 @@
       if (u >= 1) { plane_.active = false; setPlane(0, 0, false); plane_.next = 40 + Math.random() * 80; }
     }
     // shooting star
-    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { shoot.active = true; shoot.t = 0; streak.position.set(200 + Math.random() * 900, -(20 + Math.random() * 150), 0); } }
+    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { shoot.active = true; shoot.t = 0; streak.position.set(200 + Math.random() * 900, -(20 + Math.random() * 150), -1); } }
     else { shoot.t += dt; const u = shoot.t / 0.7; streak.position.x += 260 * dt; streak.position.y -= 105 * dt; streak.material.opacity = u < 0.25 ? u * 4 : Math.max(0, 1 - (u - 0.25) / 0.75); if (u >= 1) { shoot.active = false; streak.material.opacity = 0; shoot.next = 20 + Math.random() * 45; } }
     // skyline apartments
     for (const m of dots) { const u = m.userData; u.next -= dt; if (u.next < 0) { u.on = !u.on; u.next = u.on ? 15 + Math.random() * 40 : 6 + Math.random() * 25; } m.material.opacity += ((u.on ? 0.95 : 0) - m.material.opacity) * Math.min(1, dt * 3); }
