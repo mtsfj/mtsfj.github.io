@@ -223,7 +223,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/om_sign.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/shop_r.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -293,6 +293,12 @@
   const glowTex = loader.load('assets/ramen_glow.webp'); glowTex.magFilter = glowTex.minFilter = THREE.LinearFilter; glowTex.generateMipmaps = false;
   const ramenGlow = new THREE.Mesh(ramenGeo, new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
   ramenGlow.position.z = 1.14; scene.add(ramenGlow);
+
+  // the OM flyer: once in a while a sheet of paper drops right in front of the lens, out of focus
+  const flyTex = loader.load('assets/om_flyer.webp'); flyTex.magFilter = flyTex.minFilter = THREE.LinearFilter; flyTex.generateMipmaps = false;
+  const flyer = new THREE.Mesh(new THREE.PlaneGeometry(416, 640), new THREE.MeshBasicMaterial({ map: flyTex, transparent: true, depthWrite: false }));
+  flyer.visible = false; flyer.position.z = 4; scene.add(flyer);
+  const flyS = { active: false, t: 0, x: 0, ph: 0, next: 35 + Math.random() * 70 };
 
   // stars: a handful of pixels in the dark upper sky, twinkling
   const NS = 40, sp = new Float32Array(NS * 3);
@@ -394,7 +400,10 @@
   // drawn at 3× the image resolution so its grain matches the illustration rather than looking blockier
   const WIN = { x: 513, y: 513, w: 39, h: 23 }, K = 6, CW = WIN.w * K, CH = WIN.h * K;
   const wc = document.createElement('canvas'); wc.width = CW; wc.height = CH; const wg = wc.getContext('2d');
-  const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
+  const wcB = document.createElement('canvas'); wcB.width = CW; wcB.height = CH; const wgB = wcB.getContext('2d');
+  const wtex = new THREE.CanvasTexture(wcB); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
+  // the drawn interior is blitted through a strong blur so the window melts into the illustration
+  const blitWindow = () => { wgB.filter = 'none'; wgB.clearRect(0, 0, CW, CH); wgB.filter = 'blur(5px)'; wgB.drawImage(wc, 0, 0); wgB.filter = 'none'; wtex.needsUpdate = true; };
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.8); scene.add(winMesh);
   const ws = { state: 'empty', t: 0, light: true, px: -6, screen: false, blink: 0, next: 5 + Math.random() * 60, sitX: 18 };
@@ -439,7 +448,7 @@
     const frame = () => { R(0, 0, WIN.w, 1, '#0d0a1c'); R(0, WIN.h - 1, WIN.w, 1, '#0d0a1c'); R(0, 0, 1, WIN.h, '#0d0a1c'); R(WIN.w - 1, 0, 1, WIN.h, '#0d0a1c'); R(19, 1, 0.7, WIN.h - 2, '#221a36'); };
     if (!ws.light) {
       const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#2a2046'); g.addColorStop(1, '#171230');
-      wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K); frame(); wtex.needsUpdate = true; return;
+      wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K); frame(); blitWindow(); return;
     }
     // the interior is drawn zoomed in: seen from the street below, only the upper half shows
     wg.save();
@@ -476,7 +485,7 @@
     const sh = wg.createLinearGradient(0, 0, CW, CH); sh.addColorStop(0.15, 'rgba(255,255,255,0)'); sh.addColorStop(0.3, 'rgba(255,255,255,.14)'); sh.addColorStop(0.42, 'rgba(255,255,255,0)');
     wg.fillStyle = sh; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K);
     frame();
-    wtex.needsUpdate = true;
+    blitWindow();
   }
   drawWindow();
 
@@ -549,7 +558,8 @@
   // ---- small neon sign on the far building (x 771-799, y 578-604): white neon, original flower mark ----
   const SG = { x: 771, y: 578, w: 28, h: 26 }, SK = 4;
   const sc = document.createElement('canvas'); sc.width = SG.w * SK; sc.height = SG.h * SK; const sg = sc.getContext('2d');
-  const stex = new THREE.CanvasTexture(sc); stex.magFilter = stex.minFilter = THREE.LinearFilter; stex.generateMipmaps = false;
+  const scB = document.createElement('canvas'); scB.width = sc.width; scB.height = sc.height; const sgB = scB.getContext('2d');
+  const stex = new THREE.CanvasTexture(scB); stex.magFilter = stex.minFilter = THREE.LinearFilter; stex.generateMipmaps = false;
   const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(SG.w, SG.h), new THREE.MeshBasicMaterial({ map: stex, transparent: true, depthWrite: false }));
   signMesh.position.set(SG.x + SG.w / 2, -(SG.y + SG.h / 2), 0.55); scene.add(signMesh);   // far-building sign: behind the car (0.65) and the cat (0.7)
   const signS = { flick: 1, next: 6 + Math.random() * 12, hold: 0 };
@@ -570,6 +580,7 @@
     // a wet highlight along the top edge and the mounting bracket
     sg.fillStyle = 'rgba(255,255,255,.22)'; sg.fillRect(2 * SK, 2 * SK, W - 4 * SK, 0.8 * SK);
     sg.fillStyle = '#0e0b1c'; sg.fillRect(W / 2 - 1.5 * SK, 0, 3 * SK, 1.2 * SK);
+    sgB.filter = 'none'; sgB.clearRect(0, 0, sc.width, sc.height); sgB.filter = 'blur(3.5px)'; sgB.drawImage(sc, 0, 0); sgB.filter = 'none';
     stex.needsUpdate = true;
   }
   drawSign();
@@ -663,6 +674,15 @@
     rain.material.opacity = 0.36 + 0.2 * gust.k;
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
+    // OM flyer drop: pendulum fall through the frame, ~2.6 s
+    if (!flyS.active) { flyS.next -= dt; if (flyS.next < 0) { flyS.active = true; flyS.t = 0; flyS.x = 460 + Math.random() * 620; flyS.ph = Math.random() * 6; flyer.visible = true; } }
+    else {
+      flyS.t += dt; const uf = flyS.t / 2.6;
+      flyer.position.x = flyS.x + Math.sin(flyS.t * 2.0 + flyS.ph) * 80;
+      flyer.position.y = 340 - uf * (816 + 680);
+      flyer.rotation.z = 0.14 * Math.sin(flyS.t * 1.6 + flyS.ph);
+      if (uf >= 1) { flyS.active = false; flyer.visible = false; flyS.next = 60 + Math.random() * 120; }
+    }
     // moon station: slow warm pulse
     station.material.opacity = 0.15 + 0.6 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.1), 3);
     // Luffy billboard: 12 frames at 10 fps, faint screen flicker
