@@ -1,0 +1,10 @@
+.DS_Store
+Thumbs.db
+.vscode/
+site.zip
+cv.tex
+_sources/
+placement.html
+ramen-tool.html
+mask-tool.html
+hero-mask-tool.html
