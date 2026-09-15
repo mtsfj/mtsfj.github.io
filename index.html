@@ -81,7 +81,18 @@
   .article .links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; }
   .article .links a.live { color: var(--sodium); text-decoration-color: var(--sodium); }
   .article .date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); margin-bottom: 8px; display: block; }
-  .crow-perch { display: block; width: 42px; height: auto; image-rendering: pixelated; margin: 0 0 10px; opacity: .85; }
+  .timeline { margin: 26px 0 4px; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--rule) transparent; }
+  .timeline ol { display: flex; margin: 0; padding: 0 0 12px; list-style: none; min-width: max-content; }
+  .timeline li { position: relative; min-width: 150px; padding: 20px 26px 0 0; }
+  .timeline li::before { content: ""; position: absolute; top: 5px; left: 10px; right: -10px; height: 2px; background: var(--rule); }
+  .timeline li:last-child::before { right: 26px; }
+  .timeline li::after { content: ""; position: absolute; top: 2px; left: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px rgba(255,138,209,.55); }
+  .tl-date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); display: block; margin-bottom: 4px; }
+  .tl-label { display: block; font-size: 15px; font-weight: 500; }
+  .tl-sub { display: block; font-size: 13px; color: var(--paper-dim); max-width: 24ch; }
+  .drives { margin: 30px 0 0; }
+  .drives .k { font-family: var(--pixel); font-size: 11px; color: var(--pink); display: block; margin-bottom: 8px; }
+  .drives p { margin: 0; max-width: var(--measure); }
   .pubs { margin: 0; padding: 0; list-style: none; max-width: 760px; }
   .pubs li { padding: 14px 0; border-top: 1px dashed var(--rule); }
   .pubs li:first-child { border-top: 0; padding-top: 0; }
@@ -116,10 +127,24 @@
 <main>
   <section id="bio">
     <div class="grid">
-      <h2><img class="crow-perch" src="assets/crow.png" alt="" width="21" height="14">Bio</h2>
+      <h2>Bio</h2>
       <div class="prose" data-lang="fr">
         <p>Je prépare une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer, sur l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs : plutôt que des benchmarks figés, des agents qui se fixent leurs propres objectifs pour découvrir et cartographier les capacités et vulnérabilités d'un modèle.</p>
-        <p>Avant ça : un master à Georgia Tech (systèmes et machine learning), un diplôme d'ingénieur à IMT Atlantique, et un passage chez Thales à écrire des kernels d'attention CUDA/Triton et à quantifier des modèles en INT8/FP8. Ce que je préfère, c'est quand la théorie (théorie de l'information, processus stochastiques) et le bas niveau (GPU, mémoire) se rencontrent.</p>
+        <div class="timeline" aria-label="Parcours">
+          <ol>
+            <li><span class="tl-date">2020 – 2022</span><span class="tl-label">CPGE MP</span><span class="tl-sub">mathématiques théoriques</span></li>
+            <li><span class="tl-date">2024</span><span class="tl-label">Thales</span><span class="tl-sub">quantization INT8/FP8, R&amp;D deep learning</span></li>
+            <li><span class="tl-date">2025</span><span class="tl-label">Airbus</span><span class="tl-sub">RAG et validation de LLM en milieu critique</span></li>
+            <li><span class="tl-date">déc. 2025</span><span class="tl-label">Georgia Tech</span><span class="tl-sub">M.Sc. CS, systèmes et machine learning</span></li>
+            <li><span class="tl-date">mars 2026</span><span class="tl-label">IMT Atlantique</span><span class="tl-sub">ingénieur IA et systèmes embarqués</span></li>
+            <li><span class="tl-date">fév. 2026</span><span class="tl-label">MPI-IS / ELLIS Tübingen</span><span class="tl-sub">groupe Schölkopf, Pinductor</span></li>
+            <li><span class="tl-date">nov. 2026</span><span class="tl-label">Thèse, Inria Flowers</span><span class="tl-sub">exploration autotélique, jusqu'en 2029</span></li>
+          </ol>
+        </div>
+        <div class="drives">
+          <span class="k">Ce qui m'anime</span>
+          <p>La sécurité de l'IA, à commencer par celle de l'auto-amélioration récursive, et la compréhension fine des LLM : rendre l'IA aussi bénéfique que possible pour les humains en limitant ses défauts et ses risques, autant que possible en open source. Et ce que je préfère, c'est quand la théorie (théorie de l'information, processus stochastiques) et le bas niveau (GPU, mémoire) se rencontrent.</p>
+        </div>
         <ul class="bio-meta">
           <li><span>Thèse</span><span>2026 – 2029, ED Mathématiques et Informatique, Université de Bordeaux</span></li>
           <li><span>Directeur</span><span>Pierre-Yves Oudeyer</span></li>
@@ -129,7 +154,21 @@
       </div>
       <div class="prose" data-lang="en" lang="en" hidden>
         <p>I am doing my PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer, on autotelic exploration for the automatic evaluation of large generative models: instead of fixed benchmarks, agents that set their own goals to discover and map a model's capabilities and vulnerabilities.</p>
-        <p>Before that: an M.Sc. at Georgia Tech (systems and machine learning), an engineering degree from IMT Atlantique, and time at Thales writing CUDA/Triton attention kernels and quantizing models to INT8/FP8. What I like most is where theory (information theory, stochastic processes) meets the low level (GPUs, memory).</p>
+        <div class="timeline" aria-label="Timeline">
+          <ol>
+            <li><span class="tl-date">2020 – 2022</span><span class="tl-label">CPGE MP</span><span class="tl-sub">theoretical mathematics</span></li>
+            <li><span class="tl-date">2024</span><span class="tl-label">Thales</span><span class="tl-sub">INT8/FP8 quantization, deep learning R&amp;D</span></li>
+            <li><span class="tl-date">2025</span><span class="tl-label">Airbus</span><span class="tl-sub">RAG and LLM validation in safety-critical settings</span></li>
+            <li><span class="tl-date">Dec 2025</span><span class="tl-label">Georgia Tech</span><span class="tl-sub">M.Sc. CS, systems and machine learning</span></li>
+            <li><span class="tl-date">Mar 2026</span><span class="tl-label">IMT Atlantique</span><span class="tl-sub">M.Eng. AI and embedded systems</span></li>
+            <li><span class="tl-date">Feb 2026</span><span class="tl-label">MPI-IS / ELLIS Tübingen</span><span class="tl-sub">Schölkopf group, Pinductor</span></li>
+            <li><span class="tl-date">Nov 2026</span><span class="tl-label">PhD, Inria Flowers</span><span class="tl-sub">autotelic exploration, through 2029</span></li>
+          </ol>
+        </div>
+        <div class="drives">
+          <span class="k">What drives me</span>
+          <p>AI safety, starting with the safety of recursive self-improvement, and a fine-grained understanding of LLMs: making AI as beneficial as possible for humans while limiting its flaws and risks, in the open as much as possible. And what I like most is where theory (information theory, stochastic processes) meets the low level (GPUs, memory).</p>
+        </div>
         <ul class="bio-meta">
           <li><span>PhD</span><span>2026 – 2029, Doctoral School of Mathematics and Computer Science, University of Bordeaux</span></li>
           <li><span>Advisor</span><span>Pierre-Yves Oudeyer</span></li>
