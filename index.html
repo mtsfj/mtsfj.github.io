@@ -519,7 +519,7 @@
   const sc = document.createElement('canvas'); sc.width = SG.w * SK; sc.height = SG.h * SK; const sg = sc.getContext('2d');
   const stex = new THREE.CanvasTexture(sc); stex.magFilter = stex.minFilter = THREE.LinearFilter; stex.generateMipmaps = false;
   const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(SG.w, SG.h), new THREE.MeshBasicMaterial({ map: stex, transparent: true, depthWrite: false }));
-  signMesh.position.set(SG.x + SG.w / 2, -(SG.y + SG.h / 2), 0.82); scene.add(signMesh);
+  signMesh.position.set(SG.x + SG.w / 2, -(SG.y + SG.h / 2), 0.65); scene.add(signMesh);   // far-building sign: behind the car and the cat
   const signS = { flick: 1, next: 6 + Math.random() * 12, hold: 0 };
   function drawSign() {
     const W = SG.w * SK, H = SG.h * SK; sg.clearRect(0, 0, W, H);
