@@ -262,7 +262,7 @@
   const NR = 650, rp = new Float32Array(NR * 3);
   for (let i = 0; i < NR; i++) { rp[i * 3] = Math.random() * IW; rp[i * 3 + 1] = -Math.random() * IH; rp[i * 3 + 2] = 3; }
   const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(rp, 3));
-  const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xd8d0ff, size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.36 }));
+  const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xd8d0ff, size: 2.0, sizeAttenuation: false, transparent: true, opacity: 0.36 }));
   scene.add(rain);
 
   // ---- procedural events (all sky objects sit at z=-1, behind the buildings and wires) ----
@@ -342,8 +342,6 @@
   const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.8); scene.add(winMesh);
-  const winGlow = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w + 12, WIN.h + 12), new THREE.MeshBasicMaterial({ color: 0xffb070, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending, depthWrite: false }));
-  winGlow.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.75); scene.add(winGlow);
   const ws = { state: 'empty', t: 0, light: true, px: -6, screen: false, blink: 0, next: 5 + Math.random() * 60, sitX: 18 };
   if (Math.random() < 0.5) { ws.state = 'sit'; ws.screen = true; ws.next = 30 + Math.random() * 90; }   // half the time he is already at his desk
   else if (Math.random() < 0.3) { ws.light = false; ws.next += 20; }
@@ -377,10 +375,10 @@
       const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#2a2046'); g.addColorStop(1, '#171230');
       wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K); frame(); wtex.needsUpdate = true; return;
     }
-    // warm room: vertical gradient plus a soft diagonal reflection on the glass
-    const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#e9b57c'); g.addColorStop(0.35, '#f4c98f'); g.addColorStop(1, '#c98a5a');
+    // warm room in the street's palette: pale amber up top sinking into the neon rose
+    const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#f0c497'); g.addColorStop(0.35, '#f6cfa8'); g.addColorStop(1, '#c8879b');
     wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K);
-    R(1, 1, WIN.w - 2, 1.2, 'rgba(90,50,40,.35)');                                  // ceiling shadow
+    R(1, 1, WIN.w - 2, 1.2, 'rgba(80,45,75,.35)');                                  // ceiling shadow
     // back wall details: a pink poster and a shelf
     R(7.5, 3.5, 5.5, 6.5, '#e57fb9'); R(8.3, 4.3, 3.9, 2.2, '#f7cfe5'); R(8.3, 7.2, 2.5, 0.7, '#c95e98');
     R(2.5, 9.5, 6, 0.7, '#8a5a3a'); R(3, 7.4, 1.6, 2.1, '#5c7fb8'); R(5, 7.9, 1.2, 1.6, '#c9573f');
@@ -625,7 +623,6 @@
       if (ws.next < 0) { ws.state = 'out'; ws.t = 0; ws.screen = false; }
     }
     else if (ws.state === 'out') { ws.px -= 9 * dt; if (ws.px < -6) { ws.state = 'empty'; ws.next = 15 + Math.random() * 35; if (Math.random() < 0.35) { ws.light = false; ws.next += 20 + Math.random() * 40; } } }
-    winGlow.material.opacity = ws.light ? 0.1 + (ws.screen ? 0.02 : 0) : 0;
     if (Math.floor(t * 12) !== Math.floor((t - dt) * 12)) drawWindow();   // repaint at 12 fps, plenty for 39×23 px
     // arcade: marquee chase, cabinet screens, an occasional stutter of the pink sign
     arcS.t += dt;
