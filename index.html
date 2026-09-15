@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mathis Fajeau — PhD student, Inria Bordeaux</title>
+<meta name="description" content="Mathis Fajeau — PhD student in the Flowers team at Inria Bordeaux. Autotelic exploration for evaluating large generative models, world models, LLM-guided program induction.">
+<link rel="icon" type="image/png" href="favicon.png">
+<meta property="og:title" content="Mathis Fajeau — PhD student, Inria Bordeaux">
+<meta property="og:description" content="Autotelic exploration for evaluating large generative models.">
+<meta property="og:image" content="og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #17132c;
+    --night-deep: #0f0c22;
+    --paper: #f1ebe4;
+    --paper-dim: #a59fbb;
+    --pink: #ff8ad1;
+    --coral: #ff7a63;
+    --sodium: #ffc36b;
+    --rule: rgba(241,235,228,.13);
+    --sans: "Inter Tight", system-ui, sans-serif;
+    --pixel: "Silkscreen", monospace;
+    --measure: 62ch;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--night); color: var(--paper); font-family: var(--sans); font-size: 17px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration-color: var(--pink); text-underline-offset: 3px; }
+  a:hover { text-decoration-color: var(--coral); }
+  :focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+
+  .hero { position: relative; height: 100svh; min-height: 540px; overflow: hidden; background: var(--night-deep); }
+  .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 42%; background: linear-gradient(to top, rgba(15,12,34,.92), rgba(15,12,34,0)); pointer-events: none; }
+  .hero-text { position: absolute; z-index: 1; left: clamp(20px, 6vw, 96px); bottom: clamp(28px, 9vh, 110px); max-width: 640px; }
+  .hero h1 { font-family: var(--pixel); font-weight: 400; font-size: clamp(30px, 6vw, 64px); line-height: 1; margin: 0 0 14px; color: var(--paper); text-shadow: 0 0 26px rgba(255,138,209,.5); }
+  .hero p { margin: 0; font-size: clamp(16px, 1.6vw, 20px); color: var(--paper-dim); max-width: 44ch; }
+  .hero p strong { color: var(--paper); font-weight: 500; }
+  .hero-nav { position: absolute; z-index: 1; top: 22px; right: clamp(20px, 6vw, 96px); display: flex; gap: 26px; font-size: 15px; }
+  .hero-nav a { text-decoration: none; color: var(--paper); text-shadow: 0 1px 8px rgba(15,12,34,.9); }
+  .hero-nav a:hover { color: var(--pink); }
+  .hero-nav .lang { font: inherit; font-family: var(--pixel); font-size: 11px; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(241,235,228,.35); background: rgba(15,12,34,.5); color: var(--paper); cursor: pointer; }
+  .hero-nav .lang:hover { border-color: var(--pink); }
+  [hidden] { display: none !important; }
+  .scroll-hint { position: absolute; z-index: 1; right: clamp(20px, 6vw, 96px); bottom: 34px; font-family: var(--pixel); font-size: 11px; color: var(--paper-dim); }
+
+  main { padding: 0 clamp(20px, 6vw, 96px); }
+  section { padding: 84px 0; border-top: 1px solid var(--rule); }
+  section:first-of-type { border-top: 0; }
+  .grid { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 40px 64px; }
+  h2 { font-family: var(--pixel); font-weight: 400; font-size: 15px; margin: 4px 0 0; color: var(--pink); }
+  .prose { max-width: var(--measure); }
+  .prose p { margin: 0 0 1.2em; }
+  .prose p:last-child { margin-bottom: 0; }
+  .bio-meta { margin: 28px 0 0; padding: 0; list-style: none; font-size: 15px; }
+  .bio-meta li { padding: 8px 0; border-top: 1px dashed var(--rule); display: flex; gap: 18px; }
+  .bio-meta li span:first-child { min-width: 120px; color: var(--paper-dim); }
+  .articles { margin: 0; padding: 0; list-style: none; max-width: 760px; }
+  .article { padding: 26px 0; border-top: 1px dashed var(--rule); }
+  .article:first-child { border-top: 0; padding-top: 0; }
+  .article h3 { margin: 0 0 6px; font-size: 22px; font-weight: 500; line-height: 1.25; }
+  .article h3 a { text-decoration: none; }
+  .article h3 a:hover { color: var(--pink); }
+  .article p { margin: 0 0 10px; color: var(--paper-dim); max-width: 60ch; }
+  .article .links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; }
+  .article .links a.live { color: var(--sodium); text-decoration-color: var(--sodium); }
+  .article .date { font-family: var(--pixel); font-size: 10px; color: var(--paper-dim); margin-bottom: 8px; display: block; }
+  .pubs { margin: 0; padding: 0; list-style: none; max-width: 760px; }
+  .pubs li { padding: 14px 0; border-top: 1px dashed var(--rule); }
+  .pubs li:first-child { border-top: 0; padding-top: 0; }
+  .pubs .authors { color: var(--paper-dim); font-size: 15px; }
+  .pubs .venue { color: var(--sodium); font-size: 15px; }
+  .contact-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 12px 32px; }
+  footer { padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  footer .pixel { font-family: var(--pixel); font-size: 10px; }
+  @media (max-width: 720px) { .grid { grid-template-columns: 1fr; gap: 20px; } section { padding: 60px 0; } .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; } }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <canvas id="street" aria-hidden="true"></canvas>
+  <nav class="hero-nav" aria-label="Navigation">
+    <a href="#bio">Bio</a><a href="#articles" data-lang="fr">Articles</a><a href="#articles" data-lang="en">Articles</a><a href="#publications">Publications</a><a href="#contact">Contact</a>
+    <button class="lang" id="lang-toggle" type="button" aria-label="Switch language">EN</button>
+  </nav>
+  <div class="hero-text">
+    <h1>Mathis Fajeau</h1>
+    <p data-lang="fr"><strong>Doctorant à Inria Bordeaux, équipe Flowers.</strong> J'explore comment des agents curieux peuvent cartographier ce que les grands modèles génératifs savent faire — et où ils échouent.</p>
+    <p data-lang="en"><strong>PhD student at Inria Bordeaux, Flowers team.</strong> I study how curious agents can map what large generative models can do — and where they fail.</p>
+  </div>
+  <div class="scroll-hint" data-lang="fr">↓ défiler</div>
+  <div class="scroll-hint" data-lang="en">↓ scroll</div>
+</header>
+
+<main>
+  <section id="bio">
+    <div class="grid">
+      <h2>Bio</h2>
+      <div class="prose" data-lang="fr">
+        <p>Je prépare une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer, sur l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs : plutôt que des benchmarks figés, des agents qui se fixent leurs propres objectifs pour découvrir et cartographier les capacités et vulnérabilités d'un modèle.</p>
+        <p>Avant ça : un master à Georgia Tech (systèmes et machine learning), un diplôme d'ingénieur à IMT Atlantique, et un passage chez Thales à écrire des kernels d'attention CUDA/Triton et à quantifier des modèles en INT8/FP8. Ce que je préfère, c'est quand la théorie (théorie de l'information, processus stochastiques) et le bas niveau (GPU, mémoire) se rencontrent.</p>
+        <ul class="bio-meta">
+          <li><span>Thèse</span><span>2026 – 2029, ED Mathématiques et Informatique, Université de Bordeaux</span></li>
+          <li><span>Directeur</span><span>Pierre-Yves Oudeyer</span></li>
+          <li><span>Thèmes</span><span>exploration autotélique, induction de programmes guidée par LLM, évaluation de modèles</span></li>
+          <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
+        </ul>
+      </div>
+      <div class="prose" data-lang="en">
+        <p>I am doing my PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer, on autotelic exploration for the automatic evaluation of large generative models: instead of fixed benchmarks, agents that set their own goals to discover and map a model's capabilities and vulnerabilities.</p>
+        <p>Before that: an M.Sc. at Georgia Tech (systems and machine learning), an engineering degree from IMT Atlantique, and time at Thales writing CUDA/Triton attention kernels and quantizing models to INT8/FP8. What I like most is where theory (information theory, stochastic processes) meets the low level (GPUs, memory).</p>
+        <ul class="bio-meta">
+          <li><span>PhD</span><span>2026 – 2029, Doctoral School of Mathematics and Computer Science, University of Bordeaux</span></li>
+          <li><span>Advisor</span><span>Pierre-Yves Oudeyer</span></li>
+          <li><span>Topics</span><span>autotelic exploration, LLM-guided program induction, model evaluation</span></li>
+          <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="articles">
+    <div class="grid">
+      <h2>Articles</h2>
+      <div data-lang="fr">
+        <p class="prose" style="color:var(--paper-dim);margin:0 0 34px">Chaque article existe en deux formes : une page interactive où l'on peut manipuler les idées, et le document classique.</p>
+        <ul class="articles">
+          <li class="article">
+            <span class="date">2026 · arXiv · soumis à NeurIPS</span>
+            <h3><a href="articles/pinductor.html">Pinductor : apprendre des modèles du monde POMDP à partir d'observations, avec des priors de LLM</a></h3>
+            <p>Un LLM propose des programmes-hypothèses sur la dynamique d'un environnement partiellement observable ; un filtre particulaire les départage à partir des observations, sans jamais voir l'état caché.</p>
+            <div class="links"><a class="live" href="articles/pinductor.html">Ouvrir la page interactive (en anglais)</a><a href="https://arxiv.org/abs/2605.13740">arXiv</a><a href="https://github.com/atomresearch/pinductor">Code</a></div>
+          </li>
+          <li class="article">
+            <span class="date">2026 · projet de recherche</span>
+            <h3><a href="articles/sycophancy.html">Quality-diversity autotélique pour découvrir la sycophancie des LLM</a></h3>
+            <p>Au lieu d'un score, un répertoire : une boucle inspirée d'ACES invente ses propres attaques, notées par un logprob sans juge, et cartographie 164 tactiques qui font plier un modèle local — dont des canaux qu'aucun humain ne peut utiliser.</p>
+            <div class="links"><a class="live" href="articles/sycophancy.html">Ouvrir la page interactive (en anglais)</a><a href="https://github.com/ZWhimsi/autotelic-qd-sycophancy/blob/main/docs/report.pdf">Rapport</a><a href="https://github.com/ZWhimsi/autotelic-qd-sycophancy">Code</a></div>
+          </li>
+        </ul>
+      </div>
+      <div data-lang="en">
+        <p class="prose" style="color:var(--paper-dim);margin:0 0 34px">Each article comes in two forms: an interactive page where you can play with the ideas, and the classic document.</p>
+        <ul class="articles">
+          <li class="article">
+            <span class="date">2026 · arXiv · submitted to NeurIPS</span>
+            <h3><a href="articles/pinductor.html">Pinductor: learning POMDP world models from observations with language-model priors</a></h3>
+            <p>An LLM proposes program hypotheses about the dynamics of a partially observable environment; a particle filter tells them apart from observations alone, without ever seeing the hidden state.</p>
+            <div class="links"><a class="live" href="articles/pinductor.html">Open the interactive page</a><a href="https://arxiv.org/abs/2605.13740">arXiv</a><a href="https://github.com/atomresearch/pinductor">Code</a></div>
+          </li>
+          <li class="article">
+            <span class="date">2026 · research project</span>
+            <h3><a href="articles/sycophancy.html">Autotelic quality-diversity for discovering LLM sycophancy</a></h3>
+            <p>A repertoire instead of a score: an ACES-inspired loop invents its own attacks, scores them with a judge-free logprob, and maps 164 tactics that make a local model cave — including channels no human can use.</p>
+            <div class="links"><a class="live" href="articles/sycophancy.html">Open the interactive page</a><a href="https://github.com/ZWhimsi/autotelic-qd-sycophancy/blob/main/docs/report.pdf">Report</a><a href="https://github.com/ZWhimsi/autotelic-qd-sycophancy">Code</a></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="publications">
+    <div class="grid">
+      <h2>Publications</h2>
+      <ul class="pubs">
+        <li><div><a href="https://arxiv.org/abs/2605.13740">Pinductor: Learning POMDP World Models from Observations with Language-Model Priors</a></div><div class="authors">V. Six*, F. Panse*, <strong>M. Fajeau</strong>*, L. Da Costa*, M. Sharma, A. Amayuelas, T. Z. Xiao, D. Hyland, P. Hennig, B. Schölkopf — <span data-lang="fr">* co-premiers auteurs</span><span data-lang="en">* equal first authors</span></div><div class="venue" data-lang="fr">arXiv 2605.13740 · soumis à NeurIPS 2026</div><div class="venue" data-lang="en">arXiv 2605.13740 · submitted to NeurIPS 2026</div></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="grid">
+      <h2>Contact</h2>
+      <ul class="contact-list">
+        <li><span>prénom.nom@inria.fr</span></li>
+        <li><a href="https://github.com/ZWhimsi">GitHub</a></li>
+        <li><a href="https://scholar.google.com/citations?user=kMFBjk4AAAAJ">Google Scholar</a></li>
+        <li><a href="https://www.linkedin.com/in/mathis-fajeau/">LinkedIn</a></li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Inria Bordeaux Sud-Ouest · 200 avenue de la Vieille Tour, 33405 Talence</span>
+  <span class="pixel">© 2026 Mathis Fajeau</span>
+</footer>
+
+<script>
+  // language: ?lang= wins, then the browser's language; French only for French browsers
+  (function () {
+    const q = new URLSearchParams(location.search).get('lang');
+    let lang = q || ((navigator.language || 'en').toLowerCase().startsWith('fr') ? 'fr' : 'en');
+    const btn = document.getElementById('lang-toggle');
+    function apply() {
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-lang]').forEach(el => { el.hidden = el.dataset.lang !== lang; });
+      btn.textContent = lang === 'fr' ? 'EN' : 'FR';
+      document.title = lang === 'fr' ? 'Mathis Fajeau — Doctorant, Inria Bordeaux' : 'Mathis Fajeau — PhD student, Inria Bordeaux';
+    }
+    btn.addEventListener('click', () => { lang = lang === 'fr' ? 'en' : 'fr'; apply(); });
+    apply();
+  })();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp", "rest": "assets/lights_rest.webp", "comps": {"sign_left": {"src": "assets/sign_left.webp", "x": 421, "y": 64, "w": 65, "h": 413}, "sign_right": {"src": "assets/sign_right.webp", "x": 874, "y": 303, "w": 38, "h": 134}, "lamp": {"src": "assets/lamp.webp", "x": 859, "y": 150, "w": 46, "h": 22}, "sign_far": {"src": "assets/sign_far.webp", "x": 610, "y": 434, "w": 19, "h": 111}, "win_r1": {"src": "assets/win_r1.webp", "x": 1002, "y": 396, "w": 22, "h": 82}, "shop_r": {"src": "assets/shop_r.webp", "x": 949, "y": 542, "w": 26, "h": 40}, "strip_r": {"src": "assets/strip_r.webp", "x": 861, "y": 310, "w": 15, "h": 82}, "win_r2": {"src": "assets/win_r2.webp", "x": 1118, "y": 262, "w": 9, "h": 85}, "win_r3": {"src": "assets/win_r3.webp", "x": 1086, "y": 302, "w": 15, "h": 49}, "sign_small": {"src": "assets/sign_small.webp", "x": 435, "y": 514, "w": 28, "h": 26}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const IW = 1456, IH = 816;
+  const canvas = document.getElementById('street');
+  const hero = document.querySelector('.hero');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f0c22);
+  const camera = new THREE.OrthographicCamera(0, IW, 0, -IH, -10, 10);
+
+  const loader = new THREE.TextureLoader();
+  function crisp(src, cb) {
+    const t = loader.load(src, () => { if (cb) cb(); });
+    t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    return t;
+  }
+  function plane(src, x, y, w, h, z, opts) {
+    const m = new THREE.MeshBasicMaterial(Object.assign({ map: crisp(src), transparent: true, depthWrite: false }, opts || {}));
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+    p.position.set(x + w / 2, -(y + h / 2), z);
+    scene.add(p); return p;
+  }
+
+  // layers, back to front: sky (parallax) → stars → street (lights dimmed) → lights
+  const PAD = 160;
+  const sky = plane(ASSETS.sky, -PAD, -PAD, IW + 2 * PAD, IH + 2 * PAD, -3, { transparent: false });
+  const city = plane(ASSETS.city, 0, 0, IW, IH, 0);
+  const rest = plane(ASSETS.rest, 0, 0, IW, IH, 1);
+  const comps = [];
+  for (const [name, c] of Object.entries(ASSETS.comps)) {
+    const p = plane(c.src, c.x, c.y, c.w, c.h, 1.1);
+    const kind = name.startsWith('win') || name === 'shop_r' ? 'window' : name === 'lamp' ? 'lamp' : 'neon';
+    p.userData = { name, kind, seed: Math.random() * 100, next: 3 + Math.random() * 8, burst: 0, on: true };
+    comps.push(p);
+  }
+
+  // stars: a handful of pixels in the dark upper sky, twinkling
+  const NS = 40, sp = new Float32Array(NS * 3);
+  for (let i = 0; i < NS; i++) { sp[i * 3] = Math.random() * IW; sp[i * 3 + 1] = -(10 + Math.random() * 170); sp[i * 3 + 2] = -2; }
+  const starGeo = new THREE.BufferGeometry(); starGeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
+  const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffe9f2, size: 2.2, sizeAttenuation: false, transparent: true, opacity: 0.8 }));
+  scene.add(stars);
+
+  // rain: thin drops, slightly slanted, in front of everything
+  const NR = 500, rp = new Float32Array(NR * 3);
+  for (let i = 0; i < NR; i++) { rp[i * 3] = Math.random() * IW; rp[i * 3 + 1] = -Math.random() * IH; rp[i * 3 + 2] = 3; }
+  const rainGeo = new THREE.BufferGeometry(); rainGeo.setAttribute('position', new THREE.BufferAttribute(rp, 3));
+  const rain = new THREE.Points(rainGeo, new THREE.PointsMaterial({ color: 0xd8d0ff, size: 1.6, sizeAttenuation: false, transparent: true, opacity: 0.32 }));
+  scene.add(rain);
+
+  // ---- procedural events (all sky objects sit at z=-1, behind the buildings and wires) ----
+  const pxMat = (color, opacity) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false });
+  const pxq = (w, h, color, opacity, z) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), pxMat(color, opacity)); m.position.z = z; scene.add(m); return m; };
+
+  // airplane: tiny dark body, white strobe, red beacon; crosses the upper sky in ~70 s
+  const plane_ = { body: pxq(7, 2, 0x201a3a, 1, -1), strobe: pxq(2, 2, 0xffffff, 1, -0.9), beacon: pxq(2, 2, 0xff4a4a, 1, -0.9), active: false, t: 0, dur: 70, y: 100, dir: 1, next: 10 + Math.random() * 90 };
+  function setPlane(x, y, vis) { for (const k of ['body', 'strobe', 'beacon']) { plane_[k].visible = vis; plane_[k].position.x = x; plane_[k].position.y = -y; } plane_.strobe.position.x = x - 3 * plane_.dir; plane_.beacon.position.x = x + 3 * plane_.dir; }
+  setPlane(0, 0, false);
+
+  // shooting stars: a short streak that fades, every 20–60 s
+  const streak = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, -1), new THREE.Vector3(22, -9, -1)]), new THREE.LineBasicMaterial({ color: 0xfff1d8, transparent: true, opacity: 0 }));
+  scene.add(streak); const shoot = { active: false, t: 0, next: 5 + Math.random() * 50 };
+
+  // distant apartment lights on the skyline towers: each one has its own slow on/off rhythm
+  const DOTS = [{"x":641,"y":480,"w":1,"h":1},{"x":631,"y":495,"w":1,"h":1},{"x":638,"y":495,"w":1,"h":1},{"x":633,"y":501,"w":1,"h":1},{"x":641,"y":501,"w":1,"h":1},{"x":645,"y":495,"w":1,"h":1},{"x":702,"y":488,"w":1,"h":1},{"x":710,"y":487,"w":1,"h":1},{"x":703,"y":499,"w":1,"h":1},{"x":707,"y":497,"w":1,"h":1},{"x":705,"y":493,"w":1,"h":1},{"x":710,"y":509,"w":1,"h":1},{"x":705,"y":511,"w":1,"h":1},{"x":711,"y":501,"w":1,"h":1},{"x":711,"y":495,"w":1,"h":1},{"x":703,"y":505,"w":1,"h":1},{"x":692,"y":499,"w":1,"h":1},{"x":686,"y":494,"w":1,"h":1},{"x":691,"y":490,"w":1,"h":1},{"x":687,"y":484,"w":1,"h":1},{"x":689,"y":479,"w":1,"h":1},{"x":710,"y":479,"w":1,"h":1},{"x":713,"y":479,"w":1,"h":1},{"x":707,"y":482,"w":1,"h":1},{"x":704,"y":470,"w":1,"h":1},{"x":705,"y":463,"w":1,"h":1},{"x":703,"y":457,"w":1,"h":1},{"x":646,"y":471,"w":1,"h":1},{"x":644,"y":466,"w":1,"h":1},{"x":648,"y":478,"w":1,"h":1},{"x":650,"y":486,"w":1,"h":1},{"x":659,"y":509,"w":1,"h":1},{"x":659,"y":512,"w":1,"h":1},{"x":673,"y":507,"w":1,"h":1},{"x":681,"y":507,"w":1,"h":1},{"x":667,"y":493,"w":1,"h":1},{"x":673,"y":493,"w":1,"h":1},{"x":667,"y":489,"w":1,"h":1},{"x":672,"y":487,"w":1,"h":1},{"x":680,"y":484,"w":1,"h":1},{"x":642,"y":507,"w":1,"h":1},{"x":634,"y":505,"w":1,"h":1},{"x":668,"y":600,"w":4,"h":3},{"x":682,"y":546,"w":4,"h":3},{"x":637,"y":585,"w":4,"h":3}]
+, dots = [];
+  const PALETTE = [0xffd9a0, 0xffd9a0, 0xffd9a0, 0xffc36b, 0xffb3d9, 0xff8ad1, 0xa8e6ff];
+  for (const d of DOTS) {
+    const m = pxq(d.w + 0.2, d.h + 0.2, PALETTE[Math.floor(Math.random() * PALETTE.length)], 1, 0.6);
+    m.position.set(d.x + d.w / 2, -(d.y + d.h / 2), 0.6);
+    m.userData = { on: Math.random() < 0.6, next: Math.random() * 20 };
+    m.material.opacity = m.userData.on ? 1 : 0; dots.push(m);
+  }
+
+  // steam from the air-con unit bottom right: soft puffs that rise, drift and dissolve
+  const puffs = [];
+  for (let i = 0; i < 8; i++) { const p = pxq(3, 3, 0xbfb3d9, 0, 2.2); p.userData = { t: i * 0.45 }; puffs.push(p); }
+  const STEAM = { x: 1226, y: 712 };
+
+  // rain gusts: every so often the wind picks up for a few seconds
+  const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
+
+  // the big neon slowly wanders between pink and lavender; the right one flips colour now and then
+  const signL = comps.find(c => c.userData.name === 'sign_left'), signR = comps.find(c => c.userData.name === 'sign_right');
+  const hue = { t: Math.random() * 60, r: { next: 10 + Math.random() * 50, alt: Math.random() < 0.3 } };
+
+  // ---- actors (PixelLab sprites): feet-anchored, scaled by depth ----
+  renderer.localClippingEnabled = true;
+  const SPR = {"cat": {"src": "assets/cat_south.png", "frames": 6, "w": 48, "h": 48, "feet": 4}, "crow": {"src": "assets/crow.png", "frames": 1, "w": 21, "h": 14, "feet": 0}, "car": {"src": "assets/car.png", "frames": 1, "w": 102, "h": 49, "feet": 1}};                     // { name: { src, frames, w, h } }
+  const personH = (y) => (y - 490) * 0.27;     // how tall a person looks at road depth y (px)
+  function actor(name, z) {
+    const s = SPR[name], tex = crisp(s.src);
+    tex.repeat.set(1 / s.frames, 1);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(s.w, s.h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, alphaTest: 0.5 }));
+    m.position.z = z; m.visible = false; scene.add(m);
+    m.userData.set = (i) => { tex.offset.x = i / s.frames; };
+    m.userData.place = (x, feetY, scale, flip) => { m.scale.set(scale * (flip ? -1 : 1), scale, 1); m.position.x = x; m.position.y = -(feetY - (s.h / 2 - s.feet) * scale); };
+    return m;
+  }
+  // cat crossing the road
+  const cat = actor('cat', 0.7); const catS = { active: false, t: 0, dur: 16, next: 20 + Math.random() * 150 };
+  // crow perched on the street-lamp arm
+  const crow = actor('crow', 0.7); const crowS = { next: 6 + Math.random() * 12, hop: 0, flip: false };
+  crow.userData.place(958, 163, 1, false); crow.userData.set(0); crow.visible = true;
+  // kei car crossing the far intersection, clipped to the gap between the buildings
+  const car = actor('car', 0.65); const carS = { active: false, t: 0, dur: 8, next: 15 + Math.random() * 140 };
+  car.material.clippingPlanes = [new THREE.Plane(new THREE.Vector3(1, 0, 0), -515), new THREE.Plane(new THREE.Vector3(-1, 0, 0), 845)];
+  const carGround = (x) => 648 + (636 - 648) * (x - 514) / (837 - 514);   // road line between the two building edges
+
+  // ---- the lit window (x 513-551, y 513-535): someone comes in, sits down and codes ----
+  // drawn at 3× the image resolution so its grain matches the illustration rather than looking blockier
+  const WIN = { x: 513, y: 513, w: 39, h: 23 }, K = 3, CW = WIN.w * K, CH = WIN.h * K;
+  const wc = document.createElement('canvas'); wc.width = CW; wc.height = CH; const wg = wc.getContext('2d');
+  const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = THREE.LinearFilter; wtex.minFilter = THREE.LinearFilter; wtex.generateMipmaps = false;
+  const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
+  winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.8); scene.add(winMesh);
+  const winGlow = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w + 12, WIN.h + 12), new THREE.MeshBasicMaterial({ color: 0xffb070, transparent: true, opacity: 0.08, blending: THREE.AdditiveBlending, depthWrite: false }));
+  winGlow.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.75); scene.add(winGlow);
+  const ws = { state: 'empty', t: 0, light: true, px: -6, screen: false, blink: 0, next: 5 + Math.random() * 60, sitX: 18 };
+  if (Math.random() < 0.5) { ws.state = 'sit'; ws.screen = true; ws.next = 30 + Math.random() * 90; }   // half the time he is already at his desk
+  else if (Math.random() < 0.3) { ws.light = false; ws.next += 20; }
+  const R = (x, y, w, h, c) => { wg.fillStyle = c; wg.fillRect(x * K, y * K, w * K, h * K); };
+  function drawPerson(x, pose, bob) {
+    const el = (cx, cy, rx, ry, c) => { wg.fillStyle = c; wg.beginPath(); wg.ellipse(cx * K, cy * K, rx * K, ry * K, 0, 0, Math.PI * 2); wg.fill(); };
+    const rr = (cx, cy, w, h, r, c) => { wg.fillStyle = c; wg.beginPath(); wg.roundRect(cx * K, cy * K, w * K, h * K, r * K); wg.fill(); };
+    const SKIN = '#d8a27c', HAIR = '#6a4a2f', HAIR2 = '#8a6440', KNIT = '#2b2542', KNIT2 = '#3d3560', JEANS = '#2f3b5e', RIM = 'rgba(140,200,255,.55)';
+    if (pose === 'sit') {
+      rr(x - 2.4, 11.2, 1.4, 9.5, 0.5, '#4a3a52');                          // chair back
+      rr(x - 1, 16.2, 4.4, 6, 0.8, JEANS);                                    // lap
+      rr(x - 0.6, 11.2 - bob, 4.4, 5.4, 1.2, KNIT);                          // sweater
+      rr(x + 2.6, 11.6 - bob, 1.4, 4.6, 0.6, KNIT2);                         // lit edge of the sweater (screen side)
+      rr(x + 2.2, 13.7, 3.4, 1.1, 0.5, KNIT); rr(x + 5, 13.9, 0.9, 0.8, 0.3, SKIN);   // forearm, hand on the keyboard
+      el(x + 1.5, 9.4 - bob, 1.6, 1.8, SKIN);                                // face
+      el(x + 1.2, 8.3 - bob, 1.75, 1.2, HAIR); rr(x - 0.4, 8.2 - bob, 2.4, 1.6, 0.6, HAIR);   // hair, fringe over the forehead
+      rr(x + 0.1, 7.6 - bob, 1.2, 0.5, 0.2, HAIR2);                          // highlight in the hair
+      rr(x + 2.9, 8.6 - bob, 0.5, 2.2, 0.2, RIM);                            // blue rim light from the screen on the cheek
+    } else {
+      const step = pose === 'walk1' ? 0.9 : 0;
+      rr(x - 0.4 - step, 14, 2, 8, 0.6, JEANS); rr(x + 1.8 + step, 14, 2, 8, 0.6, JEANS);
+      rr(x - 0.6, 6.4, 4.4, 8, 1.2, KNIT); rr(x + 2.6, 6.8, 1.2, 7, 0.5, KNIT2);
+      el(x + 1.5, 4.6, 1.6, 1.8, SKIN);
+      el(x + 1.2, 3.5, 1.75, 1.2, HAIR); rr(x - 0.4, 3.4, 2.4, 1.6, 0.6, HAIR); rr(x + 0.1, 2.8, 1.2, 0.5, 0.2, HAIR2);
+    }
+  }
+  function drawWindow() {
+    wg.clearRect(0, 0, CW, CH);
+    const frame = () => { R(0, 0, WIN.w, 1, '#0d0a1c'); R(0, WIN.h - 1, WIN.w, 1, '#0d0a1c'); R(0, 0, 1, WIN.h, '#0d0a1c'); R(WIN.w - 1, 0, 1, WIN.h, '#0d0a1c'); R(19, 1, 0.7, WIN.h - 2, '#221a36'); };
+    if (!ws.light) {
+      const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#2a2046'); g.addColorStop(1, '#171230');
+      wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K); frame(); wtex.needsUpdate = true; return;
+    }
+    // warm room: vertical gradient plus a soft diagonal reflection on the glass
+    const g = wg.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#e9b57c'); g.addColorStop(0.35, '#f4c98f'); g.addColorStop(1, '#c98a5a');
+    wg.fillStyle = g; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K);
+    R(1, 1, WIN.w - 2, 1.2, 'rgba(90,50,40,.35)');                                  // ceiling shadow
+    // back wall details: a pink poster and a shelf
+    R(7.5, 3.5, 5.5, 6.5, '#e57fb9'); R(8.3, 4.3, 3.9, 2.2, '#f7cfe5'); R(8.3, 7.2, 2.5, 0.7, '#c95e98');
+    R(2.5, 9.5, 6, 0.7, '#8a5a3a'); R(3, 7.4, 1.6, 2.1, '#5c7fb8'); R(5, 7.9, 1.2, 1.6, '#c9573f');
+    // desk with its shadow, legs
+    R(14, 15, 22, 1, '#b5793f'); R(14, 16, 22, 0.6, 'rgba(60,30,20,.35)'); R(15, 16.5, 0.8, 5.5, '#6e4630'); R(34.2, 16.5, 0.8, 5.5, '#6e4630');
+    // monitor: bezel, stand, screen
+    R(24.6, 7.6, 8.8, 7.4, '#26203a'); R(28.4, 15 - 0.4, 1.4, 0.5, '#26203a'); R(27.2, 14.6, 3.8, 0.5, '#26203a');
+    if (ws.screen) {
+      const on = ws.blink > 0;
+      R(25.3, 8.3, 7.4, 5.9, on ? '#cfeeff' : '#9ad4ff');
+      R(26, 9.2, 3.2, 0.6, '#5fa6e6'); R(26, 10.4, 4.6, 0.6, '#5fa6e6'); R(26, 11.6, 2.4, 0.6, '#5fa6e6'); R(26, 12.8, 3.8, 0.6, on ? '#3d86d1' : '#5fa6e6');
+      // screen light spills onto the desk and the sitter
+      wg.fillStyle = 'rgba(120,190,255,.16)'; wg.fillRect(20 * K, 8 * K, 14 * K, 8 * K);
+    } else R(25.3, 8.3, 7.4, 5.9, '#1c1a2c');
+    // plant on the sill
+    R(3, 15, 4, 2.2, '#8a5a3a'); wg.fillStyle = '#3f8a5a'; wg.beginPath(); wg.ellipse(5 * K, 13.2 * K, 2.4 * K, 1.9 * K, 0, 0, Math.PI * 2); wg.fill();
+    wg.fillStyle = '#5fb07a'; wg.beginPath(); wg.ellipse(4.2 * K, 12.4 * K, 1.1 * K, 0.9 * K, 0, 0, Math.PI * 2); wg.fill();
+    if (ws.state === 'in' || ws.state === 'out') drawPerson(ws.px, Math.floor(ws.t * 6) % 2 ? 'walk1' : 'walk0', 0);
+    if (ws.state === 'sit') drawPerson(ws.sitX, 'sit', Math.floor(ws.t) % 5 === 0 && (ws.t % 1) < 0.35 ? 0.5 : 0);
+    // glass: a faint diagonal sheen, then the frame
+    const sh = wg.createLinearGradient(0, 0, CW, CH); sh.addColorStop(0.15, 'rgba(255,255,255,0)'); sh.addColorStop(0.3, 'rgba(255,255,255,.14)'); sh.addColorStop(0.42, 'rgba(255,255,255,0)');
+    wg.fillStyle = sh; wg.fillRect(K, K, CW - 2 * K, CH - 2 * K);
+    frame();
+    wtex.needsUpdate = true;
+  }
+  drawWindow();
+
+  // ---- arcade entrance on the right (replaces the roller shutter, x 1356-1456, y 440-812) ----
+  const ARC = { x: 1356, y: 440, w: 100, h: 372 }, AK = 3, ACW = ARC.w * AK, ACH = ARC.h * AK;
+  const ac = document.createElement('canvas'); ac.width = ACW; ac.height = ACH; const ag = ac.getContext('2d');
+  const atex = new THREE.CanvasTexture(ac); atex.magFilter = atex.minFilter = THREE.LinearFilter; atex.generateMipmaps = false;
+  const arcMesh = new THREE.Mesh(new THREE.PlaneGeometry(ARC.w, ARC.h), new THREE.MeshBasicMaterial({ map: atex, transparent: true, depthWrite: false }));
+  arcMesh.position.set(ARC.x + ARC.w / 2, -(ARC.y + ARC.h / 2), 0.82); scene.add(arcMesh);
+  // light spill: on the wall to the left of the door and on the wet pavement in front of it
+  const spillC = document.createElement('canvas'); spillC.width = 256; spillC.height = 256;
+  (function () { const g = spillC.getContext('2d'); const r = g.createRadialGradient(256, 200, 10, 256, 200, 250); r.addColorStop(0, 'rgba(230,140,190,.8)'); r.addColorStop(0.45, 'rgba(130,170,200,.25)'); r.addColorStop(1, 'rgba(130,170,200,0)'); g.fillStyle = r; g.fillRect(0, 0, 256, 256); })();
+  const spillTex = new THREE.CanvasTexture(spillC); spillTex.magFilter = spillTex.minFilter = THREE.LinearFilter;
+  const spill = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshBasicMaterial({ map: spillTex, transparent: true, opacity: 0.17, blending: THREE.AdditiveBlending, depthWrite: false }));
+  spill.position.set(1356 - 120, -(812 - 60), 2.3); scene.add(spill);   // centred on the doorway's foot, spreading left onto the street
+  const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
+  for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
+  const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
+  // the door's outline in local px: top edge slopes up to the right (456 at the left post, 440 at the picture edge)
+  const topAt = (lx) => 16 - 16 * (lx / ARC.w);
+  function drawArcade() {
+    ag.clearRect(0, 0, ACW, ACH);
+    ag.save(); ag.beginPath(); ag.moveTo(0, topAt(0) * AK); ag.lineTo(ACW, topAt(ARC.w) * AK); ag.lineTo(ACW, ACH); ag.lineTo(0, ACH); ag.closePath(); ag.clip();
+    // deep interior, darker on the left where the reveal of the doorway is
+    const g = ag.createLinearGradient(0, 0, 0, ACH); g.addColorStop(0, '#1c1338'); g.addColorStop(0.5, '#150e2e'); g.addColorStop(1, '#0f0a22');
+    ag.fillStyle = g; ag.fillRect(0, 0, ACW, ACH);
+    const gx = ag.createLinearGradient(0, 0, 40 * AK, 0); gx.addColorStop(0, 'rgba(0,0,0,.55)'); gx.addColorStop(1, 'rgba(0,0,0,0)'); ag.fillStyle = gx; ag.fillRect(0, 0, 40 * AK, ACH);
+    // floor: worn checker, low contrast, with a faint reflection of the machines
+    for (let y = 300; y < ARC.h; y += 6) for (let x = 0; x < ARC.w; x += 5) { ag.fillStyle = ((x / 5 + y / 6) % 2) ? '#161030' : '#1b1437'; ag.fillRect(x * AK, y * AK, 5 * AK, 6 * AK); }
+    ag.fillStyle = 'rgba(120,90,160,.10)'; ag.fillRect(0, 300 * AK, ACW, 20 * AK);
+    // cabinets: three narrow columns (foreshortened); dim screens, most of the light is on the floor in front
+    arcS.cab.forEach((cb, i) => {
+      const col = i % 3, row = Math.floor(i / 3), x = 18 + col * 26, y = 150 + row * 48;
+      ag.fillStyle = '#0d0920'; ag.fillRect(x * AK, y * AK, 16 * AK, 40 * AK);
+      ag.fillStyle = '#1e1740'; ag.fillRect((x + 1) * AK, (y + 1) * AK, 14 * AK, 4 * AK);            // marquee header of the cabinet
+      ag.fillStyle = NEON[cb.c]; ag.globalAlpha = 0.55; ag.fillRect((x + 3) * AK, (y + 6) * AK, 10 * AK, 12 * AK); ag.globalAlpha = 1;
+      ag.fillStyle = '#2a2050'; ag.fillRect((x + 2) * AK, (y + 22) * AK, 12 * AK, 3 * AK);           // control panel
+      const gl = ag.createRadialGradient((x + 8) * AK, (y + 12) * AK, 2, (x + 8) * AK, (y + 12) * AK, 20 * AK);
+      gl.addColorStop(0, NEON[cb.c] + '3a'); gl.addColorStop(1, NEON[cb.c] + '00'); ag.fillStyle = gl; ag.fillRect((x - 12) * AK, (y - 8) * AK, 40 * AK, 40 * AK);
+    });
+    // a drinks machine by the door and a small notice board
+    ag.fillStyle = '#1a1438'; ag.fillRect(4 * AK, 250 * AK, 12 * AK, 46 * AK); ag.fillStyle = 'rgba(214,160,110,.35)'; ag.fillRect(5 * AK, 253 * AK, 10 * AK, 14 * AK);
+    for (let k = 0; k < 4; k++) { ag.fillStyle = ['#8a4a5a', '#3a6a7a', '#7a6a3a', '#4a5a8a'][k]; ag.fillRect((6 + (k % 2) * 4) * AK, (270 + Math.floor(k / 2) * 6) * AK, 3 * AK, 4 * AK); }
+    ag.fillStyle = '#2a2148'; ag.fillRect(80 * AK, 120 * AK, 14 * AK, 18 * AK); ag.fillStyle = '#3a3060'; for (let k = 0; k < 3; k++) ag.fillRect(82 * AK, (123 + k * 5) * AK, (10 - k * 2) * AK, 2 * AK);
+    // marquee band across the top: dusty amber bulbs, a slow chase
+    ag.fillStyle = '#120a28'; ag.beginPath(); ag.moveTo(0, topAt(0) * AK); ag.lineTo(ACW, topAt(ARC.w) * AK); ag.lineTo(ACW, (topAt(ARC.w) + 34) * AK); ag.lineTo(0, (topAt(0) + 34) * AK); ag.closePath(); ag.fill();
+    for (let i = 0; i < 14; i++) { const lx = 4 + i * 7; const on = ((i + arcS.chase) % 3) === 0; ag.fillStyle = on ? '#d9a860' : '#3a2a18'; ag.beginPath(); ag.arc(lx * AK, (topAt(lx) + 5) * AK, 1.4 * AK, 0, Math.PI * 2); ag.fill(); }
+    // the sign: dusty pink block, pale chevrons, like the street's other signs, slightly grimy at the bottom
+    ag.fillStyle = '#c4628f'; ag.globalAlpha = 0.85 * arcS.flick; ag.beginPath(); ag.moveTo(6 * AK, (topAt(6) + 10) * AK); ag.lineTo(94 * AK, (topAt(94) + 10) * AK); ag.lineTo(94 * AK, (topAt(94) + 30) * AK); ag.lineTo(6 * AK, (topAt(6) + 30) * AK); ag.closePath(); ag.fill(); ag.globalAlpha = 1;
+    const gr = ag.createLinearGradient(0, (topAt(50) + 10) * AK, 0, (topAt(50) + 30) * AK); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.35)'); ag.fillStyle = gr; ag.fillRect(6 * AK, (topAt(50) + 8) * AK, 88 * AK, 24 * AK);
+    ag.strokeStyle = '#f3dbe6'; ag.lineWidth = 1.1 * AK; ag.globalAlpha = 0.9 * arcS.flick;
+    for (let k = 0; k < 4; k++) { const cx = 20 + k * 20, cy = topAt(cx) + 20; ag.beginPath(); ag.moveTo((cx - 5) * AK, (cy - 5) * AK); ag.lineTo(cx * AK, cy * AK); ag.lineTo((cx - 5) * AK, (cy + 5) * AK); ag.stroke(); }
+    ag.globalAlpha = 1;
+    // neon tubes framing the opening: pale pink like the street signs, a dimmer cyan inside; soft glow
+    const tube = (color, inset, wdt) => { ag.strokeStyle = color; ag.lineWidth = wdt * AK; ag.lineCap = 'round'; ag.beginPath(); ag.moveTo(inset * AK, ACH); ag.lineTo(inset * AK, (topAt(inset) + inset) * AK); ag.lineTo(ACW, (topAt(ARC.w) + inset) * AK); ag.stroke(); };
+    ag.shadowColor = '#e08ab8'; ag.shadowBlur = 7 * AK; tube('#f2b4d2', 2.5, 1.8);
+    ag.shadowColor = '#6fb5c8'; ag.shadowBlur = 5 * AK; ag.globalAlpha = 0.7; tube('#8fcbd8', 7, 1.2); ag.globalAlpha = 1;
+    ag.shadowBlur = 0;
+    // rain streaks catching the light of the doorway
+    ag.strokeStyle = 'rgba(200,190,230,.10)'; ag.lineWidth = 1;
+    for (let k = 0; k < 18; k++) { const rx = ((k * 37 + Math.floor(arcS.t * 40) * 3) % ARC.w) * AK, ry = ((k * 53) % 300) * AK; ag.beginPath(); ag.moveTo(rx, ry); ag.lineTo(rx - 2, ry + 14 * AK); ag.stroke(); }
+    // door posts and threshold so the opening reads as recessed
+    ag.fillStyle = '#0a0718'; ag.fillRect(0, topAt(0) * AK, 1.2 * AK, ACH);
+    ag.fillStyle = '#231b40'; ag.fillRect(0, (ARC.h - 6) * AK, ACW, 6 * AK); ag.fillStyle = 'rgba(242,180,210,.18)'; ag.fillRect(0, (ARC.h - 6) * AK, ACW, 1 * AK);
+    ag.restore();
+    atex.needsUpdate = true;
+  }
+  drawArcade();
+
+  // ---- small neon sign on the far building (x 771-799, y 578-604): white neon, original flower mark ----
+  const SG = { x: 771, y: 578, w: 28, h: 26 }, SK = 4;
+  const sc = document.createElement('canvas'); sc.width = SG.w * SK; sc.height = SG.h * SK; const sg = sc.getContext('2d');
+  const stex = new THREE.CanvasTexture(sc); stex.magFilter = stex.minFilter = THREE.LinearFilter; stex.generateMipmaps = false;
+  const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(SG.w, SG.h), new THREE.MeshBasicMaterial({ map: stex, transparent: true, depthWrite: false }));
+  signMesh.position.set(SG.x + SG.w / 2, -(SG.y + SG.h / 2), 0.82); scene.add(signMesh);
+  const signS = { flick: 1, next: 6 + Math.random() * 12, hold: 0 };
+  function drawSign() {
+    const W = SG.w * SK, H = SG.h * SK; sg.clearRect(0, 0, W, H);
+    sg.fillStyle = '#0e0b1c'; sg.fillRect(0, 0, W, H);                                                      // box + frame
+    sg.fillStyle = '#2a2244'; sg.fillRect(0.8 * SK, 0.8 * SK, W - 1.6 * SK, H - 1.6 * SK);
+    const f = 0.5 + 0.5 * signS.flick;
+    const g = sg.createLinearGradient(0, 0, 0, H); g.addColorStop(0, `rgba(226,214,200,${0.62 * f + 0.2})`); g.addColorStop(1, `rgba(190,172,160,${0.55 * f + 0.15})`);
+    sg.fillStyle = g; sg.fillRect(2 * SK, 2 * SK, W - 4 * SK, H - 4 * SK);                                 // off-white face, dimmer at the bottom
+    sg.fillStyle = 'rgba(80,60,70,.18)'; sg.fillRect(2 * SK, H - 7 * SK, W - 4 * SK, 5 * SK);              // grime at the bottom
+    // flower mark: muted rose petals, dusty amber centre
+    const cx = W / 2, cy = H / 2 + 0.5 * SK, pr = 4.2 * SK;
+    sg.fillStyle = '#b8607f';
+    for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + i * Math.PI * 2 / 5; sg.beginPath(); sg.ellipse(cx + Math.cos(a) * pr * 0.9, cy + Math.sin(a) * pr * 0.9, 3.1 * SK, 2.1 * SK, a, 0, Math.PI * 2); sg.fill(); }
+    sg.fillStyle = '#c9a060'; sg.beginPath(); sg.arc(cx, cy, 2.2 * SK, 0, Math.PI * 2); sg.fill();
+    sg.fillStyle = '#5f8f9a'; sg.fillRect(4 * SK, H - 5.2 * SK, W - 8 * SK, 1.0 * SK);                     // muted teal underline
+    // a wet highlight along the top edge and the mounting bracket
+    sg.fillStyle = 'rgba(255,255,255,.22)'; sg.fillRect(2 * SK, 2 * SK, W - 4 * SK, 0.8 * SK);
+    sg.fillStyle = '#0e0b1c'; sg.fillRect(W / 2 - 1.5 * SK, 0, 3 * SK, 1.2 * SK);
+    stex.needsUpdate = true;
+  }
+  drawSign();
+
+  // puddle rings: raindrops hitting the wet road
+  const ringC = document.createElement('canvas'); ringC.width = ringC.height = 16;
+  (function () { const g = ringC.getContext('2d'); g.strokeStyle = '#cfc4ff'; g.lineWidth = 1; g.beginPath(); g.ellipse(8, 8, 7, 3.5, 0, 0, Math.PI * 2); g.stroke(); })();
+  const ringTex = new THREE.CanvasTexture(ringC); ringTex.magFilter = ringTex.minFilter = THREE.NearestFilter;
+  const rings = [];
+  for (let i = 0; i < 10; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: ringTex, transparent: true, opacity: 0, depthWrite: false })); s.position.z = 2.5; s.userData = { t: 2, next: Math.random() * 2 }; scene.add(s); rings.push(s); }
+  function roadX(y) { const u = (y - 640) / (816 - 640); return 690 + (Math.random() - 0.5) * (60 + 300 * u); } // road widens toward the viewer
+
+  // ---- cover the hero with the image (like object-fit: cover), centred on the street ----
+  const view = { cx: IW * 0.5, cy: IH * 0.5, w: IW, h: IH };
+  function resize() {
+    const w = hero.clientWidth, h = hero.clientHeight;
+    renderer.setSize(w, h, false);
+    const s = Math.max(w / IW, h / IH);
+    view.w = w / s; view.h = h / s;
+    view.cx = IW * 0.5; view.cy = Math.min(IH - view.h / 2, IH * 0.55);
+  }
+  window.addEventListener('resize', resize); resize();
+
+  // ---- parallax target from pointer (desktop) and scroll (all) ----
+  let tx = 0, ty = 0, px = 0, py = 0;
+  hero.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { const r = hero.getBoundingClientRect(); tx = ((e.clientX - r.left) / r.width - 0.5) * 2; ty = ((e.clientY - r.top) / r.height - 0.5) * 2; } }, { passive: true });
+  hero.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
+
+  let t = 0, raf = null, visible = true;
+  const clock = new THREE.Clock();
+  function frame() {
+    raf = null;
+    const dt = Math.min(clock.getDelta(), 0.05); t += dt;
+    px += (tx - px) * 0.04; py += (ty - py) * 0.04;
+    const scrollK = Math.min(1, (window.scrollY || 0) / Math.max(1, hero.clientHeight));
+
+    // camera window (scroll pushes the view down a little, like the page pulling the street away)
+    const cx = view.cx + px * 6, cy = view.cy + py * 4 + scrollK * 40;
+    camera.left = cx - view.w / 2; camera.right = cx + view.w / 2; camera.top = -(cy - view.h / 2); camera.bottom = -(cy + view.h / 2);
+    camera.updateProjectionMatrix();
+    // sky moves slower than the street, so it drifts relative to the buildings
+    sky.position.x = IW / 2 - px * 14 + Math.sin(t * 0.07) * 3;
+    sky.position.y = -IH / 2 - py * 10 + scrollK * 22 + Math.cos(t * 0.05) * 2;
+    stars.position.copy(sky.position).sub(new THREE.Vector3(IW / 2, -IH / 2, 0)); stars.position.z = 0;
+    stars.material.opacity = 0.55 + 0.35 * Math.sin(t * 1.7);
+
+    // lights
+    rest.material.opacity = 0.93 + 0.07 * Math.sin(t * 8.3);
+    for (const c of comps) {
+      const u = c.userData;
+      if (u.kind === 'neon') {
+        u.next -= dt;
+        if (u.next < 0 && u.burst <= 0) { u.burst = 0.25 + Math.random() * 0.5; u.next = 4 + Math.random() * 14; }
+        if (u.burst > 0) { u.burst -= dt; c.material.opacity = Math.random() < 0.45 ? 0.15 : 1; }
+        else c.material.opacity = 0.9 + 0.1 * Math.sin(t * 6 + u.seed);
+      } else if (u.kind === 'lamp') {
+        c.material.opacity = 0.85 + 0.15 * Math.sin(t * 11 + u.seed) * Math.sin(t * 3.1);
+      } else { // windows: someone turns the light off, then on again a while later
+        u.next -= dt;
+        if (u.next < 0) { u.on = !u.on; u.next = u.on ? 10 + Math.random() * 25 : 3 + Math.random() * 8; }
+        c.material.opacity += ((u.on ? 1 : 0) - c.material.opacity) * Math.min(1, dt * 6);
+      }
+    }
+    // airplane
+    if (!plane_.active) { plane_.next -= dt; if (plane_.next < 0) { plane_.active = true; plane_.t = 0; plane_.dir = Math.random() < 0.5 ? 1 : -1; plane_.y = 70 + Math.random() * 90; plane_.dur = 55 + Math.random() * 30; } }
+    else {
+      plane_.t += dt; const u = plane_.t / plane_.dur;
+      const x = plane_.dir > 0 ? -20 + u * (IW + 40) : IW + 20 - u * (IW + 40);
+      setPlane(x, plane_.y - u * 12, true);
+      plane_.strobe.visible = (t % 1.2) < 0.08; plane_.beacon.visible = (t % 1.2) > 0.5 && (t % 1.2) < 0.62;
+      if (u >= 1) { plane_.active = false; setPlane(0, 0, false); plane_.next = 40 + Math.random() * 80; }
+    }
+    // shooting star
+    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { shoot.active = true; shoot.t = 0; streak.position.set(200 + Math.random() * 900, -(20 + Math.random() * 150), 0); } }
+    else { shoot.t += dt; const u = shoot.t / 0.7; streak.position.x += 260 * dt; streak.position.y -= 105 * dt; streak.material.opacity = u < 0.25 ? u * 4 : Math.max(0, 1 - (u - 0.25) / 0.75); if (u >= 1) { shoot.active = false; streak.material.opacity = 0; shoot.next = 20 + Math.random() * 45; } }
+    // skyline apartments
+    for (const m of dots) { const u = m.userData; u.next -= dt; if (u.next < 0) { u.on = !u.on; u.next = u.on ? 15 + Math.random() * 40 : 6 + Math.random() * 25; } m.material.opacity += ((u.on ? 0.95 : 0) - m.material.opacity) * Math.min(1, dt * 3); }
+    // steam
+    for (const p of puffs) {
+      const u = p.userData; u.t += dt; if (u.t > 3.6) u.t = 0;
+      const k = u.t / 3.6;
+      p.position.set(STEAM.x + 6 * k + Math.sin(t * 1.3 + k * 9) * 2.5, -(STEAM.y - 34 * k), 2.2);
+      const s = 2 + 6 * k; p.scale.set(s, s, 1);
+      p.material.opacity = 0.28 * Math.sin(Math.PI * k);
+    }
+    // gusts
+    gust.next -= dt;
+    if (gust.next < 0 && gust.hold <= 0) { gust.target = 0.6 + Math.random() * 0.4; gust.hold = 2 + Math.random() * 3; gust.next = 12 + Math.random() * 25; }
+    if (gust.hold > 0) { gust.hold -= dt; if (gust.hold <= 0) gust.target = 0; }
+    gust.k += (gust.target - gust.k) * Math.min(1, dt * 1.5);
+    rain.material.opacity = 0.3 + 0.18 * gust.k;
+    // neon colour drift
+    hue.t += dt;
+    if (signL) { const a = 0.5 + 0.5 * Math.sin(hue.t * 0.12); signL.material.color.setRGB(1, 0.86 + 0.14 * a, 0.9 + 0.1 * (1 - a)); } // pink ↔ pale lavender
+    if (signR) { hue.r.next -= dt; if (hue.r.next < 0) { hue.r.alt = !hue.r.alt; hue.r.next = hue.r.alt ? 6 + Math.random() * 10 : 25 + Math.random() * 40; } const tgt = hue.r.alt ? [0.75, 0.9, 1] : [1, 1, 1]; const c = signR.material.color; c.setRGB(c.r + (tgt[0] - c.r) * dt * 2, c.g + (tgt[1] - c.g) * dt * 2, c.b + (tgt[2] - c.b) * dt * 2); }
+    // cat
+    if (!catS.active) { catS.next -= dt; if (catS.next < 0) { catS.active = true; catS.t = 0; cat.visible = true; } }
+    else {
+      catS.t += dt; const u = catS.t / catS.dur, e = u * u * (3 - 2 * u);
+      const y = 640 + (845 - 640) * e, x = 690 + Math.sin(u * 4.2) * 6 + (u - 0.5) * 8;   // the far end, then straight at the camera
+      const sc = (y - 490) / 165;
+      cat.userData.place(x, y, sc, false); cat.userData.set(Math.floor(catS.t * 7) % 6);
+      if (u >= 1) { catS.active = false; cat.visible = false; catS.next = 90 + Math.random() * 120; }
+    }
+    // crow: small hops, turns around, ruffles in a gust
+    crowS.next -= dt;
+    if (crowS.next < 0) { crowS.hop = 0.16; if (Math.random() < 0.4) crowS.flip = !crowS.flip; crowS.next = 8 + Math.random() * 25; }
+    if (crowS.hop > 0) crowS.hop -= dt;
+    crow.userData.place(958 + (gust.k > 0.5 ? (Math.random() - 0.5) * 1.5 : 0), 163 - (crowS.hop > 0 ? 2 : 0), 1, crowS.flip);
+    // car
+    if (!carS.active) { carS.next -= dt; if (carS.next < 0) { carS.active = true; carS.t = 0; car.visible = true; } }
+    else {
+      carS.t += dt; const u = carS.t / carS.dur;
+      const cx = 910 + (450 - 910) * u; car.userData.place(cx, carGround(cx), 1, false); car.userData.set(0);
+      if (u >= 1) { carS.active = false; car.visible = false; carS.next = 70 + Math.random() * 110; }
+    }
+    // lit window state machine
+    ws.t += dt; ws.next -= dt;
+    if (ws.state === 'empty' && ws.next < 0) { ws.state = 'in'; ws.t = 0; ws.px = -5; ws.light = true; }
+    else if (ws.state === 'in') { ws.px += 9 * dt; if (ws.px >= ws.sitX) { ws.state = 'sit'; ws.t = 0; ws.screen = true; ws.next = 45 + Math.random() * 90; } }
+    else if (ws.state === 'sit') {
+      ws.blink -= dt; if (ws.blink < -0.4 - Math.random() * 1.2) ws.blink = 0.08 + Math.random() * 0.12;   // typing: the screen flickers
+      if (ws.next < 0) { ws.state = 'out'; ws.t = 0; ws.screen = false; }
+    }
+    else if (ws.state === 'out') { ws.px -= 9 * dt; if (ws.px < -6) { ws.state = 'empty'; ws.next = 15 + Math.random() * 35; if (Math.random() < 0.35) { ws.light = false; ws.next += 20 + Math.random() * 40; } } }
+    winGlow.material.opacity = ws.light ? 0.1 + (ws.screen ? 0.02 : 0) : 0;
+    if (Math.floor(t * 12) !== Math.floor((t - dt) * 12)) drawWindow();   // repaint at 12 fps, plenty for 39×23 px
+    // arcade: marquee chase, cabinet screens, an occasional stutter of the pink sign
+    arcS.t += dt;
+    if (Math.floor(arcS.t * 4) !== Math.floor((arcS.t - dt) * 4)) arcS.chase = (arcS.chase + 1) % 3;
+    for (const cb of arcS.cab) { cb.next -= dt; if (cb.next < 0) { cb.c = Math.floor(Math.random() * 4); cb.next = 0.6 + Math.random() * 3; } }
+    arcS.next -= dt; if (arcS.next < 0 && arcS.hold <= 0) { arcS.hold = 0.25 + Math.random() * 0.4; arcS.next = 8 + Math.random() * 20; }
+    if (arcS.hold > 0) { arcS.hold -= dt; arcS.flick = Math.random() < 0.5 ? 0.3 : 1; } else arcS.flick = 0.93 + 0.07 * Math.sin(t * 7.3);
+    spill.material.opacity = 0.14 * arcS.flick + 0.03;
+    if (Math.floor(t * 10) !== Math.floor((t - dt) * 10)) drawArcade();
+    // small sign
+    signS.next -= dt; if (signS.next < 0 && signS.hold <= 0) { signS.hold = 0.2 + Math.random() * 0.3; signS.next = 10 + Math.random() * 25; }
+    if (signS.hold > 0) { signS.hold -= dt; signS.flick = Math.random() < 0.5 ? 0.2 : 1; } else signS.flick = 0.95 + 0.05 * Math.sin(t * 9 + 1);
+    if (Math.floor(t * 10) !== Math.floor((t - dt) * 10)) drawSign();
+    // puddle rings
+    for (const r of rings) {
+      const u = r.userData; u.t += dt;
+      if (u.t > 1.1) { u.next -= dt; if (u.next < 0) { u.t = 0; u.next = 0.6 + Math.random() * 2.5; const y = 650 + Math.random() * 160; r.position.set(roadX(y), -y, 2.5); } r.material.opacity = 0; continue; }
+      const k = u.t / 1.1; r.scale.set(4 + 14 * k, 2 + 7 * k, 1); r.material.opacity = 0.45 * (1 - k);
+    }
+    // rain
+    const p = rain.geometry.attributes.position.array;
+    const vy = 520 + 260 * gust.k, vx = 40 + 260 * gust.k; for (let i = 0; i < NR; i++) { p[i * 3 + 1] -= vy * dt; p[i * 3] -= vx * dt; if (p[i * 3 + 1] < -IH) { p[i * 3 + 1] = 0; p[i * 3] = Math.random() * IW; } if (p[i * 3] < 0) p[i * 3] += IW; }
+    rain.geometry.attributes.position.needsUpdate = true;
+
+    renderer.render(scene, camera);
+    if (visible && !reduced) raf = requestAnimationFrame(frame);
+  }
+  new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && !raf && !reduced) raf = requestAnimationFrame(frame); }).observe(hero);
+  frame();
+  if (reduced) setTimeout(frame, 800); // one more pass once textures have loaded
+})();
+</script>
+</body>
+</html>
