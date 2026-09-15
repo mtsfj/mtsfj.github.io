@@ -609,8 +609,7 @@
 
   // ---- parallax target from pointer (desktop) and scroll (all) ----
   let tx = 0, ty = 0, px = 0, py = 0;
-  hero.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { const r = hero.getBoundingClientRect(); tx = ((e.clientX - r.left) / r.width - 0.5) * 2; ty = ((e.clientY - r.top) / r.height - 0.5) * 2; } }, { passive: true });
-  hero.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
+  // parallaxe à la souris désactivée (tx/ty restent à 0) ; le léger décalage au scroll est conservé
 
   let t = 0, raf = null, visible = true;
   const clock = new THREE.Clock();
