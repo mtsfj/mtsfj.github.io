@@ -265,7 +265,8 @@
   plane('assets/fuji_night.webp', 376, 45, 640, 640, -1.5);
 
   // billboard on the left facade playing the Luffy loop, times-square style; street cables pass in front
-  const luffyBez = pxq(41, 53, 0x141026, 1, 1.19); luffyBez.position.set(343 + 17.5, -(144 + 23.5), 1.19);
+  const luffyBez = new THREE.Mesh(new THREE.PlaneGeometry(41, 53), new THREE.MeshBasicMaterial({ color: 0x141026, transparent: true, depthWrite: false }));
+  luffyBez.position.set(343 + 17.5, -(144 + 23.5), 1.19); scene.add(luffyBez);
   const luffyTex = crisp('assets/luffy_screen.webp'); luffyTex.repeat.set(1 / 12, 1);
   const luffyScr = new THREE.Mesh(new THREE.PlaneGeometry(35, 47), new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
   luffyScr.position.set(343 + 17.5, -(144 + 23.5), 1.2); scene.add(luffyScr);
