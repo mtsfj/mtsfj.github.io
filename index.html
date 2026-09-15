@@ -83,6 +83,7 @@
   .article .date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); margin-bottom: 8px; display: block; }
   .tl-wrap { margin: 34px calc(-1 * clamp(20px, 6vw, 96px)) 0; }
   .tl-sticky { position: sticky; top: max(120px, calc(50vh - 140px)); overflow: hidden; padding: 22px 0 34px; }
+  .tl-active .tl-sticky { top: 0; height: 100svh; display: flex; align-items: center; padding: 0; background: var(--night); }
   .tl-track { display: flex; margin: 0; padding: 0 clamp(20px, 6vw, 96px); list-style: none; width: max-content; will-change: transform; }
   .tl-track li { position: relative; min-width: 380px; padding: 44px 56px 0 0; }
   .tl-track li::before { content: ""; position: absolute; top: 8px; left: 22px; right: -22px; height: 2px; background: var(--rule); }
@@ -132,29 +133,9 @@
       <h2>Bio</h2>
       <div class="prose" data-lang="fr">
         <p>Je prépare une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer, sur l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs : plutôt que des benchmarks figés, des agents qui se fixent leurs propres objectifs pour découvrir et cartographier les capacités et vulnérabilités d'un modèle.</p>
-        <div class="drives">
-          <span class="k">Ce qui m'anime</span>
-          <p>La sécurité de l'IA, à commencer par celle de l'auto-amélioration récursive, et la compréhension fine des LLM : rendre l'IA aussi bénéfique que possible pour les humains en limitant ses défauts et ses risques, autant que possible en open source.</p>
-        </div>
-        <ul class="bio-meta">
-          <li><span>Thèse</span><span>2026 – 2029, ED Mathématiques et Informatique, Université de Bordeaux</span></li>
-          <li><span>Directeur</span><span>Pierre-Yves Oudeyer</span></li>
-          <li><span>Thèmes</span><span>exploration autotélique, induction de programmes guidée par LLM, évaluation de modèles</span></li>
-          <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
-        </ul>
       </div>
       <div class="prose" data-lang="en" lang="en" hidden>
         <p>I am doing my PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer, on autotelic exploration for the automatic evaluation of large generative models: instead of fixed benchmarks, agents that set their own goals to discover and map a model's capabilities and vulnerabilities.</p>
-        <div class="drives">
-          <span class="k">What drives me</span>
-          <p>AI safety, starting with the safety of recursive self-improvement, and a fine-grained understanding of LLMs: making AI as beneficial as possible for humans while limiting its flaws and risks, in the open as much as possible.</p>
-        </div>
-        <ul class="bio-meta">
-          <li><span>PhD</span><span>2026 – 2029, Doctoral School of Mathematics and Computer Science, University of Bordeaux</span></li>
-          <li><span>Advisor</span><span>Pierre-Yves Oudeyer</span></li>
-          <li><span>Topics</span><span>autotelic exploration, LLM-guided program induction, model evaluation</span></li>
-          <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
-        </ul>
       </div>
     </div>
     <div class="tl-wrap" data-lang="fr" aria-label="Parcours">
@@ -179,7 +160,34 @@
         <li><span class="tl-date">Nov 2026</span><span class="tl-label">PhD, Inria Flowers</span><span class="tl-sub">autotelic exploration, through 2029</span></li>
       </ol></div>
     </div>
-  </section>
+    <div class="grid">
+      <div aria-hidden="true"></div>
+      <div class="prose" data-lang="fr">
+        <div class="drives">
+          <span class="k">Ce qui m'anime</span>
+          <p>La sécurité de l'IA, à commencer par celle de l'auto-amélioration récursive, et la compréhension fine des LLM : rendre l'IA aussi bénéfique que possible pour les humains en limitant ses défauts et ses risques, autant que possible en open source.</p>
+        </div>
+        <ul class="bio-meta">
+          <li><span>Thèse</span><span>2026 – 2029, ED Mathématiques et Informatique, Université de Bordeaux</span></li>
+          <li><span>Directeur</span><span>Pierre-Yves Oudeyer</span></li>
+          <li><span>Thèmes</span><span>exploration autotélique, induction de programmes guidée par LLM, évaluation de modèles</span></li>
+          <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
+        </ul>
+      </div>
+      <div class="prose" data-lang="en" lang="en" hidden>
+        <div class="drives">
+          <span class="k">What drives me</span>
+          <p>AI safety, starting with the safety of recursive self-improvement, and a fine-grained understanding of LLMs: making AI as beneficial as possible for humans while limiting its flaws and risks, in the open as much as possible.</p>
+        </div>
+        <ul class="bio-meta">
+          <li><span>PhD</span><span>2026 – 2029, Doctoral School of Mathematics and Computer Science, University of Bordeaux</span></li>
+          <li><span>Advisor</span><span>Pierre-Yves Oudeyer</span></li>
+          <li><span>Topics</span><span>autotelic exploration, LLM-guided program induction, model evaluation</span></li>
+          <li><span>CV</span><span><a href="cv.pdf">PDF</a></span></li>
+        </ul>
+      </div>
+    </div>
+</section>
 
   <section id="articles">
     <div class="grid">
@@ -285,10 +293,11 @@
       state = [];
       for (const w of wraps) {
         const track = w.querySelector('.tl-track'), sticky = w.querySelector('.tl-sticky');
-        track.style.transform = ''; w.style.height = '';
+        track.style.transform = ''; w.style.height = ''; w.classList.remove('tl-active');
         if (w.hidden || innerWidth <= 720) continue;
         const dist = Math.max(0, track.offsetWidth - sticky.clientWidth);
         if (dist > 0) {
+          w.classList.add('tl-active');   // la frise occupe tout l'écran pendant la traversée
           w.style.height = (sticky.offsetHeight + dist) + 'px';
           state.push({ w, track, dist, top: parseFloat(getComputedStyle(sticky).top) || 0 });
         }
