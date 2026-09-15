@@ -1,4 +1,4 @@
-# mathisfajeau.github.io · site perso
+# mtsfj.github.io · site perso
 
 Site statique, aucun build : ouvrir `index.html` suffit.
 
@@ -13,7 +13,7 @@ favicon.png, og.png     icône et image de partage
 
 ## Déployer sur GitHub Pages (gratuit)
 
-1. Créer un repo public nommé `ZWhimsi.github.io` (ou n'importe quel nom, l'URL sera alors `zwhimsi.github.io/<nom>`).
+1. Créer un repo public nommé `mtsfj.github.io` (ou n'importe quel nom, l'URL sera alors `mtsfj.github.io/<nom>`).
 2. Copier tout ce dossier à la racine du repo, `git push`.
 3. Settings → Pages → Source : « Deploy from a branch », branche `main`, dossier `/ (root)`. En ligne en une minute.
 
