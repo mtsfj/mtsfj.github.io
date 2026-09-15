@@ -272,8 +272,8 @@
   luffyScr.position.set(343 + 17.5, -(144 + 23.5), 1.2); scene.add(luffyScr);
   plane('assets/cables_front.webp', 328, 180, 74, 42, 1.4);
 
-  // ramen sign warped onto the cornice: the four corners were placed by hand with the ramen tool
-  const RC = [[1154.3, 379.3], [1192, 359], [1199, 392], [1158.7, 409.3]];
+  // ramen sign warped onto the cornice: hand-placed corners, extended for the 6 px neon margin
+  const RC = [[1149.9, 378.9], [1195.4, 353.9], [1204.0, 393.0], [1154.7, 413.7]];
   const ramenGeo = new THREE.BufferGeometry();
   ramenGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([
     RC[0][0], -RC[0][1], 0, RC[1][0], -RC[1][1], 0, RC[2][0], -RC[2][1], 0, RC[3][0], -RC[3][1], 0]), 3));
@@ -281,6 +281,10 @@
   ramenGeo.setIndex([0, 3, 1, 1, 3, 2]);
   const ramen = new THREE.Mesh(ramenGeo, new THREE.MeshBasicMaterial({ map: crisp('assets/ramen_sign.webp'), transparent: true, depthWrite: false, side: THREE.DoubleSide }));
   ramen.position.z = 1.15; scene.add(ramen);
+  // neon edge behind the bowl, breathing like the street signs
+  const glowTex = loader.load('assets/ramen_glow.webp'); glowTex.magFilter = glowTex.minFilter = THREE.LinearFilter; glowTex.generateMipmaps = false;
+  const ramenGlow = new THREE.Mesh(ramenGeo, new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+  ramenGlow.position.z = 1.14; scene.add(ramenGlow);
 
   // stars: a handful of pixels in the dark upper sky, twinkling
   const NS = 40, sp = new Float32Array(NS * 3);
@@ -335,11 +339,6 @@
     const f = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: fogTex, transparent: true, opacity: o, depthWrite: false }));
     f.position.set(cx, -cy, z); f.userData = { x0: cx, o, dr, ph: fogs.length * 2.1 }; scene.add(f); fogs.push(f);
   }
-
-  // thin steam over the ramen bowl
-  const puffs2 = [];
-  for (let i = 0; i < 5; i++) { const p = pxq(2, 2, 0xd8c8c8, 0, 1.18); p.userData = { t: i * 0.6 }; puffs2.push(p); }
-  const STEAM2 = { x: 1176, y: 374 };
 
   // sakura petals carried across the street by the wind
   const petals = [], PCOL = [0xffb3d9, 0xff8ad1, 0xffd1e8];
@@ -632,14 +631,8 @@
     // Luffy billboard: 12 frames at 10 fps, faint screen flicker
     luffyTex.offset.x = Math.floor(t * 10) % 12 / 12;
     luffyScr.material.opacity = 0.95 + 0.05 * Math.sin(t * 9.7);
-    // ramen steam
-    for (const p of puffs2) {
-      const u = p.userData; u.t += dt; if (u.t > 3) u.t = 0;
-      const k = u.t / 3;
-      p.position.set(STEAM2.x + Math.sin(t * 1.6 + k * 7) * 1.5, -(STEAM2.y - 16 * k), 1.18);
-      const s = 1 + 2.2 * k; p.scale.set(s, s, 1);
-      p.material.opacity = 0.22 * Math.sin(Math.PI * k);
-    }
+    // ramen neon edge: slow breath
+    ramenGlow.material.opacity = 0.5 + 0.14 * Math.sin(t * 2.1);
     // sakura petals: slow drift, sway, pushed harder during gusts
     for (const p of petals) {
       const u = p.userData; u.t += dt;
