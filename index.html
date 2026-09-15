@@ -261,6 +261,22 @@
     comps.push(p);
   }
 
+  // full moon low in the dusk sky, partly hidden by the mountain slope
+  const moonC = document.createElement('canvas'); moonC.width = moonC.height = 92;
+  (function () {
+    const c = moonC.getContext('2d');
+    c.fillStyle = '#f2e4d4'; c.beginPath(); c.arc(46, 46, 44, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#e2cec2';
+    for (const [x, y, rx, ry] of [[34, 36, 12, 9], [58, 56, 9, 7], [52, 28, 6, 5], [30, 60, 7, 5]]) {
+      c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2); c.fill();
+    }
+    c.fillStyle = '#d8c2b6';
+    for (const [x, y, r] of [[40, 42, 3], [62, 52, 2.5], [48, 66, 2]]) { c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); }
+  })();
+  const moonTex = new THREE.CanvasTexture(moonC); moonTex.magFilter = moonTex.minFilter = THREE.NearestFilter; moonTex.generateMipmaps = false;
+  const moon = new THREE.Mesh(new THREE.PlaneGeometry(46, 46), new THREE.MeshBasicMaterial({ map: moonTex, transparent: true, opacity: 0.85, depthWrite: false }));
+  moon.position.set(693 + 23, -(274 + 23), -1.8); scene.add(moon);
+
   // mount Fuji and its sakura in the sky gap, behind the skyline and the flying events
   plane('assets/fuji_night.webp', 376, 66, 640, 640, -1.5);
   // hand-picked pixels of the same layer promoted in front of the city, so the foliage covers the wires
