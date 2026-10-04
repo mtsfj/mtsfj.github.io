@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=46" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=47" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -55,7 +55,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=36) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=37) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -609,7 +609,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=46", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=7", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=47", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=7", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -665,7 +665,7 @@
   }
   const COMP_KIND = { win_z1_violet: 'tv', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
-    const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name === 'z5_spill' ? 0.6 : 1.1);   // (zones 9's and 5's: behind the bus)
+    const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name === 'z5_spill' || name === 'win_z4_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
     const kind = COMP_KIND[name] || (name.startsWith('win') || name === 'shop_r' ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
     const shop = name === 'win_z4_shop';             // the Pokémon Center's shop: its opening hours (open as the page opens)
     p.userData = { name, kind, shop, seed: Math.random() * 100, next: shop ? 30 + Math.random() * 60 : kind === 'shop' || kind === 'vend' ? 20 + Math.random() * 50 : 3 + Math.random() * 8, burst: 0, on: true, stut: 0 };
@@ -685,16 +685,16 @@
   const moonMesh = plane('assets/moon.webp', MOONP.x, MOONP.y, MOONP.s, MOONP.s, -2.5, { opacity: 0.1 });   // le plus loin possible, à peine suggérée
 
   // mount Fuji and its sakura in the sky gap, behind the skyline and the flying events
-  const fujiNight = plane('assets/fuji_night.webp?v=25', 376, 66, 640, 640, -1.5);
+  const fujiNight = plane('assets/fuji_night.webp?v=26', 376, 66, 640, 640, -1.5);
   // the cherry tree, nearer than the mountain: the Battle Bus and fireworks pass behind it, in front of mount Fuji
   const fujiTree = plane('assets/fuji_tree.webp?v=4', 376, 66, 640, 640, -0.9);
   // Ho-Oh's tower (the Bell Tower of Ecruteak) far off in the evening mist: nearer than the mountain, behind the street;
   // the Battle Bus and fireworks pass in front of it
   const towerMesh = plane('assets/tower.webp?v=1', 378, 104, 163, 234, -1.3);
   // the far orange skyline, blurred and dimmed so the depth reads mount > distant city
-  const skyDim = plane('assets/skyline_dim.webp?v=12', 540, 400, 260, 260, 0.05);
+  const skyDim = plane('assets/skyline_dim.webp?v=13', 540, 400, 260, 260, 0.05);
   // hand-picked pixels of the same layer promoted in front of the city, so the foliage covers the wires
-  const fujiFront = plane('assets/fuji_front.webp?v=31', 376, 66, 640, 640, 0.5);
+  const fujiFront = plane('assets/fuji_front.webp?v=32', 376, 66, 640, 640, 0.5);
 
 
 
@@ -1670,7 +1670,7 @@
   farState.needsUpdate = true;
   const farMat = new THREE.ShaderMaterial({
     uniforms: { tIds: { value: farTex('assets/far_ids.png?v=6') }, tOn: { value: farTex('assets/far_on.png?v=6') }, tOff: { value: farTex('assets/far_off.png?v=6') },
-      tAux: { value: farTex('assets/far_aux.png?v=12') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
+      tAux: { value: farTex('assets/far_aux.png?v=13') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
     vertexShader: 'varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: `
       uniform sampler2D tIds, tOn, tOff, tAux, tState;
@@ -1904,7 +1904,7 @@
     g.putImageData(im, 0, 0);
   })();
   const beamTex = new THREE.CanvasTexture(beamC); beamTex.magFilter = beamTex.minFilter = THREE.LinearFilter; beamTex.generateMipmaps = false;
-  const busBeam = busPart('', BUS.beam[0], BUS.beam[1], 0.661, { map: beamTex, color: 0xffeccc, blending: THREE.AdditiveBlending, opacity: 0.16 });
+  const busBeam = busPart('', BUS.beam[0], BUS.beam[1], 0.654, { map: beamTex, color: 0xffeccc, blending: THREE.AdditiveBlending, opacity: 0.16 });
   const busPool = busPart('', BUS.pool[0], BUS.pool[1], 0.6455, { map: fogTex, color: 0xffe6c0, blending: THREE.AdditiveBlending, opacity: 0.12 });
   const busShop = comps.find((c) => c.userData.shop);   // the Pokémon Center's shop, under the red awning
   const busS = { active: false, next: 20 + Math.random() * 120, dir: 1, x: 0, v: 0, ang: 0, stop: -1, wait: 0, bob: 0, bobN: 1, k: 1, ev: 0, burst: 0, dip: 0, dipK: 1, drop: 0, hk: 1, hf: 0, crew: false, crewWait: 0, hold: false, call: null };
@@ -1982,7 +1982,7 @@
     const lamp = (m, c, r, k) => { m.position.set(x0 + sx(c) + 0.5, -(yAt(c, r) + bob + 0.5), 0.66); m.material.opacity = m.userData.op * k; };
     lamp(busHead, BUS.head[0], BUS.head[1], S.hk); lamp(busTail, BUS.tail[0], BUS.tail[1], 1); lamp(busMark, BUS.marker[0], BUS.marker[1], 1); lamp(busClear, BUS.clear[0], BUS.clear[1], 0.8 + 0.2 * S.k);
     const hx = x0 + sx(BUS.head[0]) + (L ? 0 : 1), hy = yAt(BUS.head[0], BUS.head[1]) + bob, bw = BUS.beam[0] / 2, po = BUS.beam[0] * 0.46;
-    busBeam.scale.x = L ? -1 : 1; busBeam.position.set(hx + (L ? -bw : bw), -(hy + 3), 0.661); busBeam.material.opacity = 0.16 * S.hk;
+    busBeam.scale.x = L ? -1 : 1; busBeam.position.set(hx + (L ? -bw : bw), -(hy + 3), 0.654); busBeam.material.opacity = 0.16 * S.hk;   // (its beam along the lane: under the crew and the horde in front of it)
     busPool.position.set(hx + (L ? -po : po), -(busGround(hx + (L ? -po : po)) + 1), 0.6455); busPool.material.opacity = 0.12 * S.hk;
     // its front or rear face at the ends of its path: the end that points at the middle of the street shows, the
     // narrower the nearer the middle (1-14 px); each width baked hugging the side's own end, heading right (mirrored
@@ -3432,7 +3432,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=21', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=22', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -5107,7 +5107,7 @@
     const g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 6 : 1;   // (a finger: a bigger target)
     return x >= sx - g && x <= sx + sw + g && y >= sy - g && y <= sy + sh + g;
   }
-  hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse' && !PH.on) { showSlab(ev, overWin(ev)); } });   // no pointer cursor over the secrets: it would give them away
+  hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse' && !PH.on) { showSlab(ev, overWin(ev) && !inPkpc(ev)); } });   // no pointer cursor over the secrets: it would give them away
   hero.addEventListener('pointerleave', () => showSlab(null, false));
   // ---- the balcony window (top right): the four panes light up one after the other, stay lit a while, go out in the
   // same order; while they are lit, Naruto passes behind the frosted glass now and then (below) ----
@@ -6968,7 +6968,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=14') }, tMirror: { value: tex('assets/wet_mirror.png?v=12') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=15') }, tMirror: { value: tex('assets/wet_mirror.png?v=13') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 } },
       vertexShader: WET_VS, fragmentShader: WET_FS, transparent: true, depthWrite: false,
@@ -7034,7 +7034,7 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.png?v=6') },
+      tNRfar: { value: crisp('assets/night_far.png?v=7') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) } };   // the red night's lights: their hue (max channel 1)
   })();
@@ -7169,44 +7169,37 @@
     try { if (clb) gradeSprite(clb.material, 'far'); } catch (e) {}              // the climber on Fuji
     try { for (const m of catEyes) gradeSprite(m.material, 'self'); gradeSprite(catGlow.material, 'self'); } catch (e) {}   // the cat's eyes
   })();
-  // ---- the Pokémon Center's PC (DP's, as in every Center): a public terminal on the sidewalk just right of the Center's
-  // door, against the tall neighbour's wall, its screen facing down the street: there it hides neither the door nor the
-  // sign (nearer the door, anything standing out from the wall would cover the glass). c3/pkpc/build_pkpc.py drew it in
-  // zone 4's model (f 959.5, eye 1.26 m): 0.46 x 0.30 x 1.25 m, its front 21.4 m away, x 898-921, its foot on y 671.5.
-  // One atlas, assets/pkpc.png: the casing as the street's power out leaves it (always drawn, with its contact shadow) and
-  // as the street lights it (the Center's zone's power: the blackout takes it back to the first), the Center's warm light
-  // on it (the wall lamp along its top edge, the sidewalk's pool on its left faces: the shop's level, its opening hours),
-  // the screen (its own light: a slow drift and now and then a dip; on with the Center as the opening plays; steady under
-  // reduced motion; dark in a blackout), and in the wet sidewalk its short reflection (four ripple frames) and the
-  // screen's faint light. The water's live pass leaves it out (that mirrors at the wall's foot, not at the kiosk's); the
-  // crew's horde passes behind it. A click or a tap: the PC (below) ----
-  const PKA = { W: 192, H: 124, body: [0, 0, 32, 64], unlit: [32, 0, 32, 64], warm: [64, 0, 32, 64], screen: [96, 0, 32, 64],
-    refl: [[0, 64, 32, 60], [32, 64, 32, 60], [64, 64, 32, 60], [96, 64, 32, 60]], srefl: [[128, 64, 32, 60], [160, 64, 32, 60]] };
-  const PKS = { x: 893, y: 612, ry: 671, hit: [898, 614, 26, 59], m: {}, dead: false, shop: comps.find((c) => c.userData.name === 'win_z4_shop') || null,
-    zone: PW_ZONES.findIndex((z) => z[4] === 870), up: false, lv: 0, ont: 0, rt: 0, rf: 0, ft: Math.random() * 50, dip: 0, next: 6 + Math.random() * 10 };
+  // ---- the Pokémon Center's PC (DP's, as in every Center): inside, as in the games, on the interior's far side wall, seen
+  // through the upper door glass above the Gyarados showcase, the door's mullions in front of it: it crosses no line of the
+  // street (against B's shutter it cut the slats). c3/pkpc/build_pkpc3.py drew it in zone 4's model (f 959.5, eye 1.26 m):
+  // the far side wall at Z 27.9 (the Center's far corner), its face at 27.78, D 5.08-5.53, h 1.35-1.72 m: x 875-890,
+  // y 599-611, frontal; its screen x 877-888, y 601-609. One atlas, assets/pkpc.png: its casing in the dark shop (always
+  // drawn, through the glass: a little of the glass's sheen kept), lit by the shop (the shop's level, so its opening hours;
+  // the red night's red, as the shop's light), its screen (its own light: on all night, as a PC is; a slow drift, now and
+  // then a dip; steady under reduced motion; out in a blackout, the Center's zone's power) and that light on the wall round
+  // it, more in the dark shop. The water mirrors it with the door. A click or a tap on it: the PC (below) ----
+  const PKA = { W: 104, H: 22, lit: [0, 0, 26, 22], unlit: [26, 0, 26, 22], screen: [52, 0, 26, 22], glow: [78, 0, 26, 22] };
+  const PKS = { x: 870, y: 594, hit: [874, 600, 16, 12], m: {}, dead: false, shop: comps.find((c) => c.userData.name === 'win_z4_shop') || null,
+    zone: PW_ZONES.findIndex((z) => z[4] === 870), up: false, lv: 0, ont: 0, ft: Math.random() * 50, dip: 0, next: 6 + Math.random() * 10 };
   function pkUV(m, r) {                          // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = r[0] / PKA.W, u1 = (r[0] + r[2]) / PKA.W, v0 = 1 - r[1] / PKA.H, v1 = 1 - (r[1] + r[3]) / PKA.H;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
   }
   (function () {
-    const M = PKS.m, tex = crisp('assets/pkpc.png?v=1', null, () => { PKS.dead = true; for (const k in M) M[k].visible = false; });
-    const mk = (r, y, z, add) => {
+    const M = PKS.m, tex = crisp('assets/pkpc.png?v=3', null, () => { PKS.dead = true; for (const k in M) M[k].visible = false; });
+    const mk = (r, z, add) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(r[2], r[3]), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
-      pkUV(m, r); m.position.set(PKS.x + r[2] / 2, -(y + r[3] / 2), z); scene.add(m); return m;
+      pkUV(m, r); m.position.set(PKS.x + r[2] / 2, -(PKS.y + r[3] / 2), z); scene.add(m); return m;
     };
-    M.refl = mk(PKA.refl[0], PKS.ry, 1.157); M.srefl = mk(PKA.srefl[0], PKS.ry, 1.1572, true);     // (over the water's sheet, 1.15)
-    M.unlit = mk(PKA.unlit, PKS.y, 1.16); M.body = mk(PKA.body, PKS.y, 1.1601); M.warm = mk(PKA.warm, PKS.y, 1.1602, true); M.scr = mk(PKA.screen, PKS.y, 1.1603);
-    for (const k of ['refl', 'unlit', 'body']) gradeSprite(M[k].material, 'street');
-    for (const k of ['srefl', 'warm', 'scr']) gradeSprite(M[k].material, 'self');
-    M.warm.visible = M.scr.visible = M.srefl.visible = false;
-    if (WET.on) WET.hide.push(M.refl, M.srefl, M.unlit, M.body, M.warm, M.scr);
-    COCC.pkpc = { d: 23.9, runs: [[615, 637, 898, 921], [638, 668, 899, 919], [669, 671, 899, 920]] };   // (the horde passes behind it: its depth, the crew's eye 1.41 m)
+    M.unlit = mk(PKA.unlit, 1.1005); M.lit = mk(PKA.lit, 1.1006); M.scr = mk(PKA.screen, 1.1007); M.glow = mk(PKA.glow, 1.1008, true);   // (over the shop's comp, 1.1)
+    gradeSprite(M.unlit.material, 'street');
+    for (const k of ['lit', 'scr', 'glow']) gradeSprite(M[k].material, 'self');
+    M.lit.visible = M.scr.visible = M.glow.visible = false;
   })();
-  function stepPkpc(dt) {                        // its light: the street's power there, the shop's, the screen's own
+  function stepPkpc(dt) {                        // its light: the shop's on its casing, the screen's own (the Center's zone's power on both)
     const S = PKS, M = S.m; if (S.dead) return;
     const pz = PW.on && S.zone >= 0 ? pwShade.material.uniforms.uPow.value[S.zone] : 1, sh = S.shop ? S.shop.material.opacity : 1;
-    M.body.material.opacity = M.refl.material.opacity = pz;
-    M.warm.material.opacity = sh * pz; M.warm.visible = sh * pz > 0.004;
+    M.lit.material.opacity = sh * pz; M.lit.visible = sh * pz > 0.004;
     if (!S.up && (!OPEN.on || sh > 0.5)) { S.up = true; S.ont = 0; }   // on with the Center as the street wakes (at once when no opening plays)
     let lv = S.up ? 1 : 0;
     if (S.up && !reduced) {
@@ -7214,17 +7207,16 @@
       S.ft += dt; lv *= lightLife(S.ft, 7.7, 0.07);
       if ((S.next -= dt) < 0) { S.dip = 0.24; S.next = 6 + Math.random() * 14; }
       if (S.dip > 0) { S.dip = Math.max(0, S.dip - dt); lv *= [0.62, 0.92, 0.74, 0.96][Math.min(3, ((0.24 - S.dip) / 0.06) | 0)]; }
-      if ((S.rt += dt) > 0.15) { S.rt = 0; S.rf = (S.rf + 1) & 3; pkUV(M.refl, PKA.refl[S.rf]); pkUV(M.srefl, PKA.srefl[S.rf & 1]); }
     }
     S.lv = lv * pz;
-    M.scr.material.opacity = M.srefl.material.opacity = S.lv; M.scr.visible = M.srefl.visible = S.lv > 0.004;
+    M.scr.material.opacity = S.lv; M.glow.material.opacity = S.lv * (1.4 - 0.6 * sh);
+    M.scr.visible = M.glow.visible = S.lv > 0.004;
   }
-  function overPkpc(ev) {                        // its own pixels and a little round (a finger: more), while it has power
-    if (PK.on || PKS.dead || !(PKS.lv > 0.3)) return false;
-    const p = cbXY(ev), b = PKS.hit, g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 4 : 1;
-    return p.x >= b[0] - g && p.x <= b[0] + b[2] + g && p.y >= b[1] - g && p.y <= b[1] + b[3] + g;
-  }
-
+  const inPkpc = (ev) => {                       // its pixels (a finger: a little round)
+    const p = cbXY(ev), b = PKS.hit, g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 2 : 0;
+    return p.x >= b[0] - g && p.x < b[0] + b[2] + g && p.y >= b[1] - g && p.y < b[1] + b[3] + g;
+  };
+  function overPkpc(ev) { return !PK.on && !PKS.dead && PKS.lv > 0.3 && inPkpc(ev); }   // (while its screen has power)
   // ---- its window: DP's PC. « Whimsi a allumé le PC. », then the menu: the apps it holds (PKPC.apps, the secrets' code's:
   // { id, label: { fr, en }, icon, available(), render(el), and close(el) if it needs one }; greyed « ??? » while not
   // available) and SE DÉCONNECTER. A canvas of 256 x 192 logical pixels (the catch's DP font and text boxes, on the PC's
