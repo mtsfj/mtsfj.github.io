@@ -3162,15 +3162,18 @@
       shA: 4 - 15 * sn, elA: 14 + 8 * Math.max(0, -sn), wrA: 0, shB: 4 + 15 * sn, elB: 14 + 8 * Math.max(0, sn), wrB: 0 });
     RJ.py.t = RM.stand - 0.15 - 0.3 * Math.cos(2 * W.ph);
   }
-  function walkPlant() {                         // the pelvis from the planted foot (rule 4: no sliding): of the two feet the one nearest the
-    const W = ws, p = rigPts('v'), fa = p.LA[2], fb = p.LB[2];   // floor is in stance; it keeps the x it landed on and the pelvis keeps its offset from it
-    let side = W.plantSide || (fa[1] >= fb[1] ? 'A' : 'B');
-    const mine = side === 'A' ? fa : fb, other = side === 'A' ? fb : fa;
-    if (other[1] > mine[1] + 0.3) { side = side === 'A' ? 'B' : 'A'; W.plant = null; }   // the other foot is down now: planted where it is
-    const ft = side === 'A' ? fa : fb;
+  function walkPlant(dt) {                       // the pelvis from the planted foot (rule 4: no sliding), at any frame rate. The stance foot is
+    const W = ws, p = rigPts('v'), fs = W.f, h = Math.max(1e-3, dt || 1 / 60);   // the one pushing: a foot is planted when it has landed (ahead
+    const fw = { A: fs * (p.LA[2][0] - p.P[0]), B: fs * (p.LB[2][0] - p.P[0]) };   // of the stance foot, its forward motion against the pelvis
+    let side = W.plantSide; const prev = side && W.fw ? W.fw : fw;                 // just reversed); it keeps the x it landed on and the pelvis
+    if (!side) side = fw.A <= fw.B ? 'A' : 'B';                                     // keeps its offset from it, so the body goes the way the feet push
+    const o = side === 'A' ? 'B' : 'A', vS = (fw[side] - prev[side]) / h, vO = (fw[o] - prev[o]) / h;   // (px/s against the pelvis)
+    if ((fw[o] > fw[side] + 0.5 && vO <= 0) || (vS > 1.5 && vO < -1.5)) { side = o; W.plant = null; }   // landed; or the other is the pusher
+    W.fw = fw; W.plantSide = side;
+    const ft = side === 'A' ? p.LA[2] : p.LB[2];
     if (W.plant === null || W.plant === undefined) W.plant = ft[0];
-    W.plantSide = side;
-    const x = W.plant + (RJ.px.v - ft[0]);
+    let x = W.plant + (p.P[0] - ft[0]);
+    if (fs * (x - RJ.px.v) < 0) { x = RJ.px.v; W.plant = ft[0] + (x - p.P[0]); }   // never a step back: the foot re-planted by that hair instead
     RJ.px.v = RJ.px.t = x; RJ.px.d = 0;
     return x;
   }
@@ -3415,7 +3418,7 @@
     if (W.flash > 0) { W.flash -= dt; W.dirty = true; }
     W.L += (Lt - W.L) * Math.min(1, dt * 16); W.S += (St - W.S) * Math.min(1, dt * (St > W.S ? 6 : 8));
     if (W.state !== 'empty') for (const k in RJ) { const j = RJ[k]; j.d += (j.w * j.w * (j.t - j.v) - 2 * j.z * j.w * j.d) * dt; j.v += j.d * dt; }
-    if (W.walking) { W.walking = false; walkPlant(); }   // (a walking frame: the pelvis placed from the planted foot, the joints settled for this frame)
+    if (W.walking) { W.walking = false; walkPlant(dt); }   // (a walking frame: the pelvis placed from the planted foot, the joints settled for this frame)
     W.acc += dt;
     const busy = W.state !== 'empty' || Math.abs(Lt - W.L) > 0.003 || Math.abs(St - W.S) > 0.003 || !W.screen;   // (asleep, it breathes)
     if ((busy || W.dirty) && W.acc >= 1 / 15 && camera.right > WIN.x && camera.left < WIN.x + WIN.w) { W.acc = 0; drawWindow(); }
