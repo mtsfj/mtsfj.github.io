@@ -204,11 +204,9 @@
   @keyframes sec-pop { 0% { transform: scale(1.7); box-shadow: 0 0 22px var(--pink); } 100% { transform: none; box-shadow: none; } }
   .secrets-list { position: absolute; z-index: 2; bottom: 48px; left: clamp(14px, 6vw, 96px); margin: 0; padding: 10px 14px; list-style: none; font-size: 13px; line-height: 1.7; color: var(--paper-dim); background: rgba(15,12,34,.92); border: 1px solid rgba(255,138,209,.45); }
   .secrets-list .got { color: var(--paper); }
+  .secrets-list { max-width: calc(100% - 2 * clamp(14px, 6vw, 96px) - 28px); }
+  .secrets-list li { padding-left: 1.15em; text-indent: -1.15em; }
   /* (the counter and its list sit bottom left on every size, under the title's old place; the title is on the wall, top left) */
-  .hero-nav .snd { min-width: 30px; opacity: .6; }
-  .hero-nav .snd.on { opacity: 1; color: var(--pink); border-color: var(--pink); box-shadow: 0 0 10px rgba(255,138,209,.35); }
-  /* the sound pill pulses once with the opening's gust (the opening gives it the class and --gust = gust.k while the gust blows) */
-  .hero-nav .snd.snd-gust:not(.on) { opacity: calc(.6 + .4 * var(--gust, 0)); border-color: color-mix(in srgb, var(--pink) calc(var(--gust, 0) * 70%), rgba(241,235,228,.35)); box-shadow: 0 0 calc(var(--gust, 0) * 14px) rgba(255,138,209,calc(var(--gust, 0) * .5)); }
   .slab-tip { position: absolute; z-index: 3; pointer-events: none; opacity: 0; transform: translateY(6px); transition: opacity .18s, transform .18s; padding: 8px; background: rgba(15,12,34,.92); border: 1px solid rgba(255,138,209,.45); box-shadow: 0 0 24px rgba(255,138,209,.25); border-radius: 4px; }
   .slab-tip.on { opacity: 1; transform: none; }
   .slab-tip img { display: block; width: 300px; height: auto; max-height: calc(100svh - 40px); object-fit: contain; image-rendering: pixelated; }
@@ -341,42 +339,11 @@
   .pk-body .pc-troph p { font-size: max(12px, calc(6.5px * var(--k, 2))); }
   .pk-body .pc-troph canvas { display: block; width: 100%; max-width: 728px; height: auto; image-rendering: auto; }
   @media (prefers-reduced-motion: reduce) { .pk-frame { animation: none; } }
-  /* ---- photo mode (P, or the camera pill beside the sound pill): the page's text, nav and counters fade out (stepped, like the
-     pixel pop-ups), a thin frame stays with x (exit), save and, with a mouse, 1x / 2x; the street keeps moving ---- */
-  .hero-nav .cam { min-width: 30px; opacity: .6; display: inline-flex; align-items: center; justify-content: center; }
-  .hero-nav .cam:hover, .hero-nav .cam:focus-visible { opacity: 1; }
-  .hero-nav .cam svg { display: block; }
-  @media (max-width: 720px) { .hero-nav .cam { position: absolute; top: calc(100% + 8px); right: 0; box-sizing: border-box; height: 27px; } }   /* the phone's nav is full: the pill sits under the language pill */
-  /* phones (under 540 px): the row of links spans the width at 13 px, and the three pills (sound, camera, language) sit on their
-     own row under it, right-aligned: nothing overflows at 360-414 px, FR or EN (six links since Ingénierie joined the nav) */
+  /* phones (under 540 px): the links row spans the width at 13 px and wraps if it must; the language pill sits at the row's right end */
   @media (max-width: 540px) {
-    .hero-nav { left: 14px; right: 14px; justify-content: flex-start; gap: 12px; font-size: 13px; }
-    .hero-nav .snd, .hero-nav .cam, .hero-nav #lang-toggle { position: absolute; top: calc(100% + 8px); box-sizing: border-box; height: 27px; }
-    .hero-nav #lang-toggle { right: 0; } .hero-nav .cam { right: 46px; } .hero-nav .snd { right: 86px; }
+    .hero-nav { left: 14px; right: 14px; justify-content: flex-start; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 13px; }
+    .hero-nav .lang { margin-left: auto; }
   }
-  .pho { position: absolute; inset: 0; z-index: 4; pointer-events: none; -webkit-user-select: none; user-select: none; opacity: 0; visibility: hidden; transition: opacity .3s steps(6), visibility 0s .3s; }
-  html.photo .pho { opacity: 1; visibility: visible; transition-delay: .15s, 0s; }
-  .pho-frame { position: absolute; inset: 0; border: 1px solid rgba(241,235,228,.72); box-shadow: inset 0 0 0 1px rgba(15,12,34,.6); }
-  .pho-bar { position: absolute; top: max(14px, env(safe-area-inset-top)); right: max(14px, env(safe-area-inset-right)); display: flex; gap: 8px; }
-  .pho-scale { display: flex; }
-  .pho-btn, .pho-k { pointer-events: auto; box-sizing: border-box; height: 32px; margin: 0; padding: 0; display: inline-flex; align-items: center; justify-content: center; color: var(--paper); background: rgba(15,12,34,.62); border: 1px solid rgba(241,235,228,.55); border-radius: 0; font: 11px/1 var(--pixel); cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .pho-btn { width: 32px; }
-  .pho-k { width: 30px; }
-  .pho-k + .pho-k { margin-left: -1px; }
-  .pho-btn svg { display: block; }
-  .pho-btn:hover, .pho-k:hover { border-color: var(--pink); }
-  .pho-btn:active { transform: translate(1px, 1px); }
-  .pho-k[aria-pressed="true"] { position: relative; color: var(--pink); border-color: var(--pink); box-shadow: 0 0 10px rgba(255,138,209,.3); }
-  html.photo { overflow: hidden; }
-  html.photo .hero { min-height: 0; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
-  html.photo .hero::after { opacity: 0; }
-  .hero.photo-fade::after { transition: opacity .3s steps(6); }
-  .hero.photo-fade > :not(#street):not(.pho) { transition: opacity .3s steps(6), visibility 0s; }
-  html.photo .hero > :not(#street):not(.pho) { opacity: 0; visibility: hidden; pointer-events: none; transition-delay: 0s, .3s; }
-  html.photo.ph-pan #street { cursor: grab; }
-  html.photo.ph-pan #street:active { cursor: grabbing; }
-  @media (pointer: coarse), (hover: none) { .pho-scale { display: none; } .pho-btn { width: 44px; height: 44px; } }
-  @media (prefers-reduced-motion: reduce) { .pho, .hero.photo-fade::after, .hero.photo-fade > :not(#street):not(.pho) { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -579,7 +546,6 @@
 <footer>
   <span>Inria Bordeaux Sud-Ouest · 200 avenue de la Vieille Tour, 33405 Talence</span>
   <span class="pixel">© 2026 Mathis Fajeau</span>
-  <span class="credit"><span data-lang="fr">Musique : morceau original, inspiré de « Nuit sur Lumière » de Lorien Testard (<i>Clair Obscur: Expedition 33</i>).</span><span data-lang="en">Music: an original piece inspired by “Nuit sur Lumière” by Lorien Testard (<i>Clair Obscur: Expedition 33</i>).</span></span>
 </footer>
 
 <script>
@@ -625,7 +591,7 @@
   // the opening (its block is just above frame()): on from the first painted frame, off under reduced motion; t0 = the scene's clock
   // when the fade is given its start (-1: not yet, the street waits as the opening sets it); settle: when it does not play, the
   // evening is simply under way
-  const OPEN = { on: !reduced, settle: true, t0: -1, i: 0, watch: [], pulse: 0, pill: null };
+  const OPEN = { on: !reduced, settle: true, t0: -1, i: 0, watch: [] };
   const fadeQuad = new THREE.Mesh(new THREE.PlaneGeometry(IW * 3, IH * 3), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 1, depthTest: false, depthWrite: false,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcAlphaFactor }));
   fadeQuad.position.set(IW / 2, -IH / 2, 9); fadeQuad.renderOrder = 998; fadeQuad.frustumCulled = false; scene.add(fadeQuad);
@@ -3853,6 +3819,7 @@
   function moonGone(g) { REDN.gone = g; moonMesh.visible = station.visible = !g; if (g) lsSet('mtsfj-moon', 'gone'); else try { localStorage.removeItem('mtsfj-moon'); } catch (e) {} }
   function nightRed(on, o) {                   // the mode: the red night on (faded in), or off; kept if asked
     o = o || {}; REDN.on = on; const fade = o.fade === undefined ? 3 : o.fade;
+    if (on && FINS.t < 0) finClear(true);       // (after a finale: its street, its dawn away)
     if (nightSys()) setMode(on ? 'rouge' : null, fade); else PW.tint(on ? REDN.T0 : null, fade);
     BUS.forceZ = on ? true : REDN.busZ0;         // the TranZit: riders on every pass (its rounds stay playable)
     REDN.wander.on = false;                      // (the wandering horde waits for the horde module: off)
@@ -4186,6 +4153,21 @@
     void kr;                                     // (the curtains' count: rainAmount(), in stepRain: 650 -> 120 over these 8 s, with the lull's share)
   }
   function stepFIN(dt) { stepFinale(dt); if (FIN.blast) stepBlast(dt); if (FIN.dawn >= 0) stepDawn(dt); }
+  // the finale's after-state (its street without power, its dawn's sky without stars or Mars, its thinned rain, its
+  // morning) holds until the visitor asks for the red night again (the switch) or pulls the lever again; then it goes:
+  // the power back as the fuses' wave brings it (from the arcade down the street, 3.6 s; at once under reduced
+  // motion), the stars, Mars and the rain back (rainAmount: no dawn, no thinning), the visitor's own hour back
+  function finClear(wave) {
+    if (FIN.dawn >= 0) {
+      FIN.dawn = -1; stars.material.opacity = 1; marsDot.material.opacity = 1; marsDot.visible = true;
+      if (nightSys()) setTimeOverride(null, wave && !reduced ? 3 : 0);
+    }
+    if (PW.on && PW.ext === finDieStep) {
+      PW.ext = null; FIN.die = null;
+      if (wave && !reduced) Object.assign(PW, { u: 0.12, zon: 0, shot: true });   // (past its cut's sputter; no shell)
+      else { PW.on = false; pwShade.visible = false; }
+    }
+  }
   // ---- Kirua in the finale: his Godspeed charged on his roof and held (the lightning gathering on him, never leaving),
   // then let go straight up, at the flash: the bolt climbs out of the top of the sky, forking, the sky lit an instant,
   // the charge dying out on him; he stays on his roof. (The bolt is his own light: no grade.) ----
@@ -4253,7 +4235,7 @@
                                                                                    // ten up at once: the surge's first come while there is room)
   const finTxt = (op) => { for (const e of document.querySelectorAll('.hero-text, .scroll-hint')) { e.style.transition = 'opacity 1.5s'; e.style.opacity = op; } };   // (the page's title)
   function finStart(calm) {                      // (the lever: startEleven)
-    finOffs();
+    finOffs(); finClear(true);                   // (another finale: the last one's street, its dawn away)
     Object.assign(FINS, { t: 0, calm, st: calm ? 'calm' : 'wait', at: 0, fight: -1, stand: -1, plate: -1 });
     finEvN = 0; finEv('start'); finHold(true);
     if (REDN.gone) moonGone(false);              // (gone: it comes back, to go again)
@@ -4595,12 +4577,11 @@
   // slowly from end to end and back (90 s, left first), 3 s after the start and 8 s after the last touch, from where it
   // is. Clamped to the scene; nothing where the whole street shows; under reduced motion the drag alone ----
   const PAN = { x: 0, v: 0, drag: null, wait: 3, auto: false, ph: 0, block: false };
-  const PH = { on: false, k: 1, sy: 0, back: null, busy: false, tFade: 0, tOk: 0 };   // photo mode (its block, near the end)
   const panRoom = () => Math.max(0, (IW - view.w) / 2);
   function panClamp() { PAN.x = Math.max(view.w / 2 - view.cx, Math.min(IW - view.w / 2 - view.cx, PAN.x)); }
   hero.addEventListener('pointerdown', (ev) => {
     PAN.block = false;
-    if ((ev.pointerType === 'mouse' && (!PH.on || ev.button !== 0)) || !ev.isPrimary) return;
+    if (ev.pointerType === 'mouse' || !ev.isPrimary) return;      // (a finger drags the street; a mouse never did outside photo mode, which is gone)
     PAN.wait = 8; PAN.auto = false;
     if (panRoom() >= 20) PAN.drag = { id: ev.pointerId, x0: ev.clientX, y0: ev.clientY, p0: PAN.x, on: false, lx: ev.clientX, lt: performance.now(), v: 0 };
   });
@@ -4624,7 +4605,7 @@
     if (Math.abs(PAN.v) > 3) {                   // the inertia of a flick (x0.92 a frame at 60 fps)
       const x0 = PAN.x + PAN.v * dt; PAN.x = x0; panClamp(); PAN.v = PAN.x === x0 ? PAN.v * Math.pow(0.0067, dt) : 0; PAN.wait = 8; return;
     }
-    PAN.v = 0; if (reduced || PH.on) return;
+    PAN.v = 0; if (reduced) return;
     if (PAN.wait > 0) { PAN.wait -= dt; return; }
     const A = 0.98 * m;
     if (!PAN.auto) { const u = Math.max(-1, Math.min(1, PAN.x / A)); PAN.auto = true; PAN.ph = PAN.x > 1 || Math.abs(PAN.x) <= 1 ? Math.PI - Math.asin(u) : Math.asin(u); }
@@ -4633,13 +4614,13 @@
   // ---- the vertical drift (direction-04): on wide ratios (21:9) the view is shorter than the scene and its fixed window cut the
   // road (the reflections, the stop mark). When more than 80 px of the scene's height is out of view, the camera's centre
   // drifts between the sky and the road with the pan's own law: 90 s, from where it is, 3 s after the start and 8 s after a
-  // gesture (the pan's wait), nothing under reduced motion or in photo mode. PAN.y is an offset on view.cy, kept 20 px off
+  // gesture (the pan's wait), nothing under reduced motion. PAN.y is an offset on view.cy, kept 20 px off
   // the scene's edges, so the moon and the Battle Bus lane stay reachable and the road comes back ----
   PAN.y = 0; PAN.phy = 0; PAN.autoY = false;
   const panRoomY = () => Math.max(0, (IH - view.h) / 2 - 20);
   function stepPanY(dt) {
     const m = panRoomY();
-    if (m < 20 || reduced || PH.on) { PAN.y = 0; PAN.autoY = false; return; }
+    if (m < 20 || reduced) { PAN.y = 0; PAN.autoY = false; return; }
     if (panRoom() < 20) { if (PAN.wait > 0) { PAN.wait -= dt; return; } }   // (the horizontal pan counts the wait down when it has room of its own)
     else if (PAN.wait > 0 || (PAN.drag && PAN.drag.on) || Math.abs(PAN.v) > 3) return;
     const mid = IH / 2 - view.cy;                                            // the drift's centre: the scene's middle
@@ -4693,6 +4674,7 @@
     secList.innerHTML = Object.keys(SECRETS).map(k => found.includes(k) ? '<li class="got">✦ ' + SECRETS[k][en] + '</li>'
       : '<li>· ???' + (k === 'killua' && FOUR.k.length ? ' ' + '✧'.repeat(FOUR.k.length) : '') + '</li>').join('')
       + (found.length < SECRET_N ? '' : eleven ? '<li class="eleven got">✦ 16 · 03 · 2003 — easter egg complete</li>'
+        + '<li class="eleven">→ ' + (en ? 'your trophies are waiting: the Pokémon Center\'s PC' : 'les trophées vous attendent : le PC du Centre Pokémon') + '</li>'
         : '<li class="eleven">· ' + (en ? 'the power is yours — the fuse box' : 'le courant est à vous — la boîte à fusibles') + '</li>');
     if (pop) { secBtn.classList.remove('pop'); void secBtn.offsetWidth; secBtn.classList.add('pop'); }
   }
@@ -5499,14 +5481,14 @@
   pcClose.addEventListener('click', closePC);
   pc.addEventListener('click', (ev) => { if (ev.target === pc) closePC(); });
   document.addEventListener('keydown', (ev) => { if (ev.key !== 'Escape' || !pc.classList.contains('on')) return; if (subs.length) closeSub(subs[subs.length - 1]); else closePC(); });
-  function overPC(ev) {                        // the study's monitor (zone 5's screen box, a pixel around), only while it is on
-    if (ws.S < 0.5) return false;
+  function overPC(ev) {                        // the study's monitor (zone 5's screen box, a pixel around), on or asleep (its standby:
+    if (ws.S < 0.15) return false;               // 0.16 at the least, on the study's UPS; secrets-01)
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top)), [sx, sy, sw, sh] = RM.scr;
     const g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 6 : 1;   // (a finger: a bigger target)
     return x >= sx - g && x <= sx + sw + g && y >= sy - g && y <= sy + sh + g;
   }
-  hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse' && !PH.on) { showSlab(ev, overWin(ev) && !inPkpc(ev)); } });   // no pointer cursor over the secrets: it would give them away
+  hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') { showSlab(ev, overWin(ev) && !inPkpc(ev)); } });   // no pointer cursor over the secrets: it would give them away
   hero.addEventListener('pointerleave', () => showSlab(null, false));
   // ---- the balcony window (top right): the four panes light up one after the other, stay lit a while, go out in the
   // same order; while they are lit, Naruto passes behind the frosted glass now and then (below) ----
@@ -6058,44 +6040,126 @@
   const djTex = new THREE.CanvasTexture(djC); djTex.magFilter = djTex.minFilter = THREE.LinearFilter; djTex.generateMipmaps = false;
   const djMesh = new THREE.Mesh(new THREE.PlaneGeometry(DJ.w, DJ.h), new THREE.MeshBasicMaterial({ map: djTex, transparent: true, depthWrite: false }));
   djMesh.position.set(DJ.x0 + DJ.w / 2, -(DJ.y0 + DJ.h / 2), 0.05); djMesh.visible = false; scene.add(djMesh);
-  // the fighters are Karate Champ sprites: 0 stand, 1 bow, 2 guard, 3 lunge punch, 4 reverse punch, 5 block, 6 front kick, 7 side kick
-  const KC = { img: new Image(), cw: 64, ch: 50, n: 8 }; KC.img.src = 'assets/karate.png?v=1';
-  const KF = { stand: 0, rei: 1, kamae: 2, zuki: 3, gyaku: 4, uke: 5, geri: 6, yoko: 7 };
-  const DJ_SEQ = [[0, 'stand', 'stand'], [1.2, 'rei', 'rei'], [2.0, 'stand', 'stand'], [2.6, 'kamae', 'kamae'], [3.2, 'zuki', 'uke'], [3.7, 'kamae', 'kamae'],
-    [4.3, 'uke', 'geri'], [4.8, 'kamae', 'kamae'], [5.4, 'gyaku', 'uke'], [5.9, 'kamae', 'kamae'], [6.4, 'uke', 'yoko'], [6.9, 'kamae', 'kamae'],
-    [7.6, 'stand', 'stand'], [8.3, 'rei', 'rei'], [9.1, 'stand', 'stand']];
+  // the two karateka are our own: a rig each (pelvis, spine, neck, head; shoulder, elbow, fist; hip, knee, ankle, toes),
+  // posed by joint angles between eased keys (an anticipation before each strike, the hit held, a recoil), the feet planted
+  // on the dojo's floor by two-bone IK and lifted along an arc when they step, one foot after the other, the belt's tails on
+  // a damped spring. Each is drawn as a gi'd silhouette (capsules with round ends, in metres) over the facade's A columns,
+  // softened by his own distance from the paper (nearer the lamp: bigger and softer), then squeezed column by column onto
+  // the receding shoji and masked to the paper. Body space: metres, y up, facing the other (+x); one on each door. The bout
+  // plays only while the dojo is open (openK: its shadows go with its light), never under reduced motion; its timer goes
+  // through the street director (STAGE.due, STAGE.ask, STAGE.done); the opening's beat (its cast) and a click start one
+  const DJR = { thigh: 0.44, shin: 0.43, foot: 0.22, torso: 0.5, neck: 0.09, head: 0.11, uarm: 0.29, farm: 0.26,
+    SV: 118, SH: 189, FEET: 367, LAMP: 250 };   // A px per metre (up; along: the facade's squeeze), the floor's row, the lamp's row
+  // poses: the pelvis [x, y], the spine's lean and the head's nod (rad, + forward), each arm [shoulder from straight down,
+  // elbow] (rad, + forward), each foot [x, y] (y 0.08: the ankle of a foot on the floor); F front, B back
+  const DJP = {
+    stand: { p: [0, 0.93], lean: 0, nod: 0, aF: [0.12, 0.1], aB: [0.08, 0.1], fF: [0.07, 0.08], fB: [-0.07, 0.08] },
+    rei: { p: [-0.05, 0.92], lean: 0.55, nod: 0.25, aF: [0.3, 0], aB: [0.26, 0], fF: [0.07, 0.08], fB: [-0.07, 0.08] },
+    kamae: { p: [0.02, 0.8], lean: 0.08, nod: 0, aF: [1.05, 0.95], aB: [-0.55, 1.95], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
+    coil: { p: [-0.04, 0.8], lean: 0, nod: 0, aF: [1.35, 0.15], aB: [-0.78, 2.05], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
+    zuki: { p: [0.12, 0.78], lean: 0.14, nod: 0, aF: [-0.55, 1.95], aB: [1.52, 0], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
+    uke: { p: [-0.06, 0.81], lean: -0.06, nod: 0, aF: [1.15, 1.45], aB: [-0.5, 1.9], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
+    gedan: { p: [-0.07, 0.8], lean: -0.02, nod: 0, aF: [0.55, 0.05], aB: [-0.55, 1.95], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
+    chamb: { p: [-0.1, 0.86], lean: -0.06, nod: 0, aF: [0.95, 1.0], aB: [-0.5, 1.9], fF: [0.3, 0.55], fB: [-0.4, 0.08] },
+    geri: { p: [-0.08, 0.86], lean: -0.2, nod: 0, aF: [0.8, 1.0], aB: [-0.5, 1.9], fF: [0.74, 0.78], fB: [-0.4, 0.08] } };
+  // the bout: [t, pose, distance from the paper (m), the way into it ('i' a strike's acceleration, 'o' a recoil's, else smooth)]
+  const DJT = [
+    [[0, 'stand', 0.25], [0.8, 'stand', 0.25], [1.3, 'rei', 0.25], [1.75, 'rei', 0.25], [2.25, 'stand', 0.25], [3.0, 'kamae', 0.25],
+      [3.3, 'kamae', 0.25], [3.48, 'coil', 0.25], [3.62, 'zuki', 0.2, 'i'], [3.88, 'zuki', 0.2], [4.25, 'kamae', 0.25, 'o'],
+      [4.62, 'kamae', 0.25], [4.82, 'gedan', 0.4], [5.05, 'gedan', 0.4], [5.45, 'kamae', 0.3], [5.82, 'kamae', 0.3], [6.0, 'uke', 0.45],
+      [6.3, 'uke', 0.45], [6.7, 'kamae', 0.3], [7.2, 'kamae', 0.25], [7.9, 'stand', 0.25], [8.2, 'stand', 0.25], [8.7, 'rei', 0.25],
+      [9.05, 'rei', 0.25], [9.45, 'stand', 0.25], [9.8, 'stand', 0.25]],
+    [[0, 'stand', 0.3], [0.8, 'stand', 0.3], [1.3, 'rei', 0.3], [1.75, 'rei', 0.3], [2.25, 'stand', 0.3], [3.0, 'kamae', 0.3],
+      [3.33, 'kamae', 0.3], [3.55, 'uke', 0.45], [3.88, 'uke', 0.5], [4.25, 'kamae', 0.35], [4.62, 'kamae', 0.35], [4.8, 'chamb', 0.3],
+      [4.93, 'geri', 0.25, 'i'], [5.08, 'chamb', 0.3, 'o'], [5.45, 'kamae', 0.35], [5.8, 'kamae', 0.35], [5.93, 'coil', 0.35],
+      [6.07, 'zuki', 0.3, 'i'], [6.33, 'zuki', 0.3], [6.7, 'kamae', 0.35, 'o'], [7.2, 'kamae', 0.3], [7.9, 'stand', 0.3], [8.2, 'stand', 0.3],
+      [8.7, 'rei', 0.3], [9.05, 'rei', 0.3], [9.45, 'stand', 0.3], [9.8, 'stand', 0.3]]];
   const DJ_END = 9.8;
-  const dojo = { active: false, t: 0, next: 30 + Math.random() * 50, acc: 0 };
-  function poseAt(t, side) { let i = 0; while (i < DJ_SEQ.length - 1 && DJ_SEQ[i + 1][0] <= t) i++; return KF[DJ_SEQ[i][1 + side]]; }
+  const djNewPose = () => ({ p: [0, 0], lean: 0, nod: 0, aF: [0, 0], aB: [0, 0], fF: [0, 0], fB: [0, 0], depth: 0 });
+  const dojo = { active: false, t: 0, next: 30 + Math.random() * 50, acc: 0,
+    F: [{ i: 0, cx: 66, face: 1, P: djNewPose(), px: 0, belt: 0, bv: 0 }, { i: 1, cx: 338, face: -1, P: djNewPose(), px: 0, belt: 0, bv: 0 }] };
+  const djEase = { s: (u) => u * u * (3 - 2 * u), i: (u) => u * u * u, o: (u) => 1 - (1 - u) * (1 - u) * (1 - u) };
+  function djPose(track, t, o) {                // a karateka's pose at t, between his keys
+    let i = 0; while (i < track.length - 2 && track[i + 1][0] <= t) i++;
+    const [t0, n0, d0] = track[i], [t1, n1, d1, e] = track[i + 1], A = DJP[n0], B = DJP[n1];
+    const r = Math.max(0, Math.min(1, (t - t0) / Math.max(1e-6, t1 - t0))), u = djEase[e || 's'](r), L = (a, b) => a + (b - a) * u;
+    o.p[0] = L(A.p[0], B.p[0]); o.p[1] = L(A.p[1], B.p[1]); o.lean = L(A.lean, B.lean); o.nod = L(A.nod, B.nod); o.depth = L(d0, d1);
+    for (const k of ['aF', 'aB']) { o[k][0] = L(A[k][0], B[k][0]); o[k][1] = L(A[k][1], B[k][1]); }
+    const step = (k) => A[k][1] < 0.1 && B[k][1] < 0.1 && Math.abs(B[k][0] - A[k][0]) > 0.04, both = step('fF') && step('fB');
+    for (const k of ['fF', 'fB']) {             // a foot on the floor stays there; a step lifts that foot alone along an arc (the back one first)
+      if (!step(k)) { o[k][0] = L(A[k][0], B[k][0]); o[k][1] = L(A[k][1], B[k][1]); continue; }
+      const w = both ? (k === 'fB' ? [0, 0.55] : [0.45, 1]) : [0, 1], v = djEase.s(Math.max(0, Math.min(1, (r - w[0]) / (w[1] - w[0]))));
+      o[k][0] = A[k][0] + (B[k][0] - A[k][0]) * v; o[k][1] = A[k][1] + 0.09 * Math.sin(Math.PI * v);
+    }
+    return o;
+  }
+  function djDraw(F) {                          // his silhouette into djA: body metres -> A px, scaled about the lamp's row by his distance
+    const J = DJR, P = F.P, g = djAg, [px, py] = P.p, l = P.lean, k = 1 + 0.22 * P.depth;
+    g.setTransform(F.face * J.SH * k, 0, 0, -J.SV * k, F.cx, J.LAMP + (J.FEET - J.LAMP) * k);
+    const seg = (a, b, w) => { g.lineWidth = w; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); };
+    const dot = (c, rx, ry) => { g.beginPath(); g.ellipse(c[0], c[1], rx, ry, 0, 0, Math.PI * 2); g.fill(); };
+    const sh = [px + 0.92 * J.torso * Math.sin(l), py + 0.92 * J.torso * Math.cos(l)], nk = [px + J.torso * Math.sin(l), py + J.torso * Math.cos(l)];
+    const hd = [nk[0] + (J.neck + J.head) * Math.sin(l + P.nod), nk[1] + (J.neck + J.head) * Math.cos(l + P.nod)];
+    for (const q of ['fF', 'fB']) {             // the legs: two-bone IK from the hip to the ankle, the knee forward
+      const f = P[q], dx = f[0] - px, dy = f[1] - py, d = Math.min(Math.hypot(dx, dy), J.thigh + J.shin - 1e-4), a = Math.atan2(dy, dx);
+      const kk = a + Math.acos(Math.max(-1, Math.min(1, (J.thigh * J.thigh + d * d - J.shin * J.shin) / (2 * J.thigh * d))));
+      const kn = [px + J.thigh * Math.cos(kk), py + J.thigh * Math.sin(kk)], ka = Math.atan2(f[1] - kn[1], f[0] - kn[0]);
+      const an = [kn[0] + J.shin * Math.cos(ka), kn[1] + J.shin * Math.sin(ka)];
+      const to = f[1] < 0.1 ? [an[0] + J.foot, 0.03] : [an[0] + J.foot * Math.cos(ka + 1.45), an[1] + J.foot * Math.sin(ka + 1.45)];
+      seg([px, py], kn, 0.17); seg(kn, an, 0.14); seg(an, to, 0.07);   // the gi's wide trousers
+    }
+    seg([px, py], nk, 0.3); seg([(px + nk[0]) / 2, (py + nk[1]) / 2], sh, 0.36); seg(nk, hd, 0.1); dot(hd, J.head, J.head * 1.06);
+    for (const q of ['aF', 'aB']) {             // the arms: shoulder and elbow, the fist
+      const a1 = l + P[q][0], el = [sh[0] + J.uarm * Math.sin(a1), sh[1] - J.uarm * Math.cos(a1)], a2 = a1 + P[q][1];
+      const fs = [el[0] + J.farm * Math.sin(a2), el[1] - J.farm * Math.cos(a2)];
+      seg(sh, el, 0.12); seg(el, fs, 0.1); dot(fs, 0.055, 0.055);
+    }
+    const kt = [px + 0.14 * Math.cos(l), py + 0.05 - 0.14 * Math.sin(l)];   // the belt's knot, its two tails on their spring
+    for (const s of [0, 0.22]) seg(kt, [kt[0] + 0.19 * Math.sin(F.belt + s), kt[1] - 0.19 * Math.cos(F.belt + s)], 0.035);
+    g.setTransform(1, 0, 0, 1, 0, 0);
+  }
   function drawDojo() {
     const t = dojo.t, fade = Math.min(1, t / 0.6, Math.max(0, (DJ_END - t) / 0.7));
-    djAg.clearRect(0, 0, DJ.AW, DJ.AH); djAg.filter = 'blur(1px)';
-    // one karateka on each paper panel, facing each other, heads near the top of the paper, feet just below it;
-    // drawn wider than tall so they keep their build once squeezed by the receding facade
-    if (KC.img.complete && KC.img.naturalWidth) {
-      const sy = 3.6, sx = sy * 2.1, w = KC.cw * sx, h = KC.ch * sy;
-      djAg.imageSmoothingEnabled = false;
-      for (const [cx, face, side] of [[66, 1, 0], [338, -1, 1]]) {
-        djAg.save(); djAg.translate(cx, 0); djAg.scale(face, 1);
-        djAg.drawImage(KC.img, poseAt(t, side) * KC.cw, 0, KC.cw, KC.ch, -w / 2, 340 - h, w, h); djAg.restore();
-      }
+    djBg.clearRect(0, 0, djB.width, djB.height);
+    djAg.fillStyle = djAg.strokeStyle = '#1c0c08'; djAg.lineCap = djAg.lineJoin = 'round';
+    for (const F of dojo.F) {                   // each softened by his distance from the paper: a penumbra of 0.5-1 px (djB is ~2.3x a screen px)
+      djAg.clearRect(0, 0, DJ.AW, DJ.AH); djDraw(F);
+      djBg.filter = 'blur(' + ((0.5 + F.P.depth) * 2.27).toFixed(2) + 'px)'; djBg.drawImage(djA, 0, 0, djB.width, djB.height);
     }
-    djAg.filter = 'none';
-    djBg.clearRect(0, 0, djB.width, djB.height); djBg.globalAlpha = 0.82 * fade; djBg.drawImage(djA, 0, 0, djB.width, djB.height); djBg.globalAlpha = 1;
-    djCg.clearRect(0, 0, djC.width, djC.height);
+    djBg.filter = 'none';
+    djCg.clearRect(0, 0, djC.width, djC.height); djCg.globalAlpha = 0.82 * fade;
     for (let x = 0; x < DJ.w; x++) {           // one column at a time onto the receding facade
       const y0 = (djTop(x + 0.5) - DJ.y0) * DJ.K, hh = (djBot(x + 0.5) - djTop(x + 0.5)) * DJ.K;
       djCg.drawImage(djB, x * DJ.K, 0, DJ.K, djB.height, x * DJ.K, y0, DJ.K, hh);
     }
+    djCg.globalAlpha = 1;
     if (djMask.complete && djMask.naturalWidth) { djCg.globalCompositeOperation = 'destination-in'; djCg.drawImage(djMask, 0, 0, djC.width, djC.height); djCg.globalCompositeOperation = 'source-over'; }
     djTex.needsUpdate = true;
   }
-  function startDojo() { if (dojo.active) return; dojo.active = true; dojo.t = 0; dojo.acc = 1; djMesh.visible = true; }
+  function startDojo() {                        // a bout (the timer's, the opening's, a click on the paper): only lit, never under reduced motion
+    if (dojo.active || reduced || openK('dojo') <= 0) return false;
+    dojo.active = true; dojo.t = 0; dojo.acc = 1; djMesh.visible = true;
+    for (const F of dojo.F) { djPose(DJT[F.i], 0, F.P); F.px = F.P.p[0]; F.belt = F.bv = 0; }
+    return true;
+  }
   function stepDojo(dt) {
-    if (!dojo.active) { dojo.next -= dt; if (dojo.next < 0) startDojo(); return; }
+    if (!dojo.active) {                         // idle: the countdown through the street director's pull-in; due: open, and its yes
+      dojo.next = STAGE.due('dojo', dojo.next); dojo.next -= dt;
+      if (dojo.next > 0) return;
+      if (openK('dojo') <= 0) { dojo.next = 30 + Math.random() * 40; return; }      // shut: later
+      if (!STAGE.ask('dojo', 12)) { dojo.next = 3 + Math.random() * 4; return; }
+      if (!startDojo()) STAGE.done('dojo');
+      return;
+    }
     dojo.t += dt; dojo.acc += dt;
-    if (dojo.acc >= 1 / 20) { dojo.acc = 0; drawDojo(); }          // 20 fps is plenty for shadows
-    if (dojo.t > DJ_END) { dojo.active = false; djMesh.visible = false; dojo.next = 60 + Math.random() * 60; }
+    for (const F of dojo.F) {                   // the poses; the belts' tails trail the hips (a damped spring)
+      djPose(DJT[F.i], dojo.t, F.P);
+      const vx = (F.P.p[0] - F.px) / Math.max(dt, 1e-3); F.px = F.P.p[0];
+      F.bv += (-55 * (F.belt + 0.9 * vx) - 7 * F.bv) * dt; F.belt = Math.max(-0.8, Math.min(0.8, F.belt + F.bv * dt));
+    }
+    const lit = openK('dojo'); djMesh.material.opacity = lit;          // its shadows go with its light (the power cut scales it again)
+    if (dojo.acc >= 1 / 20 && odenSeen([DJ.x0, DJ.y0, DJ.w, DJ.h])) { dojo.acc = 0; drawDojo(); }   // 20 fps is plenty for shadows
+    if (dojo.t > DJ_END || lit <= 0) { dojo.active = false; djMesh.visible = false; dojo.next = 60 + Math.random() * 60; STAGE.done('dojo'); }
   }
   function overDojo(ev) {
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
@@ -7158,103 +7222,9 @@
     box.children[2].textContent = T[3]; el.appendChild(box); return box;
   }
 
-  // ---- ambient sound: off by default; a soft rain and a calm piano, all made in the browser (no audio file). It keeps
-  // playing while you read further down the page, and goes quiet when the tab is hidden ----
-  const SND = { ctx: null, on: false, master: null, rain: null, noise: null, piano: null, timer: null, heroIn: true };
-  const sndBtn = document.createElement('button'); sndBtn.type = 'button'; sndBtn.className = 'lang snd'; sndBtn.textContent = '♪';
-  sndBtn.setAttribute('aria-pressed', 'false'); sndBtn.setAttribute('aria-label', 'Musique et pluie / music and rain');
-  document.querySelector('.hero-nav').insertBefore(sndBtn, document.getElementById('lang-toggle'));
-  // the piano piece, original: 8 bars of chords (left hand) and a melody (right hand). Notes are names like 'Eb4';
-  // melody entries are [note, beat in the bar, length in beats]. Form: A = chords + melody, B = chords only,
-  // A2 = the melody an octave up, sparser
-  const SONG = {
-    bpm: 66,
-    chords: { Abmaj7: ['Ab2', 'Eb3', 'G3', 'C4'], Gm7: ['G2', 'D3', 'F3', 'Bb3'], Fm7: ['F2', 'C3', 'Eb3', 'Ab3'], Bb7: ['Bb2', 'F3', 'Ab3', 'D4'],
-      Cm7: ['C3', 'G3', 'Bb3', 'Eb4'], Fm9: ['F2', 'C3', 'Eb3', 'G3', 'Ab3'], Ebmaj9: ['Eb2', 'Bb2', 'G3', 'D4', 'F4'] },
-    bars: ['Abmaj7', 'Gm7', 'Fm7', 'Bb7', 'Abmaj7', 'Cm7', 'Fm9', 'Ebmaj9'],
-    melody: [
-      [['C5', 0.5, 1.5], ['Eb5', 2, 1], ['D5', 3, 1]],
-      [['Bb4', 0, 2], ['G4', 2.5, 1.5]],
-      [['Ab4', 0.5, 1], ['C5', 1.5, 1], ['Eb5', 2.5, 1.5]],
-      [['D5', 0, 1.5], ['C5', 1.5, 0.5], ['Bb4', 2, 2]],
-      [['C5', 0.5, 1], ['G5', 1.5, 1.5], ['F5', 3, 1]],
-      [['Eb5', 0, 2], ['D5', 2, 0.5], ['C5', 2.5, 1.5]],
-      [['Ab4', 0, 1], ['Bb4', 1, 1], ['C5', 2, 1], ['G4', 3, 1]],
-      [['Bb4', 0, 3], ['F5', 2.5, 1.5]]],
-    form: ['A', 'B', 'A2', 'B'] };
-  const NOTE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
-  const hz = (n) => { const m = /^([A-G])([b#]?)(-?\d)$/.exec(n); return 440 * Math.pow(2, (12 * (+m[3] + 1) + NOTE[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0) - 69) / 12); };
-  function section(kind) {                     // the events of one 8-bar section: [beat from its start, Hz, velocity, length in beats]
-    const ev = [], sw = (b) => b + (b % 1 === 0.5 ? 0.07 : 0);       // a touch of swing on the off-beats
-    SONG.bars.forEach((name, i) => {
-      const v = SONG.chords[name], b0 = i * 4;
-      if (kind === 'B') v.forEach((n, j) => ev.push([b0 + j * (4 / v.length), hz(n), 0.24 - j * 0.02, 3.5]));
-      else {
-        v.forEach((n, j) => ev.push([b0 + j * 0.06, hz(n), j ? 0.2 : 0.27, 3.8]));             // the chord, gently rolled
-        v.slice(-2).forEach((n, j) => ev.push([b0 + 2.5 + j * 0.05, hz(n), 0.13, 1.4]));      // a soft echo on beat 3
-      }
-      if (kind === 'A' || kind === 'A2') SONG.melody[i].forEach(([n, b, l]) => {
-        if (kind === 'A2' && b >= 2) return;
-        const f = hz(n) * (kind === 'A2' ? 2 : 1);
-        ev.push([b0 + sw(b), f, kind === 'A2' ? 0.26 : 0.36, l + 0.5]);
-      });
-    });
-    return ev.sort((a, b) => a[0] - b[0]);
-  }
-  function pianoNote(t, f, vel, len) {        // a felt piano: a few sine partials ringing down, a soft thud, the damper
-    const ctx = SND.ctx, amps = [1, 0.45, 0.22, 0.12, 0.06, 0.035], tau0 = Math.min(4.5, Math.max(1, 2.6 * Math.pow(261.6 / f, 0.45)));
-    vel *= 0.85 + Math.random() * 0.3;
-    for (let k = 1; k <= amps.length; k++) {
-      const fk = f * k * Math.sqrt(1 + 0.00035 * k * k); if (fk > 8000) break;
-      const o = ctx.createOscillator(), g = ctx.createGain(), ta = t + 0.006 + 0.003 * k;
-      o.frequency.value = fk; o.detune.value = (Math.random() - 0.5) * 4;
-      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(amps[k - 1] * vel, ta);
-      g.gain.setTargetAtTime(0, ta, tau0 / (1 + 0.6 * (k - 1)));
-      g.gain.setTargetAtTime(0, t + Math.max(len, 0.3), 0.2);
-      o.connect(g); g.connect(SND.piano); o.start(t); o.stop(t + Math.max(len, 0.3) + 1.4);
-    }
-    const th = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), tg = ctx.createGain();
-    th.buffer = SND.noise; bp.type = 'bandpass'; bp.frequency.value = Math.min(3000, f * 3); bp.Q.value = 1.2;
-    tg.gain.setValueAtTime(0.05 * vel, t); tg.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-    th.connect(bp); bp.connect(tg); tg.connect(SND.piano); th.start(t, Math.random() * 3); th.stop(t + 0.05);
-  }
-  const PL = { sec: 0, i: 0, t0: 0, ev: [] };
-  function schedule() {                        // plays ahead of time on the audio clock, independent of the animation
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, beat = 60 / SONG.bpm, now = ctx.currentTime;
-    if (SND.pianoOn) {                         // (only when the track can't be played)
-    while (PL.i < PL.ev.length && PL.t0 + PL.ev[PL.i][0] * beat < now + 0.35) {
-      const [b, f, v, l] = PL.ev[PL.i++], t = PL.t0 + b * beat + (Math.random() - 0.5) * 0.025;
-      if (t > now - 0.05) pianoNote(Math.max(t, now), f, v, l * beat);              // notes missed while hidden are skipped
-    }
-    if (PL.i >= PL.ev.length && now + 0.35 > PL.t0 + SONG.bars.length * 4 * beat) {
-      PL.t0 += SONG.bars.length * 4 * beat; PL.sec = (PL.sec + 1) % SONG.form.length; PL.ev = section(SONG.form[PL.sec]); PL.i = 0;
-      if (PL.t0 < now) PL.t0 = now + 0.2;
-    }
-    }
-    if (Math.random() < 0.006) sndBurst(0.05, 2400 + Math.random() * 900, 700, 0.006 + Math.random() * 0.005, Math.random() * 2 - 1);   // a rare, soft drop
-  }
-  function makeIR(ctx, sec, k) {
-    const n = Math.floor(ctx.sampleRate * sec), b = ctx.createBuffer(2, n, ctx.sampleRate);
-    for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, k); }
-    return b;
-  }
-  function sndBuild() {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)(); SND.ctx = ctx;
-    const master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination); SND.master = master;
-    const len = ctx.sampleRate * 4, buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
-    let b0 = 0, b1 = 0, b2 = 0;
-    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; b0 = 0.997 * b0 + w * 0.029; b1 = 0.985 * b1 + w * 0.032; b2 = 0.95 * b2 + w * 0.048; d[i] = (b0 + b1 + b2 + w * 0.05) * 0.55; }
-    SND.noise = buf;
-    const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;                         // the rain: soft, no hiss
-    const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 320;
-    const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1900;   // muffled: no hiss to tire the ear
-    SND.rain = ctx.createGain(); SND.rain.gain.value = 0.1; src.connect(hp); hp.connect(lp); lp.connect(SND.rain); SND.rain.connect(master); src.start();
-    SND.piano = ctx.createGain(); SND.piano.gain.value = 0.5;                                            // the piano: warm, a little room
-    const tone = ctx.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 2800;
-    const dry = ctx.createGain(); dry.gain.value = 0.8; const rev = ctx.createConvolver(); rev.buffer = makeIR(ctx, 2.8, 3); const wet = ctx.createGain(); wet.gain.value = 0.32;
-    SND.piano.connect(tone); tone.connect(dry); dry.connect(master); tone.connect(rev); rev.connect(wet); wet.connect(master);
-  }
+  // ---- the sound engine is gone (the owner's call): no pill, no rain bed, no piano, no track. SND stays as an inert stub so the effect
+  // calls in the other systems, all guarded by SND.on / SND.ctx, are dead until the final pass removes them with it ----
+  const SND = { ctx: null, on: false, master: null, rain: null, noise: null, piano: null, timer: null, heroIn: true };   // (inert stub: the effect calls are dead until the final pass)
   function sndBurst(dur, f0, f1, gain, pan) {        // a filtered noise burst: a drop, a firework
     const ctx = SND.ctx, t = ctx.currentTime, s0 = ctx.createBufferSource(); s0.buffer = SND.noise; s0.playbackRate.value = 1 + Math.random() * 0.3;
     const bp = ctx.createBiquadFilter(); bp.type = 'lowpass'; bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
@@ -7280,48 +7250,6 @@
     } else if (kind === 'crack') {               // the bolt: a crack and its whoosh
       sndBurst(0.3, 8000, 300, 0.1, 0.05); sndBurst(0.08, 12000, 6000, 0.06, -0.1);
     }
-  }
-  // a true background: the music about -32 LUFS, the rain about 14 dB under it (measured with BS.1770 in this chain)
-  function sndLevel() { if (SND.master) SND.master.gain.setTargetAtTime(SND.on && !document.hidden ? 0.3 : 0, SND.ctx.currentTime, 0.6); }
-  // the music: the site's own track (an original piece inspired by Lorien Testard's "Nuit sur Lumière", credited at the
-  // bottom of the page), through the same master as the rain. It fades in, fades out at its end and, after a short
-  // pause of rain alone, starts again; it pauses with the tab. If it can't be played, the little piano plays instead
-  const TRACK = { el: null, gain: null, out: false, failed: false };
-  function trackPlay() {
-    const g = TRACK.gain.gain, now = SND.ctx.currentTime; TRACK.out = false;
-    g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.setTargetAtTime(0.52, now, 0.9);
-    const p = TRACK.el.play(); if (p && p.catch) p.catch(() => {});
-  }
-  function trackStart() {
-    if (!TRACK.el) {
-      const el = new Audio('assets/music.mp3?v=1'); el.preload = 'auto'; TRACK.el = el;
-      TRACK.gain = SND.ctx.createGain(); TRACK.gain.gain.value = 0;
-      SND.ctx.createMediaElementSource(el).connect(TRACK.gain); TRACK.gain.connect(SND.master);
-      el.addEventListener('timeupdate', () => {
-        if (el.duration && el.duration - el.currentTime < 4 && !TRACK.out) { TRACK.out = true; TRACK.gain.gain.setTargetAtTime(0, SND.ctx.currentTime, 1.2); }
-      });
-      el.addEventListener('ended', () => setTimeout(() => { if (SND.on && !document.hidden) { el.currentTime = 0; trackPlay(); } }, 2500));
-      el.addEventListener('error', () => { TRACK.failed = true; if (SND.on) pianoStart(); });
-    }
-    trackPlay();
-  }
-  function pianoStart() { SND.pianoOn = true; PL.sec = 0; PL.i = 0; PL.ev = section(SONG.form[0]); PL.t0 = SND.ctx.currentTime + 0.6; }
-  sndBtn.addEventListener('click', () => {
-    if (!SND.ctx) sndBuild();
-    SND.on = !SND.on; if (SND.ctx.state === 'suspended') SND.ctx.resume();
-    sndBtn.classList.toggle('on', SND.on); sndBtn.setAttribute('aria-pressed', String(SND.on)); sndLevel();
-    clearInterval(SND.timer); SND.pianoOn = false;
-    if (SND.on) { if (TRACK.failed) pianoStart(); else trackStart(); SND.timer = setInterval(schedule, 60); }
-    else if (TRACK.el) setTimeout(() => { if (!SND.on) TRACK.el.pause(); }, 1200);    // once the master has faded
-  });
-  new IntersectionObserver((e) => { SND.heroIn = e[0].isIntersecting; }).observe(hero);
-  document.addEventListener('visibilitychange', () => {
-    sndLevel(); if (!TRACK.el || !SND.on || TRACK.failed) return;
-    if (document.hidden) TRACK.el.pause(); else trackPlay();
-  });
-  function stepSound() {                       // the rain swells a little with the gusts while the street is on screen
-    if (!SND.on || !SND.ctx) return;
-    SND.rain.gain.setTargetAtTime((SND.heroIn ? 0.1 + 0.03 * gust.k : 0.065) * (0.12 + 0.88 * LULL.k), SND.ctx.currentTime, 0.8);   // well under the music; a lull takes it down to a trace
   }
 
   // ---- live water reflections: the puddles and the wet road mirror the street as it is right now (a neon that
@@ -7441,6 +7369,85 @@
   }
   try { if (WET_ON) wetInit(); }
   catch (e) { WET.on = false; if (WET.mesh) { scene.remove(WET.mesh); WET.mesh.material.dispose(); } if (WET.rt) WET.rt.dispose(); }
+  // ---- 花筏 (sol-09, package 3): the right gutter carries fallen cherry petals down to its grates. Its flow line (X 2.62-2.74 m,
+  // the curb's face at 2.8) runs from the corner (Z 27 m) to the far grate (Z 22.0-21.2) and, past the crest between them
+  // (Z 19.6), to the near one (Z 16.7-15.8). Now and then (every 3-8 s on each run, with the rain's strength) a petal floats
+  // down at 0.18-0.35 m/s, wavering a little; at the grate most slip between the bars, a few catch on its far edge and stay a
+  // minute or two (a raft of five at most). Petals already on the ground: the tree itself is never touched. Whole scene pixels
+  // (1 px, a quarter of them 2 px across), pink as the street lights them now (the water's own picture of the street, as the
+  // drips take it: red in the red night, dark in the power cut); over the water's sheet, under the horde's contact shadows
+  // (1.152) and whoever walks there; not mirrored. Under reduced motion: a still raft at each grate ----
+  const HANA = { n: 24, runs: [{ z0: 27.0, z1: 22.0, next: 1.5 }, { z0: 19.6, z1: 16.7, next: 4 }], p: [], P: null, A: null };
+  (function () {
+    const g = new THREE.BufferGeometry(), pos = new Float32Array(HANA.n * 3), a = new Float32Array(HANA.n * 3);
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const A = new THREE.BufferAttribute(a, 3).setUsage(THREE.DynamicDrawUsage); g.setAttribute('aP', A);
+    const cam0 = new THREE.Vector4(0, IW, 0, IH);
+    const U = { uPx: { value: 1 },
+      tLit: { get value() { try { return WET.on && WET.rt ? WET.rt.texture : null; } catch (e) { return null; } } },
+      uCam: { get value() { try { return WET.mesh.material.uniforms.uCam.value; } catch (e) { return cam0; } } },
+      uLit: { get value() { try { return WET.on && WET.loaded >= 2 ? 1 : 0; } catch (e) { return 0; } } } };
+    const mat = new THREE.ShaderMaterial({ uniforms: U, transparent: true, depthWrite: false,
+      vertexShader: `attribute vec3 aP;                 // scene x, row (px), size (0: none, 1: one px, 2: two px across)
+        uniform float uPx, uLit; uniform vec4 uCam; uniform sampler2D tLit; varying vec3 vCol; varying float vS;
+        vec3 hLit(vec2 p) { vec2 uv = vec2((p.x - uCam.x) / (uCam.y - uCam.x), (uCam.w - p.y) / (uCam.w - uCam.z)); return texture2D(tLit, clamp(uv, 0.001, 0.999)).rgb; }
+        void main() {
+          vec2 c = floor(aP.xy) + 0.5; vS = aP.z; vCol = vec3(0.0);
+          if (aP.z < 0.5) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); gl_PointSize = 1.0; return; }
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(c.x, -c.y, 0.0, 1.0); gl_PointSize = 3.0 * uPx;
+          // the street's light where it floats (the gutter's wet concrete, albedo ~0.19) falling on a petal (~0.75): its own pink
+          vec3 L = uLit > 0.5 ? max(hLit(c), 0.85 * max(hLit(c + vec2(2.0, 0.0)), hLit(c - vec2(2.0, 0.0)))) : vec3(0.15, 0.13, 0.2);
+          vCol = pow(min(vec3(1.0), vec3(0.78, 0.46, 0.56) * pow(L, vec3(2.2)) / 0.19), vec3(1.0 / 2.2));
+        }`,
+      fragmentShader: `varying vec3 vCol; varying float vS;
+        void main() {
+          vec2 o = floor(gl_PointCoord * 3.0) - 1.0;       // (this fragment's scene px from the stamp's centre)
+          if (o.y != 0.0 || !(o.x == 0.0 || (vS > 1.5 && o.x == 1.0))) discard;
+          gl_FragColor = vec4(vCol, 1.0);
+        }` });
+    const P = new THREE.Points(g, mat); P.position.z = 1.151; P.frustumCulled = false; scene.add(P);
+    P.onBeforeRender = (r, sc, cam) => { const t = r.getRenderTarget(); U.uPx.value = (t ? t.width : r.domElement.width) / (cam.right - cam.left); };
+    HANA.P = P; HANA.A = A;
+    if (WET.on) WET.hide.push(P);                     // (not mirrored)
+    for (let i = 0; i < HANA.n; i++) HANA.p.push({ on: false });
+    if (reduced) {                                    // (still: a raft at each grate)
+      let i = 0;
+      for (const R of HANA.runs) for (let k = 0; k < 4; k++) Object.assign(HANA.p[i++], { on: true, stuck: true, run: R, Z: R.z1 + 0.02 + k * 0.014, X: 2.64 + ((k * 37) % 9) / 90, s: k % 3 === 0 ? 2 : 1, life: 1e9 });
+      hanaDraw();
+    }
+  })();
+  function hanaDraw() {                               // (each petal's whole scene pixel: the road's level, eye 1.41 m)
+    const a = HANA.A.array;
+    for (let i = 0; i < HANA.n; i++) {
+      const p = HANA.p[i];
+      if (!p.on) { a[i * 3 + 2] = 0; continue; }
+      a[i * 3] = 700 + p.X * 959.5 / p.Z; a[i * 3 + 1] = 615 + 959.5 * 1.41 / p.Z; a[i * 3 + 2] = p.s;
+    }
+    HANA.A.needsUpdate = true;
+  }
+  function stepHana(dt) {
+    if (reduced || !HANA.P) return;
+    const flow = NIGHT.rain * (0.85 + 0.3 * gust.k);  // (the rain's strength: the gutter's)
+    for (const R of HANA.runs) {
+      R.next -= dt * flow;
+      if (R.next <= 0) {
+        R.next = 3 + Math.random() * 5;
+        const p = HANA.p.find((q) => !q.on);
+        if (p) Object.assign(p, { on: true, stuck: false, run: R, Z: R.z0, X: 2.62 + Math.random() * 0.1, v: 0.18 + Math.random() * 0.17, ph: Math.random() * 6.28, s: Math.random() < 0.25 ? 2 : 1, life: 0 });
+      }
+    }
+    for (const p of HANA.p) {
+      if (!p.on) continue;
+      if (p.stuck) { if ((p.life -= dt) <= 0) p.on = false; continue; }
+      p.Z -= p.v * flow * dt; p.ph += dt * 1.7; p.X = Math.min(2.74, Math.max(2.6, p.X + Math.sin(p.ph) * 0.02 * dt));
+      if (p.Z <= p.run.z1 + 0.02) {                   // at the grate: through the bars, or caught on its far edge (five at most)
+        const raft = HANA.p.filter((q) => q.on && q.stuck && q.run === p.run).length;
+        if (raft < 5 && Math.random() < 0.3) Object.assign(p, { stuck: true, Z: p.run.z1 + 0.02 + raft * 0.014, life: 50 + Math.random() * 70 });
+        else p.on = false;
+      }
+    }
+    hanaDraw();
+  }
   hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overDojo(ev)) { startDojo(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the night follows the visitor's clock (IDEAS.md idea 1): the painted dusk is the evening (18-21 h); later the
@@ -7624,7 +7631,7 @@
   // it, more in the dark shop. The water mirrors it with the door. A click or a tap on it: the PC (below) ----
   const PKA = { W: 104, H: 22, lit: [0, 0, 26, 22], unlit: [26, 0, 26, 22], screen: [52, 0, 26, 22], glow: [78, 0, 26, 22] };
   const PKS = { x: 870, y: 594, hit: [874, 600, 16, 12], m: {}, dead: false, shop: comps.find((c) => c.userData.name === 'win_z4_shop') || null,
-    zone: PW_ZONES.findIndex((z) => z[4] === 870), up: false, lv: 0, ont: 0, ft: Math.random() * 50, dip: 0, next: 6 + Math.random() * 10 };
+    zone: PW_ZONES.findIndex((z) => z[4] === 870), up: false, lv: 0, ont: 0, ft: Math.random() * 50, dip: 0, next: 6 + Math.random() * 10, out: 0, bat: 0 };
   function pkUV(m, r) {                          // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = r[0] / PKA.W, u1 = (r[0] + r[2]) / PKA.W, v0 = 1 - r[1] / PKA.H, v1 = 1 - (r[1] + r[3]) / PKA.H;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
@@ -7652,15 +7659,19 @@
       if ((S.next -= dt) < 0) { S.dip = 0.24; S.next = 6 + Math.random() * 14; }
       if (S.dip > 0) { S.dip = Math.max(0, S.dip - dt); lv *= [0.62, 0.92, 0.74, 0.96][Math.min(3, ((0.24 - S.dip) / 0.06) | 0)]; }
     }
-    S.lv = lv * pz;
-    M.scr.material.opacity = S.lv; M.glow.material.opacity = S.lv * (1.4 - 0.6 * sh);
+    // its battery: the Center's power out and staying out (2 s; outside the finale's dark: from its dawn on), the screen
+    // comes back on it, dimmed (0.33-0.41, a slow breath; steady under reduced motion): the PC stays at hand
+    S.out = S.up && pz < 0.5 && (FINS.t < 0 || FIN.dawn >= 0) ? S.out + dt : 0;
+    S.bat = S.out > 2 ? Math.min(1, S.bat + dt / 1.2) : Math.max(0, S.bat - dt * 3);
+    S.lv = Math.max(lv * pz, S.bat * (reduced ? 0.37 : 0.37 + 0.04 * Math.sin(S.out * 2 * Math.PI / 4.5)));
+    M.scr.material.opacity = S.lv; M.glow.material.opacity = S.lv * (1.4 - 0.6 * sh * pz);   // (on the wall: more in a dark shop, its power's dark too)
     M.scr.visible = M.glow.visible = S.lv > 0.004;
   }
   const inPkpc = (ev) => {                       // its pixels (a finger: a little round)
     const p = cbXY(ev), b = PKS.hit, g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 2 : 0;
     return p.x >= b[0] - g && p.x < b[0] + b[2] + g && p.y >= b[1] - g && p.y < b[1] + b[3] + g;
   };
-  function overPkpc(ev) { return !PK.on && !PKS.dead && PKS.lv > 0.3 && inPkpc(ev); }   // (while its screen has power)
+  function overPkpc(ev) { return !PK.on && !PKS.dead && (PKS.lv > 0.3 || PKS.bat > 0.5) && inPkpc(ev); }   // (while its screen has power, or its battery)
   // ---- its window: DP's PC. « Whimsi a allumé le PC. », then the menu: the apps it holds (PKPC.apps, the secrets' code's:
   // { id, label: { fr, en }, icon, available(), render(el), and close(el) if it needs one }; greyed « ??? » while not
   // available) and SE DÉCONNECTER. A canvas of 256 x 192 logical pixels (the catch's DP font and text boxes, on the PC's
@@ -7967,6 +7978,57 @@
     for (let s = 0; s < n; s++) for (let q = 0; q < 5; q++) { const a = s < on ? (q ? 0.28 : 1) : 0, o = (s * 5 + q) * 3; C[o] = 0.62 * a; C[o + 1] = 0.2 * a; C[o + 2] = 0.16 * a; }
     healPts.geometry.attributes.color.needsUpdate = true; healPts.visible = on > 0;
   }
+  // ---- the TranZit's headlights in the rain (lumieres-08): read from its state (busS, BUS), drawn here (the bus's own block untouched).
+  // The drops crossing the beam: each falls through a window over it (its own column and phase), lit where it is in the beam (as the
+  // beam texture's cone: thin at the lamp, widening ahead, fading with the distance), a 1 px streak at the rain's slant, its tail in
+  // steps. The wet road mirrors the headlight and the tail light: under each a broken vertical streak, 1-3 px wide, fading downward,
+  // its gaps and widths a hash of its row and of a slot of time (the water moving). Whole scene pixels, additive ----
+  const BLT = { n: 2400, drops: [], t: 0 };
+  for (let i = 0; i < 70; i++) BLT.drops.push({ u: Math.random(), y: Math.random(), r: Math.random(), L: 2 + Math.floor(Math.random() * 4) });
+  const busLights = (() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(BLT.n * 3), 3)); g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(BLT.n * 3), 3));
+    const m = new THREE.Points(g, new THREE.PointsMaterial({ size: 1, sizeAttenuation: false, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    m.onBeforeRender = (r, sc, cam, gg, mat) => { const tg = r.getRenderTarget(); mat.size = Math.max(1, (tg ? tg.width : r.domElement.width) / (cam.right - cam.left)); };
+    m.material.onBeforeCompile = busShade(); m.material.customProgramCacheKey = () => 'busLights';   // (behind the near buildings, as the bus)
+    gradeSprite(m.material, 'self');
+    m.position.z = 0.655; m.frustumCulled = false; m.visible = false; scene.add(m);
+    return m;
+  })();
+  const blHash = (a, b) => { const x = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return x - Math.floor(x); };
+  function stepBusLights(dt) {
+    const S = busS, m = busLights;
+    if (!S.active || reduced) { m.visible = false; return; }
+    BLT.t += dt;
+    const P = m.geometry.attributes.position.array, Cc = m.geometry.attributes.color.array;
+    const x0 = Math.round(S.x), y0 = Math.round(busGround(x0) - BUS.ground), bob = S.bob > 0 ? 1 : 0, L = S.dir < 0, dir = L ? -1 : 1;
+    const sx = (c) => (L ? BUS.W - 1 - c : c);
+    const hx = x0 + sx(BUS.head[0]) + (L ? 0 : 1), hy = y0 + BUS.head[1] + bob, tx = x0 + sx(BUS.tail[0]), ty = y0 + BUS.tail[1] + bob;
+    const hk = S.hk, vy = 520 + 260 * gust.k, vx = 40 + 260 * gust.k, BW = BUS.beam[0];
+    let n = 0;
+    const put = (x, y, r, g, b) => { if (n >= BLT.n) return; P[n * 3] = Math.floor(x) + 0.5; P[n * 3 + 1] = -(Math.floor(y) + 0.5); P[n * 3 + 2] = 0; Cc[n * 3] = r; Cc[n * 3 + 1] = g; Cc[n * 3 + 2] = b; n++; };
+    for (const D of BLT.drops) {                 // the drops in the beam
+      D.y += vy * dt / 40; if (D.y > 1) { D.y -= 1; D.u = Math.random(); D.r = Math.random(); D.L = 2 + Math.floor(Math.random() * 4); }
+      const dx = 3 + D.u * BW, half = 2 + 0.16 * dx, yy = hy - half - 6 + D.y * (2 * half + 12), xx = hx + dir * dx - (vx / vy) * (yy - hy);
+      const s = (yy - hy) / half, lit = Math.exp(-s * s * 1.3) * Math.pow(1 - dx / (BW + 4), 1.3) * hk;
+      if (lit < 0.08 || D.r > lit * 2.2) continue;
+      const a = lit > 0.5 ? 0.42 : lit > 0.3 ? 0.3 : lit > 0.16 ? 0.2 : 0.12;
+      for (let j = 0; j < D.L; j++) { const k = a * (1 - j / (D.L + 0.5)); put(xx + (vx / vy) * j, yy - j, k, k * 0.9, k * 0.78); }
+    }
+    const streak = (lx, ly, r, g, b, k0) => {    // a lamp mirrored in the wet road: under it, fading down, broken
+      const top = busGround(lx) + 2, bot = top + 2 * Math.max(4, busGround(lx) - ly) + 10, f = Math.floor(BLT.t * 9);
+      for (let y = top; y < bot; y++) {
+        const u = (y - top) / (bot - top), run = blHash(Math.floor((y + 3 * blHash(f, 1)) / 3), f + lx * 0.13);
+        if (run > 0.9 - 0.5 * u) continue;                        // its gaps: runs of a few rows, more of them farther down
+        const w = blHash(y * 7, f + 2), wd = u < 0.45 && w > 0.5 ? 2 : u < 0.2 && w > 0.85 ? 3 : 1, j = blHash(y, f + 5) < 0.3 ? (blHash(y, f + 6) < 0.5 ? -1 : 1) : 0;
+        const k = k0 * Math.pow(1 - u, 1.3) * (0.75 + 0.25 * blHash(y * 3, f + 9));
+        if (k < 0.02) continue;
+        for (let c = 0; c < wd; c++) { const ox = j + (c === 0 ? 0 : c === 1 ? (w > 0.7 ? 1 : -1) : (w > 0.7 ? -1 : 1)), kk = c ? 0.45 : 1; put(lx + ox, y, r * k * kk, g * k * kk, b * k * kk); }
+      }
+    };
+    streak(hx, hy, 1, 0.9, 0.72, 0.55 * hk); streak(tx, ty, 1, 0.28, 0.22, 0.45);
+    m.geometry.setDrawRange(0, n); m.geometry.attributes.position.needsUpdate = true; m.geometry.attributes.color.needsUpdate = true; m.visible = n > 0;
+  }
   function stepTrain(dt) {
     const T = TRAIN;
     if (reduced || !trainPts) return;
@@ -8050,7 +8112,6 @@
     }
     set(AMB.v.train, AMBL.train * tk * seen);
   }
-  sndBtn.addEventListener('click', () => setTimeout(() => { if (reduced) stepAmbient(0); }, 0));   // (reduced motion: no frames; the levels set once)
   function stepNight(dt) {
     const C = CLOCK;
     if ((C.next -= dt) <= 0) { C.base = C.fixed !== null ? C.fixed : C.live ? localHour() : 19.5; C.next = 5; }   // the visitor's hour, re-read every 5 s
@@ -8109,7 +8170,7 @@
   const openComp = (n) => comps.find((c) => c.userData.name === n);
   const openTry = (f) => { try { f(); } catch (err) { console.warn('opening:', err); } };
   function openReset() {        // the street as the evening has not begun (also: replay, from the debug page)
-    OPEN.i = 0; OPEN.watch.length = 0; OPEN.pulse = 0;
+    OPEN.i = 0; OPEN.watch.length = 0;
     openTry(() => Object.assign(SHOP, { open: false, k: 0, t: 5, next: 1e9, neon: 0 }));            // Ichiraku shut: cornice, lanterns, window out, the kitchen at rest
     openTry(() => { const z = openComp('win_z4_shop'); if (z) { z.userData.on = false; z.userData.stut = 0; z.material.opacity = 0; } });   // the Center shut (its Pokeball sign is a neon: lit)
     openTry(() => { Object.assign(WIN2, { state: 'off', t: 0, next: 1e9, I: [0, 0, 0, 0] }); NAR.next = 1e9; });   // the balcony dark, Naruto away
@@ -8139,11 +8200,6 @@
       } catch (err) { }
     };
     if (after) setTimeout(go, after * 1000); else go();
-  }
-  function openPulse(on) {      // the sound pill pulses once with the gust (--gust = gust.k): so the rain is understood to be what it plays
-    const b = OPEN.pill || (OPEN.pill = document.querySelector('.hero-nav .snd')); if (!b) return;
-    if (on) { b.classList.add('snd-gust'); b.style.setProperty('--gust', gust.k.toFixed(3)); }
-    else { b.classList.remove('snd-gust'); b.style.removeProperty('--gust'); }
   }
   // watchers: a beat that has to wait for something (the bus's images, the oden door's own step) hands over to a function called
   // every frame until it returns true (the hand-over drops what is left)
@@ -8188,7 +8244,6 @@
     openTry(() => { ws.next = R(45, 80); });                              // he stays at his desk
     openTry(() => { CAT.stay = R(45, 110); });
     openTry(() => { if (KIL.ph.next > 1e8) KIL.ph.next = R(3, 8); });
-    openTry(() => openPulse(false));
   }
   const OPENING = [
     [0.0, () => { OPEN.watch.push(openBus); }],                       // the Battle Bus is sent now, behind Killua's roof (it emerges at 10 s: openBus)
@@ -8196,7 +8251,7 @@
     [1.3, () => { if (!nightOpen('ramen')) return; SHOP.open = true; SHOP.t = 0; openSnd('tic', 0.06); openSnd('tic', 0.18); openSnd('tic', 0.30); }],   // (at its hours)   // Ichiraku catches: tubes stutter (FLICK), lanterns and window rise in 0.8 s, the steam starts
     [1.3, () => { const o = openComp('z4_emblem'); if (o && nightOpen('emblem')) o.userData.burst = 0.4; }],          // and, an echo for the phone, the Pokeball sign stutters
     [2.2, () => { const z = openComp('win_z4_shop'); if (z && nightOpen('center')) { z.userData.on = true; z.userData.stut = openRnd(0.3, 0.15); } }],   // the Center opens, all its lights at once, stuttering
-    [3.5, () => { gust.target = 0.9; gust.hold = 2.5; OPEN.pulse = 1; }],                       // the gust (2.5 s): the rain lies down, the oden lantern swings; the pill pulses
+    [3.5, () => { gust.target = 0.9; gust.hold = 2.5; }],                       // the gust (2.5 s): the rain lies down, the oden lantern swings
     [4.0, () => { if (openK('balcony') < 0.5) return; WIN2.state = 'on'; WIN2.t = 0; NAR.jutsu = false; }],                         // the balcony: the four panes, one after the other (Naruto comes later)
     [5.2, () => { const P = KIL.ph; P.kick = 0.12; P.f = -6; P.next = openRnd(5, 10); }],       // Killua's little kick
     [5.5, () => { CAT.here = true; }],                                                          // the cat's eyes in the gap of the door
@@ -8221,7 +8276,6 @@
         try { done = OPEN.watch[k](e); } catch (err) { console.warn('opening:', err); }
         if (done) OPEN.watch.splice(k, 1);
       }
-      if (OPEN.pulse) { openPulse(true); if (e > 4.5 && gust.hold <= 0 && gust.k < 0.01) { OPEN.pulse = 0; openPulse(false); } }
     } catch (err) { console.warn('opening: stopped', err); openHandover(); }
   }
   if (OPEN.on && OPEN_ONCE) { try { if (sessionStorage.getItem('mtsfj-opened')) OPEN.on = false; else sessionStorage.setItem('mtsfj-opened', '1'); } catch (err) { } }
@@ -8312,7 +8366,7 @@
     stepHeal(dt);                                    // the Center's healing machine (its night mode)
     // the Battle Bus
     stepBBus(dt, t); stepGlide(dt);
-    stepDojo(dt); stepSound(dt); stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepOden(dt, t);
+    stepDojo(dt); stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepOden(dt, t);
     stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
     luffyTex.offset.x = Math.floor(t * 2.5) % 12 / 12; luffyScr.material.opacity = lightLife(t, 2.4, 0.035);
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
@@ -8365,6 +8419,7 @@
     // Luffy billboard: 12 frames at 10 fps, faint screen flicker
     // the bus
     stepBus(dt);
+    stepBusLights(dt);                               // its headlights in the rain and on the wet road (lumieres-08)
     stepRoom(dt, t);                                   // the study window (zone 5): its person, its lamp, its screen
     // arcade: marquee chase, cabinet screens, an occasional stutter of the pink sign
     arcS.t += dt;
@@ -8381,6 +8436,7 @@
     stepRain(dt);                                // the rain: two curtains of lit, whole-pixel streaks
     stepLampCone(dt);                            // the street lamp's light in the rain
     stepDrips(dt);                               // the eaves' drips
+    stepHana(dt);                                // 花筏: petals down the right gutter (sol-09)
 
     if (!FADE.done) {                            // the street resolving in the rain
       const u = FADE.t0 < 0 ? 0 : reduced ? 1 : Math.min(1, (performance.now() - FADE.t0) / 900), k = u * u * (3 - 2 * u);
@@ -8391,117 +8447,7 @@
     renderer.render(scene, camera);
     if (visible && !reduced) raf = requestAnimationFrame(frame);
   }
-  // ---- photo mode (P, or the camera pill beside the sound pill; Esc or x leaves it). The page's text, nav, counters and pills
-  // fade out (stepped, like the other pixel pop-ups), a thin frame stays with x (exit), save and, with a mouse, 1x / 2x; the street
-  // keeps moving. It pans as on a phone (a finger there; here a horizontal mouse drag, or the left / right arrows), clamped to the
-  // scene, and nothing in it answers while photo mode is on: not a click, not the showcase's hover, not the Konami keys. Save
-  // renders the frame as it is composed, on whole scene px, into an off-screen target (the canvas, its size and its pixel ratio stay
-  // as they are, no preserveDrawingBuffer: the debug page's shot() is untouched): at 1x one scene px is one image px, at 2x each is
-  // a 2 x 2 block, copied, never resampled. Only a real click on the save button saves (no key, no script). A phone saves at 2x.
-  const phoRoot = document.documentElement;
-  const phoSvg = (w, h, d, c) => '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w * c + '" height="' + h * c + '" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="currentColor" d="' + d + '"/></svg>';
-  const PHO_G = {                                // pixel glyphs, one path of cells each: the camera 10 x 9, exit 7 x 7, save 7 x 8, saved 7 x 5
-    cam: 'M2 0h4v1H2zM0 1h10v1H0zM0 2h1v6H0zM9 2h1v6H9zM0 8h10v1H0zM4 3h2v1H4zM4 6h2v1H4zM3 4h1v2H3zM6 4h1v2H6z',
-    x: 'M0 0h1v1H0zM1 1h1v1H1zM2 2h1v1H2zM3 3h1v1H3zM4 4h1v1H4zM5 5h1v1H5zM6 6h1v1H6zM6 0h1v1H6zM5 1h1v1H5zM4 2h1v1H4zM2 4h1v1H2zM1 5h1v1H1zM0 6h1v1H0z',
-    save: 'M3 0h1v6H3zM1 3h1v1H1zM5 3h1v1H5zM2 4h1v1H2zM4 4h1v1H4zM0 7h7v1H0z',
-    ok: 'M6 0h1v1H6zM5 1h1v1H5zM0 2h1v1H0zM4 2h1v1H4zM1 3h1v1H1zM3 3h1v1H3zM2 4h1v1H2z' };
-  const phoCam = document.createElement('button'); phoCam.type = 'button'; phoCam.className = 'lang cam'; phoCam.innerHTML = phoSvg(10, 9, PHO_G.cam, 1);
-  phoCam.setAttribute('aria-label', 'Mode photo (P) / photo mode (P)'); phoCam.setAttribute('aria-keyshortcuts', 'P'); phoCam.title = 'Mode photo (P) / photo mode (P)';
-  sndBtn.parentNode.insertBefore(phoCam, sndBtn.nextSibling);          // right after the sound pill
-  const phoHud = document.createElement('div'); phoHud.className = 'pho'; phoHud.setAttribute('role', 'group'); phoHud.setAttribute('aria-label', 'Mode photo / photo mode');
-  phoHud.innerHTML = '<div class="pho-frame"></div><div class="pho-bar"><div class="pho-scale" role="group" aria-label="\u00c9chelle de l\u2019image / image scale">'
-    + '<button type="button" class="pho-k" data-k="1" title="\u00c9chelle 1\u00d7 / scale 1\u00d7">1\u00d7</button><button type="button" class="pho-k" data-k="2" title="\u00c9chelle 2\u00d7 / scale 2\u00d7">2\u00d7</button></div>'
-    + '<button type="button" class="pho-btn pho-save" aria-label="Enregistrer l\u2019image / save the picture">' + phoSvg(7, 8, PHO_G.save, 2) + '</button>'
-    + '<button type="button" class="pho-btn pho-x" aria-label="Quitter le mode photo / exit photo mode" title="Quitter (Échap) / exit (Esc)">' + phoSvg(7, 7, PHO_G.x, 2) + '</button></div>';
-  hero.appendChild(phoHud);
-  const phoSave = phoHud.querySelector('.pho-save'), phoX = phoHud.querySelector('.pho-x');
-  PH.k = coarse ? 2 : 1;
-  function phoWin() {                           // the frame as composed, on whole scene px (the last frame's camera)
-    const W = Math.round(view.w), H = Math.round(view.h);
-    return { W, H, L: Math.max(0, Math.min(IW - W, Math.round(camera.left))), T: Math.max(0, Math.min(IH - H, Math.round(-camera.top))) };
-  }
-  function phoPaint() {                          // the toggle, and what a save would measure (the save button's tooltip)
-    for (const b of phoHud.querySelectorAll('.pho-k')) b.setAttribute('aria-pressed', String(+b.dataset.k === PH.k));
-    const s = (Math.round(view.w) * PH.k) + '\u00d7' + (Math.round(view.h) * PH.k) + ' px';
-    phoSave.title = 'Enregistrer en PNG, ' + s + ' / save as PNG, ' + s;
-  }
-  const phoJump = (y) => { phoRoot.style.scrollBehavior = 'auto'; window.scrollTo(0, y); phoRoot.style.scrollBehavior = ''; };   // (the page scrolls smoothly otherwise)
-  function phoOn() {
-    if (PH.on || !FADE.done || document.querySelector('.pc.on')) return;       // the street is still resolving, or a window has the page
-    closeScope(); secList.hidden = true; showSlab(null, false);
-    PH.on = true; PH.sy = window.scrollY || 0; PH.back = document.activeElement;
-    clearTimeout(PH.tFade); hero.classList.add('photo-fade');
-    phoJump(0);
-    for (const e of document.querySelectorAll('body > main, body > footer')) if (!e.inert) { e.inert = true; e.setAttribute('data-pho-inert', ''); }   // (no focus down the page)
-    phoRoot.classList.add('photo');
-    window.dispatchEvent(new Event('resize')); if (reduced) frame();         // the scrollbar goes: the hero is exactly the screen
-    phoX.focus({ preventScroll: true });
-  }
-  function phoOff() {
-    if (!PH.on) return;
-    PH.on = false; PAN.drag = null; PAN.wait = 8; PAN.auto = false;           // (the slow drift resumes 8 s on, from where the frame was left)
-    phoRoot.classList.remove('photo', 'ph-pan');
-    for (const e of document.querySelectorAll('[data-pho-inert]')) { e.inert = false; e.removeAttribute('data-pho-inert'); }
-    window.dispatchEvent(new Event('resize')); if (reduced) frame();
-    phoJump(PH.sy);
-    clearTimeout(PH.tFade); PH.tFade = setTimeout(() => hero.classList.remove('photo-fade'), 450);
-    const b = PH.back; PH.back = null;
-    if (b && b !== document.body && document.contains(b)) b.focus({ preventScroll: true });
-  }
-  function phoShot() {                           // the frame as composed -> a PNG, at 1x or 2x
-    if (!PH.on || PH.busy) return;
-    const k = PH.k, { W, H, L, T } = phoWin(), cam = new THREE.OrthographicCamera(L, L + W, -T, -(T + H), camera.near, camera.far);
-    const rt = new THREE.WebGLRenderTarget(W, H, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, depthBuffer: true, stencilBuffer: false });
-    const buf = new Uint8Array(W * H * 4), was = renderer.getRenderTarget(), drop = rain.material.size;
-    let ok = false;
-    try {
-      rain.material.size = Math.max(1, Math.min(2, 2 * view.w / Math.max(1, hero.clientWidth))) / renderer.getPixelRatio();   // the drops as big, in scene px, as on screen
-      renderer.setRenderTarget(rt); renderer.render(scene, cam); renderer.readRenderTargetPixels(rt, 0, 0, W, H, buf); ok = true;
-    } finally { renderer.setRenderTarget(was); rain.material.size = drop; rt.dispose(); }
-    if (!ok) return;
-    const w = W * k, h = H * k, img = new ImageData(w, h), d = img.data;
-    for (let y = 0; y < H; y++) {
-      for (let x = 0, s = (H - 1 - y) * W * 4; x < W; x++, s += 4) {            // (GL rows run bottom-up)
-        for (let j = 0; j < k; j++) {
-          let o = ((y * k + j) * w + x * k) * 4;
-          for (let i = 0; i < k; i++, o += 4) { d[o] = buf[s]; d[o + 1] = buf[s + 1]; d[o + 2] = buf[s + 2]; d[o + 3] = 255; }
-        }
-      }
-    }
-    const cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.getContext('2d').putImageData(img, 0, 0);
-    PH.busy = true; setTimeout(() => { PH.busy = false; }, 15000);              // (never stuck, whatever a browser does with a big canvas)
-    cv.toBlob((blob) => {
-      PH.busy = false; if (!blob) return;
-      const a = document.createElement('a'), t = new Date(), p = (n) => String(n).padStart(2, '0');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'mtsfj-street-' + t.getFullYear() + p(t.getMonth() + 1) + p(t.getDate()) + '-' + p(t.getHours()) + p(t.getMinutes()) + '.png';
-      a.hidden = true; document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-      phoSave.innerHTML = phoSvg(7, 5, PHO_G.ok, 2); clearTimeout(PH.tOk); PH.tOk = setTimeout(() => { phoSave.innerHTML = phoSvg(7, 8, PHO_G.save, 2); }, 1400);   // (a tick, a moment)
-    }, 'image/png');
-  }
-  phoCam.addEventListener('click', (ev) => { ev.stopPropagation(); phoOn(); });   // (the click that opens it is not the street's either)
-  hero.addEventListener('click', (ev) => {       // photo mode: the street answers nothing, only the frame's own buttons do
-    if (!PH.on) return;
-    ev.stopImmediatePropagation();
-    const b = ev.target.closest ? ev.target.closest('button') : null;
-    if (!b || !phoHud.contains(b)) return;
-    if (b === phoX) phoOff();
-    else if (b === phoSave) { if (ev.isTrusted) phoShot(); }                     // (a real click only)
-    else if (b.dataset.k) { PH.k = +b.dataset.k; phoPaint(); }
-  }, true);
-  document.addEventListener('keydown', (ev) => {
-    const k = ev.key, t = ev.target, mod = ev.ctrlKey || ev.metaKey || ev.altKey;
-    if (!PH.on) {
-      if ((k === 'p' || k === 'P') && !mod && !ev.repeat && !(t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)))) phoOn();
-      return;
-    }
-    ev.stopImmediatePropagation();               // the page's other key games (the Konami code) hear nothing meanwhile
-    if (k === 'Escape' || ((k === 'p' || k === 'P') && !mod)) { ev.preventDefault(); phoOff(); }
-    else if (k === 'ArrowLeft' || k === 'ArrowRight') { ev.preventDefault(); PAN.v = 0; PAN.x += k === 'ArrowLeft' ? -24 : 24; panClamp(); PAN.wait = 8; if (reduced) frame(); }
-  }, true);
-  window.addEventListener('resize', () => { if (PH.on) { phoRoot.classList.toggle('ph-pan', panRoom() >= 20); phoPaint(); } });
-  phoPaint();
+
   new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && !raf && !reduced) raf = requestAnimationFrame(frame); }).observe(hero);
   if (reduced) window.addEventListener('resize', () => frame());   // (no loop then: the title and the window follow a resize at once)
   frame();
