@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=48" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=49" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -55,7 +55,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=38) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=39) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -609,7 +609,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=48", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=8", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=49", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=9", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -663,6 +663,9 @@
     const r1 = 0.23 + 0.41 * ((s * 0.618) % 1), r2 = 0.97 + 0.83 * ((s * 0.382) % 1);
     return 1 - a * (0.5 + 0.3 * Math.sin(t * r1 + s * 7.13) + 0.2 * Math.sin(t * r2 + s * 3.71));
   }
+  // a light's stutter on the clock, not a coin flipped each frame: true with probability p in each slot of `step` seconds (a hash
+  // of its seed and the slot), so it reads the same at 60 and 144 Hz (lumieres-02)
+  function stutOn(t, seed, step, p) { const x = Math.sin(seed * 12.9898 + Math.floor(t / step) * 78.233) * 43758.5453; return x - Math.floor(x) < p; }
   const COMP_KIND = { win_z1_violet: 'tv', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name === 'z5_spill' || name === 'win_z4_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
@@ -675,10 +678,11 @@
       u.next = (u.on ? u.onT[0] : u.offT[0]) * Math.random(); p.material.opacity = u.on ? 1 : 0;
     }
     if (kind === 'lantern') p.userData.w = 1 + Math.random() * 0.6;
+    if (kind === 'window' && !shop) p.userData.next = 40 + Math.random() * 500;   // (a room's light: minutes, not seconds)
     comps.push(p);
   }
   // the right-hand drinks machine's display out (build_zzzanim_z7.py), laid over its comp while its tube stutters
-  const vendOff = plane('assets/z7_vendoff.png?v=2', 305, 577, 18, 73, 1.105, { opacity: 0 }); vendOff.visible = false;
+  const vendOff = plane('assets/z7_vendoff.png?v=3', 305, 577, 18, 73, 1.105, { opacity: 0 }); vendOff.visible = false;
 
   // the moon, sunset-lit, ghostly in the upper sky (position, size and opacity hand-tuned)
   const MOONP = { x: 532, y: 42, s: 90 };
@@ -702,7 +706,7 @@
   const flyTex = loader.load('assets/om_flyer.webp'); flyTex.magFilter = flyTex.minFilter = THREE.LinearFilter; flyTex.generateMipmaps = false;
   const flyer = new THREE.Mesh(new THREE.PlaneGeometry(416, 640), new THREE.MeshBasicMaterial({ map: flyTex, transparent: true, depthWrite: false }));
   flyer.visible = false; flyer.position.z = 4; scene.add(flyer);
-  const flyS = { active: false, t: 0, x: 0, ph: 0, next: 35 + Math.random() * 70, caught: -1 };
+  const flyS = { active: false, t: 0, x: 0, dx: 0, ph: 0, next: 35 + Math.random() * 70, caught: -1 };   // (dx: its drift with the wind while it falls)
 
   // ---- the stars: sixteen exactly, the first of three secrets hiding a date (16 the stars, 03 Mars, 2003 the fuses).
   // Placed by hand, the same on every load, all in the band of upper sky every screen keeps (x 552-902: an upright phone
@@ -1081,6 +1085,57 @@
   const plGlowC = document.createElement('canvas'); plGlowC.width = plGlowC.height = 16;
   (function () { const g = plGlowC.getContext('2d'), r = g.createRadialGradient(8, 8, 0, 8, 8, 8); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.3, 'rgba(255,255,255,.6)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 16, 16); })();
   const plGlowTex = new THREE.CanvasTexture(plGlowC);
+  // ---- STAGE, the street director (package 8): the big events ask it before they start, so that two never run at once on
+  // the street, none starts within 15 s of another (any lane), a street quiet for 45 s pulls in the event that is soonest
+  // due, and the opening or the finale can close the set. Two lanes: the street (the TranZit and the crew, the oden master,
+  // the OM flyer, the dojo bout, Gengar) and the sky (the Battle Bus, the summit climber: they never block the street).
+  // ask(name, seconds, { prio, lane }) answers now and reserves the lane for `seconds` at most (ask for the longest the
+  // event may take; done(name) frees it the moment it ends; a reservation run out is freed by itself). prio 2 is a called
+  // event (the finale's TranZit): it passes a closed set and the spacing. hold(reason, cast) closes the set: nothing
+  // ordinary starts, except the names in cast (the opening's beats: ['bbus', 'oden', 'dojo'], or '*' for everyone), which
+  // start freely; release(reason) opens it. due(name, seconds) is a street event's idle timer: unchanged, or 0 for the
+  // pull-in (the soonest due within 4 min; a parked timer never is; the sky keeps its own rhythm).
+  // Under reduced motion nothing asks (no event starts). stats: the answers, for the debug page ----
+  const STAGE = {
+    GAP: 15, MAX: 45, PULLMAX: 240, on: { street: null, sky: null }, holds: new Map(), last: 0, lastS: 0, end: 0, q: {}, log: [], pulled: null, lastPulled: null,
+    stats: { yes: 0, hold: 0, busy: 0, gap: 0, pull: 0 },
+    _tick() { for (const lane of ['street', 'sky']) { const c = this.on[lane]; if (c && t >= c.until) { this.on[lane] = null; if (lane === 'street') this.end = c.until; } } },
+    _cast(name) { for (const c of this.holds.values()) if (c === '*' || (c && c.indexOf(name) >= 0)) return true; return false; },
+    ask(name, seconds, o) {
+      this._tick(); o = o || {};
+      const lane = o.lane === 'sky' ? 'sky' : 'street', prio = o.prio || 1, cur = this.on[lane], dur = seconds > 0 ? seconds : 30;
+      if (cur && cur.name === name) { cur.until = Math.max(cur.until, t + dur); return true; }   // (on already: its reservation kept)
+      const free = prio >= 2 || this._cast(name);                           // (called, or sent by the script that holds the set)
+      if (!free && this.holds.size) { this.stats.hold++; return false; }      // (a closed set)
+      if (!free && cur) { this.stats.busy++; return false; }                  // (its lane is taken)
+      if (!free && t - this.last < this.GAP) { this.stats.gap++; return false; }   // (too soon after the last start)
+      this.on[lane] = { name, until: t + dur, prio }; this.last = t; if (lane === 'street') this.lastS = t; delete this.q[name]; this.stats.yes++;
+      this.log.push([+t.toFixed(1), name, lane]); if (this.log.length > 60) this.log.shift();
+      return true;
+    },
+    done(name) {
+      for (const lane of ['street', 'sky']) { const c = this.on[lane]; if (c && c.name === name) { this.on[lane] = null; if (lane === 'street') this.end = t; } }
+      delete this.q[name];
+    },
+    due(name, seconds) {
+      this._tick(); this.q[name] = [seconds, t];
+      if (!(seconds > 0) || this.holds.size || this.on.street || t - Math.max(this.end, this.lastS) < this.MAX) return seconds;   // (the street's own quiet: a sky start does not count)
+      if (this.pulled && t - this.pulled.t < 3) return seconds;              // (one pull at a time: the pulled one is asking)
+      let best = null, bn = Infinity, alt = null, an = Infinity;             // (quiet too long: the soonest due goes now; not the same filler twice when there is a choice)
+      for (const k in this.q) {
+        const [n, at] = this.q[k]; if (t - at > 2 || n > this.PULLMAX) continue;   // (due within 4 min: a parked timer never is)
+        if (n < bn) { bn = n; best = k; }
+        if (k !== this.lastPulled && n < an) { an = n; alt = k; }
+      }
+      if (alt) best = alt;
+      if (best !== name) return seconds;
+      this.pulled = { name, t }; this.lastPulled = name; delete this.q[name]; this.stats.pull++; return 0;
+    },
+    hold(reason, cast) { this.holds.set(reason, cast || null); },
+    release(reason) { this.holds.delete(reason); },
+    get busy() { this._tick(); return !!this.on.street; },
+    get state() { this._tick(); return { on: { street: this.on.street && this.on.street.name, sky: this.on.sky && this.on.sky.name }, holds: [...this.holds.keys()], last: +this.last.toFixed(1), end: +this.end.toFixed(1), stats: Object.assign({}, this.stats), log: this.log.slice(-12) }; }
+  };
   // ---- the Battle Bus (build_zzzbattlebus.py), in the airliner's place: now and then a striped night balloon with the bus
   // slung under it drifts across the dusk, left or right, behind the tower, the tree and the street (the airliner's
   // crossing: 55-85 s, then 40-120 s of empty sky). Three sizes by altitude (36, 42 or 48 px tall: higher is farther), each
@@ -1116,6 +1171,7 @@
     if (!B.active) {
       B.next -= dt;
       if (B.next >= 0 || reduced || !B.ok) return;
+      if (!STAGE.ask('bbus', 90, { lane: 'sky' })) { B.next = 3 + Math.random() * 4; return; }   // (the director says not now: asked again in a few seconds)
       B.active = true; B.t = 0; B.dir = Math.random() < 0.5 ? 1 : -1; B.y = 70 + Math.random() * 90;
       B.v = (IW + 280) / (55 + Math.random() * 30);                    // px/s: the airliner's crossing, 55-85 s over the same stretch
       B.ti = B.y < 100 ? 0 : B.y < 130 ? 1 : 2;                // higher up = farther = smaller
@@ -1128,7 +1184,7 @@
     const T = B.tiers[B.ti], span = IW + 48;
     B.t += dt;
     const trav = B.v * B.t;
-    if (trav >= span) { B.active = false; T.mesh.visible = false; B.x = -999; B.next = 40 + Math.random() * 80; return; }
+    if (trav >= span) { B.active = false; T.mesh.visible = false; B.x = -999; B.next = 150 + Math.random() * 150; STAGE.done('bbus'); return; }   // (2 crossings in 10 min, not 4-5)
     B.x = B.dir > 0 ? -24 + trav : IW + 24 - trav;
     // the pendulum (five poses) and the envelope's bob; the rim on the side that faces the glow, crossfaded in eighths
     const k = Math.round(2 * Math.sin(B.t / B.ps * 6.2832 + B.p0)), up = Math.sin(B.t / B.tb * 6.2832 + B.pb) > 0.4 ? 1 : 0;
@@ -1611,10 +1667,16 @@
   }
   const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
   let konamiAt = 0;
+  const konamiHere = (ev) => {                    // (typed on the street: the hero in view, no field, no key held with it)
+    const t = ev.target, tag = t && t.tagName;
+    return !ev.altKey && !ev.ctrlKey && !ev.metaKey && !(t && (t.isContentEditable || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT'))
+      && window.scrollY < hero.offsetHeight * 0.6;
+  };
   document.addEventListener('keydown', (ev) => {
-    if (document.querySelector('.pc.on')) return;
+    if (document.querySelector('.pc.on, .pk.on, .cb.on')) return;
     const k = (ev.key || '').toLowerCase();
     konamiAt = k === KONAMI[konamiAt] ? konamiAt + 1 : (k === KONAMI[0] ? 1 : 0);
+    if (konamiAt >= 2 && k.startsWith('arrow') && !ev.defaultPrevented && konamiHere(ev)) ev.preventDefault();   // (two keys of it in a row: the page stays put)
     if (konamiAt === KONAMI.length) { konamiAt = 0; startFireworks(); }
   });
 
@@ -1643,11 +1705,12 @@
     if (clbS.t < 0) {                                                   // waiting for the next chance
       clbS.next -= dt;
       if (clbS.next > 0 || (typeof FWK === 'object' && FWK.active)) return;
+      if (!STAGE.ask('climber', 26, { lane: 'sky' })) { clbS.next = 3 + Math.random() * 4; return; }   // (the director: not now)
       clbS.t = 0; clbS.i = 0; clbS.shown = -1;
     }
     clbS.t += dt;
     while (clbS.i < CLB.seq.length && clbS.t >= CLB.seq[clbS.i][4]) clbS.i++;
-    if (clbS.i >= CLB.seq.length) { clb.visible = false; clbS.t = -1; clbS.next = 480 + Math.random() * 420; return; }   // gone behind the rim
+    if (clbS.i >= CLB.seq.length) { clb.visible = false; clbS.t = -1; clbS.next = 480 + Math.random() * 420; STAGE.done('climber'); return; }   // gone behind the rim
     if (clbS.i !== clbS.shown) {                                        // a new step: its cell, at its anchor px
       const e = CLB.seq[clbS.i]; clbS.shown = clbS.i;
       clbTex.offset.set((e[0] % CLB.cols) / CLB.cols, 1 - (Math.floor(e[0] / CLB.cols) + 1) / CLB.rows);
@@ -1753,7 +1816,7 @@
       let g = 1;
       if (F.sign) {                                     // steady, and now and then a short stutter, like the street's neons
         F.next -= dt; if (F.next < 0 && F.ev <= 0) { F.ev = 0.2 + Math.random() * 0.5; F.next = 9 + Math.random() * 28; }
-        if (F.ev > 0) { F.ev -= dt; g = Math.random() < 0.45 ? 0.35 : 1; }
+        if (F.ev > 0) { F.ev -= dt; g = stutOn(t, F.k + F.ph, 0.08, 0.45) ? 0.35 : 1; }
       } else g = 0.955 + 0.045 * Math.sin(t * F.w + F.ph) * (0.7 + 0.3 * Math.sin(t * 0.37 + F.ph * 2));   // a lantern breathes
       fl[F.k - 1] = F.sign && (F.r === undefined ? (F.r = Math.random()) : F.r) > NIGHT.signs ? 0 : g;   // (after 1 h, most signs out)
     }
@@ -1810,8 +1873,56 @@
   const station = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({ map: stTex, transparent: true, opacity: 0, depthWrite: false }));
   station.position.set(MOONP.x + 0.62 * MOONP.s, -(MOONP.y + 0.38 * MOONP.s), -2.45); scene.add(station);
 
-  // rain gusts: every so often the wind picks up for a few seconds
-  const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0 };
+  // ---- the wind (meteo-11). Everything that moves in the wind reads gust.k: the rain's slant, stretch and gain, the lit rain, the
+  // drips' wind, the steams' drift, the oden lantern's push, Kirua's hair and hem, the tree's push, the mists' thinning, the water's
+  // ripples, the rain bed's swell, the OM flyer's drift. A gust has a shape (the tree's treeForce, as the air's own push): a small
+  // pull back (0.25 s), the push (eased, 0.5 s), a hold that wavers (two slow sines and a flutter: the rain's slant hesitates), the
+  // release (eased, 1.1 s). Three kinds: a shiver ('frisson', k 0.22-0.36, 1.2-1.8 s, often), a gust ('rafale', 0.6-1.0, 2-5 s), now
+  // and then a squall ('bourrasque', 1.25-1.35, 4-5 s, every 4-7 min).
+  // API (read by whatever moves in the wind; nobody else writes k): gust.k 0..1.35 (a touch below 0 in the pull back), gust.on,
+  // gust.kind ('frisson' | 'rafale' | 'bourrasque' | null), gust.phase ('pull' | 'push' | 'hold' | 'release' | null), gust.t (s since
+  // its onset), gust.peak, gust.dur; gust.blow(kind | { peak, dur }) starts one now; gust.next: s to the next one (1e9 holds them).
+  // The opening's plateau (gust.target and gust.hold, set by its beat sheet) runs as before, eased at 1.5/s ----
+  const gust = { k: 0, target: 0, next: 5 + Math.random() * 30, hold: 0, on: false, kind: null, phase: null, t: 0, peak: 0, dur: 0, hol: 0, seed: 0,
+    squall: 240 + Math.random() * 180, legacy: false, blow: gustBlow };
+  const GUST_KIND = { frisson: [0.22, 0.36, 1.2, 1.8, 8, 20], rafale: [0.6, 1.0, 2.0, 5.0, 12, 30], bourrasque: [1.25, 1.35, 4.0, 5.0, 40, 60] };   // peak lo-hi, duration lo-hi, the pause after it lo-hi (s)
+  const gustEase = (u) => { u = Math.max(0, Math.min(1, u)); return u * u * (3 - 2 * u); };
+  function gustBlow(kind) {                    // a gust now: by kind, or { peak, dur } (a 'rafale' otherwise)
+    const g = gust, name = typeof kind === 'string' && GUST_KIND[kind] ? kind : 'rafale', K = GUST_KIND[name], o = kind && typeof kind === 'object' ? kind : {};
+    const r = (a, b) => a + Math.random() * (b - a);
+    g.on = true; g.kind = name; g.t = 0; g.seed = Math.random() * 6.28; g.phase = 'pull';
+    g.peak = o.peak !== undefined ? +o.peak : r(K[0], K[1]); g.dur = Math.max(1.2, o.dur !== undefined ? +o.dur : r(K[2], K[3]));
+    g.hol = Math.max(0, g.dur - 0.25 - 0.5 - 1.1);
+    g.next = g.dur + r(K[4], K[5]);            // the next one, counted from this one's start (a hold set meanwhile, 1e9, stays)
+    if (name === 'bourrasque') g.squall = 240 + Math.random() * 180;
+  }
+  function gustShape(g) {                      // the air's push at g.t into this gust (its phase set as it goes)
+    const u = g.t;
+    if (u < 0.25) { g.phase = 'pull'; return -0.06 * g.peak * Math.sin(Math.PI * u / 0.25); }
+    const v = u - 0.25, env = v < 0.5 ? gustEase(v / 0.5) : v < 0.5 + g.hol ? 1 : 1 - gustEase((v - 0.5 - g.hol) / 1.1);
+    g.phase = v < 0.5 ? 'push' : v < 0.5 + g.hol ? 'hold' : 'release';
+    const turb = 1 + 0.16 * Math.sin(9.1 * v + g.seed) * Math.sin(3.3 * v + 1) + 0.09 * Math.sin(14.7 * v + 2 * g.seed);
+    return g.peak * env * turb;
+  }
+  function stepGust(dt) {
+    const g = gust;
+    if (g.hold > 0 || g.legacy) {              // the opening's plateau: its target held for hold s, then let go, eased as before
+      g.legacy = true; g.hold -= dt; if (g.hold <= 0) { g.hold = 0; g.target = 0; }
+      g.k += (g.target - g.k) * Math.min(1, dt * 1.5);
+      g.on = g.k > 0.02; g.kind = g.on ? 'rafale' : null; g.phase = g.on ? (g.hold > 0 ? 'hold' : 'release') : null;
+      if (g.hold <= 0 && g.k < 0.01) { g.legacy = false; g.k = 0; g.on = false; g.kind = g.phase = null; }
+      return;
+    }
+    g.next -= dt; g.squall -= dt;
+    if (!g.on && g.next < 0) gustBlow(g.squall < 0 ? 'bourrasque' : Math.random() < 0.35 ? 'frisson' : 'rafale');
+    let f = 0;
+    if (g.on) {
+      g.t += dt; f = gustShape(g);
+      if (g.t >= g.dur) { g.on = false; g.kind = g.phase = null; f = 0; }
+    }
+    g.k += (f - g.k) * Math.min(1, dt * 8);    // (a little inertia: the air's)
+    if (!g.on && Math.abs(g.k) < 0.002) g.k = 0;
+  }
 
   // ---- actors (PixelLab sprites): feet-anchored, scaled by depth ----
   renderer.localClippingEnabled = true;
@@ -1926,15 +2037,19 @@
   function stepBus(dt) {
     const S = busS;
     busZTick(dt); crewTick(dt); CREW.vis += dt;
+    if (!CREW.tex && CREW.vis > 120 && crewMay()) crewLoad();   // (the crew's sheets well before it is due)
     if (!S.active) {
       S.next -= dt; if (S.next >= 0) return;
       const C_ = S.call;                             // (called by CREW.api.callBus: its direction, its stop, held there)
-      S.dir = C_ ? C_.dir : Math.random() < 0.5 ? 1 : -1; S.v = BUS.V; S.ang = 0; S.wait = 0; S.bob = 0;
+      const due = !C_ && !ZG.due && crewWants();     // (the crew due: this pass heads right, to its stop)
+      S.dir = C_ ? C_.dir : due ? 1 : Math.random() < 0.5 ? 1 : -1; S.v = BUS.V; S.ang = 0; S.wait = 0; S.bob = 0;
       S.x = S.dir > 0 ? BUS.gap[0] - BUS.W - BUS.beam[0] : BUS.gap[1] + BUS.beam[0];   // its beam comes first round the corner
-      if (C_) { S.stop = C_.stopAt; S.crew = C_.crew; S.crewWait = 0; S.hold = C_.hold; S.call = null; }
+      if (C_) { S.stop = C_.stopAt; S.crew = C_.crew; S.crewWait = 0; S.hold = C_.hold; S.call = null; S.tz = false; }
       else {
-        S.stop = Math.random() < 0.35 ? BUS.stop + Math.round((Math.random() - 0.5) * 16) : -1;   // pulls up at its stop, now and then
-        S.crew = crewWants(S); S.crewWait = 0; if (S.crew) S.stop = BUS.stop;   // (the crew's stop: exactly at its stop)
+        S.tz = ZG.due;                               // (a round owed by a late shot: it starts at the stop)
+        S.stop = due || S.tz ? BUS.stop : Math.random() < 0.35 ? BUS.stop + Math.round((Math.random() - 0.5) * 16) : -1;   // pulls up at its stop, now and then
+        S.crew = due; S.crewWait = 0;
+        if (!due && S.dir > 0 && S.stop >= 0) crewCount();   // (a stop heading right without them: the crew's count)
       }
       S.active = true; for (const m of BUS.list) m.visible = true;
       if (!C_ || C_.riders) busZSpawn(BUS.forceZ);
@@ -1945,7 +2060,7 @@
       const toStop = S.stop >= 0 ? (S.stop - S.x) * S.dir : Infinity;
       if (toStop < S.v * S.v / (2 * BUS.ACC) + 0.5) {
         S.v = Math.max(0, S.v - BUS.ACC * dt);
-        if (S.v === 0 || toStop <= 0.5) { S.v = 0; S.x = S.stop; S.wait = 3 + Math.random() * 2.5; S.bob = 0.35; S.bobN = 1; S.hf = 0.5; }
+        if (S.v === 0 || toStop <= 0.5) { S.v = 0; S.x = S.stop; S.wait = 3 + Math.random() * 2.5; S.bob = 0.35; S.bobN = 1; S.hf = 0.5; if (S.tz) { S.tz = false; tzRound(); } }
       } else S.v = Math.min(BUS.V, S.v + BUS.ACC * dt);
       S.x += S.dir * S.v * dt;
     }
@@ -2000,7 +2115,7 @@
     }
     busZStep(dt, x0, y0, bob, L, S);
     if (S.crew && S.wait > 0 && !CREW.active) {     // stopped for the crew: it waits for their sheets a little, then they come
-      if (CREW.need && CREW.loaded >= CREW.need) crewBegin(S, CREW.callForm || 'stop'); else if ((S.crewWait += dt) < (S.hold ? 1e9 : 6)) S.wait = Math.max(S.wait, 0.5); else S.crew = false;
+      if (CREW.need && CREW.loaded >= CREW.need) crewBegin(S, CREW.callForm || 'stop'); else if ((S.crewWait += dt) < (S.hold ? 1e9 : 6)) S.wait = Math.max(S.wait, 0.5); else { S.crew = false; CREW.keep = true; }   // (late sheets: the next pass, then)
     }
     if (CREW.active) crewStep(dt, x0, L, S);
     if (S.hold && S.wait > 0) S.wait = Math.max(S.wait, 0.5);   // (held at its stop for the finale: CREW.api.release())
@@ -2015,7 +2130,8 @@
   // the glass, looking round at the street. The plank falls on its arc, bounces and clatters on the wet road, lies there
   // a while and fades. Hidden like the bus behind the near buildings.
   // `jugg`, after the game: a click kills a zombie (it drops to the road; +500 rises in the game's yellow; the points
-  // stay in this browser, bottom right). The first kill on a pass starts a round: the bus pulls up, zombies come over
+  // stay in this browser, bottom right). The first kill on a pass starts a round (too late for the bus to pull up in
+  // sight: on its next pass, which stops for it): the bus pulls up, zombies come over
   // its roof and out of its windows (6, 10, 14... a round, three to five at a time), the round in red chalk tallies at
   // the bottom left; a round left alone 25 s, the bus drives off with its riders (the round comes back on a later pass:
   // once a round has begun, every pass brings riders).
@@ -2025,7 +2141,7 @@
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) {} };
   const ZG = { pts: Math.max(0, +lsGet('mtsfj-tz-points') || 0), round: Math.max(1, +lsGet('mtsfj-tz-round') || 1), perk: lsGet('mtsfj-tz-perk') === '1',
-    seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
+    seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, due: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
     puller: null, alpha: null, hud: null, drink: -1, cv: null, img: null, lit: 1 };
   const zTex = crisp('assets/bus_zombies.png?v=2', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
@@ -2248,14 +2364,17 @@
     } else if (S.active) {                         // the first kill on a pass: a round, the bus pulls up at its stop or as soon as it can
       const brake = S.v * S.v / (2 * BUS.ACC) + 1;
       const at = S.wait > 0 ? S.x : S.dir > 0 ? Math.max(BUS.stop, S.x + brake) : Math.min(BUS.stop, S.x - brake);
-      if (at >= BUS.gap[0] - 0.3 * BUS.W && at <= BUS.gap[1] - 0.7 * BUS.W) {   // (mostly in sight there)
+      if (!S.crew && !CREW.active && at >= BUS.gap[0] - 0.3 * BUS.W && at <= BUS.gap[1] - 0.7 * BUS.W) {   // (mostly in sight there; never over the crew's stop)
         if (!(S.wait > 0)) S.stop = Math.round(at);
-        Object.assign(ZG, { active: true, began: true, n: 6 + 4 * (ZG.round - 1), killed: 0, quiet: 0, spawnT: 0.6 });
-        ZG.spawned = ZP.filter((q) => q.on && !q.dying).length;   // (the riders still on it are the round's first)
-        lsSet('mtsfj-tz-round', ZG.round);
-      }
+        tzRound();
+      } else { ZG.began = ZG.due = true; lsSet('mtsfj-tz-round', ZG.round); }   // (too far on to pull up in sight: the round on its next pass)
     }
     tzHud();
+  }
+  function tzRound() {                             // a round: its zombies' count; the riders still on it are its first
+    Object.assign(ZG, { active: true, began: true, due: false, n: 6 + 4 * (ZG.round - 1), killed: 0, quiet: 0, spawnT: 0.6 });
+    ZG.spawned = ZP.filter((q) => q.on && !q.dying).length;
+    lsSet('mtsfj-tz-round', ZG.round); tzHud();
   }
   function tzSoda() {                              // the machines: 2500 points buy the perk
     if (ZG.perk || ZG.drink >= 0) return;
@@ -2320,12 +2439,15 @@
   // cheer (Nikolai drinks), walk back, climb in; the door closes and the bus pulls away. The horde's own shadows on the
   // road (contact, and long toward us: the junction lights them from behind) and its reflection in the wet street (the
   // water's masks); hidden behind the AC unit and the pole when it passes beyond them. When: desktop only, never under
-  // reduced motion, the bus heading right, the page's title clear of the spots; the first stop after 3 min of the street
-  // on screen, then every 6th such stop, and the stop after each 5th round won at `jugg`. CREW.api: the finale's hooks ----
+  // reduced motion, the bus heading right, the page's title clear of the spots; its sheets fetched at 2 min of the street
+  // on screen; due at 3 min, then after every 3rd stop heading right or 15 min at most, and after each 5th round won at
+  // `jugg`: the next pass then heads right to its stop (its sheets late: still due, the pass after). CREW.api: the
+  // finale's hooks ----
   const CRW = {"ppm":24.3,"aims":[0.0,0.2,0.4,0.6],"kicks":[0.0,0.6,1.2],"heroes":{"dempsey":{"cw":36,"ch":67,"ax":17,"ay":62,"cols":16,"n":69,"size":[576,335],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":true},{"cell":3,"inside":true},{"cell":4,"inside":true},{"cell":5,"inside":true},{"cell":6,"inside":true},{"cell":7,"inside":true},{"cell":8,"inside":true},{"cell":9,"inside":false},{"cell":10,"inside":false},{"cell":11,"inside":false}],"walk":[{"cell":12},{"cell":13},{"cell":14},{"cell":15},{"cell":16},{"cell":17},{"cell":18},{"cell":19},{"cell":20},{"cell":21},{"cell":22},{"cell":23}],"rise":[{"cell":24},{"cell":25},{"cell":26},{"cell":27},{"cell":28}],"aim":[{"cell":29,"muz":[-4.3,-22.7]},{"cell":30,"muz":[-4.3,-23.8]},{"cell":31,"muz":[-4.3,-24.8]},{"cell":32,"muz":[-0.2,-22.7]},{"cell":33,"muz":[-0.3,-23.8]},{"cell":34,"muz":[-0.4,-24.8]},{"cell":35,"muz":[3.5,-22.8]},{"cell":36,"muz":[3.4,-23.8]},{"cell":37,"muz":[3.1,-24.8]},{"cell":38,"muz":[6.6,-22.8]},{"cell":39,"muz":[6.4,-23.9]},{"cell":40,"muz":[6.1,-24.8]}],"reload":[{"cell":41,"drop":false},{"cell":42,"drop":false},{"cell":43,"drop":false},{"cell":44,"drop":false},{"cell":45,"drop":true},{"cell":46,"drop":false},{"cell":47,"drop":false},{"cell":48,"drop":false},{"cell":49,"drop":false},{"cell":50,"drop":false},{"cell":51,"drop":false},{"cell":52,"drop":false},{"cell":53,"drop":false},{"cell":54,"drop":false},{"cell":55,"drop":false},{"cell":56,"drop":false}],"cheer":[{"cell":57},{"cell":58},{"cell":59},{"cell":60},{"cell":61},{"cell":62},{"cell":63},{"cell":64},{"cell":65},{"cell":66},{"cell":67},{"cell":68}]}},"nikolai":{"cw":34,"ch":70,"ax":19,"ay":66,"cols":16,"n":69,"size":[544,350],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":true},{"cell":3,"inside":true},{"cell":4,"inside":true},{"cell":5,"inside":true},{"cell":6,"inside":true},{"cell":7,"inside":true},{"cell":8,"inside":true},{"cell":9,"inside":false},{"cell":10,"inside":false},{"cell":11,"inside":false}],"walk":[{"cell":12},{"cell":13},{"cell":14},{"cell":15},{"cell":16},{"cell":17},{"cell":18},{"cell":19},{"cell":20},{"cell":21},{"cell":22},{"cell":23}],"rise":[{"cell":24},{"cell":25},{"cell":26},{"cell":27},{"cell":28}],"aim":[{"cell":29,"muz":[-5.5,-35.1]},{"cell":30,"muz":[-5.5,-36.0]},{"cell":31,"muz":[-5.5,-36.8]},{"cell":32,"muz":[-2.1,-35.1]},{"cell":33,"muz":[-2.2,-36.0]},{"cell":34,"muz":[-2.3,-36.8]},{"cell":35,"muz":[1.0,-35.1]},{"cell":36,"muz":[0.8,-36.0]},{"cell":37,"muz":[0.6,-36.8]},{"cell":38,"muz":[3.5,-35.2]},{"cell":39,"muz":[3.3,-36.0]},{"cell":40,"muz":[3.0,-36.8]}],"reload":[{"cell":41,"drop":false},{"cell":42,"drop":false},{"cell":43,"drop":false},{"cell":44,"drop":false},{"cell":45,"drop":true},{"cell":46,"drop":false},{"cell":47,"drop":false},{"cell":48,"drop":false},{"cell":49,"drop":false},{"cell":50,"drop":false},{"cell":51,"drop":false},{"cell":52,"drop":false},{"cell":53,"drop":false},{"cell":54,"drop":false},{"cell":55,"drop":false},{"cell":56,"drop":false}],"cheer":[{"cell":57},{"cell":58},{"cell":59},{"cell":60},{"cell":61},{"cell":62},{"cell":63},{"cell":64},{"cell":65},{"cell":66},{"cell":67},{"cell":68}]}},"takeo":{"cw":31,"ch":65,"ax":17,"ay":60,"cols":16,"n":69,"size":[496,325],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":true},{"cell":3,"inside":true},{"cell":4,"inside":true},{"cell":5,"inside":true},{"cell":6,"inside":true},{"cell":7,"inside":true},{"cell":8,"inside":true},{"cell":9,"inside":false},{"cell":10,"inside":false},{"cell":11,"inside":false}],"walk":[{"cell":12},{"cell":13},{"cell":14},{"cell":15},{"cell":16},{"cell":17},{"cell":18},{"cell":19},{"cell":20},{"cell":21},{"cell":22},{"cell":23}],"rise":[{"cell":24},{"cell":25},{"cell":26},{"cell":27},{"cell":28}],"aim":[{"cell":29,"muz":[-5.3,-30.5]},{"cell":30,"muz":[-5.3,-31.2]},{"cell":31,"muz":[-5.3,-31.8]},{"cell":32,"muz":[-2.6,-30.5]},{"cell":33,"muz":[-2.7,-31.2]},{"cell":34,"muz":[-2.8,-31.9]},{"cell":35,"muz":[-0.1,-30.6]},{"cell":36,"muz":[-0.3,-31.2]},{"cell":37,"muz":[-0.5,-31.9]},{"cell":38,"muz":[1.9,-30.6]},{"cell":39,"muz":[1.7,-31.3]},{"cell":40,"muz":[1.4,-31.9]}],"reload":[{"cell":41,"drop":false},{"cell":42,"drop":false},{"cell":43,"drop":false},{"cell":44,"drop":false},{"cell":45,"drop":true},{"cell":46,"drop":false},{"cell":47,"drop":false},{"cell":48,"drop":false},{"cell":49,"drop":false},{"cell":50,"drop":false},{"cell":51,"drop":false},{"cell":52,"drop":false},{"cell":53,"drop":false},{"cell":54,"drop":false},{"cell":55,"drop":false},{"cell":56,"drop":false}],"cheer":[{"cell":57},{"cell":58},{"cell":59},{"cell":60},{"cell":61},{"cell":62},{"cell":63},{"cell":64},{"cell":65},{"cell":66},{"cell":67},{"cell":68}]}},"richtofen":{"cw":34,"ch":67,"ax":18,"ay":64,"cols":16,"n":69,"size":[544,335],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":true},{"cell":3,"inside":true},{"cell":4,"inside":true},{"cell":5,"inside":true},{"cell":6,"inside":true},{"cell":7,"inside":true},{"cell":8,"inside":true},{"cell":9,"inside":false},{"cell":10,"inside":false},{"cell":11,"inside":false}],"walk":[{"cell":12},{"cell":13},{"cell":14},{"cell":15},{"cell":16},{"cell":17},{"cell":18},{"cell":19},{"cell":20},{"cell":21},{"cell":22},{"cell":23}],"rise":[{"cell":24},{"cell":25},{"cell":26},{"cell":27},{"cell":28}],"aim":[{"cell":29,"muz":[-4.4,-35.3]},{"cell":30,"muz":[-4.4,-36.2]},{"cell":31,"muz":[-4.4,-37.1]},{"cell":32,"muz":[-0.8,-35.3]},{"cell":33,"muz":[-0.9,-36.2]},{"cell":34,"muz":[-1.0,-37.1]},{"cell":35,"muz":[2.5,-35.3]},{"cell":36,"muz":[2.3,-36.2]},{"cell":37,"muz":[2.1,-37.1]},{"cell":38,"muz":[5.2,-35.4]},{"cell":39,"muz":[4.9,-36.3]},{"cell":40,"muz":[4.6,-37.1]}],"reload":[{"cell":41,"drop":false},{"cell":42,"drop":false},{"cell":43,"drop":false},{"cell":44,"drop":false},{"cell":45,"drop":true},{"cell":46,"drop":false},{"cell":47,"drop":false},{"cell":48,"drop":false},{"cell":49,"drop":false},{"cell":50,"drop":false},{"cell":51,"drop":false},{"cell":52,"drop":false},{"cell":53,"drop":false},{"cell":54,"drop":false},{"cell":55,"drop":false},{"cell":56,"drop":false}],"cheer":[{"cell":57},{"cell":58},{"cell":59},{"cell":60},{"cell":61},{"cell":62},{"cell":63},{"cell":64},{"cell":65},{"cell":66},{"cell":67},{"cell":68}]}}}}, HRD = {"levels":[64,100,150,230,42],"bodies":["1_0","1_1","1_2","1_3","2_0","2_1","2_2","2_3","3_0","3_1","3_2","3_3"],"L":[{"h":64,"moves":["walk","walk","walk","walk","walk","walk","walk","walk","hit","hit","fall","fall","fall","fall","fall","fall","fall","down"],"frames":[[[0,71,29,64,14.0,62.0],[30,71,30,64,14.0,62.0],[61,71,29,64,14.0,63.0],[91,71,29,64,14.0,62.0],[121,71,28,64,14.0,61.0],[150,71,29,64,15.0,63.0],[866,71,29,63,15.0,64.0],[896,71,30,63,15.0,63.0],[393,0,36,67,15.0,65.0],[1384,0,43,65,16.0,63.0],[180,71,43,64,16.0,62.0],[614,136,42,55,16.0,53.0],[1232,136,43,51,19.0,50.0],[1106,136,42,53,22.0,48.0],[111,197,42,43,26.0,43.0],[756,197,40,31,29.0,33.0],[1151,197,39,29,29.0,32.0],[1539,197,39,28,29.0,31.0]],[[430,0,30,67,15.0,62.0],[461,0,31,67,15.0,63.0],[493,0,29,67,14.0,64.0],[777,0,28,66,14.0,63.0],[806,0,29,66,15.0,62.0],[523,0,30,67,16.0,63.0],[72,0,30,69,16.0,65.0],[194,0,30,68,15.0,64.0],[0,0,35,70,14.0,66.0],[103,0,45,69,18.0,65.0],[225,0,45,68,18.0,64.0],[362,136,44,58,18.0,55.0],[657,136,45,55,21.0,52.0],[936,136,44,54,25.0,51.0],[1678,136,43,48,29.0,46.0],[445,197,43,32,33.0,32.0],[918,197,44,30,34.0,31.0],[1191,197,45,29,34.0,30.0]],[[836,0,28,66,13.0,62.0],[865,0,28,66,13.0,62.0],[554,0,29,67,14.0,64.0],[271,0,28,68,14.0,63.0],[584,0,29,67,15.0,62.0],[894,0,28,66,15.0,63.0],[1428,0,29,65,15.0,64.0],[1458,0,28,65,13.0,63.0],[36,0,35,70,14.0,66.0],[149,0,44,69,17.0,64.0],[614,0,45,67,18.0,63.0],[407,136,44,58,18.0,54.0],[527,136,44,56,20.0,52.0],[981,136,45,54,25.0,51.0],[1722,136,44,48,29.0,46.0],[489,197,42,32,32.0,33.0],[797,197,43,31,33.0,32.0],[963,197,43,30,33.0,31.0]],[[72,136,26,59,13.0,58.0],[1715,71,25,60,12.0,59.0],[1741,71,25,60,12.0,60.0],[1767,71,25,60,12.0,59.0],[99,136,26,59,13.0,58.0],[126,136,26,59,13.0,59.0],[1313,71,26,62,13.0,61.0],[1793,71,26,60,13.0,60.0],[1340,71,28,62,13.0,62.0],[1820,71,34,60,13.0,60.0],[153,136,34,59,13.0,59.0],[1438,136,32,50,12.0,50.0],[1813,136,31,47,14.0,47.0],[1955,136,31,45,18.0,46.0],[242,197,32,40,24.0,41.0],[532,197,33,32,29.0,28.0],[566,197,33,32,29.0,26.0],[600,197,33,32,29.0,26.0]],[[927,71,27,63,13.0,61.0],[955,71,27,63,13.0,62.0],[224,71,26,64,12.0,63.0],[983,71,25,63,12.0,63.0],[1369,71,25,62,13.0,61.0],[251,71,25,64,13.0,63.0],[1487,0,25,65,13.0,64.0],[1513,0,26,65,13.0,63.0],[923,0,33,66,13.0,65.0],[1540,0,42,65,17.0,64.0],[1009,71,41,63,16.0,63.0],[703,136,42,55,17.0,54.0],[1149,136,42,53,20.0,52.0],[1471,136,41,50,24.0,50.0],[32,197,41,44,29.0,44.0],[1007,197,39,30,33.0,29.0],[1579,197,39,28,33.0,27.0],[1619,197,39,28,33.0,27.0]],[[1395,71,28,62,12.0,61.0],[1051,71,27,63,11.0,62.0],[1079,71,26,63,10.0,63.0],[277,71,25,64,10.0,62.0],[1106,71,24,63,10.0,61.0],[1131,71,25,63,11.0,63.0],[1424,71,25,62,11.0,64.0],[1450,71,26,62,11.0,63.0],[957,0,31,66,9.0,65.0],[1583,0,37,65,10.0,64.0],[1157,71,37,63,10.0,63.0],[1027,136,37,54,10.0,54.0],[1276,136,35,51,11.0,51.0],[1555,136,33,49,13.0,49.0],[1987,136,31,45,17.0,43.0],[1237,197,31,29,22.0,29.0],[1269,197,31,29,22.0,28.0],[1692,197,31,27,23.0,27.0]],[[303,71,28,64,13.0,62.0],[1195,71,27,63,12.0,62.0],[1621,0,27,65,12.0,64.0],[1223,71,26,63,12.0,63.0],[1250,71,25,63,12.0,62.0],[332,71,26,64,13.0,63.0],[989,0,27,66,13.0,65.0],[1017,0,27,66,13.0,64.0],[660,0,32,67,11.0,66.0],[693,0,41,67,14.0,65.0],[1045,0,38,66,11.0,65.0],[572,136,41,56,15.0,55.0],[1065,136,40,54,17.0,53.0],[1192,136,39,53,21.0,52.0],[1876,136,38,46,26.0,46.0],[841,197,34,31,27.0,29.0],[1301,197,39,29,32.0,27.0],[1659,197,32,28,26.0,26.0]],[[188,136,25,59,11.0,58.0],[214,136,25,59,11.0,59.0],[240,136,25,59,11.0,60.0],[266,136,25,59,11.0,59.0],[452,136,25,58,11.0,58.0],[292,136,26,59,12.0,59.0],[1576,71,26,61,12.0,61.0],[1855,71,26,60,12.0,60.0],[1477,71,26,62,10.0,62.0],[1603,71,32,61,10.0,61.0],[1882,71,32,60,10.0,60.0],[1312,136,32,51,11.0,51.0],[1845,136,30,47,12.0,48.0],[0,197,31,45,17.0,46.0],[275,197,30,40,22.0,41.0],[1047,197,30,30,26.0,27.0],[1078,197,31,30,27.0,26.0],[1341,197,31,29,27.0,25.0]],[[359,71,38,64,22.0,62.0],[1649,0,39,65,22.0,63.0],[1084,0,38,66,22.0,64.0],[1689,0,38,65,22.0,63.0],[1728,0,37,65,22.0,62.0],[398,71,36,64,21.0,63.0],[1123,0,37,66,22.0,65.0],[1766,0,38,65,22.0,64.0],[300,0,44,68,22.0,66.0],[345,0,47,68,20.0,65.0],[1161,0,47,66,20.0,64.0],[478,136,48,58,21.0,56.0],[746,136,47,55,23.0,53.0],[794,136,46,55,26.0,53.0],[1589,136,43,49,29.0,48.0],[634,197,39,32,30.0,30.0],[674,197,40,32,31.0,29.0],[715,197,40,32,31.0,28.0]],[[435,71,35,64,17.0,62.0],[471,71,35,64,17.0,63.0],[1805,0,35,65,17.0,64.0],[1209,0,34,66,17.0,64.0],[1841,0,34,65,17.0,63.0],[507,71,33,64,17.0,63.0],[1876,0,34,65,17.0,64.0],[1911,0,35,65,17.0,64.0],[735,0,41,67,17.0,65.0],[1244,0,46,66,17.0,64.0],[541,71,46,64,17.0,63.0],[841,136,46,55,18.0,54.0],[1345,136,45,51,20.0,50.0],[1633,136,44,49,23.0,48.0],[154,197,43,41,27.0,41.0],[876,197,41,31,30.0,30.0],[1373,197,40,29,30.0,28.0],[1414,197,40,29,30.0,28.0]],[[588,71,38,64,18.0,62.0],[627,71,38,64,18.0,63.0],[666,71,38,64,18.0,64.0],[705,71,37,64,18.0,64.0],[743,71,36,64,18.0,63.0],[780,71,36,64,18.0,63.0],[1947,0,36,65,18.0,64.0],[1984,0,37,65,18.0,64.0],[1291,0,43,66,18.0,65.0],[1335,0,48,66,18.0,64.0],[817,71,48,64,18.0,63.0],[888,136,47,55,18.0,54.0],[1391,136,46,51,20.0,50.0],[1767,136,45,48,24.0,48.0],[198,197,43,41,27.0,41.0],[1110,197,40,30,30.0,28.0],[1455,197,41,29,31.0,27.0],[1497,197,41,29,31.0,26.0]],[[1915,71,35,60,20.0,59.0],[1951,71,35,60,20.0,60.0],[1504,71,35,62,20.0,61.0],[1540,71,35,62,20.0,61.0],[1987,71,35,60,20.0,59.0],[0,136,35,60,20.0,60.0],[1636,71,35,61,20.0,61.0],[36,136,35,60,20.0,60.0],[1276,71,36,63,20.0,62.0],[1672,71,42,61,20.0,60.0],[319,136,42,59,20.0,59.0],[1513,136,41,50,20.0,50.0],[1915,136,39,46,21.0,46.0],[74,197,36,44,23.0,44.0],[306,197,33,39,26.0,38.0],[410,197,34,37,30.0,28.0],[340,197,34,38,30.0,27.0],[375,197,34,38,30.0,27.0]]],"size":[2023,243]},{"h":100,"moves":["walk","walk","walk","walk","walk","walk","walk","walk","hit","hit","fall","fall","fall","fall","fall","fall","fall","down"],"frames":[[[1164,212,47,97,21.0,96.0],[1735,109,47,99,21.0,97.0],[748,109,46,100,20.0,99.0],[795,109,47,100,21.0,97.0],[1783,109,47,99,22.0,96.0],[596,212,47,98,23.0,98.0],[644,212,47,98,22.0,100.0],[1430,212,48,96,22.0,98.0],[857,0,61,103,25.0,101.0],[140,109,73,101,28.0,99.0],[843,109,73,100,28.0,98.0],[1472,312,73,86,29.0,83.0],[1546,312,73,86,31.0,79.0],[1839,312,72,84,34.0,76.0],[1022,408,71,76,37.0,68.0],[236,493,69,54,40.0,49.0],[414,493,69,52,40.0,47.0],[484,493,69,52,40.0,47.0]],[[1265,0,48,102,22.0,96.0],[1314,0,47,102,21.0,97.0],[1362,0,46,102,20.0,99.0],[214,109,46,101,21.0,98.0],[917,109,46,100,22.0,96.0],[1409,0,47,102,23.0,98.0],[269,0,48,105,23.0,101.0],[754,0,48,104,23.0,99.0],[0,0,59,108,24.0,103.0],[120,0,74,107,29.0,101.0],[318,0,73,105,28.0,99.0],[963,312,73,91,29.0,85.0],[1324,312,73,87,32.0,81.0],[1690,312,73,85,36.0,80.0],[1243,408,73,75,40.0,72.0],[609,493,72,50,44.0,49.0],[807,493,72,48,44.0,48.0],[1023,493,71,47,44.0,47.0]],[[1831,109,48,99,22.0,96.0],[261,109,46,101,20.0,97.0],[919,0,46,103,20.0,99.0],[1457,0,46,102,21.0,97.0],[1504,0,46,102,22.0,96.0],[308,109,47,101,23.0,98.0],[964,109,47,100,23.0,100.0],[1880,109,47,99,22.0,98.0],[60,0,59,108,24.0,102.0],[195,0,73,107,28.0,100.0],[392,0,73,105,28.0,99.0],[1037,312,73,91,29.0,85.0],[1398,312,73,87,31.0,81.0],[1912,312,73,84,35.0,79.0],[1094,408,73,76,40.0,73.0],[682,493,72,50,43.0,51.0],[880,493,72,48,44.0,49.0],[1167,493,72,46,44.0,48.0]],[[407,312,39,93,19.0,91.0],[447,312,39,93,19.0,92.0],[121,312,39,94,19.0,94.0],[161,312,39,94,19.0,93.0],[487,312,39,93,19.0,91.0],[527,312,40,93,20.0,92.0],[1479,212,40,96,20.0,95.0],[201,312,40,94,20.0,93.0],[1212,212,44,97,19.0,97.0],[1854,212,52,95,19.0,94.0],[568,312,52,93,19.0,93.0],[777,408,52,78,20.0,78.0],[1317,408,53,74,23.0,74.0],[1550,408,53,72,27.0,72.0],[74,493,53,65,32.0,65.0],[1240,493,52,46,37.0,42.0],[1293,493,52,46,37.0,40.0],[1678,493,51,45,37.0,39.0]],[[1928,109,43,99,20.0,96.0],[692,212,43,98,19.0,96.0],[1972,109,42,99,19.0,98.0],[1257,212,42,97,19.0,97.0],[1520,212,42,96,20.0,95.0],[0,212,41,99,20.0,97.0],[356,109,42,101,20.0,100.0],[399,109,43,101,20.0,98.0],[966,0,54,103,21.0,102.0],[1551,0,69,102,26.0,100.0],[1012,109,69,100,27.0,99.0],[1620,312,69,86,27.0,85.0],[301,408,69,81,30.0,80.0],[631,408,68,79,34.0,78.0],[1735,408,67,71,38.0,70.0],[1346,493,66,46,42.0,45.0],[1922,493,66,44,43.0,42.0],[71,560,66,43,43.0,41.0]],[[1907,212,43,95,16.0,95.0],[1563,212,42,96,15.0,96.0],[42,212,41,99,14.0,98.0],[84,212,40,99,14.0,97.0],[736,212,41,98,15.0,95.0],[1606,212,41,96,16.0,97.0],[778,212,41,98,16.0,100.0],[1300,212,41,97,15.0,98.0],[1021,0,51,103,15.0,101.0],[1621,0,62,102,16.0,100.0],[820,212,61,98,15.0,98.0],[1986,312,60,84,15.0,84.0],[440,408,58,80,16.0,79.0],[499,408,56,80,18.0,77.0],[1496,408,53,73,20.0,69.0],[755,493,51,49,23.0,46.0],[1413,493,53,46,25.0,43.0],[1730,493,53,45,25.0,42.0]],[[125,212,44,99,19.0,96.0],[170,212,44,99,18.0,97.0],[1082,109,42,100,17.0,99.0],[882,212,42,98,17.0,98.0],[1342,212,43,97,19.0,96.0],[1125,109,43,100,20.0,98.0],[1073,0,44,103,20.0,101.0],[1684,0,44,102,19.0,99.0],[803,0,53,104,18.0,103.0],[466,0,68,105,23.0,102.0],[1729,0,67,102,23.0,100.0],[1255,312,68,88,24.0,86.0],[0,408,67,84,26.0,82.0],[371,408,68,81,32.0,80.0],[1604,408,67,72,37.0,71.0],[1784,493,65,45,39.0,43.0],[138,560,65,43,40.0,41.0],[379,560,66,42,41.0,40.0]],[[715,312,38,92,16.0,91.0],[621,312,38,93,16.0,92.0],[754,312,38,92,16.0,93.0],[793,312,38,92,16.0,92.0],[832,312,38,92,16.0,91.0],[871,312,39,92,17.0,92.0],[1648,212,40,96,18.0,95.0],[1951,212,39,95,17.0,93.0],[1386,212,43,97,16.0,97.0],[1991,212,51,95,16.0,95.0],[911,312,51,92,16.0,93.0],[830,408,51,78,17.0,79.0],[1371,408,50,74,19.0,75.0],[1803,408,50,71,23.0,72.0],[128,493,50,63,28.0,64.0],[204,560,50,43,33.0,41.0],[255,560,51,43,34.0,39.0],[446,560,50,42,34.0,38.0]],[[925,212,62,98,34.0,96.0],[215,212,62,99,34.0,97.0],[443,109,62,101,34.0,99.0],[506,109,61,101,34.0,98.0],[1169,109,61,100,34.0,96.0],[278,212,60,99,34.0,98.0],[568,109,60,101,34.0,100.0],[1231,109,61,100,34.0,98.0],[535,0,71,105,34.0,102.0],[607,0,78,105,33.0,101.0],[1797,0,78,102,33.0,100.0],[1177,312,77,89,33.0,86.0],[68,408,77,84,35.0,82.0],[224,408,76,82,38.0,80.0],[1422,408,73,74,40.0,72.0],[953,493,69,48,41.0,46.0],[1467,493,68,46,40.0,44.0],[1536,493,69,46,41.0,43.0]],[[339,212,58,99,27.0,97.0],[398,212,58,99,27.0,98.0],[1876,0,58,102,27.0,100.0],[1935,0,57,102,27.0,99.0],[1293,109,56,100,27.0,97.0],[988,212,56,98,27.0,98.0],[629,109,56,101,27.0,100.0],[1350,109,57,100,27.0,99.0],[686,0,67,105,27.0,102.0],[1118,0,75,103,27.0,100.0],[1408,109,75,100,27.0,98.0],[1764,312,74,85,27.0,83.0],[556,408,74,80,29.0,78.0],[882,408,74,77,33.0,75.0],[1914,408,72,67,36.0,65.0],[1095,493,71,47,40.0,46.0],[1850,493,71,45,40.0,44.0],[0,560,70,44,40.0,43.0]],[[1484,109,62,100,28.0,97.0],[1547,109,62,100,28.0,98.0],[1610,109,62,100,28.0,100.0],[1673,109,61,100,28.0,99.0],[1045,212,60,98,28.0,97.0],[457,212,59,99,28.0,98.0],[0,109,60,102,28.0,100.0],[686,109,61,101,28.0,99.0],[1194,0,70,103,28.0,102.0],[61,109,78,102,28.0,100.0],[517,212,78,99,28.0,98.0],[146,408,77,84,28.0,83.0],[700,408,76,79,30.0,78.0],[1168,408,74,76,33.0,75.0],[0,493,73,66,37.0,65.0],[1606,493,71,46,40.0,44.0],[307,560,71,43,40.0,41.0],[497,560,70,42,40.0,40.0]],[[242,312,54,94,31.0,92.0],[297,312,54,94,31.0,93.0],[1689,212,54,96,31.0,95.0],[0,312,54,95,31.0,94.0],[352,312,54,94,31.0,92.0],[660,312,54,93,31.0,93.0],[1744,212,54,96,31.0,95.0],[1799,212,54,96,31.0,94.0],[1106,212,57,98,31.0,96.0],[55,312,65,95,31.0,93.0],[1111,312,65,91,31.0,91.0],[957,408,64,77,31.0,77.0],[1672,408,62,72,32.0,72.0],[1854,408,59,70,33.0,70.0],[179,493,56,60,36.0,60.0],[554,493,54,52,40.0,43.0],[306,493,53,53,40.0,41.0],[360,493,53,53,40.0,40.0]]],"size":[2047,605]},{"h":150,"moves":["walk","walk","walk","walk","walk","walk","walk","walk","hit","hit","fall","fall","fall","fall","fall","fall","fall","down"],"frames":[[[86,618,73,144,33.0,144.0],[1247,469,72,146,31.0,145.0],[1220,317,71,149,31.0,148.0],[1292,317,70,149,31.0,146.0],[1363,317,71,149,33.0,144.0],[1320,469,72,146,34.0,146.0],[1393,469,71,146,33.0,150.0],[160,618,72,144,33.0,147.0],[1299,0,92,155,38.0,152.0],[1661,0,113,153,44.0,149.0],[87,317,113,150,44.0,147.0],[1054,764,112,130,44.0,125.0],[1390,764,112,128,47.0,118.0],[0,904,110,126,50.0,115.0],[1550,904,108,115,54.0,103.0],[1473,1031,106,83,57.0,74.0],[1689,1031,105,78,57.0,70.0],[0,1145,105,77,57.0,69.0]],[[1775,0,72,153,32.0,144.0],[1848,0,71,153,31.0,146.0],[1920,0,70,153,30.0,149.0],[201,317,69,150,30.0,147.0],[1796,317,70,148,32.0,144.0],[478,163,72,152,34.0,147.0],[825,0,72,156,34.0,150.0],[898,0,72,156,33.0,148.0],[0,0,90,162,36.0,154.0],[182,0,112,160,43.0,151.0],[408,0,112,158,43.0,149.0],[506,764,112,137,44.0,128.0],[1167,764,111,130,47.0,121.0],[1610,764,111,127,52.0,119.0],[1871,904,109,113,57.0,108.0],[1795,1031,108,78,61.0,76.0],[106,1145,107,75,61.0,74.0],[696,1145,108,73,62.0,72.0]],[[806,469,71,147,32.0,144.0],[1435,317,72,149,32.0,145.0],[551,163,70,152,30.0,148.0],[0,163,69,153,30.0,146.0],[1621,163,69,151,32.0,143.0],[271,317,71,150,34.0,146.0],[1867,317,71,148,33.0,149.0],[1465,469,72,146,33.0,147.0],[91,0,90,161,36.0,153.0],[295,0,112,160,43.0,151.0],[521,0,112,158,43.0,149.0],[619,764,112,136,44.0,127.0],[1279,764,110,130,46.0,121.0],[1722,764,110,127,51.0,119.0],[0,1031,109,113,56.0,108.0],[1580,1031,108,79,60.0,79.0],[214,1145,108,75,61.0,76.0],[323,1145,108,74,61.0,75.0]],[[1218,618,58,141,28.0,137.0],[1740,618,57,140,27.0,138.0],[1277,618,58,141,28.0,141.0],[1336,618,58,141,28.0,139.0],[1880,618,58,139,28.0,136.0],[1939,618,59,139,29.0,139.0],[233,618,59,144,29.0,142.0],[570,618,59,143,29.0,140.0],[1758,469,67,145,28.0,145.0],[630,618,78,143,29.0,141.0],[0,764,78,139,29.0,139.0],[1281,904,78,118,30.0,118.0],[110,1031,79,111,34.0,111.0],[461,1031,79,108,39.0,109.0],[1229,1031,80,98,45.0,98.0],[1156,1145,79,70,51.0,67.0],[1551,1145,79,68,51.0,62.0],[1631,1145,79,68,51.0,61.0]],[[1939,317,65,148,29.0,143.0],[0,469,64,148,28.0,144.0],[1508,317,64,149,28.0,148.0],[878,469,63,147,28.0,146.0],[1826,469,63,145,29.0,143.0],[1538,469,63,146,30.0,145.0],[1691,163,64,151,30.0,149.0],[622,163,65,152,30.0,148.0],[1499,0,82,154,32.0,152.0],[70,163,105,153,40.0,150.0],[343,317,105,150,40.0,148.0],[1503,764,106,128,42.0,126.0],[565,904,104,122,44.0,120.0],[1061,904,103,119,49.0,117.0],[619,1031,101,107,54.0,105.0],[432,1145,99,74,58.0,72.0],[1893,1145,98,67,58.0,65.0],[311,1223,99,66,59.0,64.0]],[[1015,618,64,142,23.0,143.0],[293,618,63,144,22.0,144.0],[65,469,62,148,21.0,147.0],[128,469,62,148,21.0,145.0],[942,469,60,147,21.0,143.0],[357,618,62,144,23.0,145.0],[1890,469,62,145,23.0,149.0],[1953,469,62,145,22.0,147.0],[1582,0,78,154,22.0,152.0],[688,163,94,152,23.0,149.0],[191,469,93,148,22.0,148.0],[1833,764,91,127,22.0,126.0],[858,904,89,120,23.0,119.0],[670,904,85,121,25.0,116.0],[268,1031,81,109,28.0,103.0],[1904,1031,80,78,33.0,72.0],[805,1145,80,72,33.0,67.0],[886,1145,81,71,34.0,66.0]],[[449,317,66,150,27.0,144.0],[285,469,65,148,26.0,145.0],[1573,317,64,149,25.0,148.0],[1003,469,64,147,26.0,146.0],[1602,469,64,146,27.0,144.0],[1638,317,65,149,29.0,147.0],[176,163,66,153,29.0,151.0],[783,163,67,152,29.0,148.0],[742,0,82,157,29.0,154.0],[971,0,104,156,36.0,152.0],[851,163,103,152,35.0,150.0],[831,764,103,132,36.0,129.0],[347,904,102,124,39.0,122.0],[756,904,101,121,45.0,119.0],[721,1031,101,107,51.0,105.0],[1236,1145,99,70,56.0,67.0],[0,1223,99,67,56.0,64.0],[518,1223,99,65,56.0,62.0]],[[79,764,56,139,24.0,136.0],[331,764,57,138,24.0,137.0],[389,764,57,138,24.0,139.0],[136,764,58,139,25.0,138.0],[447,764,58,138,25.0,136.0],[195,764,57,139,25.0,139.0],[709,618,59,143,26.0,142.0],[1080,618,58,142,25.0,140.0],[420,618,67,144,25.0,145.0],[1139,618,78,142,25.0,142.0],[253,764,77,139,24.0,140.0],[1360,904,77,118,25.0,119.0],[190,1031,77,111,29.0,112.0],[541,1031,77,108,34.0,109.0],[1310,1031,77,96,40.0,97.0],[1711,1145,76,68,45.0,66.0],[618,1223,76,65,46.0,61.0],[695,1223,76,64,46.0,60.0]],[[351,469,93,148,50.0,144.0],[1068,469,93,147,50.0,145.0],[516,317,93,150,50.0,148.0],[1756,163,92,151,50.0,147.0],[1704,317,91,149,50.0,144.0],[1667,469,90,146,50.0,146.0],[955,163,90,152,50.0,150.0],[610,317,92,150,50.0,147.0],[634,0,107,158,51.0,153.0],[1076,0,119,156,50.0,151.0],[243,163,119,153,50.0,150.0],[935,764,118,131,50.0,128.0],[111,904,116,126,52.0,122.0],[450,904,114,123,55.0,119.0],[350,1031,110,109,57.0,106.0],[968,1145,105,71,58.0,69.0],[1788,1145,104,68,57.0,66.0],[100,1223,103,67,57.0,65.0]],[[445,469,87,148,40.0,145.0],[533,469,88,148,41.0,147.0],[1046,163,88,152,41.0,150.0],[1135,163,87,152,41.0,149.0],[1849,163,85,151,40.0,146.0],[1162,469,84,147,40.0,147.0],[1935,163,85,151,40.0,150.0],[0,317,86,151,40.0,149.0],[1196,0,102,156,41.0,153.0],[363,163,114,153,41.0,149.0],[703,317,114,150,41.0,147.0],[1925,764,113,127,41.0,124.0],[948,904,112,120,43.0,117.0],[1438,904,111,116,47.0,113.0],[1009,1031,108,101,51.0,98.0],[1336,1145,106,70,55.0,68.0],[204,1223,106,67,55.0,65.0],[411,1223,106,66,55.0,64.0]],[[818,317,93,150,42.0,145.0],[912,317,94,150,42.0,147.0],[1223,163,93,152,42.0,151.0],[1007,317,93,150,42.0,149.0],[622,469,91,148,42.0,146.0],[714,469,91,148,42.0,147.0],[1317,163,91,152,42.0,150.0],[1409,163,92,152,42.0,148.0],[1392,0,106,155,43.0,153.0],[1502,163,118,152,42.0,149.0],[1101,317,118,150,42.0,147.0],[228,904,118,126,43.0,124.0],[1165,904,115,119,44.0,117.0],[1659,904,112,115,47.0,113.0],[1118,1031,110,99,52.0,98.0],[1443,1145,107,69,55.0,67.0],[772,1223,107,64,56.0,62.0],[880,1223,107,62,56.0,60.0]],[[1395,618,81,141,46.0,138.0],[1477,618,81,141,46.0,140.0],[488,618,81,144,46.0,143.0],[769,618,81,143,46.0,141.0],[1559,618,81,141,46.0,138.0],[1798,618,81,140,46.0,140.0],[851,618,81,143,46.0,142.0],[933,618,81,143,46.0,141.0],[0,618,85,145,46.0,144.0],[1641,618,98,141,46.0,139.0],[732,764,98,136,46.0,137.0],[1772,904,98,114,47.0,115.0],[823,1031,95,107,48.0,108.0],[919,1031,89,104,49.0,104.0],[1388,1031,84,91,51.0,91.0],[1074,1145,81,71,55.0,64.0],[532,1145,81,74,56.0,62.0],[614,1145,81,74,56.0,60.0]]],"size":[2039,1291]},{"h":230,"moves":["walk","walk","walk","walk","walk","walk","walk","walk"],"frames":[[[499,934,113,220,50.0,221.0],[1712,706,112,222,49.0,223.0],[1606,475,111,227,48.0,227.0],[286,475,110,229,49.0,224.0],[397,475,110,229,50.0,220.0],[774,706,110,225,51.0,224.0],[1825,706,112,222,52.0,229.0],[1486,706,112,223,51.0,227.0]],[[227,0,113,237,51.0,221.0],[341,0,113,236,50.0,223.0],[843,0,111,234,49.0,228.0],[1718,475,110,227,49.0,225.0],[885,706,110,225,51.0,221.0],[146,241,111,232,52.0,225.0],[114,0,112,239,53.0,230.0],[0,0,113,240,52.0,227.0]],[[1599,706,112,223,50.0,221.0],[132,706,111,226,49.0,222.0],[1174,241,111,231,49.0,226.0],[955,0,109,234,49.0,224.0],[1065,0,109,234,50.0,220.0],[1809,241,110,230,52.0,224.0],[1829,475,111,227,52.0,229.0],[0,934,111,222,51.0,226.0]],[[1386,934,89,218,43.0,209.0],[1854,934,87,217,41.0,212.0],[89,1157,89,215,43.0,216.0],[1942,934,89,216,43.0,213.0],[179,1157,89,215,43.0,209.0],[538,1157,91,212,45.0,213.0],[308,934,91,221,45.0,218.0],[613,934,90,220,44.0,214.0]],[[1286,241,100,231,44.0,221.0],[508,475,99,229,43.0,222.0],[1032,475,99,228,43.0,227.0],[244,706,97,226,43.0,225.0],[1292,706,97,224,44.0,220.0],[342,706,98,226,46.0,224.0],[258,241,99,232,46.0,229.0],[1308,0,99,233,45.0,226.0]],[[112,934,97,222,33.0,221.0],[400,934,98,221,33.0,222.0],[441,706,98,226,33.0,226.0],[1132,475,95,228,32.0,224.0],[540,706,93,226,32.0,219.0],[1390,706,95,224,35.0,224.0],[996,706,96,225,35.0,230.0],[210,934,97,222,34.0,225.0]],[[358,241,102,232,42.0,221.0],[1920,241,101,230,40.0,223.0],[1228,475,99,228,39.0,227.0],[1093,706,98,225,39.0,224.0],[1192,706,99,225,42.0,221.0],[1941,475,100,227,44.0,225.0],[1408,0,102,233,45.0,230.0],[455,0,103,235,44.0,227.0]],[[0,1157,88,216,38.0,209.0],[269,1157,88,215,38.0,211.0],[358,1157,89,213,38.0,215.0],[448,1157,89,213,38.0,212.0],[630,1157,88,212,38.0,208.0],[845,1157,89,211,39.0,212.0],[704,934,89,220,39.0,218.0],[1045,934,89,219,38.0,214.0]],[[0,475,143,230,77.0,222.0],[608,475,144,229,77.0,224.0],[461,241,144,232,77.0,229.0],[1387,241,143,231,77.0,225.0],[144,475,141,230,77.0,221.0],[634,706,139,226,77.0,224.0],[606,241,140,232,77.0,230.0],[747,241,142,232,77.0,227.0]],[[753,475,135,229,62.0,223.0],[1328,475,136,228,62.0,225.0],[890,241,137,232,63.0,230.0],[1511,0,135,233,63.0,228.0],[1531,241,132,231,62.0,223.0],[0,706,131,227,62.0,226.0],[1175,0,132,234,62.0,231.0],[1647,0,134,233,62.0,228.0]],[[1782,0,145,233,65.0,223.0],[0,241,145,233,65.0,226.0],[1028,241,145,232,65.0,231.0],[1664,241,144,231,65.0,228.0],[889,475,142,229,65.0,224.0],[1465,475,140,228,64.0,226.0],[559,0,140,235,64.0,230.0],[700,0,142,235,64.0,228.0]],[[1476,934,125,218,71.0,211.0],[1602,934,125,218,71.0,214.0],[1135,934,125,219,71.0,219.0],[794,934,125,220,71.0,217.0],[1728,934,125,218,71.0,212.0],[719,1157,125,212,71.0,214.0],[1261,934,124,219,70.0,218.0],[920,934,124,220,70.0,216.0]]],"size":[2042,1374]},{"h":42,"moves":["walk","walk","walk","walk","walk","walk","walk","walk","hit","hit","fall","fall","fall","fall","fall","fall","fall","down"],"frames":[[[1113,0,17,43,12.0,41.0],[1131,0,18,43,13.0,41.0],[1150,0,26,43,13.0,42.0],[1177,0,18,43,12.0,41.0],[1196,0,20,43,12.0,41.0],[1626,0,26,42,13.0,41.0],[1653,0,17,42,12.0,42.0],[1945,0,17,41,12.0,41.0],[1217,0,15,43,10.0,42.0],[1671,0,15,42,8.0,41.0],[1687,0,15,42,8.0,41.0],[625,48,15,36,9.0,35.0],[776,48,16,34,12.0,33.0],[1107,48,20,31,15.0,31.0],[1444,48,27,26,20.0,27.0],[542,90,33,18,25.0,19.0],[645,90,35,17,26.0,18.0],[681,90,35,17,26.0,18.0]],[[208,0,17,45,10.0,42.0],[598,0,17,44,11.0,42.0],[63,0,17,46,11.0,43.0],[81,0,17,46,11.0,43.0],[226,0,19,45,10.0,42.0],[246,0,17,45,10.0,42.0],[99,0,17,46,11.0,43.0],[117,0,15,46,10.0,43.0],[0,0,15,47,7.0,44.0],[616,0,18,44,6.0,42.0],[635,0,18,44,6.0,42.0],[537,48,18,38,7.0,36.0],[726,48,16,35,9.0,34.0],[793,48,16,34,13.0,33.0],[1261,48,25,28,20.0,29.0],[31,90,33,21,27.0,22.0],[235,90,35,20,28.0,21.0],[371,90,35,19,28.0,20.0]],[[264,0,16,45,10.0,42.0],[281,0,17,45,11.0,42.0],[133,0,16,46,11.0,43.0],[299,0,17,45,10.0,42.0],[317,0,19,45,10.0,42.0],[654,0,18,44,10.0,42.0],[673,0,15,44,10.0,43.0],[689,0,16,44,10.0,42.0],[150,0,15,46,7.0,43.0],[706,0,19,44,7.0,42.0],[337,0,19,45,7.0,42.0],[556,48,18,38,7.0,35.0],[743,48,16,35,9.0,33.0],[910,48,18,33,12.0,32.0],[1287,48,27,28,19.0,29.0],[1958,48,36,22,26.0,23.0],[65,90,35,21,26.0,22.0],[101,90,37,21,27.0,21.0]],[[421,48,17,39,9.0,39.0],[439,48,18,39,9.0,39.0],[139,48,19,40,10.0,40.0],[159,48,19,40,11.0,40.0],[179,48,19,40,10.0,39.0],[458,48,18,39,10.0,39.0],[1963,0,18,41,9.0,40.0],[199,48,18,40,9.0,40.0],[1982,0,19,41,10.0,41.0],[218,48,21,40,10.0,39.0],[477,48,21,39,10.0,39.0],[929,48,19,33,10.0,33.0],[1128,48,16,31,10.0,31.0],[1200,48,15,30,12.0,30.0],[1472,48,21,26,19.0,26.0],[1995,48,29,22,26.0,18.0],[0,90,30,22,27.0,17.0],[139,90,30,21,27.0,16.0]],[[1233,0,15,43,9.0,42.0],[1249,0,15,43,10.0,42.0],[726,0,15,44,10.0,43.0],[1265,0,14,43,9.0,43.0],[1280,0,18,43,10.0,42.0],[1299,0,16,43,10.0,42.0],[742,0,14,44,9.0,43.0],[1316,0,14,43,9.0,42.0],[357,0,14,45,7.0,44.0],[1331,0,17,43,6.0,42.0],[1703,0,16,42,5.0,42.0],[641,48,16,36,6.0,36.0],[810,48,15,34,9.0,34.0],[949,48,16,33,14.0,33.0],[1315,48,24,28,21.0,28.0],[271,90,32,20,29.0,19.0],[407,90,33,19,30.0,18.0],[576,90,33,18,30.0,17.0]],[[1720,0,17,42,10.0,41.0],[1738,0,17,42,10.0,41.0],[1349,0,16,43,10.0,42.0],[1366,0,15,43,9.0,42.0],[1756,0,18,42,10.0,41.0],[2002,0,17,41,10.0,42.0],[1775,0,16,42,9.0,43.0],[1792,0,16,42,9.0,42.0],[1382,0,13,43,7.0,43.0],[1396,0,15,43,6.0,42.0],[2020,0,16,41,7.0,41.0],[760,48,15,35,7.0,35.0],[966,48,13,33,9.0,33.0],[1145,48,17,31,14.0,32.0],[1494,48,25,26,21.0,27.0],[441,90,33,19,28.0,19.0],[610,90,34,18,29.0,18.0],[717,90,34,17,29.0,17.0]],[[1412,0,15,43,9.0,42.0],[757,0,15,44,10.0,43.0],[372,0,15,45,10.0,44.0],[773,0,14,44,9.0,43.0],[1428,0,17,43,10.0,42.0],[788,0,16,44,10.0,43.0],[388,0,14,45,9.0,44.0],[805,0,14,44,9.0,43.0],[403,0,15,45,7.0,44.0],[820,0,18,44,6.0,43.0],[1809,0,18,42,6.0,42.0],[658,48,17,36,7.0,36.0],[826,48,15,34,9.0,34.0],[1045,48,16,32,14.0,32.0],[1419,48,24,27,22.0,27.0],[170,90,33,21,30.0,19.0],[475,90,34,19,31.0,18.0],[304,90,34,20,31.0,18.0]],[[499,48,18,39,9.0,39.0],[240,48,18,40,9.0,40.0],[259,48,18,40,9.0,40.0],[278,48,18,40,9.0,40.0],[297,48,18,40,9.0,39.0],[316,48,18,40,9.0,40.0],[1828,0,18,42,9.0,41.0],[335,48,18,40,9.0,40.0],[0,48,17,41,8.0,41.0],[354,48,18,40,8.0,40.0],[518,48,18,39,8.0,39.0],[980,48,17,33,8.0,33.0],[1163,48,15,31,9.0,31.0],[1244,48,16,29,13.0,30.0],[1520,48,22,26,20.0,26.0],[204,90,30,21,27.0,18.0],[339,90,31,20,28.0,17.0],[510,90,31,19,28.0,16.0]],[[419,0,20,45,14.0,43.0],[166,0,20,46,14.0,44.0],[16,0,20,47,14.0,45.0],[187,0,20,46,14.0,44.0],[440,0,23,45,14.0,43.0],[464,0,22,45,14.0,44.0],[487,0,20,45,14.0,44.0],[508,0,20,45,14.0,44.0],[37,0,25,47,14.0,45.0],[529,0,26,45,12.0,44.0],[839,0,26,44,12.0,43.0],[575,48,25,38,12.0,37.0],[676,48,25,36,16.0,35.0],[998,48,24,33,20.0,33.0],[1216,48,27,30,23.0,29.0],[1753,48,33,24,29.0,20.0],[1787,48,34,24,30.0,19.0],[1543,48,34,25,30.0,19.0]],[[866,0,19,44,12.0,42.0],[886,0,20,44,13.0,42.0],[907,0,20,44,13.0,43.0],[928,0,19,44,12.0,43.0],[1446,0,20,43,12.0,42.0],[1467,0,20,43,12.0,42.0],[948,0,19,44,12.0,43.0],[968,0,18,44,11.0,43.0],[556,0,19,45,11.0,44.0],[987,0,23,44,11.0,43.0],[1488,0,23,43,11.0,42.0],[601,48,23,37,12.0,36.0],[842,48,21,34,14.0,34.0],[1062,48,21,32,17.0,32.0],[1340,48,27,28,23.0,27.0],[1578,48,34,25,30.0,20.0],[1613,48,35,25,31.0,19.0],[1822,48,35,24,31.0,18.0]],[[1512,0,20,43,12.0,42.0],[1533,0,21,43,13.0,42.0],[1011,0,20,44,13.0,43.0],[1032,0,19,44,12.0,43.0],[1555,0,20,43,12.0,42.0],[1052,0,20,44,12.0,43.0],[1073,0,19,44,12.0,43.0],[1093,0,19,44,12.0,43.0],[576,0,21,45,12.0,44.0],[1576,0,24,43,12.0,43.0],[1847,0,24,42,12.0,42.0],[702,48,23,36,12.0,36.0],[864,48,22,34,15.0,34.0],[1023,48,21,33,18.0,33.0],[1368,48,26,28,23.0,28.0],[1649,48,33,25,30.0,19.0],[1683,48,34,25,31.0,18.0],[1718,48,34,25,31.0,18.0]],[[18,48,23,41,13.0,40.0],[373,48,23,40,13.0,40.0],[42,48,23,41,13.0,41.0],[1872,0,23,42,13.0,41.0],[66,48,23,41,13.0,40.0],[90,48,23,41,13.0,41.0],[1896,0,23,42,13.0,41.0],[114,48,24,41,14.0,41.0],[1601,0,24,43,14.0,42.0],[1920,0,24,42,14.0,41.0],[397,48,23,40,13.0,40.0],[887,48,22,34,13.0,34.0],[1084,48,22,32,15.0,32.0],[1179,48,20,31,16.0,31.0],[1395,48,23,28,20.0,26.0],[1858,48,31,24,28.0,16.0],[1890,48,33,24,29.0,15.0],[1924,48,33,24,29.0,15.0]]],"size":[2037,113]}]}, DOOR = {"x0":201,"y0":22,"w":22,"h":58,"frames":4,"clip":[204,24,220,79],"step":[69,74],"floor":78,"W":268};
   const CREW = { active: false, phase: '', t: 0, seen: lsGet('mtsfj-crew-seen') === '1', stops: Math.max(0, +lsGet('mtsfj-crew-stops') || 0), vis: 0,
     next: false, tex: null, loaded: 0, need: 0, made: false, heroes: [], zs: [], fx: [], tr: [], queue: [], killed: 0, spawned: 0, tier: 'desk', lone: 0, api: null, form: 'stop',
-    clock: 0, bx0: 0, by0: 0, callForm: null, lastForm: 'stop', script: false, cheerOnly: false, plan: [], clearedAt: 0, goalX: 834, ev: {}, leftOK: false, cap: 10 };
+    clock: 0, bx0: 0, by0: 0, callForm: null, lastForm: 'stop', script: false, cheerOnly: false, plan: [], clearedAt: 0, goalX: 834, ev: {}, leftOK: false, cap: 10,
+    keep: false, lastAt: 0 };                              // (keep: due still, its sheets were late; lastAt: the street's time at its last coming)
   const CREW_SLOTS = 16;                                   // (the horde's slots; ten in use at once, the finale's surge up to all)
   function crewCap(n) {                                    // (a phone keeps ten)
     const phone = CREW.tier === 'phone' || matchMedia('(max-width: 720px), (pointer: coarse)').matches;
@@ -2357,15 +2479,14 @@
     const sx = (x) => camera.left + (x - c.left) / c.width * (camera.right - camera.left), sy = (y) => -(camera.top + (y - c.top) / c.height * (camera.bottom - camera.top));
     return sx(r.right) > 780 && sx(r.left) < 880 && sy(r.bottom) > 590 && sy(r.top) < 660;
   }
-  function crewWants(S) {                                  // at a pass's start: is this the crew's stop?
-    if (reduced || S.dir < 0 || CREW.active || ZG.active) return false;
-    if (matchMedia('(max-width: 720px), (pointer: coarse)').matches) return false;
-    const stopping = S.stop >= 0;
-    if (stopping) CREW.stops++, lsSet('mtsfj-crew-stops', CREW.stops);
-    const due = CREW.next || (!CREW.seen && CREW.vis > 180) || (CREW.seen && stopping && CREW.stops % 6 === 0);
-    if (!due || crewTextCovers()) return false;
+  const crewMay = () => !reduced && !matchMedia('(max-width: 720px), (pointer: coarse)').matches;   // (desktop only, motion allowed)
+  function crewWants() {                                   // at a pass's start: is the crew due (the pass then heads right, to its stop)?
+    if (!crewMay() || CREW.active || ZG.active || CREW.vis < 120) return false;
+    const due = CREW.next || CREW.keep || (!CREW.seen && CREW.vis > 180) || (CREW.seen && (CREW.stops >= 3 || CREW.vis - CREW.lastAt >= 900));
+    if (!due || crewTextCovers()) return false;      // (under the page's title: still due, the next pass)
     crewLoad(); return true;
   }
+  function crewCount() { CREW.stops++; lsSet('mtsfj-crew-stops', CREW.stops); }   // (a stop heading right, without them)
   // ---- the meshes (made on the first event: the sprites' grading hook, defined below, exists by then) ----
   function crewMat(tex, extra, kind, opts, own) {         // own: the horde's own shader (not the bus's occlusion)
     const m = new THREE.MeshBasicMaterial(Object.assign({ map: tex, transparent: true, depthWrite: false }, opts || {}));
@@ -2464,6 +2585,7 @@
     CREW.lastForm = CREW.form;
     CREW.goalX = CREW.form === 'stop' ? CSPOT.stop[1][1] : CREW.form === 'door' ? S.x + 212.5 : CSPOT[CREW.form].reduce((a, q) => a + q[1], 0) / 4;
     CREW.seen = true; CREW.next = false; lsSet('mtsfj-crew-seen', '1');
+    if (!CREW.cheerOnly) { CREW.keep = false; CREW.lastAt = CREW.vis; CREW.stops = 0; lsSet('mtsfj-crew-stops', 0); }   // (the count starts again)
     const X0 = S.x;
     CSPOT[CREW.form].forEach(([who, sx, row], i) => {
       const H = CREW.heroes.find((h) => h.who === who);
@@ -3431,7 +3553,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=23', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=24', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -3918,7 +4040,7 @@
   function finDawn() {                           // under the flash: the night system's 6 h, then pushed to the morning; the horde down
     REDN.on = false; BUS.forceZ = REDN.busZ0; CREW.api.fellAll();
     if (nightSys()) { setMode(null, 0); setTimeOverride(6, 0); setTimeOverride(6, 9, { push: 1 }); } else PW.tint(null, 0);
-    FIN.dawn = 0;
+    FIN.dawn = 0; finEv('dawn');
   }
   function stepDawn(dt) {                        // no stars, no Mars; fewer drops (650 -> 120 in 8 s; their opacity: the night system's, with its push)
     const t = (FIN.dawn += dt), k = Math.min(1, t / 3), kr = Math.min(1, t / 8);
@@ -3972,7 +4094,21 @@
   // horde through the bus agent's CREW.api only (callBus, wave, retreat, fellAll, cheer, release; its events and state).
   // Reduced motion: the calm variant (the red faded in, the moon faded out with its still ring, the dawn, the plate; no
   // bus, no horde) ----
-  const FINS = { t: -1, calm: false, st: '', at: 0, fight: -1, stand: -1, plate: -1, offs: [] };
+  const FINS = { t: -1, calm: false, st: '', at: 0, fight: -1, stand: -1, plate: -1, offs: [], ph: '' };
+  // the finale's events, for the other systems (the dawn's sky, Mathis at his window, Naruto's clones, the crew's
+  // cheer): FIN.api.on(evt, fn) -> off(), fn(evt, t). Each finale fires all nine once, in this order (a beat it skips
+  // fires just before the next one), the calm variant too; FIN.t: its clock (-1: none runs); FIN.phase: its last event
+  const FIN_EV = ['start', 'stand', 'dying', 'rain', 'blast', 'dawn', 'cheer', 'plate', 'end'], FIN_L = {};
+  let finEvN = FIN_EV.length;
+  function finEv(name) {
+    const k = FIN_EV.indexOf(name);
+    while (finEvN <= k) { const e = FIN_EV[finEvN++]; FINS.ph = e; for (const f of (FIN_L[e] || []).slice()) { try { f(e, FINS.t); } catch (err) {} } }
+  }
+  FIN.api = {
+    on(e, f) { (FIN_L[e] = FIN_L[e] || []).push(f); return () => this.off(e, f); },
+    off(e, f) { FIN_L[e] = (FIN_L[e] || []).filter((g) => g !== f); },
+    once(e, f) { const off = this.on(e, (...a) => { off(); f(...a); }); return off; } };
+  Object.defineProperties(FIN, { t: { get: () => FINS.t }, phase: { get: () => FINS.ph } });
   const FIN_WAVES = [{ n: 4, rate: 1.4, from: ['far', 'alley'], delay: 0 },   // the horde, from the crew's first shot, from all sides as it builds:
     { n: 3, rate: 1.1, from: 'right', delay: 4.5 },                              // out of the far cross street and the alley, then up the right half of
     { n: 16, rate: 0.65, from: ['left', 'alley', 'far', 'right'], delay: 7.5 }];   // the road from our side, then all four at the surge (the module keeps
@@ -3981,26 +4117,39 @@
   function finStart(calm) {                      // (the lever: startEleven)
     finOffs();
     Object.assign(FINS, { t: 0, calm, st: calm ? 'calm' : 'wait', at: 0, fight: -1, stand: -1, plate: -1 });
+    finEvN = 0; finEv('start'); finHold(true);
     if (REDN.gone) moonGone(false);              // (gone: it comes back, to go again)
   }
   function finStage(st) { FINS.st = st; FINS.at = FINS.t; }
+  // the finale is a closed set: the street's own events don't start during it (the street director holds them when it
+  // exists; until then their clocks are pushed, as the opening does), and come back one by one after its end
+  const FIN_HOLD = [[() => FEV, 3], [() => shoot, 10], [() => Z1S, 12], [() => dojo, 16], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock, back after (s)]
+  function finHold(on) {
+    try { if (typeof STAGE !== 'undefined' && STAGE && typeof STAGE.hold === 'function') { if (on) STAGE.hold('finale'); else STAGE.release('finale'); return; } } catch (e) {}
+    if (on) { if (!FINS.held) FINS.held = FIN_HOLD.map(([g]) => { try { const o = g(), n = o.next; o.next = 1e9; return n; } catch (e) { return 0; } }); }
+    else if (FINS.held) {
+      FIN_HOLD.forEach(([g, d], i) => { try { const o = g(); if (o.next >= 1e8) o.next = Math.max(d + Math.random() * 0.5 * d, Math.min(300, FINS.held[i] || 0)); } catch (e) {} });
+      FINS.held = null;
+    }
+  }
   function finOffs() { for (const off of FINS.offs) off(); FINS.offs = []; }   // (our listeners away: the ordinary event emits the same names)
   const finOnce = (name, st, f) => FINS.offs.push(CREW.api.once(name, (s) => { if (FINS.t >= 0 && st.includes(FINS.st)) f(s); }));
   function finFight() {                          // the four at their spots: Kirua charges, the horde comes; the stand in 21 s
     FINS.fight = FINS.t; FINS.stand = FINS.t + 21; kilCharge(true);
     for (const w of FIN_WAVES) CREW.api.wave(w);
-    finStage('fight');
+    finStage('fight'); finEv('stand');
   }
   function stepFinale(dt) {
     if (FINS.t < 0) return;
     const t = (FINS.t += dt), u = t - FINS.at, A = CREW.api;
     if (!PAN.drag) PAN.wait = Math.max(PAN.wait, 1);   // (the pan's drift held)
     if (FINS.plate >= 0) {                       // the plate shown: the secrets' dot back from red after 5 s
-      if (t - FINS.plate > 5) { REDN.seq = -1; secBtn.classList.remove('red'); PAN.wait = 8; FINS.t = -1; finOffs(); }
+      if (t - FINS.plate > 5) { REDN.seq = -1; secBtn.classList.remove('red'); PAN.wait = 8; finEv('end'); FINS.t = -1; finOffs(); finHold(false); }
       return;
     }
     if (FINS.calm) {                             // the calm variant: the moon at 4 s (faded, its still ring), the plate at 9 s
-      if (FINS.st === 'calm' && t >= 4) { finStage('calm-moon'); finBlast(); }
+      if (t >= 1) finEv('stand'); if (t >= 2) finEv('dying'); if (t >= 3) finEv('rain');   // (its beats, marks only)
+      if (FINS.st === 'calm' && t >= 4) { finStage('calm-moon'); finEv('blast'); finBlast(); }
       if (t >= 9) finPlate();
       return;
     }
@@ -4010,25 +4159,25 @@
           finOnce('stop', ['called'], () => { finStage('stopped'); finTxt(0.15); });   // (the page's title faded while they hold: the left side reads)
           finOnce('out', ['called', 'stopped'], finFight);
           if (A.callBus({ dir: 1, stopAt: BUS.stop, hold: true, crew: true, formation: 'lastStand', auto: false, riders: false, left: true, cap: 16 })) finStage('called');   // (sixteen at once: the surge reads)
-          else { kilCharge(true); FINS.stand = Math.max(t, 51); finStage('fight'); }   // (no bus: on without it)
+          else { kilCharge(true); FINS.stand = Math.max(t, 51); finStage('fight'); finEv('stand'); }   // (no bus: on without it)
         }
         break;
       case 'called': case 'stopped':             // (their sheets never there: on without them at 45 s)
-        if (t >= 45) { kilCharge(true); FINS.stand = Math.max(t, 51); finStage('fight'); }
+        if (t >= 45) { kilCharge(true); FINS.stand = Math.max(t, 51); finStage('fight'); finEv('stand'); }
         break;
       case 'fight':                              // the last stand: no more come, the crew backs in, the red lights die
-        if (t >= FINS.stand) { A.retreat(); finDie(6); finStage('dying'); }
+        if (t >= FINS.stand) { A.retreat(); finDie(6); finStage('dying'); finEv('dying'); }
         break;
       case 'dying':
-        if (u >= 6.2) { nrSound('humoff'); finStage('rain'); }   // the last light out: the hum stops dead; the rain alone
+        if (u >= 6.2) { nrSound('humoff'); finStage('rain'); finEv('rain'); }   // the last light out: the hum stops dead; the rain alone
         break;
       case 'rain':
-        if (u >= 2.8) { A.retreat(); finBlast(); finStage('blast'); }   // (the flash: every zombie still up falls, finDawn)
+        if (u >= 2.8) { A.retreat(); finEv('blast'); finBlast(); finStage('blast'); }   // (the flash: every zombie still up falls, finDawn)
         break;
       case 'blast':                              // the dawn: the crew out once more to cheer by the bus, then in, then away
         if (FIN.dawn >= 2 && !A.state.active) {
           finOnce('in', ['cheer'], () => { A.release(); finStage('leave'); });
-          if (A.cheer({ formation: 'stop' })) finStage('cheer'); else { A.release(); finStage('leave'); }
+          if (A.cheer({ formation: 'stop' })) { finStage('cheer'); finEv('cheer'); } else { A.release(); finStage('leave'); }
         }
         break;
       case 'cheer':                              // (a cheer that never ends: let the bus go at 20 s)
@@ -4039,7 +4188,7 @@
         break;
     }
   }
-  function finPlate() { FINS.plate = FINS.t; finTxt(''); showPlate(); foundEleven(); }
+  function finPlate() { FINS.plate = FINS.t; finTxt(''); showPlate(); foundEleven(); finEv('plate'); }
   FIN.run.finale = finStart; FIN.fins = FINS; FIN.crew = CREW.api;   // (the debug page reaches them here)
   // the finale: one gold shell from behind the cherry tree, silent (the Konami show's helpers, at its depth: the tree in
   // front), its trail rising out of the leaves
@@ -4341,11 +4490,28 @@
   }
   secBtn.addEventListener('click', (ev) => { ev.stopPropagation(); paintSecrets(false); secList.hidden = !secList.hidden; });
   document.addEventListener('click', () => { secList.hidden = true; });
+  // the secrets' keys: the list's button says whether it is open (whoever hides it); Esc closes the list when no window
+  // is open over it; Tab and Shift+Tab stay inside an open modal window (MATHIS-PC, the fuse box, the catch, the
+  // Pokémon PC), round and round
+  secList.id = 'secrets-list'; secBtn.setAttribute('aria-controls', 'secrets-list'); secBtn.setAttribute('aria-expanded', 'false');
+  new MutationObserver(() => secBtn.setAttribute('aria-expanded', String(!secList.hidden))).observe(secList, { attributes: true, attributeFilter: ['hidden'] });
+  const secModal = () => document.querySelector('.cb.on') || document.querySelector('.pk.on') || document.querySelector('.pc.on');
+  const secFocusables = (M) => [...M.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+    .filter((e) => e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden');
+  window.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Tab') {
+      const M = secModal(); if (!M) return;
+      const F = secFocusables(M); if (!F.length) { ev.preventDefault(); return; }
+      const i = F.indexOf(document.activeElement);
+      if (ev.shiftKey ? i <= 0 : (i < 0 || i === F.length - 1)) { ev.preventDefault(); F[ev.shiftKey ? F.length - 1 : 0].focus(); }
+    } else if (ev.key === 'Escape' && !secList.hidden && !secModal()) { ev.stopPropagation(); secList.hidden = true; secBtn.focus(); }
+  }, true);
   paintSecrets(false);
 
   // ---- easter egg #2: the lit monitor in the window opens MATHIS-PC (only while the screen is on) ----
   // desktop: [icon, label, action]; action is a link {href} or a function; Valorant runs one round (openValo, below)
   const fileImg = (k) => 'assets/file_' + k + '.webp?v=1', appImg = (k) => 'assets/app_' + k + '.webp?v=1';
+  function txl(fr, en) { return document.documentElement.lang === 'en' ? en : fr; }   // (the page's language, now)
   const DESK = [
     [fileImg('folder'), 'Documents', () => openDocs()],
     [fileImg('terminal'), 'Terminal', () => openTerminal()],
@@ -4355,10 +4521,17 @@
     [appImg('claude'), 'Claude', { href: 'https://claude.ai/' }], [appImg('valorant'), 'Valorant', () => openValo()],
     [fileImg('secret'), '???', () => openSecret()]];
   const pc = document.createElement('div'); pc.className = 'pc'; pc.setAttribute('role', 'dialog'); pc.setAttribute('aria-modal', 'true'); pc.setAttribute('aria-label', 'MATHIS-PC');
-  pc.innerHTML = '<div class="pc-win"><div class="pc-bar"><span>MATHIS-PC</span><button class="pc-x" type="button" aria-label="Fermer">×</button></div>'
-    + '<div class="pc-desk"></div><div class="pc-task"><span>▣ démarrer</span><span class="pc-clock"></span></div></div>';
+  pc.innerHTML = '<div class="pc-win"><div class="pc-bar"><span>MATHIS-PC</span><button class="pc-x" type="button" aria-label="' + txl('Fermer', 'Close') + '">×</button></div>'
+    + '<div class="pc-desk"></div><div class="pc-task"><span>' + txl('▣ démarrer', '▣ start') + '</span><span class="pc-clock"></span></div></div>';
   document.body.appendChild(pc);
   const pcWin = pc.querySelector('.pc-win'), desk = pc.querySelector('.pc-desk');
+  function secLang() {                         // the secrets' fixed texts in the page's language (its toggle: at once)
+    const t = pc.querySelector('.pc-task span'); if (t) t.textContent = txl('▣ démarrer', '▣ start');
+    for (const b of pc.querySelectorAll('.pc-x')) b.setAttribute('aria-label', txl('Fermer', 'Close'));
+    scX.setAttribute('aria-label', txl('Fermer', 'Close'));
+    const im = slabTip.querySelector('img'); if (im) im.alt = txl('Léviator chromatique, carte gradée 10', 'Shiny Gyarados, graded 10 card');
+  }
+  secLang(); new MutationObserver(secLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   for (const [src, label, act] of DESK) {
     const el = document.createElement(act && act.href ? 'a' : act ? 'button' : 'span');
     el.className = 'pc-app' + (act ? '' : ' pc-game');
@@ -4372,7 +4545,7 @@
   function openSub(title, body, cls) {
     const w = document.createElement('div'); w.className = 'pc-sub ' + (cls || '');
     w.style.marginLeft = w.style.marginTop = (subs.length * 18) + 'px';
-    w.innerHTML = '<div class="pc-bar"><span></span><button class="pc-x" type="button" aria-label="Fermer">×</button></div><div class="pc-sub-body"></div>';
+    w.innerHTML = '<div class="pc-bar"><span></span><button class="pc-x" type="button" aria-label="' + txl('Fermer', 'Close') + '">×</button></div><div class="pc-sub-body"></div>';
     w.querySelector('.pc-bar span').textContent = title;
     w.querySelector('.pc-sub-body').appendChild(body);
     w.querySelector('.pc-x').addEventListener('click', () => closeSub(w));
@@ -4404,20 +4577,29 @@
       '  research collab.    MPI-IS / ELLIS Tübingen         2026 -', '  M.Sc. CS            Georgia Tech                    2025',
       '  M.Eng. AI           IMT Atlantique                  2026', '  interns             Airbus (RAG), Thales (INT8/FP8)',
       '  NeurIPS 2026        Pinductor, poster, co-first author', 'full version: CV.pdf, on the desktop'],
-    '.secrets': () => ['there are ' + SECRET_N + ' secrets in this street. found: ' + found.length + '.',
-      '  - something rare, behind a shop window', '  - an old code, worth 30 lives',
-      '  - a white-haired boy on a roof, quick as lightning',
-      '  - count the stars, then touch every one', '  - a fuse box wants one year, in base 2: in the arcade, or grey on a corner (the terminal knows the fusebox)',
-      '  - a light that never twinkles, and blinks three short, three long',
-      '  - now and then a flyer falls past the lens: catch it',
-      '  - this computer runs a game: one round, one against five, clutch it',
-      '  - a soda machine takes no coins, only points: the undead pay well',
-      '  - the big cherry tree rustles now and then, as if something hid in its branches'] };
+    '.secrets': () => txl(['il y a ' + SECRET_N + ' secrets dans cette rue. trouvés : ' + found.length + '.',
+        '  - quelque chose de rare, derrière une vitrine', '  - un vieux code, qui vaut 30 vies',
+        '  - quatre héros vivent dans cette rue : saluez-les, chacun là où il est',
+        '  - comptez les étoiles, puis touchez-les toutes', '  - une boîte à fusibles veut une année, en base 2 : dans l\'arcade, ou grise à un coin (le terminal connaît fusebox)',
+        '  - une lumière qui ne scintille jamais, et clignote trois courts, trois longs',
+        '  - de temps en temps, une affiche tombe devant l\'objectif : attrapez-la',
+        '  - cet ordinateur fait tourner un jeu : une manche, un contre cinq, à clutcher',
+        '  - un distributeur ne prend pas de pièces, seulement des points : les morts-vivants paient bien',
+        '  - le grand cerisier frémit parfois, comme si quelque chose se cachait dans ses branches'],
+      ['there are ' + SECRET_N + ' secrets in this street. found: ' + found.length + '.',
+        '  - something rare, behind a shop window', '  - an old code, worth 30 lives',
+        '  - four heroes live in this street: greet each of them, wherever they are',
+        '  - count the stars, then touch every one', '  - a fuse box wants one year, in base 2: in the arcade, or grey on a corner (the terminal knows the fusebox)',
+        '  - a light that never twinkles, and blinks three short, three long',
+        '  - now and then a flyer falls past the lens: catch it',
+        '  - this computer runs a game: one round, one against five, clutch it',
+        '  - a soda machine takes no coins, only points: the undead pay well',
+        '  - the big cherry tree rustles now and then, as if something hid in its branches']) };
   function openTerminal() {
     const box = document.createElement('div'); box.className = 'pc-term-box';
     const out = document.createElement('pre'); out.className = 'pc-mono pc-term';
     const line = document.createElement('label'); line.className = 'pc-term-line';
-    line.innerHTML = '<span class="pc-prompt">mathis@pc:~$&nbsp;</span><input spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="commande">';
+    line.innerHTML = '<span class="pc-prompt">mathis@pc:~$&nbsp;</span><input spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="' + txl('commande', 'command') + '">';
     box.append(out, line);
     const w = openSub('Terminal', box, 'pc-sub-term'), input = line.querySelector('input'), body = w.querySelector('.pc-sub-body');
     const hist = []; let hi = 0, timer = null, busy = false;
@@ -4474,9 +4656,9 @@
     const box = document.createElement('div'); box.className = 'pc-secret';
     box.innerHTML = '<div class="pc-sq">' + SECRET_KEYS.map(() => '<i></i>').join('') + '</div>'
       + '<div class="pc-pad"><i class="dx"></i><i class="dy"></i><i class="fx"></i><i class="fy"></i><i class="ss"></i><i class="ss s2"></i>'
-      + '<button class="dp up" data-k="arrowup" aria-label="haut"></button><button class="dp dn" data-k="arrowdown" aria-label="bas"></button>'
-      + '<button class="dp lf" data-k="arrowleft" aria-label="gauche"></button><button class="dp rt" data-k="arrowright" aria-label="droite"></button>'
-      + '<button class="ab b" data-k="b">B</button><button class="ab a" data-k="a">A</button></div><p class="pc-hint">30 vies</p>';
+      + '<button class="dp up" data-k="arrowup" aria-label="' + txl('haut', 'up') + '"></button><button class="dp dn" data-k="arrowdown" aria-label="' + txl('bas', 'down') + '"></button>'
+      + '<button class="dp lf" data-k="arrowleft" aria-label="' + txl('gauche', 'left') + '"></button><button class="dp rt" data-k="arrowright" aria-label="' + txl('droite', 'right') + '"></button>'
+      + '<button class="ab b" data-k="b">B</button><button class="ab a" data-k="a">A</button></div><p class="pc-hint">' + txl('30 vies', '30 lives') + '</p>';
     const sq = [...box.querySelectorAll('.pc-sq i')]; let at = 0, done = false;
     const press = (k) => {
       if (done) return;
@@ -5244,17 +5426,17 @@
   function stepWindow(dt) {
     const W2 = WIN2; W2.t += dt;
     const busy = !!(NAR.a || NAR.q.length);
-    if (W2.state === 'off') { if (W2.t > W2.next) { W2.state = 'on'; W2.t = 0; W2.next = 40 + Math.random() * 40; NAR.next = 4 + Math.random() * 6; NAR.jutsu = false; } }
+    if (W2.state === 'off') { if (W2.t > W2.next && openK('balcony') > 0.5) { W2.state = 'on'; W2.t = 0; W2.next = 240 + Math.random() * 480; NAR.next = 4 + Math.random() * 6; NAR.jutsu = false; } }   // (lit for minutes; dark from 1 h)
     else if (W2.state === 'on') {
       for (let k = 0; k < WL.n; k++) {                                              // pane after pane, left to right
         const tk = W2.t - k * 0.45; if (tk < 0) { W2.I[k] = 0; continue; }
         const f = Math.floor(tk / 0.06); W2.I[k] = f < FLICK.length ? FLICK[f] : 0.95 + 0.05 * Math.sin(W2.t * 1.3 + k);
       }
       if (!busy && (NAR.next -= dt) < 0 && W2.t > 3 && W2.next - W2.t > 9) { nPlan(); NAR.next = 14 + Math.random() * 16; }
-      if (W2.t > W2.next && !busy) { W2.state = 'off-going'; W2.t = 0; }
+      if ((W2.t > W2.next || openK('balcony') < 0.5) && !busy) { W2.state = 'off-going'; W2.t = 0; }
     } else {                                                                         // going out, in the same order
       for (let k = 0; k < WL.n; k++) { const tk = W2.t - k * 0.3; W2.I[k] = tk < 0 ? W2.I[k] : Math.max(0, 1 - tk / 0.25); }
-      if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 18 + Math.random() * 25; W2.I = [0, 0, 0, 0]; }
+      if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 60 + Math.random() * 180; W2.I = [0, 0, 0, 0]; }
     }
     const here = nStep(dt);
     W2.acc += dt; if (W2.acc < 1 / 20) return; W2.acc = 0;
@@ -5390,7 +5572,7 @@
   function stepShop(dt, t) {
     SHOP.t += dt;
     if (!nightOpen('ramen')) { if (SHOP.open) { SHOP.open = false; SHOP.t = 0; } SHOP.next = SHOP.t + 5 + Math.random() * 20; }   // shut for the night (open again a little after its hour)
-    if (SHOP.t > SHOP.next) { SHOP.open = !SHOP.open; SHOP.t = 0; SHOP.next = SHOP.open ? 80 + Math.random() * 60 : 14 + Math.random() * 12; }
+    if (SHOP.t > SHOP.next) { if (!SHOP.open) { SHOP.open = true; SHOP.t = 0; } SHOP.next = SHOP.t + 30; }   // open again after its night; never shut within its hours
     SHOP.k = Math.max(0, Math.min(1, SHOP.k + (SHOP.open ? dt / 0.8 : -dt / 0.5)));
     const f = Math.floor(SHOP.t / 0.06);                                         // the tubes catch, or sputter out
     SHOP.neon = SHOP.open ? (f < FLICK.length ? FLICK[f] : lightLife(t, 11.3, 0.035)) : (f < 3 ? [0.6, 0.15, 0.4][f] : 0);
@@ -5412,7 +5594,8 @@
   function odenDiff(src, eq) {
     const [x, y, w, h] = ODEN.sign;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: odenTex(src), transparent: true, opacity: 0, depthWrite: false,
-      blending: THREE.CustomBlending, blendEquation: eq, blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor }));
+      blending: THREE.CustomBlending, blendEquation: eq, blendSrc: THREE.SrcAlphaFactor, blendDst: THREE.OneFactor,
+      blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor }));   // (the colour only: the canvas's alpha is left whole, else the box reads white in any un-premultiplied capture)
     m.position.set(x + w / 2, -(y + h / 2), 0.03); m.visible = false; scene.add(m); return m;
   }
   const odenDn = odenDiff('assets/oden_sign_dn.png?v=4', THREE.ReverseSubtractEquation), odenUp = odenDiff('assets/oden_sign_up.png?v=2', THREE.AddEquation);
@@ -5428,7 +5611,7 @@
       if (B.dip <= 0) { B.dip = 0.05 + Math.random() * 0.13; B.cur = B.cur < 1 || Math.random() < 0.35 ? 1 : 0.45 + Math.random() * 0.25; }
       if (B.ev > 0) k = B.cur; else B.cur = 1;
     }
-    if (B.burst > 0) { B.burst -= dt; if (Math.random() < 0.4) k = Math.min(k, 0.5); }   // the fireworks' stutter, as the neons
+    if (B.burst > 0) { B.burst -= dt; if (stutOn(t, 7.7, 0.06, 0.4)) k = Math.min(k, 0.5); }   // the fireworks' stutter, as the neons
     if (B.force !== null) k = B.force;
     B.lvl = k; const o = 1 - k;
     odenDn.material.opacity = odenUp.material.opacity = o; odenDn.visible = odenUp.visible = o > 0.004;
@@ -5499,7 +5682,8 @@
   function stepOdenDoor(dt, t) {
     let W = OIN.who;
     if (!W) {
-      OIN.next -= dt; if (OIN.next > 0) return;
+      OIN.next = STAGE.due('oden', OIN.next); OIN.next -= dt; if (OIN.next > 0) return;
+      if (!STAGE.ask('oden', 12)) { OIN.next = 3 + Math.random() * 4; return; }   // (the director: not now)
       const ltr = Math.random() < 0.5;          // the master from the counter, a customer from the door, either way
       W = OIN.who = { x: ltr ? 407 : 475, dir: ltr ? 1 : -1, hat: Math.random() < 0.45, ph: 0, wait: 0,
         stop: Math.random() < 0.55 ? 430 + Math.random() * 24 : null, v: 0.5 + Math.random() * 0.2 };
@@ -5508,7 +5692,7 @@
     const s = (700 - W.x) / 6.4;                // px per metre, a metre inside the facade (camera 1.2 m up, facade 5.4 m off)
     if (W.stop !== null && Math.abs(W.x - W.stop) < 0.6 && W.wait < 2.2) W.wait += dt;   // stops, looks out at the rain
     else { W.x += W.dir * W.v * (700 - W.x) * (700 - W.x) / (485 * 6.4) * dt; W.ph += dt * W.v * 3.6; }   // along the shop: foreshortened
-    if (W.x < 404 || W.x > 478) { OIN.who = null; OIN.next = 45 + Math.random() * 75; ODOOR.mesh.visible = false; return; }
+    if (W.x < 404 || W.x > 478) { OIN.who = null; OIN.next = 45 + Math.random() * 75; ODOOR.mesh.visible = false; STAGE.done('oden'); return; }
     OIN.acc += dt; if (OIN.acc < 1 / 20 || !odenSeen(ODOOR.box)) return; OIN.acc = 0;
     const G = ODOOR, [bx, by, bw, bh] = G.box, g = odSh;
     const m = (v) => v * s, feet = 615 + 1.2 * s, bob = W.wait > 0 ? 0 : Math.abs(Math.sin(W.ph * Math.PI)) * m(0.015);
@@ -5603,6 +5787,7 @@
     odenFinish(G); G.mesh.material.opacity = light;
   }
   const Z1S = { who: null, next: 20 + Math.random() * 40, acc: 0 }, Z1F = { who: null, next: 80 + Math.random() * 120, acc: 0 };
+  const z1Busy = (n) => !!((n === 'win_z1_warm' && Z1S.who) || (n === 'win_z1_top' && Z1F.who));   // someone crossing that window now
   function stepZ1(dt, t) {
     // the curtain: crosses the room (2-5 s in the window), sometimes stops a moment; only with the light on
     if (Z1.warm) {
@@ -6917,9 +7102,10 @@
     uniform sampler2D tScene, tWet, tMirror;
     uniform vec4 uCam;                         // the frame of tScene in scene px: left, right, top, bottom (y down)
     uniform float uTime, uGain, uDim, uRain, uHot, uSpread;
+    uniform float uRedK, uRedFront;            // the red night here: its level, and the eleventh's wave front (scene x)
     varying vec2 vP;
     float hash(vec2 p) { p = fract(p * vec2(0.1031, 0.103)); p += dot(p, p.yx + 33.33); return fract((p.x + p.y) * p.x); }
-    vec2 gP; float gRough, gRip, gHw, gYm, gD, gSpread, gJit;     // this pixel's parameters, set in main()
+    vec2 gP; float gRough, gRip, gHw, gYm, gD, gSpread, gJit, gGate;     // this pixel's parameters, set in main()
     vec3 tap(vec2 q) {
       vec2 uv = vec2((q.x - uCam.x) / (uCam.y - uCam.x), (uCam.w - q.y) / (uCam.w - uCam.z));
       vec2 e = step(0.0, uv) * step(uv, vec2(1.0));
@@ -6928,8 +7114,10 @@
       // brighter things, the dim ones blur away), and the bright ones count as the much brighter sources they are
       // (the painting can only show a neon at 1.0)
       float l = dot(c, vec3(0.3, 0.5, 0.2));
-      return max(c - mix(0.07, 0.12, gRough), 0.0)
-        * (smoothstep(mix(0.06, 0.2, gRough), mix(0.3, 0.55, gRough), l) + uHot * smoothstep(0.45, 0.9, l));
+      // (in the red night the lights keep 81-98 % of their luminance; the gate follows that exposure, gGate < 1 there,
+      // so that a reflection keeps the share of its light the light keeps instead of falling off the steep thresholds)
+      return max(c - mix(0.07, 0.12, gRough) * gGate, 0.0)
+        * (smoothstep(mix(0.06, 0.2, gRough) * gGate, mix(0.3, 0.55, gRough) * gGate, l) + uHot * smoothstep(0.45 * gGate, 0.9 * gGate, l));
     }
     // one tap k of 8 along the streak (written out below, not looped: no texture read inside a loop)
     vec4 streak(float k) {
@@ -6952,6 +7140,7 @@
       // strongest where its mirror image falls); in the puddles it stays nearly a mirror. The taps' jitter is shared
       // by short horizontal dashes (3 px, a random phase per row): the streaks break into strokes, not into noise
       gP = p; gRough = rough; gRip = rip; gHw = 1.0 + 4.0 * rough; gYm = ym; gD = d; gSpread = mix(0.02, uSpread, rough);
+      gGate = 1.0 - 0.1 * max(uRedK, smoothstep(uRedFront - 30.0, uRedFront + 30.0, p.x));
       gJit = hash(vec2(floor(p.x / 3.0 + hash(vec2(row, 7.0)) * 3.0), row)) - 0.5;
       vec4 a = streak(0.0) + streak(1.0) + streak(2.0) + streak(3.0) + streak(4.0) + streak(5.0) + streak(6.0) + streak(7.0);
       float fres = mix(0.45, 1.0, exp(-(p.y - 615.0) / 90.0));     // far away, at a grazing angle: more mirror
@@ -6967,9 +7156,9 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=16') }, tMirror: { value: tex('assets/wet_mirror.png?v=14') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=17') }, tMirror: { value: tex('assets/wet_mirror.png?v=15') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
-        uHot: { value: 1.5 }, uSpread: { value: 0.8 } },
+        uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 } },
       vertexShader: WET_VS, fragmentShader: WET_FS, transparent: true, depthWrite: false,
       blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor });
     WET.mesh = new THREE.Mesh(new THREE.PlaneGeometry(IW, 216), mat);   // scene rows 600-816, over the lit layers, under the rings and the rain
@@ -6992,6 +7181,7 @@
     WET.mesh.visible = true;
     const u = WET.mesh.material.uniforms;
     u.uCam.value.set(camera.left, camera.right, -camera.top, -camera.bottom); u.uRain.value = 1 + 0.8 * gust.k;
+    u.uRedK.value = REDN.k; u.uRedFront.value = REDN.wave ? 1456 - Math.max(0, REDN.wu - REDN.W0) * REDN.V : 1e5;   // (sol-02: the gate follows the red night)
     u.uTime.value = t % (200 * Math.PI);       // every ripple frequency loops over 200π s: a seamless wrap, floats stay small
   }
   try { if (WET_ON) wetInit(); }
@@ -7431,13 +7621,26 @@
   // vending machines and the street lamp stay on. At 0:55-1:25 the last train crosses the valley, once. The finale's dawn
   // (CLOCK.push): most lights out, the rain thinning. Hours as the visitor's local ones (past midnight as 24+) ----
   const NHOURS = { center: [8.5, 21], dagashi: [8.5, 21.5], tabako: [8, 22], emblem: [8.5, 24], lantern9: [8.5, 24.5], ramen: [8.5, 26],
-    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25] };
+    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25], luffy: [8.5, 26] };
   const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', win_z7_kiosk: 'tabako', z4_emblem: 'emblem', win_z9_lantern: 'lantern9' };
   const NHOME = [[0, 1], [10, 1], [11, 0.9], [12, 0.75], [13, 0.52], [14, 0.32], [15, 0.2], [16, 0.13], [17, 0.15], [18, 0.3], [19, 0.55], [20.5, 1], [24, 1]];   // [hours since noon, the share of homes that may be lit]
   const NCARS = [[0, 1], [10, 1], [12, 0.6], [14, 0.3], [16, 0.25], [18, 0.6], [20.5, 1], [24, 1]];                                             // the far road's cars
   const NIGHT = { home: 1, busy: 0, farX: 0, cars: 1, signs: 1, rain: 1, snap: false, init: false };
   const nOpenAt = (h, k) => { const [a, b] = NHOURS[k]; return (h >= a && h < b) || (h + 24 >= a && h + 24 < b); };
   const nightOpen = (k) => nOpenAt(CLOCK.h, k);
+  // ---- openK(name): how open a place is at the visitor's hour (CLOCK.h), 0 (shut) .. 1 (open), eased: a 6-minute smoothstep at
+  // its opening and at its closing time (NHOURS), so a driven hour (setTimeOverride, the finale's dawn) shuts the places one by one,
+  // and the live clock over those minutes. The hour only: the power cut (pw) and the red night are not in it. Names: 'dojo', 'oden',
+  // 'arcade', 'ramen', 'center' (the Pokémon Center never shuts, as in the games: always 1), 'dagashi', 'tabako', 'emblem',
+  // 'lantern9', 'study', 'balcony', 'luffy'; an unknown name: 1. Read by the street's lights, the ground's lights, the dojo's bout,
+  // Ichiraku's closing and Gengar's visit ----
+  const OPEN_EASE = 0.1;                         // hours (6 min)
+  const nRamp = (h, a, b) => Math.min(nSmooth(a, a + OPEN_EASE, h), 1 - nSmooth(b - OPEN_EASE, b, h));
+  function openK(name) {
+    if (name === 'center') return 1;
+    const H = NHOURS[name]; if (!H) return 1;
+    return Math.max(nRamp(CLOCK.h, H[0], H[1]), nRamp(CLOCK.h + 24, H[0], H[1]));   // (hours past midnight as 24+)
+  }
   const nLerp = (T, e) => { for (let i = 1; i < T.length; i++) if (e <= T[i][0]) { const [a, va] = T[i - 1], [b, vb] = T[i]; return va + (vb - va) * (e - a) / (b - a); } return T[T.length - 1][1]; };
   function nightLife(h) {                        // the hour's shares
     const e = (h + 12) % 24, push = Math.min(1, CLOCK.push);
@@ -7630,12 +7833,13 @@
     openTry(() => { CAT.here = false; CAT.k = 0; CAT.stay = 1e9; });                                  // no cat
     openTry(() => { gust.target = 0; gust.hold = 0; gust.next = 1e9; });                              // no gust
     openTry(() => { KIL.ph.next = 1e9; });                                                           // no kick before its beat
+    openTry(() => STAGE.hold('opening', ['bbus', 'oden', 'dojo']));                                 // the set closed: only the opening's own beats start (STAGE, package 8)
     [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => Z1S, () => Z1F, () => dojo, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
   }
   function openSettled() {      // no opening (reduced motion, or a visitor who has seen it): the evening is under way
     openTry(() => { if (nightOpen('ramen')) Object.assign(SHOP, { open: true, k: 1, t: 10, neon: 1 }); });   // (each at the hour's state)
     openTry(() => { const z = openComp('win_z4_shop'); if (z && nightOpen('center')) { z.userData.on = true; z.userData.stut = 0; z.material.opacity = 1; } });
-    openTry(() => Object.assign(WIN2, { state: 'on', t: 10, I: [1, 1, 1, 1], next: openRnd(40, 40) }));
+    openTry(() => { if (openK('balcony') > 0.5) Object.assign(WIN2, { state: 'on', t: 10, I: [1, 1, 1, 1], next: openRnd(120, 480) }); });
     openTry(() => { if (nightOpen('study')) Object.assign(ws, { state: 'sit', light: true, screen: true, L: 1, S: 1, seated: false, next: openRnd(45, 80), dirty: true }); });
   }
   function openSnd(kind, after) {   // -40 dB under the master; nothing unless the pill is on (and no context is ever created here)
@@ -7684,7 +7888,8 @@
   function openHandover() {     // 12 s: the random timers again, bounded for the first minute (what is in progress carries on)
     OPEN.on = false; OPEN.watch.length = 0;
     const R = openRnd;
-    openTry(() => { if (!BBUS.active) BBUS.next = R(40, 80); });          // the Battle Bus: its crossing goes on (55-85 s), then 40 + rnd 80 as ever
+    openTry(() => STAGE.release('opening'));                                 // the street director takes over (STAGE, package 8)
+    openTry(() => { if (!BBUS.active) BBUS.next = R(150, 150); });          // the Battle Bus: its crossing goes on (55-85 s), then 150 + rnd 150 as ever (evenements-09)
     openTry(() => { busS.next = R(35, 25); });                            // the TranZit before 70 s
     openTry(() => { flyS.next = R(45, 30); });                            // the OM flyer between 57 and 87 s
     openTry(() => { if (!shoot.active) shoot.next = R(20, 45); });
@@ -7695,7 +7900,7 @@
     openTry(() => { NAR.next = R(14, 16); });                             // the balcony is lit: Naruto passes within the minute
     openTry(() => { if (!dojo.active) dojo.next = R(60, 60); });          // (else the bout sets it itself at its end: 60 + rnd 60)
     openTry(() => { SHOP.next = R(80, 60); });
-    openTry(() => { WIN2.next = R(40, 40); });
+    openTry(() => { WIN2.next = R(120, 480); });
     openTry(() => { ws.next = R(45, 80); });                              // he stays at his desk
     openTry(() => { CAT.stay = R(45, 110); });
     openTry(() => { if (KIL.ph.next > 1e8) KIL.ph.next = R(3, 8); });
@@ -7708,7 +7913,7 @@
     [1.3, () => { const o = openComp('z4_emblem'); if (o && nightOpen('emblem')) o.userData.burst = 0.4; }],          // and, an echo for the phone, the Pokeball sign stutters
     [2.2, () => { const z = openComp('win_z4_shop'); if (z && nightOpen('center')) { z.userData.on = true; z.userData.stut = openRnd(0.3, 0.15); } }],   // the Center opens, all its lights at once, stuttering
     [3.5, () => { gust.target = 0.9; gust.hold = 2.5; OPEN.pulse = 1; }],                       // the gust (2.5 s): the rain lies down, the oden lantern swings; the pill pulses
-    [4.0, () => { WIN2.state = 'on'; WIN2.t = 0; NAR.jutsu = false; }],                         // the balcony: the four panes, one after the other (Naruto comes later)
+    [4.0, () => { if (openK('balcony') < 0.5) return; WIN2.state = 'on'; WIN2.t = 0; NAR.jutsu = false; }],                         // the balcony: the four panes, one after the other (Naruto comes later)
     [5.2, () => { const P = KIL.ph; P.kick = 0.12; P.f = -6; P.next = openRnd(5, 10); }],       // Killua's little kick
     [5.5, () => { CAT.here = true; }],                                                          // the cat's eyes in the gap of the door
     [6.0, () => { if (nightOpen('study')) ws.next = -1; }],                                                             // Mathis comes in and the lamp goes on (in, turn, sitdown, sit: the machine's own)
@@ -7762,19 +7967,19 @@
       const u = c.userData;
       if (u.kind === 'neon') {
         u.next -= dt;
-        if (u.next < 0 && u.burst <= 0) { u.burst = 0.25 + Math.random() * 0.5; u.next = 4 + Math.random() * 14; }
-        if (u.burst > 0) { u.burst -= dt; c.material.opacity = Math.random() < 0.45 ? 0.15 : 1; }
+        if (u.next < 0 && u.burst <= 0) { u.burst = 0.25 + Math.random() * 0.5; u.next = 40 + Math.random() * 80; }
+        if (u.burst > 0) { u.burst -= dt; c.material.opacity = stutOn(t, u.seed, 0.07, 0.45) ? 0.15 : 1; }
         else c.material.opacity = lightLife(t, u.seed, 0.04);
       } else if (u.kind === 'lamp') {
         c.material.opacity = lightLife(t, u.seed, 0.04);
       } else if (u.kind === 'shop') {  // the dagashi-ya, open: steady; its tubes waver a moment now and then, barely
         u.next -= dt; if (u.next < 0) { u.burst = 0.18 + Math.random() * 0.22; u.next = 25 + Math.random() * 50; }
-        if (u.burst > 0) { u.burst -= dt; c.material.opacity = Math.random() < 0.5 ? 0.9 : 1; } else c.material.opacity = 1;
+        if (u.burst > 0) { u.burst -= dt; c.material.opacity = stutOn(t, u.seed, 0.11, 0.5) ? 0.9 : 1; } else c.material.opacity = 1;
       } else if (u.kind === 'tube') c.material.opacity = 1;     // the tabako window: a steady tube
       else if (u.kind === 'vend') {    // the drinks machines: always on; the right one's tube fails a moment, rarely
         c.material.opacity = 1; u.next -= dt;
         if (u.next < 0) { u.burst = 0.35 + Math.random() * 0.55; u.next = 50 + Math.random() * 100; }
-        if (u.burst > 0) { u.burst -= dt; vendOff.material.opacity = Math.random() < 0.55 ? 0.85 : 0; } else vendOff.material.opacity = 0;
+        if (u.burst > 0) { u.burst -= dt; vendOff.material.opacity = stutOn(t, u.seed, 0.09, 0.55) ? 0.85 : 0; } else vendOff.material.opacity = 0;
         vendOff.visible = vendOff.material.opacity > 0;
       } else if (u.kind === 'home') {  // a home's window: on a long while, then off a while; some evenings upstairs the TV:
         // its light jumps from shot to shot and cools with the picture, under the warm room light
@@ -7801,16 +8006,19 @@
         c.material.opacity += (tgt - c.material.opacity) * Math.min(1, dt * 14);
         const col = c.material.color, kc = Math.min(1, dt * 10);
         col.setRGB(col.r + ((u.cool ? 0.8 : 1) - col.r) * kc, col.g + ((u.cool ? 0.9 : 0.97) - col.g) * kc, 1);
-      } else { // windows: someone turns the light off, then on again a while later; the Center's shop keeps opening
-        // hours: open a minute or two, closed a few seconds now and then, all its lights at once (catching with a stutter)
+      } else { // windows: someone turns the light off, then on again a while later: minutes, as a room is lived in (on 4-15 min, off
+        // 1-6 min), never while their figure crosses it (zone 1: out just after they leave); the Center's shop: open through its
+        // hours, all its lights at once (catching with a stutter), no closing in between
         u.next -= dt;
+        if (u.next < 0 && u.on && !u.shop && z1Busy(u.name)) u.next = 0.8 + Math.random() * 1.5;
         if (u.next < 0) {
-          u.on = !u.on && nightLit(u);
-          u.next = u.shop ? (u.on ? 45 + Math.random() * 75 : 6 + Math.random() * 8) : u.on ? 10 + Math.random() * 25 : 3 + Math.random() * 8;
-          if (u.shop && u.on) u.stut = 0.3 + Math.random() * 0.15;
+          const was = u.on;
+          u.on = u.shop ? nightLit(u) : !u.on && nightLit(u);
+          u.next = u.shop ? (u.on ? 30 + Math.random() * 30 : 6 + Math.random() * 8) : u.on ? 240 + Math.random() * 660 : 60 + Math.random() * 300;
+          if (u.shop && u.on && !was) u.stut = 0.3 + Math.random() * 0.15;
         }
         else if (u.on && !nightLit(u) && u.next > 2) u.next = u.shop ? 0 : nightDelay();   // closing time, bedtime
-        if (u.stut > 0) { u.stut -= dt; c.material.opacity = Math.random() < 0.5 ? 0.25 : 1; }
+        if (u.stut > 0) { u.stut -= dt; c.material.opacity = stutOn(t, u.seed, 0.06, 0.5) ? 0.25 : 1; }
         else c.material.opacity += ((u.on ? 1 : 0) - c.material.opacity) * Math.min(1, dt * (u.shop && !u.on ? 16 : 6));
       }
       if (u.kind === 'neon' || u.kind === 'shop' || u.kind === 'tube' || u.kind === 'lantern') c.material.opacity *= nightGate(u, dt);   // their hours
@@ -7846,26 +8054,24 @@
       p.scale.set(sz, sz, 1);
       p.material.opacity = 0.55 * Math.sin(Math.PI * Math.min(1, k * 1.15)) * (0.75 + 0.25 * u.dx);
     }
-    // gusts
-    gust.next -= dt;
-    if (gust.next < 0 && gust.hold <= 0) { gust.target = 0.6 + Math.random() * 0.4; gust.hold = 2 + Math.random() * 3; gust.next = 12 + Math.random() * 25; }
-    if (gust.hold > 0) { gust.hold -= dt; if (gust.hold <= 0) gust.target = 0; }
-    gust.k += (gust.target - gust.k) * Math.min(1, dt * 1.5);
+    stepGust(dt);                                 // the wind: its gusts, their shapes and kinds (gust.k; the opening's plateau)
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
     // OM flyer drop: pendulum fall through the frame, ~2.6 s
-    if (!flyS.active) { flyS.next -= dt; if (flyS.next < 0) { flyS.active = true; flyS.t = 0; flyS.x = 460 + Math.random() * 620; flyS.ph = Math.random() * 6; flyer.visible = true; } }
+    if (!flyS.active) { flyS.next = STAGE.due('flyer', flyS.next); flyS.next -= dt; if (flyS.next < 0 && !STAGE.ask('flyer', 8)) flyS.next = 3 + Math.random() * 4;   // (the director: not now, asked again in a few seconds)
+      if (flyS.next < 0) { flyS.active = true; flyS.t = 0; flyS.x = 460 + Math.random() * 620; flyS.dx = 0; flyS.ph = Math.random() * 6; flyer.visible = true; } }
     else if (flyS.caught >= 0) {                     // caught: it stops a moment (a little tug), then the wind takes it off
       flyS.caught += dt; const k = Math.max(0, flyS.caught - 0.3) / 0.9, q = 1 - Math.max(0, 1 - flyS.caught / 0.3) * 0.03;
       flyer.scale.set(q, q, 1);
-      flyer.position.x = flyS.cx + 950 * k * k; flyer.position.y = flyS.cy + 650 * k * k; flyer.rotation.z = flyS.cr - 0.7 * k;
-      if (k >= 1) { flyS.active = false; flyS.caught = -1; flyer.visible = false; flyer.scale.set(1, 1, 1); flyS.next = 60 + Math.random() * 120; }
+      flyer.position.x = flyS.cx - 950 * k * k; flyer.position.y = flyS.cy + 650 * k * k; flyer.rotation.z = flyS.cr + 0.7 * k;   // (up and to the left: with the wind, as the rain goes)
+      if (k >= 1) { flyS.active = false; flyS.caught = -1; flyer.visible = false; flyer.scale.set(1, 1, 1); flyS.next = 60 + Math.random() * 120; STAGE.done('flyer'); }
     } else {
       flyS.t += dt; const uf = flyS.t / 4.2;
-      flyer.position.x = flyS.x + Math.sin(flyS.t * 1.5 + flyS.ph) * 70;
+      flyS.dx -= (40 + 260 * Math.max(0, gust.k)) * 0.5 * dt;   // the wind's drift, left (the drips' drops' rule)
+      flyer.position.x = flyS.x + flyS.dx + Math.sin(flyS.t * 1.5 + flyS.ph) * 70;
       flyer.position.y = 340 - uf * (816 + 680);
       flyer.rotation.z = 0.13 * Math.sin(flyS.t * 1.2 + flyS.ph);
-      if (uf >= 1) { flyS.active = false; flyer.visible = false; flyS.next = 60 + Math.random() * 120; }
+      if (uf >= 1) { flyS.active = false; flyer.visible = false; flyS.next = 60 + Math.random() * 120; STAGE.done('flyer'); }
     }
     // moon station: slow warm pulse
     station.material.opacity = 0.06 + 0.3 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.1), 3);
@@ -7877,8 +8083,8 @@
     arcS.t += dt;
     if (Math.floor(arcS.t * 4) !== Math.floor((arcS.t - dt) * 4)) arcS.chase = (arcS.chase + 1) % 3;
     for (const cb of arcS.cab) { cb.next -= dt; if (cb.next < 0) { cb.c = Math.floor(Math.random() * 4); cb.next = 0.6 + Math.random() * 3; } }
-    arcS.next -= dt; if (arcS.next < 0 && arcS.hold <= 0) { arcS.hold = 0.25 + Math.random() * 0.4; arcS.next = 8 + Math.random() * 20; }
-    if (arcS.hold > 0) { arcS.hold -= dt; arcS.flick = Math.random() < 0.5 ? 0.3 : 1; } else arcS.flick = lightLife(t, 8.8, 0.035);
+    arcS.next -= dt; if (arcS.next < 0 && arcS.hold <= 0) { arcS.hold = 0.25 + Math.random() * 0.4; arcS.next = 25 + Math.random() * 45; }
+    if (arcS.hold > 0) { arcS.hold -= dt; arcS.flick = stutOn(t, 8.8, 0.045, 0.5) ? 0.3 : 1; } else arcS.flick = lightLife(t, 8.8, 0.035);
     stepPower(dt);                                // the fuses' reward: the street's power cut, and back (idle otherwise)
     stepNR(dt);                                   // the red night, the eleventh's start (idle otherwise)
     stepFIN(dt);                                  // the finale: the lights dying, the moon, the dawn (idle otherwise)
