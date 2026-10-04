@@ -14,7 +14,7 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=47" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=48" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -55,7 +55,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=37) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=38) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -609,7 +609,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=47", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=7", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=48", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=8", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -2386,7 +2386,6 @@
       g.fillStyle = dep(CF * 5.49 / (700 - x)); g.fillRect(x, 0, 1, Math.round(CHZ + 0.2575 * (700 - x)));
     }
     g.fillStyle = '#000'; g.fillRect(352, 565, 46, 142);         // zone 7's alley: its mouth open (its far wall is behind anyone in it)
-    g.fillStyle = dep(15.0); g.fillRect(352, 652, 17, 37);        // (its crates, against the near wall)
     for (const k in COCC) { g.fillStyle = dep(COCC[k].d); for (const [y0, y1, x0, x1] of COCC[k].runs) g.fillRect(x0, y0, x1 - x0 + 1, y1 - y0 + 1); }
     const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t;
   }
@@ -3432,7 +3431,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=22', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=23', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -5438,7 +5437,7 @@
   // right): a gust leans it toward the wall, eddies rock it; one pre-rendered frame per half degree (the rest frame is
   // empty: the street holds the lantern at rest)
   const LAN = ODEN.lantern, LAN_N = LAN.angles.length, LAN_0 = LAN.angles.indexOf(0);
-  const lanTex = odenTex('assets/oden_lantern.png?v=3'); lanTex.repeat.set(1 / LAN_N, 1);
+  const lanTex = odenTex('assets/oden_lantern.png?v=4'); lanTex.repeat.set(1 / LAN_N, 1);
   const lanMesh = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanTex, transparent: true, depthWrite: false }));
   lanMesh.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.03); lanMesh.visible = false; scene.add(lanMesh);
   const LS = { a: 0, v: 0, eddy: 0, et: 0, force: null };       // angle (deg, its foot to the right > 0), speed, the eddies' push
@@ -6968,7 +6967,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=15') }, tMirror: { value: tex('assets/wet_mirror.png?v=13') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=16') }, tMirror: { value: tex('assets/wet_mirror.png?v=14') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 } },
       vertexShader: WET_VS, fragmentShader: WET_FS, transparent: true, depthWrite: false,
