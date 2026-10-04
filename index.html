@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=49" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=50" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -61,7 +61,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=39) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=40) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -205,7 +205,9 @@
   .secrets-list { position: absolute; z-index: 2; bottom: 48px; left: clamp(14px, 6vw, 96px); margin: 0; padding: 10px 14px; list-style: none; font-size: 13px; line-height: 1.7; color: var(--paper-dim); background: rgba(15,12,34,.92); border: 1px solid rgba(255,138,209,.45); }
   .secrets-list .got { color: var(--paper); }
   .secrets-list { max-width: calc(100% - 2 * clamp(14px, 6vw, 96px) - 28px); }
-  .secrets-list li { padding-left: 1.15em; text-indent: -1.15em; }
+  .secrets-list { font: 12px/1.9 var(--pixel); letter-spacing: .08em; }   /* (the street's voice: the counter's) */
+  .secrets-list li { padding-left: 1.6em; text-indent: -1.6em; }
+  .secrets { font-size: 12px; }
   /* (the counter and its list sit bottom left on every size, under the title's old place; the title is on the wall, top left) */
   .slab-tip { position: absolute; z-index: 3; pointer-events: none; opacity: 0; transform: translateY(6px); transition: opacity .18s, transform .18s; padding: 8px; background: rgba(15,12,34,.92); border: 1px solid rgba(255,138,209,.45); box-shadow: 0 0 24px rgba(255,138,209,.25); border-radius: 4px; }
   .slab-tip.on { opacity: 1; transform: none; }
@@ -320,7 +322,7 @@
   .pk-app { display: none; flex-direction: column; width: var(--aw, 512px); }
   .pk.app .pk-scr { display: none; }
   .pk.app .pk-app { display: flex; }
-  .pk-bar { width: 100%; height: calc(16px * var(--k, 2)); }
+  .pk-bar { width: 100%; height: calc(16px * var(--kt, var(--k, 2))); }
   .pk-body { box-sizing: border-box; min-height: calc(176px * var(--k, 2)); max-height: 76vh; overflow: auto; padding: 14px 16px; background: #120c2c; color: #e9e3f5; font: 13px/1.5 var(--sans); outline: none; }
   .pk-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* the Pokémon PC's apps (PKPC: the Pokédex entry, the trophies) at its scale, as a DP screen (--k: device pixels per DP
@@ -338,6 +340,14 @@
   .pk-body .pc-troph li { grid-template-columns: max(20px, calc(12px * var(--k, 2))) 1fr auto; gap: max(8px, calc(4px * var(--k, 2))); }
   .pk-body .pc-troph p { font-size: max(12px, calc(6.5px * var(--k, 2))); }
   .pk-body .pc-troph canvas { display: block; width: 100%; max-width: 728px; height: auto; image-rendering: auto; }
+  /* DP's words in an app: a canvas a line at --kt CSS px per DP px (whole device pixels), the words for a screen reader */
+  .pk .pk-dp canvas.pk-ln { display: block; width: calc(var(--w) * var(--kt, 2) * 1px); height: calc(var(--h) * var(--kt, 2) * 1px); max-width: none; margin: 0; border: 0; background: none; box-shadow: none; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .pk .pk-dp { position: relative; }
+  .pk .pk-dp + .pk-dp { margin-top: calc(var(--kt, 2) * 4px); }
+  .pk .pk-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .pk-body .cb-dex-txt .pk-dp canvas.pk-ln + canvas.pk-ln { margin-top: calc(var(--kt, 2) * 2px); }
+  .pk-body .pc-troph .pk-tl { margin: 0 0 calc(var(--kt, 2) * 8px); }
+  .pk-body .pc-troph .pk-tl canvas.pk-ln ~ canvas.pk-ln { margin-top: calc(var(--kt, 2) * 3px); }
   @media (prefers-reduced-motion: reduce) { .pk-frame { animation: none; } }
   /* phones (under 540 px): the links row spans the width at 13 px and wraps if it must; the language pill sits at the row's right end */
   @media (max-width: 540px) {
@@ -573,7 +583,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=49", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=4", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=4", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=4", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=9", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=5", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=50", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -646,7 +656,14 @@
     comps.push(p);
   }
   // the right-hand drinks machine's display out (build_zzzanim_z7.py), laid over its comp while its tube stutters
-  const vendOff = plane('assets/z7_vendoff.png?v=3', 305, 577, 18, 73, 1.105, { opacity: 0 }); vendOff.visible = false;
+  const vendOff = plane('assets/z7_vendoff.png?v=4', 305, 577, 18, 73, 1.105, { opacity: 0 }); vendOff.visible = false;
+  // the drinks machines' cold light on the sidewalk before them (lumieres-05), over the water's sheet as the lamp's pool, and the Pokéball's
+  // red and white on the Center's facade and the awning's top (lumieres-06): additive layers at their source's level as it is rendered
+  // (LGT.post); the red night grades them as the train's windows (once, at their first render)
+  const vendPool = plane('assets/vend_pool.png?v=1', 262, 716, 140, 80, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });
+  const embGlow = plane('assets/z4_emblem_glow.png?v=1', 876, 444, 70, 104, 1.1, { opacity: 0, blending: THREE.AdditiveBlending });
+  const LAY = [[vendPool, comps.find((c) => c.userData.name === 'z7_vending'), () => 1 - 0.3 * vendOff.material.opacity],
+    [embGlow, comps.find((c) => c.userData.name === 'z4_emblem'), () => 1]];
 
   // the moon, sunset-lit, ghostly in the upper sky (position, size and opacity hand-tuned)
   const MOONP = { x: 532, y: 42, s: 90 };
@@ -2016,6 +2033,23 @@
       .replace('#include <map_fragment>', '#include <map_fragment>\nvec2 sp = texture2D(tSpill, vUv).rg;\ndiffuseColor.rgb *= 1.0 + sp.r * uWarm * smoothstep(640.0, 500.0, vWP.x) + sp.g * uRed * smoothstep(760.0, 860.0, vWP.x);');
   });
   const busGlow = busPart('assets/bus_glow.png?v=4', BUS.W, BUS.H, 0.651, { blending: THREE.AdditiveBlending }, 2);
+  // the destination box (evenements-06): its inside laid over the baked one, one text a pass: LAST STAND for a called
+  // bus and the crew's (it turns to it as the bus brakes for them, the headlights flashing twice),
+  // OUT OF SERVICE with zombies aboard, else one of TranZit's stops; the baked box's light cut under it
+  const BOX = {"texts":["OUT OF SERVICE","LAST STAND","DINER","FARM","TOWN","POWER","BUS DEPOT"],"x0":150,"y0":13,"w":51,"h":6,"rows":[["000000000000000000000000000000000000000000000000000","011101010111000111011100011101110110010101011101110","010101010010000101010000010001000101010101010001000","010101010010000101011000011101100110010101010001100","010101010010000101010000000101000101010101010001000","011101110010000111010000011101110101001001011101110"],["000000000000000000000000000000000000000000000000000","000000010001110111011100011101110111010010110000000","000000010001010100001000010000100101011010101000000","000000010001110111001000011100100111010110101000000","000000010001010001001000000100100101010010101000000","000000011101010111001000011100100101010010110000000"],["000000000000000000000000000000000000000000000000000","000000000000000001100101001011101100000000000000000","000000000000000001010101101010001010000000000000000","000000000000000001010101011011001100000000000000000","000000000000000001010101001010001010000000000000000","000000000000000001100101001011101010000000000000000"],["000000000000000000000000000000000000000000000000000","000000000000000001110111011001000100000000000000000","000000000000000001000101010101101100000000000000000","000000000000000001100111011001010100000000000000000","000000000000000001000101010101000100000000000000000","000000000000000001000101010101000100000000000000000"],["000000000000000000000000000000000000000000000000000","000000000000000001110111010001010010000000000000000","000000000000000000100101010001011010000000000000000","000000000000000000100101010101010110000000000000000","000000000000000000100101010101010010000000000000000","000000000000000000100111001010010010000000000000000"],["000000000000000000000000000000000000000000000000000","000000000000000110011101000101110110000000000000000","000000000000000101010101000101000101000000000000000","000000000000000110010101010101100110000000000000000","000000000000000100010101010101000101000000000000000","000000000000000100011100101001110101000000000000000"],["000000000000000000000000000000000000000000000000000","000000000110010101110001100111011001110111000000000","000000000101010101000001010100010101010010000000000","000000000110010101110001010110011001010010000000000","000000000101010100010001010100010001010010000000000","000000000110011101110001100111010001110010000000000"]],"cols":{"in_u":[16,14,24],"let_u":[46,42,48],"in_g":[28,22,8],"let_g":[190,172,122]}};
+  const boxTex = (inC, letC) => {                 // (its texts drawn here, a row each: the inside and its letters, in the baked box's colours)
+    const c = document.createElement('canvas'); c.width = BOX.w; c.height = BOX.h * BOX.rows.length;
+    const g = c.getContext('2d'), im = g.createImageData(c.width, c.height);
+    BOX.rows.forEach((rows, r) => rows.forEach((ln, j) => { for (let i = 0; i < BOX.w; i++) { const k = ((r * BOX.h + j) * BOX.w + i) * 4, q = ln[i] === '1' ? letC : inC; im.data[k] = q[0]; im.data[k + 1] = q[1]; im.data[k + 2] = q[2]; im.data[k + 3] = 255; } }));
+    g.putImageData(im, 0, 0);
+    const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.repeat.set(1, 1 / BOX.rows.length); return t;
+  };
+  const busBox = busPart('', BOX.w, BOX.h, 0.6501, { map: boxTex(BOX.cols.in_u, BOX.cols.let_u) });
+  const busBoxGlow = busPart('', BOX.w, BOX.h, 0.6511, { map: boxTex(BOX.cols.in_g, BOX.cols.let_g), blending: THREE.AdditiveBlending });
+  BUS.uBoxR = { value: new THREE.Vector4() };
+  busGlow.material.customProgramCacheKey = () => 'bus-glow';
+  busGlow.material.onBeforeCompile = busShade((sh) => { sh.uniforms.uBoxR = BUS.uBoxR; sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform vec4 uBoxR;')
+    .replace('#include <map_fragment>', 'if (vWP.x >= uBoxR.x && vWP.x < uBoxR.z && -vWP.y >= uBoxR.y && -vWP.y < uBoxR.w) discard;\n#include <map_fragment>'); });
   const busWheels = BUS.wheels.map(() => busPart('assets/bus_wheel.png?v=3', BUS.wd, BUS.wd, 0.652, { alphaTest: 0.5 }, 1, 16));
   busWheels[1].material.map = busWheels[0].material.map;   // the two turn together: one texture
   const busFace = busPart('assets/bus_end.png?v=3', BUS.cell, BUS.fh, 0.649, { alphaTest: 0.5 }, 1, 28);
@@ -2037,7 +2071,7 @@
   const busBeam = busPart('', BUS.beam[0], BUS.beam[1], 0.654, { map: beamTex, color: 0xffeccc, blending: THREE.AdditiveBlending, opacity: 0.16 });
   const busPool = busPart('', BUS.pool[0], BUS.pool[1], 0.6455, { map: fogTex, color: 0xffe6c0, blending: THREE.AdditiveBlending, opacity: 0.12 });
   const busShop = comps.find((c) => c.userData.shop);   // the Pokémon Center's shop, under the red awning
-  const busS = { active: false, next: 20 + Math.random() * 120, dir: 1, x: 0, v: 0, ang: 0, stop: -1, wait: 0, bob: 0, bobN: 1, k: 1, ev: 0, burst: 0, dip: 0, dipK: 1, drop: 0, hk: 1, hf: 0, crew: false, crewWait: 0, hold: false, call: null, stP: 1, stT: 0 };
+  const busS = { active: false, next: 20 + Math.random() * 120, dir: 1, x: 0, v: 0, ang: 0, stop: -1, wait: 0, bob: 0, bobN: 1, k: 1, ev: 0, burst: 0, dip: 0, dipK: 1, drop: 0, hk: 1, hf: 0, crew: false, crewWait: 0, hold: false, call: null, stP: 1, stT: 0, box: 0, tele: -1 };
   function busOff(keep) { busS.active = false; for (const m of BUS.list) m.visible = false; busZOff(keep); crewOff(); STAGE.done('tranzit'); }   // (keep: the shot lying on the road, the plank; the street free again)
   const busStage = () => { if (t - busS.stT > 30) { busS.stT = t; STAGE.ask('tranzit', 120, { prio: busS.stP }); } };   // (a long stop: its reservation kept ahead)
   function busCrackle(dt) {                        // the tubes: a buzz, stutters, dips, now and then a drop-out (by time slots: the same at any refresh rate)
@@ -2054,6 +2088,7 @@
     else if (S.drop > 0) { S.drop -= dt; k = S.drop > 0.07 ? 0.04 : hv(7.7, 0.04); }
     S.k = k;
     if (S.hf > 0) { S.hf -= dt; S.hk = stutOn(t, 9.2, 0.06, 0.5) ? 0.25 : 1; } else S.hk = 0.92 + 0.08 * k;   // the headlights: a little of it
+    if (S.tele >= 0 && S.tele < 0.5) S.hk = (S.tele % 0.25) < 0.12 ? 1.8 : 0.15;   // (two flashes, braking for the crew)
   }
   function stepBus(dt) {
     const S = busS;
@@ -2078,6 +2113,7 @@
       }
       S.active = true; for (const m of BUS.list) m.visible = true;
       if (!C_ || C_.riders) busZSpawn(BUS.forceZ);
+      S.box = C_ ? 1 : ZP.some((q) => q.on) ? 0 : 2 + Math.floor(Math.random() * (BOX.texts.length - 2)); S.tele = -1;   // (LAST STAND, OUT OF SERVICE, or a stop)
     }
     if (S.wait > 0) busStage();                      // (the crew or a round at its stop: the street kept)
     // the ride: cruise, brake to its stop, wait (its tubes crackle harder, the headlights stutter), pull away
@@ -2085,6 +2121,7 @@
     else {
       const toStop = S.stop >= 0 ? (S.stop - S.x) * S.dir : Infinity;
       if (toStop < S.v * S.v / (2 * BUS.ACC) + 0.5) {
+        if (S.crew && !S.hold && S.tele < 0) S.tele = 0;   // (braking for the crew: LAST STAND, two flashes)
         S.v = Math.max(0, S.v - BUS.ACC * dt);
         if (S.v === 0 || toStop <= 0.5) { S.v = 0; S.x = S.stop; S.wait = 3 + Math.random() * 2.5; S.bob = 0.35; S.bobN = 1; S.hf = 0.5; if (S.tz) { S.tz = false; tzRound(); } }
       } else S.v = Math.min(BUS.V, S.v + BUS.ACC * dt);
@@ -2107,6 +2144,10 @@
     busOpen.uShell.value.set(x0, y0 + bob, 1 / BUS.W, 1 / BUS.H); busOpen.uRow.value = L ? 0 : 0.5;   // where the openings are
     const lv = 0.12 + 0.88 * S.k;
     busFar.material.color.setScalar(lv); busMid.material.color.setScalar(lv); busGlow.material.opacity = S.k;
+    if (S.tele >= 0) { S.tele += dt; if (S.tele >= 0.25 && S.box !== 1) S.box = 1; }   // (the box turns: dark a moment, then LAST STAND)
+    const bxl = L ? x0 + BUS.W - BOX.x0 - BOX.w : x0 + BOX.x0, byt = y0 + bob + BOX.y0, flip = S.tele >= 0 && S.tele < 0.25;
+    for (const m of [busBox, busBoxGlow]) { m.material.map.offset.y = 1 - (S.box + 1) / BOX.texts.length; put(m, BOX.w, BOX.h, bxl, byt); }
+    busBoxGlow.material.opacity = flip ? 0 : S.k; BUS.uBoxR.value.set(bxl, byt, bxl + BOX.w, byt + BOX.h);
     busEyeGlow.position.set(x0 + sx(BUS.eyes[0][0]) + (L ? -0.5 : 1.5), -(yAt(BUS.eyes[0][0], BUS.eyes[0][1]) + bob + 0.5), 0.6515);
     // the wheels: they turn with the road (16 frames a turn), mirrored heading left
     S.ang += S.v * dt / (BUS.wd / 2);
@@ -2140,6 +2181,7 @@
       busFaceGlow.material.opacity = S.k;
     }
     busZStep(dt, x0, y0, bob, L, S);
+    busDoorStep(dt, x0, y0 + bob, L, S);            // (an ordinary stop: its door opens)
     if (S.crew && S.wait > 0 && !CREW.active) {     // stopped for the crew: it waits for their sheets a little, then they come
       if (CREW.need && CREW.loaded >= CREW.need) crewBegin(S, CREW.callForm || 'stop'); else if ((S.crewWait += dt) < (S.hold ? 1e9 : 6)) S.wait = Math.max(S.wait, 0.5); else { S.crew = false; CREW.keep = true; }   // (late sheets: the next pass, then)
     }
@@ -2161,12 +2203,18 @@
   // its roof and out of its windows (6, 10, 14... a round, three to five at a time), the round in red chalk tallies at
   // the bottom left; a round left alone 25 s, the bus drives off with its riders (the round comes back on a later pass:
   // once a round has begun, every pass brings riders).
-  // With 2500 points the soda machines (zone 7's three) sell the perk: a short jingle (our own), the bottle drunk in
-  // first person, its icon at the bottom left for good. Never under reduced motion (no bus then) ----
+  // Perk-a-Cola: zone 7's three machines each sell their perk (Speed Cola 3000, Double Tap 2000, Juggernog 2500): the
+  // bottle drunk in first person, its icon at the bottom left for good. Never under reduced motion (no bus then) ----
   const BZ = {"W":1872,"H":840,"win":103,"roofCol":120,"plankY":50.65,"winSlots":[25,49,74,131,160],"roofSlots":[30,72,165,208],"soda":[281,569,347,724],"drink":{"w":96,"h":128,"n":25,"fps":8},"pull":{"w":48,"h":66,"ax":24,"ay":64,"fps":8,"n":39,"rows":{"A":0,"B":66},"eyes":{"A":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5]],"B":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5]]},"plank":[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,0.02,-50.03,-0.076],[1,0.3,-48.45,-0.272],[1,0.6,-47.58,-0.384],[1,0.21,-48.79,-0.229],[1,0.12,-49.24,-0.173],[1,0.38,-48.18,-0.306],[1,0.88,-46.96,-0.466],[1,1.05,-46.64,-0.512],[1,0.34,-48.32,-0.288],[1,0.36,-48.24,-0.299],[1,1.02,-46.7,-0.503],[1,1.4,-46.07,-0.593],[1,3.89,-46.05,0.573],[1,4.7,-45.35,0.088],[1,-2.85,-45.51,-1.33],[1,-11.96,-54.78,-2.414],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0]],"loop":28},"roof":{"w":40,"h":36,"ax":20,"ay":32,"fps":8,"n":26,"rows":{"A":132,"B":168},"eyes":{"A":[[34.5,16.0],[35.0,16.5],[35.5,17.0],[35.5,17.5],[35.5,17.5],[35.0,16.5],[34.5,16.5],[34.5,15.5],[34.0,15.5],[34.0,14.5],[33.5,14.5],[33.5,14.5],[34.0,15.5],[34.5,16.5],[35.0,16.5],[35.5,17.0],[35.5,17.5],[34.5,11.5],[29.5,3.0],0,0,0,0,[27.0,1.5],[31.5,7.5],[34.0,14.5]],"B":[[34.5,16.0],[35.0,16.5],[35.5,17.0],[35.5,17.5],[35.5,17.5],[35.0,16.5],[34.5,16.5],[34.5,15.5],[34.0,15.5],[34.0,14.5],[33.5,14.5],[33.5,14.5],[34.0,15.5],[34.5,16.5],[35.0,16.5],[35.5,17.0],[35.5,17.5],[34.5,11.5],[29.5,3.0],0,0,0,0,[27.0,1.5],[31.5,7.5],[34.0,14.5]]}},"fall":{"w":60,"h":70,"ax":26,"ay":64,"fps":10,"n":13,"rows":{"A":204,"B":274},"eyes":{"A":[0,0,[21.5,18.0],[17.5,32.5],[16.0,50.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5]],"B":[0,0,[21.5,18.0],[17.5,32.5],[16.0,50.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5]]}},"fallhi":{"w":60,"h":110,"ax":26,"ay":104,"fps":10,"n":15,"rows":{"A":344,"B":454},"eyes":{"A":[0,0,0,0,[20.0,15.5],[18.0,31.5],[16.5,50.5],[16.0,70.5],[15.5,91.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5]],"B":[0,0,0,0,[20.0,15.5],[18.0,31.5],[16.5,50.5],[16.0,70.5],[15.5,91.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5]]}},"climb":{"w":40,"h":72,"ax":20,"ay":68,"fps":10,"n":15,"rows":{"A":564,"B":636},"eyes":{"A":[0,0,[28.5,71.5],[28.5,67.0],[28.5,63.5],[28.5,63.5],[29.5,61.5],[30.5,59.5],[32.0,56.5],[33.0,54.5],[33.0,53.5],[33.5,53.5],[33.5,53.5],[34.0,52.5],[34.5,52.5]],"B":[0,0,[28.5,71.5],[28.5,67.0],[28.5,63.5],[28.5,63.5],[29.5,61.5],[30.5,59.5],[32.0,56.5],[33.0,54.5],[33.0,53.5],[33.5,53.5],[33.5,53.5],[34.0,52.5],[34.5,52.5]]}},"emerge":{"w":48,"h":66,"ax":24,"ay":64,"fps":10,"n":16,"rows":{"A":708,"B":774},"eyes":{"A":[[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[24.0,17.5],[29.0,18.0],[32.5,18.5],0,0,0,0,0,0,0],"B":[[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[24.0,17.5],[29.0,18.0],[32.5,18.5],0,0,0,0,0,0,0]},"front":[0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1]}};
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) {} };
-  const ZG = { pts: Math.max(0, +lsGet('mtsfj-tz-points') || 0), round: Math.max(1, +lsGet('mtsfj-tz-round') || 1), perk: lsGet('mtsfj-tz-perk') === '1',
+  const PERKS = {                                  // near to far: x across the machines, price, tag colour, its icon and drink
+    speed: { x0: 281, x1: 304, price: 3000, col: '#7fd06a', ls: 'mtsfj-tz-speed', icon: "url('assets/speed_perk.png?v=1')", drink: 'assets/speed_drink.png?v=1' },
+    tap: { x0: 304, x1: 325, price: 2000, col: '#e8a33a', ls: 'mtsfj-tz-tap', icon: "url('assets/tap_perk.png?v=1')", drink: 'assets/tap_drink.png?v=1' },
+    jugg: { x0: 325, x1: 347, price: 2500, col: '#d9493c', ls: 'mtsfj-tz-perk', icon: "url('assets/jugg_perk.png?v=1')", drink: 'assets/jugg_drink.png?v=1' } };
+  const PERK_ORDER = ['jugg', 'speed', 'tap'];     // (the icons' order on the HUD)
+  const ZG = { pts: Math.max(0, +lsGet('mtsfj-tz-points') || 0), round: Math.max(1, +lsGet('mtsfj-tz-round') || 1),
+    has: { jugg: lsGet('mtsfj-tz-perk') === '1', speed: lsGet('mtsfj-tz-speed') === '1', tap: lsGet('mtsfj-tz-tap') === '1' }, dk: 'jugg', imgs: {},
     seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, due: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
     puller: null, alpha: null, hud: null, drink: -1, cv: null, img: null, lit: 1 };
   const zTex = crisp('assets/bus_zombies.png?v=2', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
@@ -2326,34 +2374,35 @@
     if (!ZG.hud) {
       const st = document.createElement('style');
       st.textContent = '.tz-pts{position:absolute;z-index:2;right:clamp(20px,6vw,96px);bottom:58px;font:16px/1 var(--pixel);letter-spacing:.06em;color:#ffd84a;text-shadow:1px 1px 0 #3b2306,-1px 0 0 #3b2306,0 -1px 0 #3b2306;pointer-events:none}'
-        + '.tz-hud{position:absolute;z-index:2;left:clamp(20px,6vw,96px);bottom:12px;display:flex;align-items:flex-end;gap:14px;pointer-events:none}'
-        + '.hero .tz-hud canvas{position:static;inset:auto;width:72px;height:36px;image-rendering:pixelated}.tz-hud .tz-perkicon{width:64px;height:64px;background:url(assets/jugg_perk.png?v=1) 0 0/64px 832px repeat-y;image-rendering:pixelated}'
+        + '.tz-hud{position:absolute;z-index:2;left:clamp(20px,6vw,96px);bottom:48px;display:flex;align-items:flex-end;gap:14px;pointer-events:none}'   // (above the secrets' pill: it shares the corner)
+        + '.hero .tz-hud canvas{position:static;inset:auto;width:72px;height:36px;image-rendering:pixelated}.tz-hud .tz-perkicon{width:64px;height:64px;background:0 0/100% 1300% repeat-y;image-rendering:pixelated}'
         + '.tz-pop{animation:tzpop .3s cubic-bezier(.3,1.6,.5,1) both,tzshine .42s steps(12) .3s both}@keyframes tzpop{from{transform:scale(0)}to{transform:scale(1)}}'
-        + '@keyframes tzshine{from{background-position:0 -64px}to{background-position:0 -832px}}@media (prefers-reduced-motion:reduce){.tz-pop{animation:none}}'
+        + '@keyframes tzshine{from{background-position:0 8.3333%}to{background-position:0 108.3333%}}@media (prefers-reduced-motion:reduce){.tz-pop{animation:none}}'   // (its 13 frames: the icon, the shine, the icon again)
         + '.tz-plus,.tz-tag{position:absolute;z-index:3;font:12px/1 var(--pixel);pointer-events:none;transform:translate(-50%,-100%);animation:tzup 1s ease-out forwards}'
         + '.tz-plus{color:#ffd84a;text-shadow:1px 1px 0 #3b2306}.tz-tag{color:#d9493c;text-shadow:1px 1px 0 #1a0606;animation-duration:1.8s}'
         + '@keyframes tzup{to{transform:translate(-50%,-230%);opacity:0}}'
         + '.hero canvas.tz-drink{position:absolute;z-index:1;inset:auto auto 0 auto;image-rendering:pixelated;pointer-events:none}'
-        + '@media (max-width:720px){.tz-pts{right:14px;bottom:18px}.tz-hud{left:auto;right:96px;bottom:12px}}';
+        + '@media (max-width:720px){.tz-pts{right:14px;bottom:50px}.tz-hud{left:auto;right:14px;bottom:72px;gap:8px}.hero .tz-hud canvas{width:36px;height:18px}.tz-hud .tz-perkicon{width:32px;height:32px}}';   // (a phone: at 1x, right, stacked over the secrets' pill, clear of the page's title)
       document.head.appendChild(st);
       const pts = document.createElement('div'); pts.className = 'tz-pts';
       const box = document.createElement('div'); box.className = 'tz-hud';
       const chalk = document.createElement('canvas'); chalk.width = 36; chalk.height = 18;
-      const perk = document.createElement('div'); perk.className = 'tz-perkicon';   // (its frames: the icon, then a shine across it)
-      box.append(chalk, perk); hero.append(pts, box);
-      ZG.hud = { pts, chalk, perk, r: 0 };
+      const perks = {};                              // (each its frames: the icon, then a shine across it)
+      for (const k of PERK_ORDER) { const p = document.createElement('div'); p.className = 'tz-perkicon'; p.style.backgroundImage = PERKS[k].icon; p.hidden = true; perks[k] = p; }
+      box.append(chalk, ...PERK_ORDER.map((k) => perks[k])); hero.append(pts, box);
+      ZG.hud = { pts, chalk, perks, r: 0 };
     }
-    if (ZG.seen && !ZG.img) { ZG.img = new Image(); ZG.img.src = 'assets/jugg_drink.png?v=1'; }   // (the drink ready before it is bought)
+    for (const k of PERK_ORDER) if (ZG.seen && !ZG.has[k] && !ZG.imgs[k] && ZG.pts >= PERKS[k].price) { ZG.imgs[k] = new Image(); ZG.imgs[k].src = PERKS[k].drink; }   // (a drink ready once it can be bought)
     const H = ZG.hud;
     const off = tzOff();
     H.pts.textContent = ZG.pts; H.pts.hidden = off || !ZG.seen;
     H.chalk.hidden = off || !ZG.began; if (!off && ZG.began && H.r !== ZG.round) { tzChalk(H.chalk.getContext('2d'), ZG.round); H.r = ZG.round; }
-    H.perk.hidden = off || !(ZG.perk && ZG.drink < 0);
+    for (const k of PERK_ORDER) H.perks[k].hidden = off || !ZG.has[k] || (ZG.drink >= 0 && ZG.dk === k);
   }
-  function tzPop(cls, txt, x, y) {                 // a word rising from a point of the street
+  function tzPop(cls, txt, x, y, col) {            // a word rising from a point of the street (col: its colour, else the class's)
     if (tzOff()) return;
     const r = canvas.getBoundingClientRect(), hr = hero.getBoundingClientRect(), d = document.createElement('div');
-    d.className = cls; d.textContent = txt;
+    d.className = cls; d.textContent = txt; if (col) d.style.color = col;
     d.style.left = (r.left - hr.left + (x - camera.left) / (camera.right - camera.left) * r.width) + 'px';
     d.style.top = (r.top - hr.top + (y + camera.top) / (camera.top - camera.bottom) * r.height) + 'px';
     hero.appendChild(d); setTimeout(() => d.remove(), 2000);
@@ -2374,7 +2423,7 @@
       }
     }
     if (hit) { zKill(hit, x, y); return true; }
-    if (x >= BZ.soda[0] && x < BZ.soda[2] && y >= BZ.soda[1] && y < BZ.soda[3]) { tzSoda(); return true; }
+    if (x >= BZ.soda[0] && x < BZ.soda[2] && y >= BZ.soda[1] && y < BZ.soda[3]) { tzSoda(x); return true; }
     return false;
   }
   function zKill(z, x, y) {                        // shot: it drops to the road
@@ -2402,14 +2451,16 @@
     ZG.spawned = ZP.filter((q) => q.on && !q.dying).length;
     lsSet('mtsfj-tz-round', ZG.round); tzHud();
   }
-  function tzSoda() {                              // the machines: 2500 points buy the perk
-    if (ZG.perk || ZG.drink >= 0) return;
-    if (ZG.pts < 2500) { tzPop('tz-tag', '2500', (BZ.soda[0] + BZ.soda[2]) / 2, BZ.soda[1] - 2); return; }
-    ZG.pts -= 2500; ZG.perk = true; lsSet('mtsfj-tz-points', ZG.pts); lsSet('mtsfj-tz-perk', '1');
-    tzJingle();
-    if (reduced) { tzHud(); tzPerk(); return; }
+  function tzSoda(x) {                             // a machine: its perk for its price (its tag, in its colour, when short of points)
+    const k = x < PERKS.speed.x1 ? 'speed' : x < PERKS.tap.x1 ? 'tap' : 'jugg', P = PERKS[k];
+    if (ZG.has[k] || ZG.drink >= 0) return;
+    if (ZG.pts < P.price) { tzPop('tz-tag', String(P.price), (P.x0 + P.x1) / 2, BZ.soda[1] - 2, P.col); return; }
+    ZG.pts -= P.price; ZG.has[k] = true; ZG.dk = k; lsSet('mtsfj-tz-points', ZG.pts); lsSet(P.ls, '1');
+    if (k === 'jugg') tzJingle();                // (the existing jingle, Juggernog's only)
+    if (reduced) { tzHud(); tzPerk(k); return; }
     if (!ZG.cv) { ZG.cv = document.createElement('canvas'); ZG.cv.width = JD.w; ZG.cv.height = JD.h; ZG.cv.className = 'tz-drink'; }
-    if (!ZG.img) { ZG.img = new Image(); ZG.img.src = 'assets/jugg_drink.png?v=1'; }
+    if (!ZG.imgs[k]) { ZG.imgs[k] = new Image(); ZG.imgs[k].src = P.drink; }
+    ZG.img = ZG.imgs[k];                           // (one layout, JD, for the three: only its sheet changes)
     const r = canvas.getBoundingClientRect(), hr = hero.getBoundingClientRect(), px = 2 * r.width / (camera.right - camera.left);   // twice the street's pixel: close
     Object.assign(ZG.cv.style, { width: JD.w * px + 'px', height: JD.h * px + 'px', left: Math.round(hr.width * (hr.width < 720 ? 0.36 : 0.56) - JD.cx * px) + 'px' });   // (the view's centre at 56 %; on a phone at 36 %: the bottle in sight)
     hero.insertBefore(ZG.cv, canvas.nextSibling); ZG.drink = 0; tzHud();   // (over the street, under the page's words and the HUD)
@@ -2425,11 +2476,11 @@
     const k = sm((t - 0.95) / 0.35) * (1 - sm((t - 2.2) / 0.35)), bob = D.gulps.reduce((a, s) => a + Math.exp(-Math.pow((t - s - 0.05) / 0.08, 2)), 0);
     const dpr = window.devicePixelRatio || 1, y = Math.round((4 * k + 1.5 * bob * k) * dpr) / dpr;   // (whole device pixels: the street is never resampled)
     canvas.style.transform = y > 0 ? 'translateY(' + y + 'px)' : '';
-    if (f >= D.n) { ZG.drink = -1; canvas.style.transform = ''; ZG.cv.remove(); tzHud(); tzPerk(); }
+    if (f >= D.n) { ZG.drink = -1; canvas.style.transform = ''; ZG.cv.remove(); tzHud(); tzPerk(ZG.dk); }
   }
-  function tzPerk() {                              // its icon, for good
-    const p = ZG.hud.perk; if (!tzOff()) { p.hidden = false; p.classList.remove('tz-pop'); void p.offsetWidth; p.classList.add('tz-pop'); }
-    foundSecret('jugg');
+  function tzPerk(k) {                             // its icon, for good (Juggernog's: the secret)
+    const p = ZG.hud.perks[k]; if (!tzOff()) { p.hidden = false; p.classList.remove('tz-pop'); void p.offsetWidth; p.classList.add('tz-pop'); }
+    if (k === 'jugg') foundSecret('jugg');
   }
   function tzJingle() {                            // a little fanfare of our own, about as loud as the music (-35 LUFS)
     if (!SND.on || !SND.ctx) return;
@@ -2737,7 +2788,36 @@
     const S = busS; S.hold = false; S.call = null; CREW.script = false; CREW.callForm = null; CREW.leftOK = false; CREW.cap = 10;
     crewEmit('gone');
   }
+  // ---- the front door at an ordinary stop (evenements-01): it folds open, the saloon's tubes
+  // light the road under its step, nobody gets off (OUT OF SERVICE), it shuts before the bus pulls away. Not at the
+  // crew's stop (theirs), nor through a round of `jugg` or a held bus ----
+  const BDOOR = { st: '', t: 0, door: null, glow: null, pool: null };
+  function busDoorStep(dt, x0, y0, L, S) {
+    const B = BDOOR, stopped = S.wait > 0 && !S.crew && !S.hold && !ZG.active && !CREW.active;
+    if (!B.st) {
+      if (!stopped || S.wait < 1.6) return;
+      if (!B.door) {                                   // (made at the first stop: the sprites' grading hook exists by then)
+        const t1 = crisp('assets/bus_door.png?v=1'), t2 = crisp('assets/bus_door_glow.png?v=1'); t1.repeat.set(1 / 4, 1 / 2); t2.repeat.set(1 / 4, 1 / 2);
+        B.door = new THREE.Mesh(new THREE.PlaneGeometry(DOOR.w, DOOR.h), crewMat(t1, null, 'door', { alphaTest: 0.5 }));
+        B.glow = new THREE.Mesh(new THREE.PlaneGeometry(DOOR.w, DOOR.h), crewMat(t2, null, 'doorg', { blending: THREE.AdditiveBlending }));
+        B.pool = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), crewMat(fogTex, null, 'doorp', { color: 0x8fd6ff, blending: THREE.AdditiveBlending, opacity: 0 }));
+        for (const m of [B.door, B.glow, B.pool]) { m.visible = false; scene.add(m); }
+      }
+      B.st = 'open'; B.t = 0; S.wait = Math.max(S.wait, 4.3);   // (open about 3 s)
+    }
+    B.t += dt;
+    if (B.st === 'open' && (!stopped || S.wait < 0.7)) { B.st = 'shut'; B.t = 0; }
+    if (B.st === 'shut' && B.t > 0.45) { busDoorOff(); return; }
+    const dk = B.st === 'open' ? Math.min(3, Math.floor(B.t / 0.1)) : Math.max(0, 3 - Math.floor(B.t / 0.1));   // (4 frames, 0.45 s each way)
+    const xl = L ? x0 + BUS.W - DOOR.x0 - DOOR.w : x0 + DOOR.x0, cy = -(y0 + DOOR.y0 + DOOR.h / 2);
+    B.door.visible = true; B.door.material.map.offset.set(dk / 4, L ? 0 : 0.5); B.door.position.set(xl + DOOR.w / 2, cy, 0.6502);
+    B.glow.visible = dk > 0; B.glow.material.map.offset.set(dk / 4, L ? 0 : 0.5); B.glow.material.opacity = S.k; B.glow.position.set(xl + DOOR.w / 2, cy, 0.6503);
+    B.pool.visible = dk > 0; B.pool.scale.set(44, 9, 1); B.pool.position.set(xl + DOOR.w / 2, -(y0 + BUS.ground + 3), 0.6457);   // (on the road under its step)
+    B.pool.material.opacity = 0.2 * (dk / 3) * S.k;
+  }
+  function busDoorOff() { const B = BDOOR; B.st = ''; if (B.door) B.door.visible = B.glow.visible = B.pool.visible = false; }
   function crewOff() {                                     // the bus gone (or the page's reset): everything of the event away
+    busDoorOff();
     if (!CREW.made) return;
     CREW.active = false; CREW.door.visible = CREW.doorGlow.visible = false;
     for (const H of CREW.heroes) { H.st = undefined; H.body.visible = H.lit.visible = H.cont.visible = false; if (H.refl) H.refl.visible = false; }
@@ -2995,7 +3075,7 @@
   // joint angles alone, each following its target through a damped spring: eased, the head and the hands a little looser
   // (overlap, follow-through). 19.8 px a metre on the room's plane. At the scene's own pixels, 15 fps while it moves ----
   const WIN = { x: 511, y: 502, w: 87, h: 53 }, K = 4, CW = WIN.w * K, CH = WIN.h * K;
-  const RM = { seat: [556.6, 547.2], stand: 536.6, door: 505, keys: [[549.6, 543.6], [550.5, 543.9]], scr: [532, 532, 11, 10] };
+  const RM = { seat: [556.6, 547.2], stand: 536.6, door: 505, glass: 540, keys: [[549.6, 543.6], [550.5, 543.9]], scr: [532, 532, 11, 10] };   // (glass: where he stands at the window)
   const wc = document.createElement('canvas'); wc.width = WIN.w; wc.height = WIN.h; const wg = wc.getContext('2d', { willReadFrequently: true });   // the window, at the scene's own pixels
   const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = wtex.minFilter = THREE.NearestFilter; wtex.generateMipmaps = false;
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
@@ -3082,6 +3162,18 @@
       shA: 4 - 15 * sn, elA: 14 + 8 * Math.max(0, -sn), wrA: 0, shB: 4 + 15 * sn, elB: 14 + 8 * Math.max(0, sn), wrB: 0 });
     RJ.py.t = RM.stand - 0.15 - 0.3 * Math.cos(2 * W.ph);
   }
+  function walkPlant() {                         // the pelvis from the planted foot (rule 4: no sliding): of the two feet the one nearest the
+    const W = ws, p = rigPts('v'), fa = p.LA[2], fb = p.LB[2];   // floor is in stance; it keeps the x it landed on and the pelvis keeps its offset from it
+    let side = W.plantSide || (fa[1] >= fb[1] ? 'A' : 'B');
+    const mine = side === 'A' ? fa : fb, other = side === 'A' ? fb : fa;
+    if (other[1] > mine[1] + 0.3) { side = side === 'A' ? 'B' : 'A'; W.plant = null; }   // the other foot is down now: planted where it is
+    const ft = side === 'A' ? fa : fb;
+    if (W.plant === null || W.plant === undefined) W.plant = ft[0];
+    W.plantSide = side;
+    const x = W.plant + (RJ.px.v - ft[0]);
+    RJ.px.v = RJ.px.t = x; RJ.px.d = 0;
+    return x;
+  }
   // ---- the person: the owner at his PC, the one figure behind lit glass drawn in colour (his wish). Each frame his parts
   // are laid at 4x as plain shapes (capsules, ellipses, the chair's back), front to back, each 4x sample keeping the first
   // part over it; a scene pixel is his where half its 16 samples are, and shows the part most of them have: crisp pixels
@@ -3108,6 +3200,20 @@
     const fH = [fs * Math.cos(a4), Math.sin(a4)], uH = [fs * Math.sin(a4), -Math.cos(a4)], fT = [fs * Math.cos(a2), Math.sin(a2)], uT = [fs * Math.sin(a2), -Math.cos(a2)];
     const at = (o, f, u, kf, ku) => [o[0] + f[0] * kf + u[0] * ku, o[1] + f[1] * kf + u[1] * ku];
     const cap = (m, l, a, b, r) => Q.push([m, l, 0, a[0], a[1], b[0], b[1], r]), ell = (m, l, c, u, rx, ry) => Q.push([m, l, 1, c[0], c[1], u[0], u[1], rx, ry]);
+    if (W.front) {                               // (the finale) at the glass, square to the street: a hand flat on the pane, the arms, the head, the hoodie, the legs
+      const bx = p.P[0], by = p.P[1], br = 0.12 * Math.sin(W.t * 1.3), h = W.hand || 0, hc = [bx, by - 13.7 + 0.4 * br];
+      cap(4, 0, [bx + 4.7, by - 10.6 - 2.2 * h], [bx + 5.0, by - 11.8 - 2.2 * h], 1.0);                      // the right hand, up on the glass as it lifts
+      cap(1, 0, [bx + 3.1, by - 9.4], [bx + 4.8, by - 10.4 - 1.6 * h], 1.0);                                   // its arm
+      cap(1, 0, [bx - 3.1, by - 9.4], [bx - 3.9, by - 2.0], 0.95); cap(4, 0, [bx - 3.9, by - 2.0], [bx - 4.0, by - 0.6], 0.62);   // the left arm down, its hand
+      ell(5, 3, [hc[0], hc[1] - 1.2], [1, 0], 2.35, 1.5);                                                      // the hair
+      ell(4, 3, hc, [1, 0], 2.2, 2.35);                                                                        // the face
+      ell(5, 3, [hc[0], hc[1] - 2.0], [1, 0], 2.4, 1.0);                                                       // the fringe
+      cap(2, 4, [bx - 1.7, by - 10.5], [bx + 1.7, by - 10.5], 0.85); cap(4, 4, [bx, by - 11.4], [bx, by - 10.2], 0.75);   // the collar, the neck
+      cap(1, 6, [bx, by - 9.0 + 0.3 * br], [bx, by - 1.2], 3.3);                                               // the torso
+      cap(6, 8, [bx - 1.7, by], [bx - 1.9, by + 16.4], 1.35); cap(6, 8, [bx + 1.7, by], [bx + 1.9, by + 16.4], 1.35);   // the legs
+      cap(7, 8, [bx - 2.4, by + 17.1], [bx - 1.2, by + 17.1], 0.8); cap(7, 8, [bx + 1.2, by + 17.1], [bx + 2.4, by + 17.1], 0.8);   // the shoes
+      return Q;
+    }
     const arm = (A, far, l) => { const [Sh, E, Wr, T] = A, dx = Wr[0] - E[0], dy = Wr[1] - E[1], dl = Math.hypot(dx, dy) || 1, Wc = [Wr[0] - dx / dl * 0.85, Wr[1] - dy / dl * 0.85];
       cap(4 + far, l, Wr, T, 0.62); cap(3 + far, l, Wc, Wr, 0.95); cap(1 + far, l, E, Wc, 0.88); cap(1 + far, l, Sh, E, 1.0); };
     const leg = (Lg, far, l) => { const [P, Kn, Ft] = Lg; cap(7 + far, l, Ft, [Ft[0] + fs * 1.3, Ft[1]], 0.75); cap(6 + far, l, Kn, Ft, 1.25); cap(6 + far, l, P, Kn, 1.7); };
@@ -3222,16 +3328,24 @@
   ws.L = ws.light ? 1 : 0;
   function stepRoom(dt, t) {
     const W = ws; W.t += dt; W.next -= dt;
+    if (!W.finHooked) {                           // the finale (FIN.api, a const declared further down: hooked at run time): at the last stand he gets up
+      W.finHooked = true;                         // and comes to the glass to watch the street (towin, atwin); the blast's flash whitens him with the
+      try {                                       // street; at the dawn he goes back to his desk (or, his room dark, he is gone); the end at the latest
+        FIN.api.on('stand', () => { if (!reduced) ws.toGlass = true; });
+        FIN.api.on('dawn', () => { ws.toGlass = false; if (ws.state === 'atwin') ws.finDawn = 0; else if (ws.state === 'towin') ws.rush = true; });
+        FIN.api.on('end', () => { ws.toGlass = false; if (ws.state === 'atwin') ws.finDawn = Math.max(ws.finDawn, 4.9); else if (ws.state === 'towin') ws.rush = true; });
+      } catch (e) {}
+    }
     if (W.state === 'empty') {
       if (studyLate() && !OPEN.on && W.next > 4 && W.next < 1e8) W.next = 2 + Math.random() * 2;   // late: he is back soon
       if (W.next < 0 && nightOpen('study')) {                          // someone at the door: in they come, the lamp goes on
-        Object.assign(W, { state: 'in', t: 0, f: 1, ph: Math.random() * 6, x0: RM.door, seated: false, lampAt: W.light ? -1 : 0.35 });
+        Object.assign(W, { state: 'in', t: 0, f: 1, ph: Math.random() * 6, x0: RM.door, seated: false, lampAt: W.light ? -1 : 0.35, plant: null, plantSide: null });
         setT(POSE.stand); RJ.px.t = RM.door; RJ.py.t = RM.stand; snap();
       }
     } else if (W.state === 'in') {               // in by the door in the left wall, past the desk, to just before the chair
       if (W.lampAt >= 0 && W.t > W.lampAt) { W.light = true; W.lampAt = -1; }
-      const x = W.x0 + 15 * W.t;
-      if (x < RM.seat[0] - 4.5) { walkPose(dt); RJ.px.t = x; }
+      const x = RJ.px.v;                       // (the pelvis advances from the planted foot, placed at the end of the frame: the stride sets the pace)
+      if (x < RM.seat[0] - 4.5) { walkPose(dt); W.walking = true; }
       else { setT(POSE.stand); RJ.px.t = RM.seat[0] - 4.5; RJ.py.t = RM.stand; RJ.yaw.t = 1; Object.assign(W, { state: 'turn', t: 0, h1: false }); }
     } else if (W.state === 'turn') {             // he turns round (through facing the street) to sit, his back to the chair
       if (W.t > 0.35 && !W.h1) { W.h1 = true; W.f = -1; RJ.yaw.v = 1; RJ.yaw.t = 0; }
@@ -3242,6 +3356,8 @@
       if (W.t > 1) W.screen = true;
       if (W.t > 1.7) Object.assign(W, { state: 'sit', t: 0, seated: true, next: 45 + Math.random() * 80, act: 'type', actT: 6 + Math.random() * 10,
         look: 2 + Math.random() * 3, lampOff: W.light && Math.random() < 0.45 ? 15 + Math.random() * 40 : -1 });
+    } else if (W.state === 'sit' && W.toGlass) {   // (the finale's stand: up, and to the window)
+      W.toGlass = false; Object.assign(W, { state: 'standup', t: 0, h1: false, h2: false, h3: false, glass: true });
     } else if (W.state === 'sit') {
       if (!W.seated) { W.seated = true; W.f = -1; setT(POSE.sit); RJ.px.t = RM.seat[0]; RJ.py.t = RM.seat[1]; reachKeys(); snap(); W.act = 'type'; W.actT = 5 + Math.random() * 8; }
       if (W.lampOff >= 0 && W.t > W.lampOff) { W.light = false; W.lampOff = -1; }   // the lamp off: the screen alone
@@ -3275,10 +3391,22 @@
       if (W.t > 0.2) W.screen = false;
       if (W.t > 0.25 && !W.h1) { W.h1 = true; setT(POSE.hinge); RJ.px.t = RM.seat[0] - 1.2; RJ.py.t = RM.stand + 0.4; }
       if (W.t > 0.85 && !W.h2) { W.h2 = true; setT(POSE.stand); RJ.py.t = RM.stand; RJ.yaw.t = 1; }
-      if (W.t > 1.35 && !W.h3) { W.h3 = true; RJ.yaw.t = 0; }                      // facing the door already (on the left)
-      if (W.t > 1.5) Object.assign(W, { state: 'out', t: 0, x0: RJ.px.v, ph: 0, lampOff: Math.random() < 0.7 ? 1 : 0 });
+      if (W.t > 1.35 && !W.h3) { W.h3 = true; RJ.yaw.t = W.glass ? 1 : 0; }         // facing the door already (on the left); to the window: the street
+      if (W.t > 1.5) Object.assign(W, W.glass ? { state: 'towin', t: 0, glass: false, plant: null, plantSide: null }
+        : { state: 'out', t: 0, x0: RJ.px.v, ph: 0, lampOff: Math.random() < 0.7 ? 1 : 0, plant: null, plantSide: null });
+    } else if (W.state === 'towin') {            // (the finale) to the middle of the glass, on planted feet
+      walkPose(dt); W.walking = true; const x = RJ.px.v;
+      if (x <= RM.glass || W.rush) { setT(POSE.stand); RJ.py.t = RM.stand; RJ.yaw.t = 1; W.walking = false; Object.assign(W, { state: 'atwin', t: 0, front: 0, hand: 0, finDawn: W.rush ? 4.9 : -1, rush: false }); }
+    } else if (W.state === 'atwin') {            // at the glass: the head turns first, then he squares to the street, a hand flat on the pane
+      if (W.t > 0.35 && !W.front) W.front = 1;
+      W.hand = Math.max(0, Math.min(1, (W.t - 0.6) / 0.4));
+      if (W.finDawn >= 0 && (W.finDawn += dt) > 5) {   // the dawn (or the end): back to his desk the usual way; his room dark, he is gone
+        W.front = 0; W.hand = 0; W.finDawn = -1;
+        if (W.L > 0.1 || W.S > 0.1) { W.f = 1; RJ.yaw.t = 0; Object.assign(W, { state: 'in', t: 0, x0: RJ.px.v, lampAt: -1, seated: false, plant: null, plantSide: null }); }
+        else { W.screen = false; Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false }); }
+      }
     } else if (W.state === 'out') {
-      const x = W.x0 - 15 * W.t; walkPose(dt); RJ.px.t = x;
+      walkPose(dt); W.walking = true; const x = RJ.px.v;
       if (W.lampOff && x < 516) { W.light = false; W.lampOff = 0; }      // the switch by the door, on the left
       if (x < RM.door - 2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false });
     }
@@ -3287,6 +3415,7 @@
     if (W.flash > 0) { W.flash -= dt; W.dirty = true; }
     W.L += (Lt - W.L) * Math.min(1, dt * 16); W.S += (St - W.S) * Math.min(1, dt * (St > W.S ? 6 : 8));
     if (W.state !== 'empty') for (const k in RJ) { const j = RJ[k]; j.d += (j.w * j.w * (j.t - j.v) - 2 * j.z * j.w * j.d) * dt; j.v += j.d * dt; }
+    if (W.walking) { W.walking = false; walkPlant(); }   // (a walking frame: the pelvis placed from the planted foot, the joints settled for this frame)
     W.acc += dt;
     const busy = W.state !== 'empty' || Math.abs(Lt - W.L) > 0.003 || Math.abs(St - W.S) > 0.003 || !W.screen;   // (asleep, it breathes)
     if ((busy || W.dirty) && W.acc >= 1 / 15 && camera.right > WIN.x && camera.left < WIN.x + WIN.w) { W.acc = 0; drawWindow(); }
@@ -3298,12 +3427,10 @@
   const atex = new THREE.CanvasTexture(ac); atex.magFilter = atex.minFilter = THREE.LinearFilter; atex.generateMipmaps = false;
   const arcMesh = new THREE.Mesh(new THREE.PlaneGeometry(ARC.w, ARC.h), new THREE.MeshBasicMaterial({ map: atex, transparent: true, depthWrite: false }));
   arcMesh.position.set(ARC.x + ARC.w / 2, -(ARC.y + ARC.h / 2), 0.82); scene.add(arcMesh);
-  // light spill: on the wall to the left of the door and on the wet pavement in front of it
-  const spillC = document.createElement('canvas'); spillC.width = 256; spillC.height = 256;
-  (function () { const g = spillC.getContext('2d'); const r = g.createRadialGradient(256, 200, 10, 256, 200, 250); r.addColorStop(0, 'rgba(230,140,190,.8)'); r.addColorStop(0.45, 'rgba(130,170,200,.25)'); r.addColorStop(1, 'rgba(130,170,200,0)'); g.fillStyle = r; g.fillRect(0, 0, 256, 256); })();
-  const spillTex = new THREE.CanvasTexture(spillC); spillTex.magFilter = spillTex.minFilter = THREE.LinearFilter;
-  const spill = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshBasicMaterial({ map: spillTex, transparent: true, opacity: 0.17, blending: THREE.AdditiveBlending, depthWrite: false }));
-  spill.position.set(1356 - 120, -(812 - 60), 2.3); scene.add(spill);   // centred on the doorway's foot, spreading left onto the street
+  // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
+  // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
+  // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
+  const spill = plane('assets/arcade_spill.png?v=1', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
@@ -3337,18 +3464,28 @@
       ag.drawImage(arcImg, lx, 0, 1, 332, lx * AK, y0 * AK, AK, (y1 - y0) * AK);
     }
     // the fuses' reward: with the power cut the room goes dark, and comes back as its tube catches
-    const pw = PW.on ? PW.arc : 1;
-    if (pw < 1) { ag.fillStyle = 'rgba(6,4,16,' + 0.9 * (1 - pw) + ')'; ag.fillRect(0, 0, ACW, ACH); }
+    // and by its hours (lumieres-01): shut, its ceiling out (0.3 of its light), its cabinets' attract screens and the fuse prompt kept
+    const pwr = PW.on ? PW.arc : 1, hk = HRS.k.arcade, pw = pwr * (0.3 + 0.7 * hk);   // (HRS: openK by frame; drawArcade also runs at load)
+    if (pwr < 1) { ag.fillStyle = 'rgba(6,4,16,' + 0.9 * (1 - pwr) + ')'; ag.fillRect(0, 0, ACW, ACH); }
+    if (hk < 0.999) {                            // the hours' dark: all but the screens (their glass: out of the path)
+      const a2 = 1 - (1 - 0.9 * (1 - pw)) / Math.max(0.05, 1 - 0.9 * (1 - pwr));
+      ag.save(); ag.beginPath(); ag.rect(0, 0, ACW, ACH);
+      for (const q of ARC_ROW.concat([BOOT_Q[2][0]])) q.forEach(([qx, qy], k) => { const X = qx * AK, Y = roomY(qx, qy) * AK; if (k) ag.lineTo(X, Y); else ag.moveTo(X, Y); });
+      { const [x, y, w, h] = ARC_SCREENS[3], cx = x + w / 2; ag.rect(x * AK, roomY(cx, y) * AK, w * AK, (roomY(cx, y + h) - roomY(cx, y)) * AK); }
+      ag.clip('evenodd'); ag.fillStyle = 'rgba(6,4,16,' + Math.max(0, a2) + ')'; ag.fillRect(0, 0, ACW, ACH); ag.restore();
+      ag.globalAlpha = (1 - hk) * pwr; ag.fillStyle = '#1f9b52'; ag.fillRect(60 * AK, 90 * AK, 6 * AK, 3 * AK);   // 非常口: the exit sign, always lit
+      ag.fillStyle = '#9dffbf'; ag.fillRect(61 * AK, 91 * AK, 1 * AK, 1 * AK); ag.fillRect(63 * AK, 91 * AK, 2 * AK, 1 * AK); ag.globalAlpha = 1;
+    }
     // cabinet screens, the cyan sign and the claw machine breathe a little
     ag.globalCompositeOperation = 'lighter';
     ARC_SCREENS.forEach(([x, y, w, h, col], i) => {
       const cb = arcS.cab[i % arcS.cab.length], cx = x + w / 2;
-      ag.globalAlpha = (0.05 + 0.05 * (cb.c % 2) + 0.03 * (cb.c === 3)) * pw; ag.fillStyle = col;
+      ag.globalAlpha = (0.05 + 0.05 * (cb.c % 2) + 0.03 * (cb.c === 3)) * (i < 4 ? pwr : pw); ag.fillStyle = col;   // (the screens: their power only)
       if (i < 3) { rowPath(ARC_ROW[i]); ag.fill(); }            // the row's screens: on their own slanted glass
       else ag.fillRect(x * AK, roomY(cx, y) * AK, w * AK, (roomY(cx, y + h) - roomY(cx, y)) * AK);
     });
     ag.globalCompositeOperation = 'source-over'; ag.globalAlpha = 1;
-    drawBoot(); drawFuseScreen(pw);             // the row's screens booting (the reward), the fuse cabinet's own screen
+    drawBoot(); drawFuseScreen(pwr);            // the row's screens booting (the reward), the fuse cabinet's own screen (its power only)
     // rain streaks catching the light of the doorway
     ag.strokeStyle = 'rgba(200,190,230,' + 0.1 * pw + ')'; ag.lineWidth = 1;
     for (let k = 0; k < 18; k++) { const rx = ((k * 37 + Math.floor(arcS.t * 40) * 3) % ARC.w) * AK, ry = (30 + (k * 53) % 300) * AK; ag.beginPath(); ag.moveTo(rx, ry); ag.lineTo(rx - 2, ry + 14 * AK); ag.stroke(); }
@@ -3646,7 +3783,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=24', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=25', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -3934,6 +4071,36 @@
     scene.onAfterRender = function () { const r = a0.apply(this, arguments); for (const f of LGT.done) f(); return r; }; }
   LGT.pre.push(() => { STUDY.op = winMesh.material.opacity; });      // his screen on its UPS: the window keeps its own level (the lamp
   LGT.post.push(() => { winMesh.material.opacity = STUDY.op; });     // in it follows the mains: studyMains)
+  // ---- the places shut by the hour (lumieres-01, gauche-02, direction-09): over a shut place the street with its power out (the fuses'
+  // own picture, graded as the street is: their shader, its grade and picture shared), by openK, zone by zone; the oden's own lights
+  // with it; the arcade's room (drawArcade) and its spill by openK('arcade') ----
+  const HRS = { z: { oden: 8, dojo: 9 }, k: { oden: 1, dojo: 1, arcade: 1 }, ks: 1, keep: [], spill: 1 };
+  const hrShade = new THREE.Mesh(pwShade.geometry, pwShade.material.clone());
+  { const U = hrShade.material.uniforms, S = pwShade.material.uniforms;
+    U.tUnlit = S.tUnlit; U.uCC = S.uCC; U.uFront.value = -1e4; U.uAmb.value = 1;
+    hrShade.material.onBeforeCompile = pwShade.material.onBeforeCompile; }
+  hrShade.position.set(IW / 2, -IH / 2, 0.012); hrShade.visible = false; scene.add(hrShade);   // (over the fuses' shade, under the lights)
+  function stepHours() {
+    for (const k in HRS.k) HRS.k[k] = openK(k);
+    HRS.ks = Math.max(0, Math.min(1, 2 * HRS.k.oden - 1));
+    if (typeof lanDark === 'function') lanDark(1 - HRS.ks);          // (the unlit lantern, gauche-03: its own hook, on its sign's time)
+    const shut = HRS.k.oden < 0.999 || HRS.k.dojo < 0.999;
+    if (shut && !PW.unlit) pwUnlit(() => { if (reduced) requestAnimationFrame(() => frame()); });   // (reduced motion: a frame once it is in)
+    const U = hrShade.material.uniforms.uPow.value; for (let i = 0; i < U.length; i++) U[i] = 1;
+    U[HRS.z.oden] = HRS.k.oden; U[HRS.z.dojo] = HRS.k.dojo;
+    hrShade.visible = shut && !!PW.ready;
+  }
+  // the oden shuts its signs first (its light box and its lantern: the first half of its 6 minutes), then its window and its door
+  const HRL = () => [[lanMesh, 0, 1], [OWIN.mesh, 0, 0], [ODOOR.mesh, 0, 0], [odenDn, 1, 1], [odenUp, 1, 1]];   // [mesh, a dark layer?, a sign?]
+  LGT.pre.push(() => {
+    const L = HRL(), k = HRS.k.oden, ks = HRS.ks; HRS.keep.length = 0;
+    for (const [o, off, sg] of L) { HRS.keep.push(o.material.opacity, o.visible); const kk = sg ? ks : k; if (kk >= 0.999) continue;
+      if (off) { if (1 - kk > o.material.opacity) { o.material.opacity = 1 - kk; o.visible = true; } } else o.material.opacity *= kk; }
+    HRS.spill = spill.material.opacity; spill.material.opacity *= 0.25 + 0.75 * HRS.k.arcade;
+  });
+  LGT.done.push(() => { HRL().forEach(([o], i) => { o.material.opacity = HRS.keep[i * 2]; o.visible = HRS.keep[i * 2 + 1]; }); spill.material.opacity = HRS.spill; });
+  LGT.pre.push(() => { for (const [m] of LAY) if (!m.material.userData.nrk) gradeSprite(m.material, 'self'); });
+  LGT.post.push(() => { for (const [m, src, f] of LAY) { const o = src ? src.material.opacity * f() : 0; m.material.opacity = o; m.visible = !!src && src.visible && o > 0.004; } });
   LGT.pre.push(() => { HEAL.keep = busShop ? busShop.material.opacity : 1; });   // the healing machine: on the Center's power (its shop's, as
   LGT.post.push(() => { if (busShop && healPts.visible) healPts.material.opacity = HEAL.keep > 0.01 ? Math.min(1, busShop.material.opacity / HEAL.keep) : 0; });   // the fuses scale it)
   // the blast's lights are drawn a scene pixel at a time (crisp at any zoom), in value steps with a dither between them
@@ -5352,15 +5519,20 @@
     const en = document.documentElement.lang === 'en' ? 1 : 0, lang = en ? 'en-GB' : 'fr-FR';
     const day = (ms) => ms ? new Date(ms).toLocaleDateString(lang, { day: '2-digit', month: '2-digit', year: 'numeric' }) : '—';
     const gap = (a, b) => { if (!a || !b || b < a) return ''; const m = (b - a) / 60000; return m < 60 ? ' +' + Math.max(1, Math.round(m)) + ' min' : m < 2880 ? ' +' + Math.round(m / 60) + ' h' : ' +' + Math.round(m / 1440) + (en ? ' d' : ' j'); };
-    const ol = document.createElement('ol');
-    order.forEach((k, i) => {
-      const li = document.createElement('li'); li.innerHTML = '<i></i><span></span><time></time>';
-      li.querySelector('i').textContent = String(i + 1); li.querySelector('span').textContent = SECRETS[k][en];
-      li.querySelector('time').textContent = day(secAt[k]) + gap(secAt[order[i - 1]], secAt[k]); ol.appendChild(li);
-    });
-    if (eleven) {
-      const li = document.createElement('li'); li.className = 'xi'; li.innerHTML = '<i>✦</i><span>16 · 03 · 2003 — easter egg complete</span><time></time>';
-      li.querySelector('time').textContent = day(eleven.at); ol.appendChild(li);
+    // the list in DP's font (secrets-06): a line each, its number, its name, when; where one does not fit on its line,
+    // every date goes under its name (the same rhythm for all)
+    const ol = document.createElement('div'); ol.className = 'pk-dp pk-tl'; ol.setAttribute('role', 'list');
+    const rows = order.map((k, i) => [String(i + 1), SECRETS[k][en], day(secAt[k]) + gap(secAt[order[i - 1]], secAt[k]), '#ff8ad1', '#f1ebe4']);
+    if (eleven) rows.push(['✦', '16 · 03 · 2003 — easter egg complete', day(eleven.at), '#ffd98f', '#ffd98f']);
+    const room = pkInner(el, 16), nw = 14, one = rows.every((r) => nw + pkW(r[1]) + 10 + pkW(r[2]) <= room);   // (16: a scroll bar's room)
+    for (const [n, name, when, cn, cl] of rows) {
+      const ls = one ? [name] : pkWrap(name, room - nw), [c, g] = pkLn(room, 8 + 10 * (ls.length - (one ? 1 : 0)));
+      if (PK.F) {
+        pkText(g, n, 0, 2, cn); ls.forEach((l, j) => pkText(g, l, nw, 2 + 10 * j, cl));
+        pkText(g, when, one ? room - pkW(when) : nw, one ? 2 : 2 + 10 * ls.length, '#a99fc0');
+      }
+      const it = document.createElement('div'); it.setAttribute('role', 'listitem'); it.className = 'pk-vh'; it.textContent = n + ' ' + name + ', ' + when;
+      ol.append(c, it);
     }
     const cv = document.createElement('canvas'); cv.width = 728; cv.height = 408;   // (twice its size: crisp at the Pokémon PC's width)
     const p = document.createElement('p');
@@ -5377,11 +5549,10 @@
     if (eleven) pts.push([Math.round(1365 * S), Math.round(602 * S)]);
     g.strokeStyle = 'rgba(255,138,209,.85)'; g.lineWidth = 1; g.setLineDash([3, 2]); g.beginPath();
     pts.forEach(([x, y], i) => { if (i) g.lineTo(x + 0.5, y + 0.5); else g.moveTo(x + 0.5, y + 0.5); }); g.stroke(); g.setLineDash([]);
-    g.font = '8px Silkscreen, monospace'; g.textBaseline = 'top';
-    pts.forEach(([x, y], i) => {
+    pts.forEach(([x, y], i) => {                 // (its numbers in DP's font, a shadow under each)
       const xi = eleven && i === pts.length - 1;
       g.fillStyle = '#0a0718'; g.fillRect(x - 3, y - 3, 7, 7); g.fillStyle = xi ? '#ffb648' : '#ff8ad1'; g.fillRect(x - 2, y - 2, 5, 5);
-      const s = xi ? '11' : String(i + 1); g.fillStyle = '#0a0718'; g.fillText(s, x + 5, y - 9); g.fillStyle = xi ? '#ffd98f' : '#f1ebe4'; g.fillText(s, x + 4, y - 10);
+      const s = xi ? '11' : String(i + 1); if (PK.F) { pkText(g, s, x + 5, y - 7, '#0a0718'); pkText(g, s, x + 4, y - 8, xi ? '#ffd98f' : '#f1ebe4'); }
     });
     return box;
   }
@@ -5551,10 +5722,10 @@
     const N = NAR, dir = Math.random() < 0.5 ? 1 : -1, r = Math.random(), out = (d) => d > 0 ? 1.0 : -6.2;   // in and out behind the walls
     N.s = out(-dir); N.q = []; N.fig = null; N.figs = [];
     if (r < 0.4) { N.q.push(nGo(out(dir), false, dir)); return; }                 // walks past
-    if (r < 0.62) { N.q.push(nGo(out(dir), true, dir)); return; }                 // the Naruto run
+    if (r < 0.62) { const g = nGo(out(dir), true, dir); if (dir > 0 && Math.random() < 0.6) g.leap = -2.3; N.q.push(g); return; }   // the Naruto run; toward the camera, six in ten end in the bond: from s -2.3 m he leaps out of the frame
     // he stops in front of the glass (the frontal section, all of him showing), looks out toward the far end of the
     // street, and goes on or turns back
-    const jutsu = !N.jutsu && r > 0.9, stand = jutsu ? -2.28 : -1.57 - Math.random() * 0.5, stop = stand - NG.xa0 * dir;   // x 1241, 1246-1256
+    const jutsu = !N.jutsu && r > 0.9, stand = jutsu ? -1.75 : -1.35 - Math.random() * 0.3, stop = stand - NG.xa0 * dir;   // x 1252, 1254-1261: a step nearer the glass, his head and shoulders over the rail
     const back = Math.random() < 0.3 ? -dir : dir, sd = dir > 0 ? 'T' : 'A', bd = back > 0 ? 'T' : 'A';
     N.q.push(nGo(stop, false, dir));
     N.q.push(nFrames([0, 1, 2, 3, 4, 5].map(i => ['settle' + sd, i, 0.1]), () => { N.s += NG.xa0 * dir; }));   // the last step, he stops
@@ -5562,7 +5733,7 @@
     let look;
     if (jutsu) {
       N.jutsu = true;
-      const C = [stand + 0.8, stand - 0.9];             // two clones along the glass: one beside him in the frontal section, one beyond
+      const C = [stand + 0.65, stand - 0.85];           // two clones along the glass: one at the glass's near edge (half in view), one beyond
       const poof = () => C.forEach((c, i) => N.puffs.push({ s: c, t: -0.05 * i }));
       look = [['seal', 0, 0.16], ['seal', 1, 0.55], ['seal', 2, 0.45], ['seal', 2, 0.12, poof],
         ['seal', 1, 1.5, () => { N.figs = C.map(c => ({ row: 'seal', i: 1, s: c })); }],
@@ -5588,6 +5759,10 @@
       N.s += ds * A.dir;
       const ph = ((((N.s - A.ph0) * A.dir) / D) % 1 + 1) % 1, i = Math.floor(ph * n) % n;
       N.fig = { row: A.row, i, s: N.s - A.dir * D * (ph - i / n) };              // drawn where frame i's feet are planted
+      if (A.leap !== undefined && N.s > A.leap) {                                  // the leap: 1.8 m through the air on a parabola 0.62 m high, the
+        const u = Math.min(1, (N.s - A.leap) / 1.8);                             // run's stride frame held (airborne: no foot to plant)
+        N.fig = { row: A.row, i: 4, s: N.s, lift: 0.62 * 4 * u * (1 - u) };
+      }
       if (rem - ds <= 1e-6) N.a = null;
     } else {                                    // a sequence of frames where he stands
       let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
@@ -5606,7 +5781,7 @@
     silg.imageSmoothingEnabled = true; silg.fillStyle = '#000';
     for (const f of figs) {
       const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm;
-      silg.drawImage(nSheet, f.i * c[1], c[0], c[1], c[2], u - WL.x - c[4] * k, nV(u) - WL.y - c[5] * k, c[1] * k, c[2] * k);
+      silg.drawImage(nSheet, f.i * c[1], c[0], c[1], c[2], u - WL.x - c[4] * k, nV(u) - (f.lift || 0) * nK(u) - WL.y - c[5] * k, c[1] * k, c[2] * k);
     }
     for (const p of NAR.puffs) {                // a puff of smoke: a few billows swelling fast, thinning out
       if (p.t < 0) continue;
@@ -5624,7 +5799,7 @@
   const WIN2 = { state: 'off', t: 0, next: 4 + Math.random() * 5, I: [0, 0, 0, 0], acc: 0, shown: true };
   const FLICK = [0, 0.75, 0.1, 0.95, 0.35, 1];                                     // a tube catching, step 60 ms
   function stepWindow(dt) {
-    const W2 = WIN2; W2.t += dt;
+    const W2 = WIN2; W2.t += dt; stepNFin(dt);
     const busy = !!(NAR.a || NAR.q.length);
     if (W2.state === 'off') { if (W2.t > W2.next && openK('balcony') > 0.5) { W2.state = 'on'; W2.t = 0; W2.next = 240 + Math.random() * 480; NAR.next = 4 + Math.random() * 6; NAR.jutsu = false; } }   // (lit for minutes; dark from 1 h)
     else if (W2.state === 'on') {
@@ -5661,6 +5836,62 @@
     W2.shown = lit || here;
     wlTex.needsUpdate = true;
   }
+  // ---- the finale (FIN.api): as the last stand begins ('stand') the balcony lights if it was dark and Naruto comes to the glass
+  // to look down at the street, and stays there, watching, through the whole stand (his own cycle held); pouf, pouf, pouf: three
+  // clones line up along the glass with him (two with the seal). As the street's lights die ('dying') they go one by one, pouf,
+  // and the balcony goes out with the street (as the other windows do: no lone lit window in the blackout); it stays dark through
+  // the rain and the blast. Six seconds into the dawn he turns and walks away (in the dark), fourteen in the window's own life
+  // resumes (the end at the latest). Silhouettes still (rule 5); nothing under reduced motion ----
+  const NFIN = { on: false, t: 0, q: [] };
+  const nfAt = (at, f) => NFIN.q.push({ at, f });
+  function nfHold(on) {                          // the window held lit (and the planner quiet) while they are there; held dark after
+    const W2 = WIN2;
+    if (on) { if (W2.state !== 'on') { W2.state = 'on'; W2.t = 0; W2.I = [0, 0, 0, 0]; } W2.next = 1e9; NAR.next = 1e9; }
+    else { W2.next = W2.state === 'on' ? W2.t + 20 + Math.random() * 20 : 18 + Math.random() * 25; NAR.next = 10 + Math.random() * 10; }
+  }
+  function nfCome() {                            // from wherever he is: along the glass to his stop, the last step, the turn, a look down, held
+    const N = NAR, stand = -1.6; if (!N.fig) N.s = -6.2;
+    const dir = N.s < stand ? 1 : -1, sd = dir > 0 ? 'T' : 'A';
+    N.a = null; N.q = []; N.figs = []; N.puffs = [];
+    N.q.push(nGo(stand - NG.xa0 * dir, false, dir));
+    N.q.push(nFrames([0, 1, 2, 3, 4, 5].map(i => ['settle' + sd, i, 0.1]), () => { N.s += NG.xa0 * dir; }));
+    N.q.push(nFrames(nTurn(dir > 0 ? 8 : 0, 1).concat([['look', 3, 1e9]])));
+  }
+  function nfLeave() {                           // he straightens, turns away and walks off along the glass (the planner's own way out)
+    const N = NAR; if (!N.fig) { N.a = null; N.q = []; return; }
+    N.a = null; N.q = []; N.figs = [];
+    N.q.push(nFrames([['turn', 1, 0.4]].concat(nTurn(1, 0)).concat([0, 1, 2, 3].map(i => ['startA', i, 0.1])), () => { N.s += NG.xr0; }));
+    N.q.push(Object.assign(nGo(-6.2, false, -1), { init() { this.ph0 = N.s; } }));
+  }
+  const NF_CLONES = [['look', 3, -2.5], ['seal', 1, -3.3], ['seal', 1, -0.95]];   // row, frame, s along the glass (the last at the near edge, half in view)
+  function stepNFin(dt) {
+    if (!NFIN.on) return;
+    NFIN.t += dt;
+    for (let i = NFIN.q.length - 1; i >= 0; i--) if (NFIN.t >= NFIN.q[i].at) { const e = NFIN.q.splice(i, 1)[0]; try { e.f(); } catch (err) {} }
+  }
+  function nfStart() {                           // 'stand'
+    if (reduced) return;
+    NFIN.on = true; NFIN.t = 0; NFIN.q = [];
+    nfHold(true); nfCome();
+    NF_CLONES.forEach(([row, i, s], k) => { nfAt(7 + k * 1.4, () => { NAR.puffs.push({ s, t: 0 }); }); nfAt(7.25 + k * 1.4, () => { NAR.figs.push({ row, i, s }); }); });
+  }
+  function nfDying() {                           // 'dying': the clones go one by one, pouf, as the street's lights die; the balcony goes out with them
+    if (!NFIN.on) return;
+    const t0 = NFIN.t; NFIN.q = [];
+    NF_CLONES.forEach(([row, i, s], k) => nfAt(t0 + 0.3 + k * 0.6, () => { NAR.puffs.push({ s, t: 0 }); NAR.figs = NAR.figs.filter(f => f.s !== s); }));
+    nfAt(t0 + 1.9, () => { const W2 = WIN2; if (W2.state === 'on') { W2.state = 'off-going'; W2.t = 0; } NAR.figs = []; });   // (pane by pane, 1.5 s: dark with the street)
+  }
+  function nfDawn() {                            // 'dawn': six seconds in he turns and walks away (in the dark); fourteen in, the window's own life
+    if (!NFIN.on) return;
+    const t0 = NFIN.t; NFIN.q = [];
+    nfAt(t0 + 6, () => { NAR.figs = []; nfLeave(); });
+    nfAt(t0 + 14, () => { NFIN.on = false; NFIN.q = []; NAR.figs = []; nfHold(false); });
+  }
+  function nfEnd() {                             // 'end' (at the latest): he walks away, the window's own life resumes
+    if (!NFIN.on) return;
+    NFIN.on = false; NFIN.q = []; NAR.figs = []; nfLeave(); nfHold(false);
+  }
+  try { FIN.api.on('stand', nfStart); FIN.api.on('dying', nfDying); FIN.api.on('dawn', nfDawn); FIN.api.on('end', nfEnd); } catch (e) {}
 
   // ---- Luffy on the ramen shop's menu board (its face, in the facade's perspective) ----
   const LB = [[1130.6, 585.9], [1148.5, 584.7], [1148.5, 639.3], [1130.6, 638.4]];   // top-left, top-right, bottom-right, bottom-left
@@ -5671,10 +5902,8 @@
   const luffyTex = loader.load('assets/luffy_board.webp?v=1'); luffyTex.magFilter = luffyTex.minFilter = THREE.LinearFilter; luffyTex.generateMipmaps = false; luffyTex.repeat.set(1 / 12, 1);
   const luffyScr = new THREE.Mesh(lbGeo, new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
   luffyScr.position.z = 0.5; scene.add(luffyScr);
-  const lbGlowC = document.createElement('canvas'); lbGlowC.width = lbGlowC.height = 64;
-  (function () { const g = lbGlowC.getContext('2d'), r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(150,170,255,1)'); r.addColorStop(0.45, 'rgba(150,170,255,.3)'); r.addColorStop(1, 'rgba(150,170,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); })();
-  const lbGlow = new THREE.Mesh(new THREE.PlaneGeometry(52, 92), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(lbGlowC), transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false }));
-  lbGlow.position.set(1139.5, -612, 0.48); scene.add(lbGlow);
+  // the screen's light on its own frame and 2-3 px of wall, two stippled steps (droite-04: no ellipse), at 0.9 of the screen's level
+  const lbGlow = plane('assets/luffy_glow.png?v=1', 1113, 566, 52, 92, 0.48, { opacity: 0, blending: THREE.AdditiveBlending });
 
   // ---- life in the ramen shop: steam from the kitchen vent, and behind the lit glass under the noren the light
   // breathes, the cook moves about, a customer leans over his bowl, the bowls steam ----
@@ -5765,7 +5994,14 @@
   const addTex = (src, x, y, w, h, z, additive) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending }));
     m.position.set(x + w / 2, -(y + h / 2), z); scene.add(m); return m; };
-  const neonMesh = addTex('assets/ichiraku_neon.png?v=2', 1118, 326, 156, 126, 0.97, true);
+  const neonMesh = addTex('assets/ichiraku_neon_glow.png?v=1', 1118, 326, 156, 126, 0.97, true);   // (lumieres-06: its tubes' light on its board)
+  neonMesh.material.map.magFilter = neonMesh.material.map.minFilter = THREE.NearestFilter;      // (one texel per scene pixel: crisp at 2x, 4x)
+  // IRneon(k): the neon's own factor, k 0..1 on its opacity, for Ichiraku's closing (package 5: the neon out first); IRneon(): back to 1.
+  // Applied around each render (the lights' hooks), so stepShop's level and the fuses' and the red night's scaling are untouched
+  const IRN = { k: 1, op: 1 };
+  function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
+  LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
+  LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
   const lanternMesh = addTex('assets/ramen_lanterns.png?v=1', 1112, 448, 164, 124, 0.96, true);
   const shopOff = addTex('assets/shop_off.png?v=2', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the lights and lanterns, out
   const SHOP = { open: true, k: 1, t: 10, next: 70 + Math.random() * 60, neon: 1 };
@@ -5823,6 +6059,15 @@
   const lanTex = odenTex('assets/oden_lantern.png?v=4'); lanTex.repeat.set(1 / LAN_N, 1);
   const lanMesh = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanTex, transparent: true, depthWrite: false }));
   lanMesh.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.03); lanMesh.visible = false; scene.add(lanMesh);
+  // the lantern without its light (the power cut, the oden shut by its hours, or lanDark(k)): the same swing, unlit
+  // (oden_lantern_off.png: its paper a dark crimson, its ribs and rings, the dusk on it, and the wall where it hangs at
+  // rest; every frame, the rest one too, as the oden unlit has them), over the lit one as much as that one has no light;
+  // lit by the street, so the street's grade. lanDark(k): k 0..1 toward unlit, on top of its power and the oden's hours
+  const lanOffTex = odenTex('assets/oden_lantern_off.png?v=1'); lanOffTex.repeat.set(1 / LAN_N, 1);
+  const lanOff = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanOffTex, transparent: true, depthWrite: false, opacity: 0 }));
+  lanOff.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.031); lanOff.visible = false; scene.add(lanOff);
+  let lanPw = null, lanDk = 0;                 // the lit lantern's entry in the power cut's list (its power then); lanDark's k
+  function lanDark(k) { lanDk = Math.max(0, Math.min(1, +k || 0)); }
   const LS = { a: 0, v: 0, eddy: 0, et: 0, force: null };       // angle (deg, its foot to the right > 0), speed, the eddies' push
   function stepLantern(dt) {
     LS.et -= dt; if (LS.et < 0) { LS.et = 0.2 + Math.random() * 0.6; LS.eddy = (Math.random() - 0.5) * (0.5 + 2.4 * gust.k); }
@@ -5831,7 +6076,11 @@
     if (LS.force !== null) { LS.a = LS.force; LS.v = 0; }
     const lo = LAN.angles[0], hi = LAN.angles[LAN_N - 1]; LS.a = Math.max(lo, Math.min(hi, LS.a));
     const f = Math.round((LS.a - lo) / 0.5);
-    lanTex.offset.x = f / LAN_N; lanMesh.visible = f !== LAN_0;
+    lanTex.offset.x = lanOffTex.offset.x = f / LAN_N; lanMesh.visible = f !== LAN_0;
+    if (!lanOff.material.userData.nrk) gradeSprite(lanOff.material, 'street');
+    if (PW.on && PW.list && !lanPw) lanPw = PW.list.find((e) => e.o === lanMesh) || null;
+    const lit = lanMesh.material.opacity * (PW.on && lanPw ? lanPw.p : 1) * openK('oden') * (1 - lanDk);   // its light: its level, its power, the oden's hours
+    lanOff.material.opacity = 1 - lit; lanOff.visible = lit < 0.996;
   }
   // what lives behind the glass: a small canvas over a box of the shop, drawn at 2x and masked to its glass; the
   // painting's grain is cut out of what is drawn (one fixed pattern, a scene pixel per grain, as for the ramen shadows)
@@ -5859,7 +6108,7 @@
   for (let i = 0; i < 9; i++) OST.w.push({ t: i * 0.4 + Math.random() * 0.15, x: 488.5 + Math.random() * 4, ph: Math.random() * 6.3, a: 0.6 + Math.random() * 0.4, h: 32 + Math.random() * 10 });
   function stepOdenSteam(dt, t) {
     for (const w of OST.w) { w.t += dt; if (w.t > 3.6) { w.t -= 3.6; w.x = 488.5 + Math.random() * 4; w.ph = Math.random() * 6.3; w.a = 0.6 + Math.random() * 0.4; w.h = 32 + Math.random() * 10; } }
-    OST.acc += dt; if (OST.acc < 1 / 20 || !odenSeen(OWIN.box)) return; OST.acc = 0;
+    OST.acc += dt; if (OST.acc < 1 / 20 || !odenSeen(OWIN.box) || openK('oden') < 0.01) return; OST.acc = 0;   // (shut: no steam)
     const G = OWIN, g = G.g, K = G.K, [bx, by] = G.box;
     g.clearRect(0, 0, G.c.width, G.c.height);
     for (const w of OST.w) {
@@ -5947,12 +6196,23 @@
   // (700 + 6.72 s, 615 - 6.03 s); a walk frame i is drawn at a root moving at his walk's speed where it was at phase
   // i/n, so a foot in stance stays put
   const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 33.4129, ppm: 44, w0: -4.43, D: 1.0066, v: 1.007, xa0: 0.266, xr0: -0.248 };
-  const ZRC = { walkT: [0, 35, 73, 16, 17, 69], walkA: [73, 35, 73, 16, 18, 68], settle: [146, 35, 74, 7, 16, 71], idle: [220, 32, 72, 4, 17, 69], toss: [292, 35, 77, 32, 17, 74], turn: [369, 35, 73, 12, 17, 69], start: [442, 37, 73, 6, 20, 68] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
-  const zrSheet = new Image(); zrSheet.src = 'assets/red_sil.webp?v=1';
+  const ZRC = { walkT: [0, 36, 73, 16, 18, 69], walkA: [73, 36, 73, 16, 18, 68], settle: [146, 35, 74, 7, 16, 71], idle: [220, 32, 72, 4, 17, 69], toss: [292, 38, 101, 38, 17, 98], turn: [393, 35, 73, 12, 17, 69], start: [466, 37, 73, 6, 20, 68] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
+  const ZRB = [null,null,null,null,null,null,null,[34.0,23.8],[34.0,13.0],[34.0,6.6],[34.0,4.5],[34.0,6.6],[34.0,13.1],[34.0,24.0],[34.0,39.1],null,null,null,null,null,null,null,null,[34.0,17.9],[34.0,9.3],[34.0,5.0],[34.0,5.0],[34.0,9.4],[34.0,18.0],[34.0,31.0],null,null,null,null,null,null,null,null];   // the toss row: the Poké Ball's place in each cell (px), null while it is in his hand (red_meta.json)
+  const zrSheet = new Image(); zrSheet.src = 'assets/red_sil.webp?v=2';
   function z1Red(g, ox, oy, f) {                  // his frame f = { row, i, w } into the door's canvas (its box at ox, oy)
     const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
     g.drawImage(zrSheet, f.i * c[1], c[0], c[1], c[2], 700 + ZR.x * s - c[4] * k - ox, 615 - ZR.kf * s - c[5] * k - oy, c[1] * k, c[2] * k);
     g.globalCompositeOperation = 'source-in'; g.fillRect(0, 0, g.canvas.width, g.canvas.height); g.globalCompositeOperation = 'source-over';
+  }
+  function z1Ball(G, f) {                         // the Poké Ball in the air: crisp over the blurred glass (2 x 2 px, dark, its top lit by the room),
+    if (!f || f.row !== 'toss' || !ZRB[f.i]) return;   // masked by the glazing like him; the blur would eat a 7-cm ball at 1x
+    const c = ZRC.toss, s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm, [bx, by] = ZRB[f.i], K = G.K, g = G.g, [, , w, h] = G.box;
+    const x = Math.round(700 + ZR.x * s - c[4] * k + bx * k - G.box[0] - 1), y = Math.round(615 - ZR.kf * s - c[5] * k + by * k - G.box[1] - 1);
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 0.85;
+    g.fillStyle = '#200c12'; g.fillRect(x * K, y * K, 2 * K, 2 * K); g.fillStyle = '#5a2e38'; g.fillRect(x * K, y * K, K, K);
+    g.globalAlpha = 1;
+    if (G.mask.complete && G.mask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(G.mask, 0, 0, w * K, h * K); g.globalCompositeOperation = 'source-over'; }
+    G.tex.needsUpdate = true;
   }
   function z1RPlan() {                            // his visit: in, the stop, the tosses between two pauses, the turn, out
     const F = { w: ZR.w0, q: [], a: null, fig: null }, run = (row, n, dt) => Array.from({ length: n }, (_, i) => [row, i, dt]);
@@ -6024,7 +6284,7 @@
         if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 120 + Math.random() * 150; z1Door.mesh.visible = false; }
         else if ((Z1F.acc += dt) >= 1 / 20 && odenSeen(z1Door.box) && zrSheet.complete && zrSheet.naturalWidth) {
           Z1F.acc = 0;
-          z1Draw(z1Door, light, 0.78, 0.7, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig));
+          z1Draw(z1Door, light, 0.78, 0.7, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig)); z1Ball(z1Door, F.fig);
         } else z1Door.mesh.material.opacity = light;
       }
     }
@@ -6207,6 +6467,40 @@
   const KTIP = { x: 459, y: 106, k: KM.tip.h / KM.rest.h };     // the spire's tip; how small he is up there
   const KCH = [KM.chest[0] - KIL.x, KM.chest[1] - KIL.y], KSEAT = [KM.seat[0] - KIL.x, KM.seat[1] - KIL.y];   // his chest and seat, in his box
   const kilTip = plane('assets/killua_tip.webp?v=2', Math.round(KTIP.x - KM.tip.seat[0]), Math.round(KTIP.y - KM.tip.seat[1]), KM.tip.w, KM.tip.h, -1.28); kilTip.visible = false;   // tiny, far off: on the spire's tip
+  // ---- his yo-yo (a nod to his weapon): now and then, from his hand on his thigh, it drops on its string past his legs and
+  // the eave, sleeps spinning below his feet, a flick of the wrist, and it winds back up into his hand. A small canvas at the
+  // scene's own pixels (the string 1 px, the yo-yo 3 px of steel, a cold glint that turns), between his body and his legs, in his group
+  // (hidden with him while he is a bolt, graded with him); in a gust the string leans with the rain. Rare, 3.4 s; not under
+  // reduced motion. Debug: ?yoyo in the URL brings it 4 s after the page opens ----
+  const YO = { x: 318, y: 190, w: 30, h: 60, K: 2, hand: [326, 196], drop: 44, t: -1, next: /[?&]yoyo\b/.test(location.search) ? 4 : 150 + Math.random() * 150, acc: 0 };   // (debug: ?yoyo brings it 4 s after the page opens)
+  const yoC = document.createElement('canvas'); yoC.width = YO.w * YO.K; yoC.height = YO.h * YO.K; const yog = yoC.getContext('2d');
+  const yoTex = new THREE.CanvasTexture(yoC); yoTex.magFilter = yoTex.minFilter = THREE.NearestFilter; yoTex.generateMipmaps = false;
+  const yoMesh = new THREE.Mesh(new THREE.PlaneGeometry(YO.w, YO.h), new THREE.MeshBasicMaterial({ map: yoTex, transparent: true, depthWrite: false }));
+  yoMesh.position.set(YO.x + YO.w / 2, -(YO.y + YO.h / 2), 0.0185); yoMesh.visible = false; kilMesh.add(yoMesh);
+  function yoDraw(L, spin, lean) {               // the string L px down from his hand (its end `lean` px along the wind), the yo-yo at its end
+    const K = YO.K, g = yog, px = (x, y, c) => { g.fillStyle = c; g.fillRect(Math.round(x - YO.x) * K, Math.round(y - YO.y) * K, K, K); };
+    g.clearRect(0, 0, yoC.width, yoC.height);
+    const [hx, hy] = YO.hand, ex = hx + lean, ey = hy + L;
+    for (let y = hy + 1; y < ey - 1; y++) px(hx + (ex - hx) * (y - hy) / Math.max(1, L), y, 'rgba(196,190,204,0.5)');   // the string, 1 px
+    const cx = Math.round(ex), cy = Math.round(ey);
+    for (let dx = -1; dx <= 1; dx++) { px(cx + dx, cy - 1, '#777d8a'); px(cx + dx, cy, dx ? '#5c6270' : '#30343c'); px(cx + dx, cy + 1, '#3a3e48'); }   // the yo-yo, 3 px of steel, its axle dark
+    px(cx + (spin % 2 ? 1 : -1), cy - 1, '#d6e2f2');                               // its cold glint, turning
+    yoTex.needsUpdate = true;
+  }
+  function stepYoyo(dt) {
+    const Y = YO;
+    if (Y.t < 0) { if (reduced || KIL.state !== 'sit') return; if ((Y.next -= dt) > 0) return; Y.t = 0; Y.acc = 1; yoMesh.visible = true; }
+    if (KIL.state !== 'sit') { Y.t = -1; yoMesh.visible = false; Y.next = 60 + Math.random() * 60; return; }
+    Y.t += dt; const t = Y.t; let L;
+    if (t < 0.6) L = Y.drop * Math.pow(t / 0.6, 2);                                  // the drop (gravity)
+    else if (t < 2.0) L = Y.drop;                                                     // it sleeps, spinning
+    else if (t < 2.12) L = Y.drop - 2 * Math.sin(Math.PI * (t - 2.0) / 0.12);         // the flick: a tug on the string
+    else if (t < 2.7) L = Y.drop * Math.pow(1 - (t - 2.12) / 0.58, 2);              // and up it winds
+    else L = 0;
+    Y.acc += dt;
+    if (Y.acc >= 1 / 30) { Y.acc = 0; yoDraw(L, Math.floor(t * 10), gust.k * 3 * Math.min(1, L / Y.drop)); }
+    if (t > 3.4) { Y.t = -1; yoMesh.visible = false; Y.next = 150 + Math.random() * 150; }
+  }
 
   // ---- now and then, silent sheet lightning behind Fuji: 1 to 3 in ten minutes, never two close (none under reduced
   // motion). A few quick pulses light the sky behind the mountain (behind its silhouette), its ridge and the cherry tree's
@@ -6371,7 +6665,7 @@
     kilShow('legs', kilNear(KM.knee, P.k) * 3 + kilNear(KM.ankle, P.a)); kilShow('head', K.pitch * 9 + K.wind * 3 + b);
   }
   function stepKillua(dt) {
-    if (KIL.state === 'sit') { kilIdle(dt); return; }
+    if (KIL.state === 'sit') { kilIdle(dt); stepYoyo(dt); return; }
     if (KIL.state === 'charge' || KIL.state === 'sky') { stepKilSky(dt); return; }   // (the finale's: held, then up)
     KIL.t += dt; const t = KIL.t, cx = KIL.x + KCH[0], cy = KIL.y + KCH[1];
     gsg.clearRect(0, 0, gsC.width, gsC.height); gsg.lineCap = gsg.lineJoin = 'round';
@@ -6409,6 +6703,7 @@
   }
   function godspeed() {
     if (KIL.state !== 'sit') return;
+    if (YO.t >= 0) { YO.t = -1; yoMesh.visible = false; YO.next = 60 + Math.random() * 60; }   // (the yo-yo away first)
     Object.assign(KIL, { state: 'go', t: 0, up: false, down: false, dash: null, sparks: [], tick: 0, ph: kilPh() }); for (const n in KREST) kilShow(n, KREST[n]);
     gsMesh.visible = true; soundFx('zap');
   }
@@ -6447,7 +6742,7 @@
   function heroNar() {                           // Naruto's figure (scene px) while he shows on the lit glass, else null
     const f = NAR.fig; if (!f || !(Math.max(...WIN2.I) > 0.5)) return null;
     const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm;
-    return heroClip(u - c[4] * k, nV(u) - c[5] * k, c[1] * k, c[2] * k, [WL.x, WL.y, WL.w, WL.h]);
+    return heroClip(u - c[4] * k, nV(u) - (f.lift || 0) * nK(u) - c[5] * k, c[1] * k, c[2] * k, [WL.x, WL.y, WL.w, WL.h]);
   }
   function heroRed() {                           // Red's figure at the balcony door while he is there, its light on, else null
     const F = Z1F.who; if (!F || !F.fig || !Z1.top || Z1.top.material.opacity < 0.5 || !z1Door.mesh.visible) return null;
@@ -6496,7 +6791,7 @@
     let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
     if (j >= A.seq.length) return;
     A.seq[j] = [A.seq[j][0], A.seq[j][1], t];   // (this breath ends now)
-    A.seq.splice(j + 1, 0, ...Array.from({ length: 16 }, (_, i) => ['toss', i, 0.05]));
+    A.seq.splice(j + 1, 0, ...Array.from({ length: ZRC.toss[3] }, (_, i) => ['toss', i, 0.05]));
   }
   function fourHit(k) {                          // he is clicked (or tapped) while he is there
     const again = FOUR.k.includes(k), [x, y] = heroAt(k);
@@ -6548,7 +6843,8 @@
   // threshold, about 20 cm at that depth). They blink, glance aside, look away a moment; now and then the cat goes off
   // for a while. Click it while its eyes are there: a slow blink back (a cat's way of saying it trusts you). A quiet
   // reply, not one of the secrets: nothing is counted ----
-  const CAT = { x: 833, y: 630, here: Math.random() < 0.6, stay: 40 + Math.random() * 110, k: 1, dx: 0, blink: 3, look: 8, lookT: 0, away: 0, slow: -1 };
+  const CAT = { x: 833, y: 630, here: Math.random() < 0.6, stay: 40 + Math.random() * 110, k: 1, dx: 0, blink: 3, look: 8, lookT: 0, away: 0, slow: -1,
+    spook: -1, hid: false, peek: 0, lids: 0 };   // (the street's events: a glance, in, a peek back)
   CAT.k = CAT.here ? 1 : 0;
   const catMat = () => new THREE.MeshBasicMaterial({ color: 0xc4e678, transparent: true, opacity: 0, depthWrite: false });
   const catEyes = [0, 2].map((dx) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), catMat()); m.position.z = 0.6; m.userData.dx = dx; scene.add(m); return m; });
@@ -6572,17 +6868,27 @@
       k = u < 0.4 ? 1 - u / 0.4 : u < 0.9 ? 0 : u < 1.4 ? (u - 0.9) / 0.5 : 1;
       if (u >= 1.6) C.slow = -1;
     }
+    // the street's events (catSpook, catPeek): a glance toward the bus, then in; back after it, half-lidded a moment
+    if (C.spook >= 0) { C.spook += dt; if (C.spook < 0.35) { C.dx = -1; C.away = 0; C.lookT = 0; } else { C.spook = -1; C.hid = true; C.dx = 0; } }
+    if (C.hid) { k = 0; if (C.peek > 0 && (C.peek -= dt) <= 0) { C.hid = false; C.lids = 1.2; C.here = true; C.stay = Math.max(C.stay, 30); C.peek = 0; } }
+    if (C.lids > 0) { C.lids -= dt; k = Math.min(k, 0.5); }
     C.k += (k - C.k) * Math.min(1, dt * 25);
     for (const m of catEyes) { m.position.x = C.x + C.dx + m.userData.dx + 0.5; m.position.y = -(C.y + 0.5); m.material.opacity = 0.6 * C.k; m.visible = C.k > 0.01; }
     catGlow.position.set(C.x + C.dx + 1.5, -(C.y + 0.5), 0.6); catGlow.material.opacity = 0.16 * C.k; catGlow.visible = C.k > 0.01;
   }
   function overCat(ev) {
-    if (!CAT.here || CAT.away || CAT.slow >= 0) return false;
+    if (!CAT.here || CAT.away || CAT.slow >= 0 || CAT.hid || CAT.spook >= 0) return false;
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top));
     return Math.abs(x - (CAT.x + 1.5)) < 7 && Math.abs(y - CAT.y) < 6;
   }
   function catBlink() { CAT.slow = 0; CAT.stay = Math.max(CAT.stay, 20); }
+  // the street's events: the TranZit's stop with the crew and the finale's stand send it in (a glance toward the bus first);
+  // it peeks back a few seconds after the bus is gone, or at the finale's dawn (its end at the latest)
+  function catSpook() { const C = CAT; if (C.hid || C.spook >= 0) return; C.spook = C.here ? 0 : 0.35; C.peek = 0; }
+  function catPeek(after) { const C = CAT; if (!C.hid && C.spook < 0) return; C.peek = C.peek > 0 ? Math.min(C.peek, after) : after; }
+  try { CREW.api.on('stop', catSpook); CREW.api.on('gone', () => catPeek(6)); } catch (e) {}
+  try { FIN.api.on('stand', catSpook); FIN.api.on('dawn', () => catPeek(6)); FIN.api.on('end', () => catPeek(1)); } catch (e) {}
 
   // ---- the catch (secret): now and then the big cherry tree's lower-left lobe rustles, as if something hid in it; click it while it
   // shakes and a wild battle starts (a shiny Chimchar, Ouisticram, in the Pokemon Diamond/Pearl manner: the official DP sprites,
@@ -7218,8 +7524,11 @@
     const im = new Image(); im.onload = () => { const r = CBM.atlas.foe; g.drawImage(im, r[0], r[1], r[2], r[3], 0, 0, 80, 80); }; im.src = 'assets/catch_battle.png?v=2';
     const T = en ? ['No. 390 · CHIMCHAR ★', 'Type: FIRE · shiny', 'Height 0.5 m · Weight 6.2 kg', 'Caught in the rain, out of the cherry tree. The flame on its tail does not go out in a downpour.']
       : ['N°390 · OUISTICRAM ★', 'Type : FEU · chromatique', 'Taille 0,5 m · Poids 6,2 kg', 'Attrapé sous la pluie, dans le cerisier. La flamme de sa queue ne s\'éteint pas sous l\'averse.'];
-    const d = box.children[1]; T.slice(0, 3).forEach((t, i) => { const e = document.createElement(i ? 'p' : 'b'); e.textContent = t; d.appendChild(e); });
-    box.children[2].textContent = T[3]; el.appendChild(box); return box;
+    // all in DP's font (secrets-06): its number in pink, its type and size, its words in their box under it
+    const d = box.children[1], k = PK.k, side = pkInner(el, Math.max(112, 80 * k) + 2 * Math.max(2, k) + Math.max(14, 12 * k));   // (beside its card)
+    T.slice(0, 3).forEach((t, i) => d.appendChild(pkDP(t, i ? '#e9e3f5' : '#ff8ad1', side)));
+    const tx = document.createElement('div'); tx.className = 'cb-dex-txt'; tx.appendChild(pkDP(T[3], '#ffffff', pkInner(el, 2 * Math.max(10, 8 * k) + 2 * Math.max(2, k))));
+    box.replaceChild(tx, box.children[2]); el.appendChild(box); return box;
   }
 
   // ---- the sound engine is gone (the owner's call): no pill, no rain bed, no piano, no track. SND stays as an inert stub so the effect
@@ -7337,7 +7646,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=17') }, tMirror: { value: tex('assets/wet_mirror.png?v=15') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=18') }, tMirror: { value: tex('assets/wet_mirror.png?v=16') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -7369,6 +7678,47 @@
   }
   try { if (WET_ON) wetInit(); }
   catch (e) { WET.on = false; if (WET.mesh) { scene.remove(WET.mesh); WET.mesh.material.dispose(); } if (WET.rt) WET.rt.dispose(); }
+  // ---- the ground's light per source (sol-01, package 3; and sol-05, the street lamp's pool). Zone 10's ground holds only the
+  // light that never goes out by the hour (the street's painted lights, the sky's); each source's own light on the ground is a
+  // layer of its own (zones/zone10_gl, render10.py's split: what that source adds alone, with the ground's own pixels), added over
+  // the street and following its source. A comp's layer takes that comp's level as it is drawn (its hours, its tube catching or
+  // sputtering, the fuses' cut and the power's return, the television's tint) and its red in the red night; a place without a
+  // comp (the oden, Ichiraku, the dojo) openK(name) times its power (pwAt) and the red night's red there (twAt). Over the fuses'
+  // unlit quad (z 0.02): a pool goes dark with its own source, not with the wave's front; the street's night multiply on it. The
+  // street lamp's pool is one of them: at its glass's centre (881) at the pole's depth, the painted pool and the live one in one
+  // place (the old faint lamp_pool plane retired); in the red night it keeps half its light, as its glass ----
+  const GL = { list: [
+    { src: 'lamp', url: 'assets/gl_lamp.png?v=1', box: [296, 720, 903, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
+    { src: 'oden', url: 'assets/gl_oden.png?v=1', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
+    { src: 'z7_vending', url: 'assets/gl_z7_vending.png?v=1', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
+    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.png?v=1', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
+    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.png?v=1', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
+    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.png?v=1', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
+    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.png?v=1', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
+    { src: 'win_z1_violet', url: 'assets/gl_win_z1_violet.png?v=1', box: [204, 688, 815, 85], comp: 'win_z1_violet' },   // 1.1 % of the ground's light, +9 at most
+    { src: 'ramen', url: 'assets/gl_ramen.png?v=1', box: [370, 716, 833, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
+    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.png?v=1', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
+    { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.png?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
+    { src: 'dojo', url: 'assets/gl_dojo.png?v=1', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
+  ], m: [] };
+  (function () {
+    const byName = {}; for (const c of comps) byName[c.userData.name] = c;
+    GL.list.forEach((g, i) => {
+      const [x, y, w, h] = g.box, m = plane(g.url, x, y, w, h, 0.02, { blending: THREE.AdditiveBlending, opacity: 0 });
+      const mat = m.material, c = g.comp ? byName[g.comp] : null;
+      if (g.comp === 'lamp') mat.userData.nrL = 0.5;   // (the red night: half its light, as the glass)
+      nrHook(mat);
+      m.onBeforeRender = () => {                       // (just before it is drawn: its source's level is drawn the same frame, the fuses' too)
+        let k = 0, nr = 0;
+        if (c) { const cm = c.material; k = c.visible ? cm.opacity : 0; nr = cm.userData.nrk ? cm.userData.nrk.value : 0; mat.color.copy(cm.color); }
+        else if (g.place) { k = openK(g.place) * (PW.on ? pwAt(g.x, i) : 1); nr = REDN.wave ? twAt(g.x, i)[0] : REDN.k; mat.color.setRGB(1, 1, 1); }
+        mat.color.multiply(city.material.color);       // (the street's night multiply)
+        mat.opacity = Math.max(0, Math.min(1, k)); mat.userData.nrk.value = nr;
+      };
+      GL.m.push(m);
+    });
+    lcPool.visible = false;                            // (sol-05: the old pool, faint and 20 px off the lamp: its layer above replaces it)
+  })();
   // ---- 花筏 (sol-09, package 3): the right gutter carries fallen cherry petals down to its grates. Its flow line (X 2.62-2.74 m,
   // the curb's face at 2.8) runs from the corner (Z 27 m) to the far grate (Z 22.0-21.2) and, past the crest between them
   // (Z 19.6), to the near one (Z 16.7-15.8). Now and then (every 3-8 s on each run, with the rain's strength) a petal floats
@@ -7485,7 +7835,7 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.png?v=7') },
+      tNRfar: { value: crisp('assets/night_far.png?v=8') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) } };   // the red night's lights: their hue (max channel 1)
   })();
@@ -7667,6 +8017,45 @@
     M.scr.material.opacity = S.lv; M.glow.material.opacity = S.lv * (1.4 - 0.6 * sh * pz);   // (on the wall: more in a dark shop, its power's dark too)
     M.scr.visible = M.glow.visible = S.lv > 0.004;
   }
+  // ---- droite-07: a Gengar in the Pokémon Center at night. The Center never shuts (lumieres-11); in its night mode (1 h-6 h), once in a
+  // long while (the street director's 'gengar'), a round shadow with two pointed ears drifts behind the door glass in front
+  // of its PC: only the screen's light (and the dim shop's) shows it, a soft dark shape (rule 5); it stops, opens two red
+  // eyes once, and as it goes the screen stutters twice (a ghost and electronics). Nothing to hover, no cursor. Reduced
+  // motion: it never comes; nor in a power cut (the PC is dark then). Its canvas: the door's upper glass, x 868-898, y 590-616,
+  // at 2x, the door's two mullions (x 878, 884) cut out of it as out of the PC ----
+  const GG = { on: false, t: 0, next: 150 + Math.random() * 450, dir: 1, img: new Image(), c: document.createElement('canvas'), acc: 0 };
+  GG.img.src = 'assets/gengar_shadow.png?v=1'; GG.c.width = 60; GG.c.height = 52;
+  const ggg = GG.c.getContext('2d');
+  const ggTex = new THREE.CanvasTexture(GG.c); ggTex.magFilter = ggTex.minFilter = THREE.NearestFilter; ggTex.generateMipmaps = false;
+  const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(30, 26), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
+  ggMesh.position.set(883, -603, 1.1009); ggMesh.visible = false; scene.add(ggMesh);   // (in front of the PC's screen and glow, 1.1007-1.1008)
+  function stepGengar(dt) {
+    if (reduced || PKS.dead) return;
+    if (!GG.on) {
+      if (openK('centerNight') < 0.5 || PW.on) return;                          // (the Center's night mode, 1 h-6 h)
+      if ((GG.next -= dt) > 0) return;
+      if (!STAGE.ask('gengar', 10)) { GG.next = 3 + Math.random() * 4; return; }
+      Object.assign(GG, { on: true, t: 0, dir: Math.random() < 0.5 ? 1 : -1 }); ggMesh.visible = true;
+    }
+    const T = 7.2, t = (GG.t += dt);
+    if (t > T || PW.on) { GG.on = false; ggMesh.visible = false; STAGE.done('gengar'); GG.next = 600 + Math.random() * 900; return; }
+    if (Math.abs(t - 4.6) < dt / 2 + 1e-4 || Math.abs(t - 5.15) < dt / 2 + 1e-4) PKS.dip = 0.24;   // the screen stutters as it goes
+    GG.acc += dt; if (GG.acc < 1 / 15) return; GG.acc = 0;
+    // its path: in from one side (2.2 s), a stop before the screen (eyes at 2.6-3.6 s), out the other way, fading in and out
+    const u = t < 2.2 ? t / 2.2 : t < 4.2 ? 1 : 1 + (t - 4.2) / 3;
+    const x = GG.dir * (u < 1 ? -12 * (1 - u) * (1 - u) : u > 1 ? 13 * (u - 1) * (u - 1) : 0), bob = Math.sin(t * 2.6) > 0 ? 1 : 0;
+    const al = Math.min(1, t / 0.8, (T - t) / 1.2);
+    const g = ggg; g.clearRect(0, 0, 60, 52); g.imageSmoothingEnabled = false;
+    if (GG.img.complete && GG.img.naturalWidth) {
+      g.globalAlpha = 0.86 * al; g.drawImage(GG.img, bob * 16, 0, 16, 15, (7 + Math.round(x)) * 2, 6 * 2, 32, 30);
+      g.globalAlpha = 1; g.globalCompositeOperation = 'source-in'; g.fillStyle = '#08060e'; g.fillRect(0, 0, 60, 52);
+      g.globalCompositeOperation = 'destination-out'; g.fillRect((878 - 868) * 2, 0, 2, 52); g.fillRect((884 - 868) * 2, 0, 2, 52);
+      g.globalCompositeOperation = 'source-over';
+      const open = t > 2.6 && t < 3.6 && !(t > 3.05 && t < 3.15);     // two red eyes, once (a blink)
+      if (open) { g.fillStyle = 'rgba(226,52,64,' + (0.85 * al) + ')'; for (const ex of [11, 17]) if (ex + Math.round(x) !== 10 && ex + Math.round(x) !== 16) g.fillRect((ex + Math.round(x)) * 2, (10 + bob) * 2, 2, 2); }
+    }
+    ggTex.needsUpdate = true;
+  }
   const inPkpc = (ev) => {                       // its pixels (a finger: a little round)
     const p = cbXY(ev), b = PKS.hit, g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 2 : 0;
     return p.x >= b[0] - g && p.x < b[0] + b[2] + g && p.y >= b[1] - g && p.y < b[1] + b[3] + g;
@@ -7698,7 +8087,7 @@
     const im = new Image(); im.onload = () => { PK.F = im; PK.tc = {}; if (PK.on && PK.ph === 'app') pkDrawBar(); }; im.src = 'assets/catch_font.png?v=1';
     PK.cv.addEventListener('click', (ev) => { ev.stopPropagation(); pkPress(pkPt(PK.cv, ev)); });
     PK.cv.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') pkHover(pkPt(PK.cv, ev)); });
-    PK.bar.addEventListener('click', (ev) => { ev.stopPropagation(); if (pkPt(PK.bar, ev).x >= PK.bw - PK.backW - 14) pkBack(); });
+    PK.bar.addEventListener('click', (ev) => { ev.stopPropagation(); if (pkPt(PK.bar, ev).x >= PK.bar.width - PK.backW - 14) pkBack(); });
     el.addEventListener('click', (ev) => { ev.stopPropagation(); if (ev.target === el) pkClose(); });
     document.addEventListener('keydown', pkKey, true);
     window.addEventListener('resize', () => { if (PK.on) pkFit(); });
@@ -7706,10 +8095,17 @@
   function pkFit() {                             // a whole number of DEVICE pixels per logical one, as the catch's panel; an app: wider on a phone
     const d = window.devicePixelRatio || 1, kd = Math.max(1, Math.min(Math.ceil(4 * d), Math.floor(Math.min(innerWidth * d * 0.92 / 256, innerHeight * d * 0.74 / 192))));
     PK.k = kd / d; PK.el.style.setProperty('--k', String(PK.k));
+    PK.kt = Math.max(PK.k, Math.ceil(2 * d) / d); PK.el.style.setProperty('--kt', String(PK.kt));   // (DP's words in an app: 2 CSS px a DP px at the least)
     const bw = Math.max(256, Math.round(Math.min(innerWidth * 0.94, 520) / PK.k));
     PK.el.style.setProperty('--aw', (bw * PK.k) + 'px');
-    if (PK.bar.width !== bw) PK.bar.width = bw;
+    const bwt = Math.round(bw * PK.k / PK.kt); if (PK.bar.width !== bwt) PK.bar.width = bwt;   // (its title bar at the words' scale)
     PK.bw = bw; if (PK.ph === 'app') pkDrawBar();
+    if (PK.ph === 'app' && PK.rw && PK.rw !== bw * PK.k) pkRedo();   // (its words wrapped again to the new width)
+  }
+  function pkRedo() {                            // the open app laid out again (its scroll kept)
+    const a = PK.items[PK.cur], b = PK.body; if (!a) return;
+    const st = b.scrollTop; if (a.close) try { a.close(b); } catch (e) {}
+    b.textContent = ''; try { a.render(b); } catch (e) { b.textContent = '…'; } b.scrollTop = st; PK.rw = PK.bw * PK.k;
   }
   function pkTint(col) {
     if (PK.tc[col]) return PK.tc[col];
@@ -7717,12 +8113,37 @@
     q.drawImage(PK.F, 0, 0); q.globalCompositeOperation = 'source-in'; q.fillStyle = col; q.fillRect(0, 0, c.width, c.height);
     return (PK.tc[col] = c);
   }
+  // the few glyphs DP's atlas lacks, as pixels: [width, its pixels [x, y, w, h] from the capitals' top]; a few others as theirs
+  const PK_XG = { '·': [1, [[0, 2, 1, 1]]], '—': [5, [[0, 2, 5, 1]]], '°': [3, [[0, 0, 3, 1], [0, 1, 1, 1], [2, 1, 1, 1], [0, 2, 3, 1]]] },
+    PK_AS = { '✦': '★', '’': "'", 'Ç': 'C', '…': '.' };
+  function pkGlyph(ch) { const M = CBM.font; ch = PK_AS[ch] || ch; if (PK_XG[ch]) return { x: PK_XG[ch] }; let i = M.order.indexOf(ch); if (i < 0) i = M.order.indexOf('?'); return { i, w: M.widths[i] }; }
+  function pkW(s) { let w = 0; for (const ch of s.toUpperCase()) { const q = pkGlyph(ch); w += (q.x ? q.x[0] : q.w) + 1; } return Math.max(0, w - 1); }
   function pkText(g, s, x, y, col) {             // the catch's DP font (6 x 7 cells, caps 5 px high from row 2); y: the capitals' top
-    const M = CBM.font, T = pkTint(col); let cx = Math.round(x);
+    const M = CBM.font, T = pkTint(col); let cx = Math.round(x); const cy = Math.round(y);
     for (const ch of s.toUpperCase()) {
-      let i = M.order.indexOf(ch); if (i < 0) i = M.order.indexOf('?'); const w = M.widths[i];
-      g.drawImage(T, i * M.cell[0], 0, w, M.cell[1], cx, Math.round(y) - 2, w, M.cell[1]); cx += w + 1;
+      const q = pkGlyph(ch);
+      if (q.x) { g.fillStyle = col; for (const r of q.x[1]) g.fillRect(cx + r[0], cy + r[1], r[2], r[3]); cx += q.x[0] + 1; continue; }
+      g.drawImage(T, q.i * M.cell[0], 0, q.w, M.cell[1], cx, cy - 2, q.w, M.cell[1]); cx += q.w + 1;
     }
+  }
+  function pkWrap(s, maxW) {                     // words to lines of at most maxW DP px
+    const out = []; let line = '';
+    for (const word of s.split(' ')) { const t = line ? line + ' ' + word : word; if (line && pkW(t) > maxW) { out.push(line); line = word; } else line = t; }
+    out.push(line); return out;
+  }
+  function pkLn(w, h) {                          // a line's canvas: w x h DP px, shown at --kt
+    const c = document.createElement('canvas'); c.className = 'pk-ln'; c.width = Math.max(1, w); c.height = h;
+    c.style.setProperty('--w', String(c.width)); c.style.setProperty('--h', String(h)); c.setAttribute('aria-hidden', 'true');
+    const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return [c, g];
+  }
+  function pkDP(s, col, maxW, cls) {             // DP's words in an app: wrapped to maxW DP px, a canvas a line; the words for a screen reader
+    const box = document.createElement('div'); box.className = 'pk-dp' + (cls ? ' ' + cls : '');
+    for (const ln of maxW ? pkWrap(s, maxW) : [s]) { const [c, g] = pkLn(pkW(ln) + 1, 8); if (PK.F) pkText(g, ln, 0, 2, col); box.appendChild(c); }
+    const sr = document.createElement('span'); sr.className = 'pk-vh'; sr.textContent = s; box.appendChild(sr);
+    return box;
+  }
+  function pkInner(el, pad) {                    // an app's room for a line, in DP px (its body's width, less pad CSS px)
+    const w = (el && el.clientWidth) || PK.bw * PK.k; return Math.max(96, Math.floor((w - 32 - (pad || 0)) / (PK.kt || 2)));
   }
   function pkBox(g, x, y, w, h, fill, edge, line) {   // the catch's text box: its corners cut by a pixel, a light line inside
     g.fillStyle = edge; g.fillRect(x + 1, y, w - 2, h); g.fillRect(x, y + 1, w, h - 2); g.fillStyle = fill; g.fillRect(x + 1, y + 1, w - 2, h - 2);
@@ -7756,7 +8177,7 @@
     }
   }
   function pkDrawBar() {                         // the app's title bar (DP's PC blue) and RETOUR
-    const g = PK.bg, w = PK.bw, L = pkL(), a = PK.items[PK.cur]; if (!PK.F || !a) return;
+    const g = PK.bg, w = PK.bar.width, L = pkL(), a = PK.items[PK.cur]; if (!PK.F || !a) return;
     g.fillStyle = '#140e34'; g.fillRect(0, 0, w, 16); g.fillStyle = '#5b8fe0'; g.fillRect(0, 0, w, 15);
     g.fillStyle = '#8fbcf6'; g.fillRect(0, 0, w, 1); g.fillStyle = '#3a68b8'; g.fillRect(0, 13, w, 2);
     pkText(g, pkName(a), 9, 6, '#140e34'); pkText(g, pkName(a), 8, 5, '#fff');
@@ -7804,8 +8225,8 @@
     if (!PK.ok[i]) { pkSnd('buzz'); return; }
     const a = PK.items[i], b = PK.body; PK.ph = 'app'; PK.cur = i; PK.el.classList.add('app');
     b.textContent = ''; b.scrollTop = 0;
-    try { a.render(b); } catch (e) { b.textContent = '…'; }
-    pkFit(); pkDrawBar(); pkSnd('pick'); PK.sr.textContent = pkName(a);
+    PK.rw = 0; try { a.render(b); } catch (e) { b.textContent = '…'; }
+    pkFit(); PK.rw = PK.bw * PK.k; pkDrawBar(); pkSnd('pick'); PK.sr.textContent = pkName(a);
     try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); }
   }
   function pkEnd() {                             // an app leaving: its close(el) if it has one, its content cleared
@@ -8307,7 +8728,7 @@
       if (u.kind === 'neon') {
         u.next -= dt;
         if (u.next < 0 && u.burst <= 0) { u.burst = 0.25 + Math.random() * 0.5; u.next = 40 + Math.random() * 80; }
-        if (u.burst > 0) { u.burst -= dt; c.material.opacity = stutOn(t, u.seed, 0.07, 0.45) ? 0.15 : 1; }
+        if (u.burst > 0) { u.burst -= dt; c.material.opacity = (stutOn(t, u.seed, 0.07, 0.45) ? 0.15 : 1) * (u.name === 'z4_emblem' ? openK('emblem') : 1); }
         else c.material.opacity = lightLife(t, u.seed, 0.04) * (u.name === 'z4_emblem' ? openK('emblem') : 1);
       } else if (u.kind === 'lamp') {
         c.material.opacity = lightLife(t, u.seed, 0.04);
@@ -8364,11 +8785,14 @@
     }
     stepZ1(dt, t);                                   // the people behind zone 1's lit windows (their light just set)
     stepHeal(dt);                                    // the Center's healing machine (its night mode)
+    stepHours();                                     // the places shut by the hour: the dojo, the oden, the arcade
+    if (WET.on && WET.hide.indexOf(vendPool) < 0) WET.hide.push(vendPool);   // (the machines' pool: out of the water's picture, as the lamp's)
     // the Battle Bus
     stepBBus(dt, t); stepGlide(dt);
-    stepDojo(dt); stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepOden(dt, t);
+    stepDojo(dt); stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
     stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
-    luffyTex.offset.x = Math.floor(t * 2.5) % 12 / 12; luffyScr.material.opacity = lightLife(t, 2.4, 0.035);
+    luffyTex.offset.x = Math.floor(t * 2.5) % 12 / 12; luffyScr.material.opacity = lightLife(t, 2.4, 0.035) * (0.3 + 0.7 * openK('luffy'));   // (standby once Ichiraku is shut: above overLuffy's 0.25)
+    lbGlow.material.opacity = 0.9 * luffyScr.material.opacity;
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
     stepSwitch();                                    // the switch box by the Center: its toggles, its light
     // Konami fireworks: launch the queued shells on time, step every burst, stop when the sky is clear again
@@ -8430,7 +8854,7 @@
     stepPower(dt);                                // the fuses' reward: the street's power cut, and back (idle otherwise)
     stepNR(dt);                                   // the red night, the eleventh's start (idle otherwise)
     stepFIN(dt);                                  // the finale: the lights dying, the moon, the dawn (idle otherwise)
-    spill.material.opacity = (0.14 * arcS.flick + 0.03) * (PW.on ? PW.arc : 1);
+    spill.material.opacity = (0.82 * arcS.flick + 0.18) * (PW.on ? PW.arc : 1);
     const arcHz = PW.on || FZ.boot >= 0 ? 30 : 10;  // the room repainted at 10 fps, 30 while the reward runs
     if (Math.floor(t * arcHz) !== Math.floor((t - dt) * arcHz)) drawArcade();
     stepRain(dt);                                // the rain: two curtains of lit, whole-pixel streaks
