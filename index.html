@@ -606,8 +606,8 @@
   const fadeQuad = new THREE.Mesh(new THREE.PlaneGeometry(IW * 3, IH * 3), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 1, depthTest: false, depthWrite: false,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcAlphaFactor }));
   fadeQuad.position.set(IW / 2, -IH / 2, 9); fadeQuad.renderOrder = 998; fadeQuad.frustumCulled = false; scene.add(fadeQuad);
-  THREE.DefaultLoadingManager.onLoad = () => { if (FADE.t0 >= 0) return; FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame(); };
-  setTimeout(() => { if (FADE.t0 < 0) { FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame(); } }, 9000);
+  THREE.DefaultLoadingManager.onLoad = () => { setTimeout(lateStart, 1200); if (FADE.t0 >= 0) return; FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame(); };   // (the late sprites: once the eager batch is in)
+  setTimeout(() => { if (FADE.t0 < 0) { FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame(); setTimeout(lateStart, 1200); } }, 9000);
 
   const loader = new THREE.TextureLoader();
   function crisp(src, cb, onErr) {
@@ -615,6 +615,22 @@
     t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
     return t;
   }
+  // ---- late sprites (direction-08): what cannot appear in the first 15 s after the first rendered frame is fetched after it,
+  // so the first paint waits for none of it: the TranZit and its riders, Naruto's and Red's sheets, the showcase card, Ho-Oh,
+  // Gengar. crispLate() gives a texture whose image comes with lateStart() (1.2 s after the eager batch has loaded; fallbacks at
+  // 9 s and 20 s); each group's readiness gates its event, so nothing is drawn before its sheet is in (no black quad) ----
+  const LATE = { q: [], started: false, pending: 0, need: {}, ready: {} };
+  const imgLoader = new THREE.ImageLoader();
+  function crispLate(src, group, cb, onErr) {
+    const t = new THREE.Texture(); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    LATE.need[group] = (LATE.need[group] || 0) + 1; LATE.ready[group] = false;
+    LATE.q.push(() => { LATE.pending++; imgLoader.load(src, (img) => { t.image = img; t.needsUpdate = true; LATE.pending--; if (--LATE.need[group] === 0) LATE.ready[group] = true; if (cb) cb(); },
+      undefined, () => { LATE.pending--; if (onErr) onErr(); }); });   // (a failed image: its group never ready, its event never starts)
+    return t;
+  }
+  function lateImg(img, src) { LATE.q.push(() => { img.src = src; }); }
+  function lateStart() { if (LATE.started) return; LATE.started = true; const q = LATE.q; LATE.q = []; for (const f of q) f(); }
+  setTimeout(lateStart, 20000);
   function plane(src, x, y, w, h, z, opts) {
     const m = new THREE.MeshBasicMaterial(Object.assign({ map: crisp(src, null, () => { p.visible = false; }), transparent: true, depthWrite: false }, opts || {}));   // (a missing image: no black box)
     const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
@@ -866,17 +882,8 @@
     scX.focus({ preventScroll: true });
   }
   function closeScope() { if (!SC.open) return; SC.open = false; scope.hidden = true; clearInterval(SC.timer); clearTimeout(SC.typing); }
-  function marsChirp() {                        // a faint radio chirp, well under the rain
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime;
-    for (const [d, f] of [[0, 1320], [0.09, 990], [0.18, 1320]]) {
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(0.004, t + d + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.07);
-      o.connect(g); g.connect(SND.master); o.start(t + d); o.stop(t + d + 0.08);
-    }
-  }
   scSos.addEventListener('click', () => {      // the light answered: the transmission comes in, typed out
-    const T = MARS_T(); scTxH.textContent = T.head; scTxS.textContent = T.morse; scTx.hidden = false; placeScope(); foundSecret('mars'); marsChirp();
+    const T = MARS_T(); scTxH.textContent = T.head; scTxS.textContent = T.morse; scTx.hidden = false; placeScope(); foundSecret('mars');
     clearTimeout(SC.typing);
     if (reduced) { scTxM.textContent = T.msg; return; }
     let n = 0; const type = () => { scTxM.textContent = T.msg.slice(0, ++n); if (n < T.msg.length) SC.typing = setTimeout(type, 28); }; type();
@@ -1343,7 +1350,7 @@
         if (tau < F.td) { F.vy = Math.min(F.vy + 170 * dt, 105); F.vx += (F.f * 4 - F.vx) * (1 - Math.exp(-dt / 1.1)); }   // falling: gravity against a drag, the bus's speed bleeding off
         else {                                                                        // under the wing: onto its own glide, its sway in it
           const w = 6.283 * (tau - F.td) / F.Ts, k = 1 - Math.exp(-dt / 0.3);
-          if (!F.dep) { F.dep = true; gldSnd('wind', F.x); }
+          if (!F.dep) F.dep = true;
           F.vx += (F.f * F.vg * (1 + 0.12 * Math.sin(w + F.p1)) - F.vx) * k; F.vy += (F.sk * (1 + 0.16 * Math.sin(w * 1.7 + F.p2)) - F.vy) * k;
         }
         F.x += F.vx * dt; F.y += F.vy * dt;
@@ -1395,25 +1402,6 @@
     }
     return false;
   }
-  function gldSnd(kind, x) {                         // very faint, through the master, when the pill is on: the door's clunk; a soft whoosh at each wing
-    if (!SND.on || !SND.ctx || !SND.master) return;
-    try {
-      const ctx = SND.ctx, t0 = ctx.currentTime + 0.02, pan = Math.max(-1, Math.min(1, (x - 728) / 728));
-      const out = (node) => { if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; node.connect(p); p.connect(SND.master); } else node.connect(SND.master); };
-      if (kind === 'door') {                         // a low thud (a sine falling 120 -> 55 Hz) and a short dull tick
-        const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(120, t0); o.frequency.exponentialRampToValueAtTime(55, t0 + 0.11);
-        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.06, t0 + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
-        o.connect(g); out(g); o.start(t0); o.stop(t0 + 0.2);
-        sndBurst(0.05, 900, 200, 0.03, pan);
-      } else {                                       // wind: the noise through a band that rises and falls, swelling and fading
-        const s = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain(), dur = 0.9 + Math.random() * 0.3;
-        s.buffer = SND.noise; s.playbackRate.value = 0.9 + Math.random() * 0.3; bp.type = 'bandpass'; bp.Q.value = 0.8;
-        bp.frequency.setValueAtTime(380, t0); bp.frequency.exponentialRampToValueAtTime(1300, t0 + dur * 0.4); bp.frequency.exponentialRampToValueAtTime(520, t0 + dur);
-        g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.03, t0 + dur * 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-        s.connect(bp); bp.connect(g); out(g); s.start(t0, Math.random() * 3); s.stop(t0 + dur + 0.05);
-      }
-    } catch (e) { /* a sound must never stop the show */ }
-  }
   function gldDrop() {                               // the bus's door opens: two to four leave, one after another
     const G = GLD, B = BBUS;
     if (reduced || !B.active || G.run || G.t < G.next) return false;
@@ -1429,7 +1417,7 @@
         x: G.door[0], y: G.door[1], vx: G.bv, vy: 0, sig: null });
       te += 0.2 + Math.random() * 0.2;
     });
-    G.run = true; G.next = G.t + 10; gldSnd('door', B.x);
+    G.run = true; G.next = G.t + 10;
     return true;
   }
 
@@ -1449,7 +1437,7 @@
     }
     FWK.pts = pts;
   };
-  FWK.img.src = 'assets/konami_gyarados.png?v=1';
+  FWK.img.src = 'assets/konami_gyarados.webp?v=2';
   const sparkMat = (sz) => new THREE.PointsMaterial({ size: sz || 2.4, sizeAttenuation: false, vertexColors: true, transparent: true, opacity: 1, blending: THREE.AdditiveBlending, depthWrite: false });
   const PINK = [[1, 0.55, 0.82], [1, 0.78, 0.92], [0.95, 0.42, 0.7]], GOLD = [[1, 0.85, 0.45], [1, 0.7, 0.3], [1, 0.96, 0.72]];
   function peony(n, R, cols) {                 // a round classic burst
@@ -1486,13 +1474,12 @@
         r0 = Math.min(r0, rel[i]); r1 = Math.max(r1, rel[i]); span = Math.max(span, Math.abs(p[0] - 0.7 * p[1])); }
       Object.assign(spec, { rel, life, r0, r1, span, glow: omGlow(spec.P, spec.s, spec.x, spec.y) });
     }
-    soundFx('launch');
     FWK.bursts.push(Object.assign({ t: 0, geo: S.geo, pos: S.pos, col: S.col, pts: S.pts, rgeo: R.geo, rp: R.pos, rc: R.col, rocket: R.pts, trail: [], jx, jy, gk, burst: false, done: false }, spec, { beam }));   // the beam object, not the spec's flag
   }
   function stepBeam(b, tb) {
     const B = b.beam, t0 = b.expl + 0.35, EMIT = 1.3, LIFE = 1.0;
     if (tb < t0 || B.done) return;
-    if (!B.on) { B.on = true; scene.add(B.pts); soundFx('beam'); for (const c of comps) if (c.userData.kind === 'neon') c.userData.burst = 0.35 + Math.random() * 0.4; OBOX.burst = 0.35 + Math.random() * 0.4; }
+    if (!B.on) { B.on = true; scene.add(B.pts); for (const c of comps) if (c.userData.kind === 'neon') c.userData.burst = 0.35 + Math.random() * 0.4; OBOX.burst = 0.35 + Math.random() * 0.4; }
     const tt = tb - t0;
     for (let i = 0; i < B.n; i++) {
       const age = tt - B.born[i];
@@ -1516,7 +1503,7 @@
       b.rgeo.attributes.position.needsUpdate = true; b.rgeo.attributes.color.needsUpdate = true; return;
     }
     if (!b.burst) {                            // bang: the shell goes, the sparks fly out, the street's neons stutter
-      b.burst = true; soundFx('bang'); scene.remove(b.rocket); b.rgeo.dispose(); b.rocket.material.dispose(); scene.add(b.pts);
+      b.burst = true; scene.remove(b.rocket); b.rgeo.dispose(); b.rocket.material.dispose(); scene.add(b.pts);
       for (const c of comps) if (c.userData.kind === 'neon') c.userData.burst = 0.12 + Math.random() * 0.25;
       OBOX.burst = 0.12 + Math.random() * 0.25;
     }
@@ -2014,12 +2001,12 @@
     };
   }
   function busPart(src, w, h, z, opts, rows, cols) {
-    const tex = src ? crisp(src) : null; if (tex) tex.repeat.set(1 / (cols || 1), 1 / (rows || 1));
+    const tex = src ? crispLate(src, 'bus') : null; if (tex) tex.repeat.set(1 / (cols || 1), 1 / (rows || 1));   // (late: the TranZit is never due before 15 s)
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial(Object.assign({ map: tex, transparent: true, depthWrite: false }, opts || {})));
     m.material.onBeforeCompile = busShade(); m.material.customProgramCacheKey = () => 'bus';   // (one program per kind of layer)
     m.position.z = z; m.visible = false; scene.add(m); BUS.list.push(m); return m;
   }
-  const busSpill = crisp('assets/bus_spill.png?v=4');   // the shell's light maps (R, G) and its openings (B), two rows
+  const busSpill = crispLate('assets/bus_spill.png?v=4', 'bus');   // the shell's light maps (R, G) and its openings (B), two rows
   const busOpen = { uShell: { value: new THREE.Vector4() }, uRow: { value: 0.5 } };
   function busInside(m) {                          // a saloon layer shows only through the shell's openings, wherever parallax slides it
     m.material.customProgramCacheKey = () => 'bus-inside';
@@ -2108,6 +2095,7 @@
     if (!S.active) {
       S.next = STAGE.due('tranzit', S.next);         // (a street quiet for 45 s pulls it in)
       S.next -= dt; if (S.next >= 0) return;
+      if (!LATE.ready.bus) { S.next = 1; return; }     // (its sheets not in yet: a second later)
       const C_ = S.call;                             // (called by CREW.api.callBus: its direction, its stop, held there)
       S.stP = C_ ? 2 : 1;                            // (the street director first: a called pass goes through a closed set)
       if (!STAGE.ask('tranzit', 120, { prio: S.stP })) { S.next = 3 + Math.random() * 4; return; }
@@ -2228,13 +2216,13 @@
     has: { jugg: lsGet('mtsfj-tz-perk') === '1', speed: lsGet('mtsfj-tz-speed') === '1', tap: lsGet('mtsfj-tz-tap') === '1' }, dk: 'jugg', imgs: {},
     seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, due: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
     puller: null, alpha: null, hud: null, drink: -1, cv: null, img: null, lit: 1 };
-  const zTex = crisp('assets/bus_zombies.png?v=2', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
+  const zTex = crispLate('assets/bus_zombies.png?v=2', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
       const c = document.createElement('canvas'); c.width = BZ.W; c.height = BZ.H; const g = c.getContext('2d'); g.drawImage(zTex.image, 0, 0);
       const d = g.getImageData(0, 0, BZ.W, BZ.H).data, a = new Uint8Array(BZ.W * BZ.H); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3]; ZG.alpha = a;
     } catch (e) {}
   });
-  const zTexG = crisp('assets/bus_zombies_glow.png?v=2'), zTexS = crisp('assets/bus_zombies_spill.png?v=2');
+  const zTexG = crispLate('assets/bus_zombies_glow.png?v=2', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.png?v=2', 'bus');
   function zMesh(tex, glow) {                      // a zombie's layer: its own cell of the sheets (uCell), hidden behind the near buildings
     const u = { value: new THREE.Vector4(0, 0, 1, 1) };
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial(glow ? { map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }
@@ -2350,7 +2338,6 @@
       const yg = busGround(p.x) + 4;               // the road just in front of the bus's wheels
       if (p.y >= yg && p.vy > 0) {
         p.y = yg; p.vy *= -0.32; p.vx *= 0.55; p.w *= 0.4; p.hits++;
-        if (SND.on && SND.ctx) sndBurst(0.05 + 0.03 * Math.random(), 2200, 500, 0.012 / p.hits, Math.max(-1, Math.min(1, (p.x - 728) / 728)));   // a clatter
         if (p.hits >= 3 || Math.abs(p.vy) < 18) { p.st = 'lying'; p.life = 25; p.y = yg; }
       }
     } else if (p.st === 'lying') {
@@ -2442,7 +2429,6 @@
     Object.assign(z, { dying: true, kind: hi ? 'fallhi' : 'fall', sheet: hi ? 'fallhi' : 'fall', t: 0, Y: hi ? z.Y + BUS.ground - BUS.roof : z.Y });
     ZG.pts += 500; ZG.seen = true; lsSet('mtsfj-tz-points', ZG.pts);   // (500 a kill: the first round, 6 of them, buys the perk)
     tzPop('tz-plus', '+500', x, y - 4);
-    if (SND.on && SND.ctx) sndBurst(0.11, 1300, 160, 0.03, Math.max(-1, Math.min(1, (x - 728) / 728)));
     const S = busS;
     if (ZG.active) {
       ZG.quiet = 0;
@@ -2467,7 +2453,6 @@
     if (ZG.has[k] || ZG.drink >= 0) return;
     if (ZG.pts < P.price) { tzPop('tz-tag', String(P.price), (P.x0 + P.x1) / 2, BZ.soda[1] - 2, P.col); return; }
     ZG.pts -= P.price; ZG.has[k] = true; ZG.dk = k; lsSet('mtsfj-tz-points', ZG.pts); lsSet(P.ls, '1');
-    if (k === 'jugg') tzJingle();                // (the existing jingle, Juggernog's only)
     if (reduced) { tzHud(); tzPerk(k); return; }
     if (!ZG.cv) { ZG.cv = document.createElement('canvas'); ZG.cv.width = JD.w; ZG.cv.height = JD.h; ZG.cv.className = 'tz-drink'; }
     if (!ZG.imgs[k]) { ZG.imgs[k] = new Image(); ZG.imgs[k].src = P.drink; }
@@ -2482,7 +2467,6 @@
     g.clearRect(0, 0, D.w, D.h);
     if (f < D.n && ZG.img.complete) g.drawImage(ZG.img, (f % D.cols) * D.w, Math.floor(f / D.cols) * D.h, D.w, D.h, 0, 0, D.w, D.h);
     const at = (s) => t0 < s && t >= s;            // its sounds, on their frames
-    if (at(D.pop)) tzFx('pop'); if (at(D.toss)) tzFx('clink'); D.gulps.forEach((s) => { if (at(s)) tzFx('gulp'); });
     const sm = (x) => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
     const k = sm((t - 0.95) / 0.35) * (1 - sm((t - 2.2) / 0.35)), bob = D.gulps.reduce((a, s) => a + Math.exp(-Math.pow((t - s - 0.05) / 0.08, 2)), 0);
     const dpr = window.devicePixelRatio || 1, y = Math.round((4 * k + 1.5 * bob * k) * dpr) / dpr;   // (whole device pixels: the street is never resampled)
@@ -2492,29 +2476,6 @@
   function tzPerk(k) {                             // its icon, for good (Juggernog's: the secret)
     const p = ZG.hud.perks[k]; if (!tzOff()) { p.hidden = false; p.classList.remove('tz-pop'); void p.offsetWidth; p.classList.add('tz-pop'); }
     if (k === 'jugg') foundSecret('jugg');
-  }
-  function tzJingle() {                            // a little fanfare of our own, about as loud as the music (-35 LUFS)
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime + 0.05, lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1800; lp.connect(SND.master);
-    const note = (m, at, d, g, type, out) => {
-      const o = ctx.createOscillator(), e = ctx.createGain(); o.type = type; o.frequency.value = 440 * Math.pow(2, (m - 69) / 12);
-      e.gain.setValueAtTime(0.0001, t + at); e.gain.exponentialRampToValueAtTime(g, t + at + 0.02); e.gain.exponentialRampToValueAtTime(0.0001, t + at + d);
-      o.connect(e); e.connect(out); o.start(t + at); o.stop(t + at + d + 0.05);
-    };
-    [[72, 0, 0.12], [76, 0.14, 0.12], [79, 0.28, 0.12], [84, 0.42, 0.3], [81, 0.78, 0.12], [83, 0.92, 0.12], [84, 1.06, 0.55]].forEach(([m, at, d]) => note(m, at, d, 0.24, 'square', lp));
-    [[48, 0, 0.36], [55, 0.42, 0.32], [48, 1.06, 0.6]].forEach(([m, at, d]) => note(m, at, d, 0.19, 'triangle', SND.master));
-  }
-  function tzFx(kind) {                            // the drink's small sounds, ours, at the other effects' level: the cap popped, a gulp, the bottle's clink away
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime + 0.01;
-    const ping = (fq, d, gn, at) => {
-      const o = ctx.createOscillator(), e = ctx.createGain(); o.type = 'sine'; o.frequency.value = fq;
-      e.gain.setValueAtTime(0.0001, t + at); e.gain.exponentialRampToValueAtTime(gn, t + at + 0.004); e.gain.exponentialRampToValueAtTime(0.0001, t + at + d);
-      o.connect(e); e.connect(SND.master); o.start(t + at); o.stop(t + at + d + 0.02);
-    };
-    if (kind === 'pop') { sndBurst(0.05, 5200, 1400, 0.03, 0.1); ping(2750, 0.14, 0.006, 0.005); ping(4120, 0.09, 0.003, 0.005); }
-    else if (kind === 'gulp') sndBurst(0.12, 420, 140, 0.035, 0);
-    else if (kind === 'clink') { ping(3150, 0.22, 0.004, 0.3); ping(4730, 0.15, 0.0025, 0.302); ping(3150, 0.12, 0.0018, 0.41); }
   }
   tzHud();
   // ---- the crew (Dempsey, Nikolai, Takeo, Richtofen: the owner's images, rigged and baked by bus/crew/): now and then
@@ -2717,7 +2678,6 @@
     [[905, 16], [960, 21], [880, 12.5], [1000, 26]].forEach(([x, d], i) => fg.push({ t: 0, x, d, b: (i * 5) % 12 }));
     for (let i = 0; i < 14; i++) fg.push({ t: 1.2 + i * 1.6 + (i > 7 ? 2.5 : 0), x: 930 + ((i * 97) % 400), d: 6.1 + ((i * 37) % 13) / 10, b: (i * 7 + 3) % 12 });
     CREW.plan = (CREW.script || CREW.cheerOnly) ? [] : fg; CREW.total = CREW.plan.length;   // (queued when the fight starts)
-    if (SND.on && SND.ctx) sndBurst(0.5, 6000, 2400, 0.006, 0.15);   // the door's pneumatic sigh
     if (!CREW.cheerOnly) crewEmit('stop');
   }
   function crewSpawn(w) {
@@ -2769,7 +2729,7 @@
     for (const H of CREW.heroes) {
       if (H.st === undefined) continue;
       H.t += dt;
-      if (H.st === 'wait') { if (CREW.phase !== 'door' && CREW.t >= H.at) { H.st = 'down'; H.t = 0; if (SND.on && SND.ctx) sndBurst(0.08, 900, 200, 0.004, 0.1); } allSet = false; allIn = false; continue; }
+      if (H.st === 'wait') { if (CREW.phase !== 'door' && CREW.t >= H.at) { H.st = 'down'; H.t = 0; } allSet = false; allIn = false; continue; }
       if (H.st === 'down' && H.t >= 1 / CREW.fast) { H.st = 'walk'; H.t = 0; H.x = H.door; H.y = ROW_DOOR; }
       if (H.st === 'walk') {                         // 1.17 m/s toward his spot, the row easing to his
         const ppm = (H.row - CHZ) / CEYE, dx = H.sx - H.x, v = 1.17 * ppm * dt;
@@ -2802,7 +2762,7 @@
       }
     }
     if (CREW.phase === 'cheer' && CREW.t > CREW.hold) { CREW.phase = 'back'; CREW.t = 0; for (const H of CREW.heroes) { H.st = 'back'; H.t = 0; } }
-    if (CREW.phase === 'back' && allIn) { CREW.phase = 'shut'; CREW.t = 0; if (SND.on && SND.ctx) sndBurst(0.5, 6000, 2400, 0.006, 0.15); }
+    if (CREW.phase === 'back' && allIn) { CREW.phase = 'shut'; CREW.t = 0; }
     S.wait = Math.max(S.wait, 0.5);                    // the bus waits for them
   }
   function crewEnd(S) {
@@ -2895,8 +2855,7 @@
       : Math.max(0.08, Math.min(0.38, 0.06 + (z.D - 8) / 70));   // (a hit now and then: a few get far before they drop)
     if (Math.random() < p) crewHit(z, 1);
     if (H.burst % 4 === 1) crewTracer(H, z);
-    crewShotSound(H);
-    if (H.left <= 0) { H.st = 'reload'; H.t = 0; H.burst = 0; H.nextShot = CREW.clock + 1.8; if (H.gun === 'garand' && SND.on && SND.ctx) crewPing(H); return; }
+    if (H.left <= 0) { H.st = 'reload'; H.t = 0; H.burst = 0; H.nextShot = CREW.clock + 1.8; return; }
     H.nextShot = CREW.clock + (H.burst % G[0] === 0 ? G[3] * (0.8 + 0.4 * Math.random()) : G[1]);
   }
   function crewIdleFrame(F, t, T) {                       // an idle's frame at t of T s: in 0.6 s, held (stretched), out 0.6 s
@@ -2951,7 +2910,7 @@
   function crewHit(z, dmg) {                               // struck: thrown back; out of life, it falls
     z.hp -= dmg;
     if (z.st === 'walk' || z.st === 'hit') { z.st = z.hp <= 0 ? 'fall' : 'hit'; z.st_t = 0; }
-    if (z.hp <= 0) { CREW.killed++; if (SND.on && SND.ctx) setTimeout(() => SND.on && sndBurst(0.18, 420, 60, 0.02 * Math.min(1, 10 / z.D), Math.max(-1, Math.min(1, (700 + CF * z.X / z.D - 728) / 728))), 650); }
+    if (z.hp <= 0) { CREW.killed++; }
   }
   function crewZOff(z) { z.on = false; for (const m of [z.body, z.long, z.refl, z.cont]) if (m) m.visible = false; }
   function crewTracer(H, z) {
@@ -2961,29 +2920,6 @@
     const a = 0.08 + Math.random() * 0.1, b = a + 0.22, xa = x0 + (x1 - x0) * a, ya = y0 + (y1 - y0) * a, xb = x0 + (x1 - x0) * b, yb = y0 + (y1 - y0) * b;
     const len = Math.hypot(xb - xa, yb - ya);
     t.m.scale.set(len, 1, 1); t.m.rotation.z = -Math.atan2(yb - ya, xb - xa); t.m.position.set((xa + xb) / 2, -(ya + yb) / 2, 1.9); t.m.visible = true; t.t = 0;
-  }
-  function crewShotSound(H) {
-    if (!SND.on || !SND.ctx) return;
-    const pan = Math.max(-1, Math.min(1, (H.sx - 728) / 728)), g = H.gun === 'garand' ? 0.02 : 0.011;
-    sndBurst(H.gun === 'garand' ? 0.09 : 0.05, 3200, 380, g, pan);
-  }
-  function crewPing(H) {                                   // the Garand's clip, flying out
-    const ctx = SND.ctx, t = ctx.currentTime + 0.03, pan = Math.max(-1, Math.min(1, (H.sx - 728) / 728));
-    for (const f of [2950, 4380]) {
-      const o = ctx.createOscillator(), e = ctx.createGain(); o.frequency.value = f; e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(0.004, t + 0.005); e.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-      let node = e; if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; e.connect(p); node = p; }
-      o.connect(e); node.connect(SND.master); o.start(t); o.stop(t + 0.3);
-    }
-  }
-  function crewGroan(z) {                                  // a moan: a low buzz through a mouth's resonance, wavering
-    const ctx = SND.ctx, t = ctx.currentTime, d = 0.7 + Math.random() * 0.8, f = 70 + Math.random() * 45;
-    const o = ctx.createOscillator(), bp = ctx.createBiquadFilter(), lp = ctx.createBiquadFilter(), e = ctx.createGain(), lfo = ctx.createOscillator(), lg = ctx.createGain();
-    o.type = 'sawtooth'; o.frequency.value = f; lfo.frequency.value = 4 + Math.random() * 3; lg.gain.value = f * 0.06; lfo.connect(lg); lg.connect(o.frequency);
-    bp.type = 'bandpass'; bp.frequency.value = 480 + Math.random() * 200; bp.Q.value = 3.5; lp.type = 'lowpass'; lp.frequency.value = 1300;
-    const g = 0.006 * Math.min(1, 9 / z.D);
-    e.gain.setValueAtTime(0.0001, t); e.gain.exponentialRampToValueAtTime(g, t + 0.18); e.gain.exponentialRampToValueAtTime(0.0001, t + d);
-    let node = e; if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = Math.max(-1, Math.min(1, (700 + CF * z.X / z.D - 728) / 728)); e.connect(p); node = p; }
-    o.connect(bp); bp.connect(lp); lp.connect(e); node.connect(SND.master); o.start(t); lfo.start(t); o.stop(t + d + 0.05); lfo.stop(t + d + 0.05);
   }
   function crewTick(dt) {                                  // bus or no bus: the horde walking, struck, falling, lying; the tracers
     if (!CREW.made) return;
@@ -3002,7 +2938,6 @@
         }
         z.X += z.wx * z.v * dt * k; z.D += z.wd * z.v * dt * k; z.t += dt;
         if (z.path ? z.path.length === 1 && Math.hypot(z.path[0][0] - z.X, z.path[0][1] - z.D) < 1.4 : z.D > 36.5) crewHit(z, 9);   // (at the crew's feet: point blank)
-        if (SND.on && SND.ctx && Math.random() < dt / 9) crewGroan(z);
       }
       if (z.st === 'fall' && z.st_t > 1.0) { z.st = 'down'; z.st_t = 0; }
       if (z.st === 'down') { z.fade = Math.max(0, 1 - Math.max(0, z.st_t - 6) / 1.5); if (z.fade <= 0) { crewZOff(z); continue; } }
@@ -3700,9 +3635,9 @@
     if (fzLever.classList.contains('pull')) return;
     if (!fz.classList.contains('armed')) {
       fzLever.classList.remove('try'); void fzLever.offsetWidth; fzLever.classList.add('try');
-      fzMain.classList.remove('try'); void fzMain.offsetWidth; fzMain.classList.add('try'); nrSound('clack'); return;
+      fzMain.classList.remove('try'); void fzMain.offsetWidth; fzMain.classList.add('try'); return;
     }
-    fzLever.classList.add('pull'); fz.classList.add('dark'); nrSound('relay');
+    fzLever.classList.add('pull'); fz.classList.add('dark');
     setTimeout(() => { closeFuse(); fz.classList.remove('dark', 'armed', 'won'); FZ.sw.fill(false); fzLever.classList.remove('pull'); startEleven(); }, reduced ? 250 : 700);
   });
   function fzToggle(i) {
@@ -3805,7 +3740,7 @@
     if (!PW.list) { PW.list = pwList(); PW.keep = new Array(PW.list.length * 2); }
     for (const e of PW.list) e.p = 1;
     Object.assign(PW, { on: true, u: 0, arc: 1, zon: 0, shot: false });
-    pwShade.visible = true; FZ.state = 'dead'; FZ.boot = -1; fzSound('cut');
+    pwShade.visible = true; FZ.state = 'dead'; FZ.boot = -1;
   }
   function stepPower(dt) {                     // the reward's clock: each light's power this frame, the unlit street's
     if (FZ.boot >= 0) { FZ.boot += dt; if (FZ.boot > 0.9 && FZ.state === 'boot') { FZ.state = 'live'; FZ.live = arcS.t; } if (FZ.boot > 3.4) FZ.boot = -1; }
@@ -3815,12 +3750,12 @@
     const u = (PW.u += dt), L = PW.list;
     for (let i = 0; i < L.length; i++) L[i].p = pwAt(L[i].x, i);
     PW.arc = pwAt(1406, 0);
-    if (FZ.state === 'dead' && u > PW.W0 + 50 / PW.V + 0.35) { FZ.boot = 0; FZ.state = 'boot'; fzSound('boot'); }   // the room lit: the cabinets boot
+    if (FZ.state === 'dead' && u > PW.W0 + 50 / PW.V + 0.35) { FZ.boot = 0; FZ.state = 'boot'; }   // the room lit: the cabinets boot
     const U = pwShade.material.uniforms;
     U.uFront.value = u < 0.12 ? -1e4 : u < PW.W0 ? 1e4 : 1456 - (u - PW.W0) * PW.V;
     U.uAmb.value = u < 0.12 ? [1, 0.3, 0.8, 0][(u / 0.03) | 0] : 1;
     for (let k = 0; k < PW_ZONES.length; k++) U.uPow.value[k] = pwAt(PW_ZONES[k][4], k + 1);
-    while (PW.zon < PW_ZONES.length && u > (PW_ZONES[PW.zon][4] < 0 ? PW.FAR : PW.W0 + (1456 - PW_ZONES[PW.zon][4]) / PW.V)) { PW.zon++; fzSound('tube'); }
+    while (PW.zon < PW_ZONES.length && u > (PW_ZONES[PW.zon][4] < 0 ? PW.FAR : PW.W0 + (1456 - PW_ZONES[PW.zon][4]) / PW.V)) { PW.zon++; }
     if (!PW.shot && u > 3) { PW.shot = true; if (!PW.shell) launchShell(); }
     if (u > PW.END) { PW.on = false; pwShade.visible = false; }
   }
@@ -3844,7 +3779,7 @@
   // ?night=red shows the red night without finding anything; once the eleventh is found, MATHIS-PC keeps it
   // ('mtsfj-night') ----
   const REDN = { on: false, k: 0, to: 0, rate: 1, T0: [1, 0.12, 0.08], list: null, keep: [], wave: false, wu: 0, V: 150,
-    W0: 0.3, FAR: 10.6, seq: -1, plated: false, hum: null, sLast: 0, gone: lsGet('mtsfj-moon') === 'gone', busZ0: BUS.forceZ, wander: { on: false, max: 3 } };
+    W0: 0.3, FAR: 10.6, seq: -1, plated: false, sLast: 0, gone: lsGet('mtsfj-moon') === 'gone', busZ0: BUS.forceZ, wander: { on: false, max: 3 } };
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
@@ -4053,7 +3988,7 @@
     // the eleventh's start: the plate when the wave is through (a calm fade under reduced motion), then the red holds
     if (REDN.seq >= 0 && FINS.t < 0) {           // (the whole finale running: its plate at its end)
       REDN.seq += dt; const at = reduced ? 3.4 : REDN.FAR + 0.9;
-      if (!REDN.plated && REDN.seq > at) { REDN.plated = true; showPlate(); foundEleven(); nrSound('humoff'); }
+      if (!REDN.plated && REDN.seq > at) { REDN.plated = true; showPlate(); foundEleven(); }
       if (REDN.seq > at + 5) { REDN.seq = -1; REDN.plated = false; secBtn.classList.remove('red'); }
     }
   }
@@ -4062,29 +3997,13 @@
     if (reduced) { nightRed(true, { fade: 3 }); finStart(true); return; }
     nrHookAll();
     if (nightSys()) setMode('rouge', REDN.FAR - 1);   // the sky charges as the wave goes (the lights: the wave, below)
-    nrSetHue(nightSys() ? CLOCK.red : REDN.T0); REDN.k = 0; REDN.to = 1; REDN.wave = true; REDN.wu = 0; nrSound('hum');
+    nrSetHue(nightSys() ? CLOCK.red : REDN.T0); REDN.k = 0; REDN.to = 1; REDN.wave = true; REDN.wu = 0;
     finStart(false);                             // (the rest of it: the TranZit, the last stand, the moon, the dawn)
   }
   // the plate: EASTER EGG COMPLETE, slid up at the bottom of the street for 4 s
   const eePlate = document.createElement('div'); eePlate.className = 'ee-plate'; eePlate.setAttribute('role', 'status');
   eePlate.innerHTML = '<i>11</i><span><b>EASTER EGG COMPLETE</b><small>16 · 03 · 2003</small></span>'; hero.appendChild(eePlate);
   function showPlate() { eePlate.classList.remove('on'); void eePlate.offsetWidth; eePlate.classList.add('on'); }
-  function nrSound(kind) {                     // a relay's clack, the mains' hum rising with the wave (-40 dB), all under the rain
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime;
-    if (kind === 'relay') { sndBurst(0.06, 300, 80, 0.06, 0); sndBurst(0.02, 4000, 1500, 0.015, 0); }
-    else if (kind === 'clack') sndBurst(0.05, 900, 200, 0.03, 0);
-    else if (kind === 'hum') {
-      if (REDN.hum) return;
-      const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(1, t + 9); g.connect(SND.master);
-      const os = [[50, 0.006], [100, 0.0035], [150, 0.0018], [250, 0.0008]].map(([f, a]) => {
-        const o = ctx.createOscillator(), e = ctx.createGain(); o.frequency.value = f; e.gain.value = a; o.connect(e); e.connect(g); o.start(t); return o; });
-      REDN.hum = { g, os };
-    } else if (kind === 'humoff' && REDN.hum) {
-      const h = REDN.hum; REDN.hum = null; h.g.gain.cancelScheduledValues(t); h.g.gain.setValueAtTime(h.g.gain.value, t); h.g.gain.setTargetAtTime(0.0001, t, 0.8);
-      h.os.forEach((o) => o.stop(t + 4));
-    }
-  }
   // ---- the eleventh's finale, its end (beats 52-78 s of its sheet; the crew and the horde join it with their module):
   // the red lights die one by one, for good (the fuses' blackout, held: the street with its power out, graded as the
   // street is); then the moon goes as Moon's did, at its own place and size: it whitens (0.4 s) and breaks into a
@@ -4270,16 +4189,6 @@
     for (let i = 0; i < 10; i++) at('spark', rnd(0, 2 * Math.PI), rnd(180, 300), { life0: rnd(0.45, 0.75) });
     FIN.blast = { t: 0, P, dawned: false, boom: false, bolt: false }; nrHalo.visible = false;
   }
-  function finSound() {                          // a dull blow (the only loud thing of the finale, still under the music), a falling whistle
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime;
-    const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(65, t); o.frequency.exponentialRampToValueAtTime(30, t + 0.6);
-    g.gain.setValueAtTime(0.16, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.65); o.connect(g); g.connect(SND.master); o.start(t); o.stop(t + 0.7);
-    sndBurst(0.9, 1400, 90, 0.12, 0);
-    const w = ctx.createOscillator(), wg = ctx.createGain(); w.frequency.setValueAtTime(4000, t + 0.15); w.frequency.exponentialRampToValueAtTime(200, t + 2.15);
-    wg.gain.setValueAtTime(0.0001, t + 0.15); wg.gain.exponentialRampToValueAtTime(0.01, t + 0.3); wg.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
-    w.connect(wg); wg.connect(SND.master); w.start(t + 0.15); w.stop(t + 2.25);
-  }
   function stepBlast(dt) {
     const B = FIN.blast, O = FIN.objs, b = (B.t += dt);
     if (reduced) {                               // the calm variant: the moon fades in 2 s, a still ring a second
@@ -4294,7 +4203,7 @@
     const kh = b < 0.4 ? b / 0.4 : Math.max(0, 1 - (b - 0.4) / 0.5);               // and glows
     O.halo.visible = kh > 0.002; O.halo.material.uniforms.uA.value = kh;
     moonMesh.material.opacity = b < 0.4 ? 1 : Math.max(0, 1 - (b - 0.4) / 0.1);   // and breaks
-    if (b >= 0.4 && !B.boom) { B.boom = true; finSound(); }
+    if (b >= 0.4 && !B.boom) B.boom = true;
     if (b >= 0.52 && !REDN.gone) moonGone(true);
     const tb = b - 0.4;                                                            // the fireball
     O.ball.visible = tb > 0 && tb < 1.6;
@@ -4413,7 +4322,7 @@
     const pts = jagged(cx, cy - 6, cx + rnd(-16, 16), top, 12), forks = [];
     for (let i = 0; i < 3; i++) { const p = pts[Math.floor(rnd(0.25, 0.85) * pts.length)], a = -Math.PI / 2 + rnd(-1.1, 1.1); forks.push(jagged(p[0], p[1], p[0] + Math.cos(a) * rnd(14, 34), p[1] + Math.sin(a) * rnd(14, 34), 6)); }
     const I0 = KIL.state === 'charge' ? Math.min(1, KIL.t / 2) : 0.6;
-    Object.assign(KIL, { state: 'sky', t: 0, sky: { pts, forks, I0 }, sparks: [] }); gsMesh.visible = true; flMesh.visible = true; soundFx('crack');
+    Object.assign(KIL, { state: 'sky', t: 0, sky: { pts, forks, I0 }, sparks: [] }); gsMesh.visible = true; flMesh.visible = true;
   }
   function stepKilSky(dt) {
     KIL.t += dt; const t = KIL.t, cx = KIL.x + KCH[0], cy = KIL.y + KCH[1];
@@ -4535,7 +4444,7 @@
         if (t >= FINS.stand) { A.retreat(); finDie(6); finStage('dying'); finEv('dying'); }
         break;
       case 'dying':
-        if (u >= 6.2) { nrSound('humoff'); finStage('rain'); finEv('rain'); }   // the last light out: the hum stops dead; the rain alone
+        if (u >= 6.2) { finStage('rain'); finEv('rain'); }   // the last light out: the hum stops dead; the rain alone
         break;
       case 'rain':
         if (u >= 2.8) { A.retreat(); finEv('blast'); finBlast(); finStage('blast'); }   // (the flash: every zombie still up falls, finDawn)
@@ -4579,22 +4488,6 @@
     B.S.geo.attributes.position.needsUpdate = true; B.S.geo.attributes.color.needsUpdate = true;
     B.S.pts.material.opacity = Math.max(0, 1 - fall / 1.3);
     if (fall > 1.3) { scene.remove(B.S.pts); B.S.geo.dispose(); B.S.pts.material.dispose(); PW.shell = null; }
-  }
-  function fzSound(kind) {                     // well under the rain, like the rest (the master is a true background)
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime;
-    if (kind === 'cut') {                      // the power going: a dull thump, a crackle
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(90, t); o.frequency.exponentialRampToValueAtTime(35, t + 0.35);
-      g.gain.setValueAtTime(0.04, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4); o.connect(g); g.connect(SND.master); o.start(t); o.stop(t + 0.45);
-      sndBurst(0.18, 2400, 300, 0.012, 0);
-    } else if (kind === 'tube') sndBurst(0.05, 7000, 3500, 0.006 + Math.random() * 0.004, (Math.random() - 0.5) * 0.8);   // a tube's tick
-    else if (kind === 'boot') {                // a cabinet's chime: two soft square notes
-      for (const [f, d] of [[660, 0], [990, 0.09]]) {
-        const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'square'; o.frequency.value = f;
-        g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(0.006, t + d + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.12);
-        o.connect(g); g.connect(SND.master); o.start(t + d); o.stop(t + d + 0.14);
-      }
-    }
   }
   drawArcade();
 
@@ -4862,9 +4755,9 @@
 
   // ---- easter egg: the graded card in the Pokémon Center's showcase, shown up close on hover (tap on touch) ----
   const slabTip = document.createElement('div'); slabTip.className = 'slab-tip';
-  slabTip.innerHTML = '<img src="assets/slab_gyarados.webp?v=1" alt="Léviator chromatique, carte gradée 10">';
+  slabTip.innerHTML = '<img alt="Léviator chromatique, carte gradée 10">';
   hero.appendChild(slabTip);
-  let slabOK = false; slabTip.querySelector('img').onload = () => { slabOK = true; };
+  let slabOK = false; slabTip.querySelector('img').onload = () => { slabOK = true; }; lateImg(slabTip.querySelector('img'), 'assets/slab_gyarados.webp?v=1');   // (late; the tip waits for it)
   function overWin(ev) {                      // pointer -> picture coordinates, through the same camera as the render
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top));
@@ -5502,16 +5395,15 @@
       }
     }
     function enemyFires(e) {
-      e.fired = now; hurtT = now; sfx('enemy'); setTimeout(() => sfx('hurt'), 60);
+      e.fired = now; hurtT = now;
       let dmg = 50; const s = Math.min(shield, dmg); shield -= s; dmg -= s; hp = Math.max(0, hp - dmg);
-      if (hp <= 0) { feed.push({ t: now, k: e.name.toUpperCase(), v: PLAYER, mine: false }); setState('lose'); sfx('lose'); }
+      if (hp <= 0) { feed.push({ t: now, k: e.name.toUpperCase(), v: PLAYER, mine: false }); setState('lose'); }
     }
     function kill(e, x, y) {
       const sp = VALO.spots[e.name], rx = sp.rx[e.base];
       e.dx = rx[Math.max(0, e.k)] - rx[rx.length - 1]; e.alive = false; e.st = 'die'; e.t = 0; e.k = 0;
       e.anim = e.base === 'cout' ? 'cdie' : 'die'; kills++; hitT = now; marks.push({ x, y, t: now });
       feed.push({ t: now, k: PLAYER, v: e.name.toUpperCase(), mine: true }); badge = { n: kills, t: now };
-      sfx('hs'); sfx('kill', kills);
       if (cur === e) { cur = null; nextT = rnd(0.7, 1.4) * HOLD; }
       if (kills >= 5) aceAt = now + 0.45;
     }
@@ -5542,7 +5434,7 @@
     function fire() {
       if (st === 'lose' && stT > 0.8) { setState('buy'); return; }
       if ((st !== 'live' && st !== 'buy') || now - lastShot < 0.13 || reloadT > 0) return;
-      lastShot = now; ammo--; sfx('shot'); tracer = { x: C.x, y: C.y };
+      lastShot = now; ammo--; tracer = { x: C.x, y: C.y };
       const e = cur && cur.vis && cur.alive ? cur : null;
       if (e && hits(e, C.x, C.y, tol)) kill(e, C.x, C.y);
       if (ammo <= 0 && reserve > 0) reloadT = 1.4;
@@ -5728,7 +5620,7 @@
       g.globalAlpha = slide; g.drawImage(IMG.ui, lx, ly, lw, lh, Math.round(70 - lw / 2 - 20 * (1 - slide)), 176 - lh, lw, lh); g.globalAlpha = 1;
       text3('JETT', 150, 36, WHITE, 4, slide); text3(T_.role, 151, 60, GREY, 1, slide);
       ORDER.forEach((n, k) => { face(n, 'right', 151 + k * 15, 96, false, false); if (n === 'jett') { rect(149 + k * 15, 94, 15, 1, WHITE); rect(149 + k * 15, 108, 15, 1, WHITE); rect(149 + k * 15, 94, 1, 15, WHITE); rect(163 + k * 15, 94, 1, 15, WHITE); } });
-      const on = t > 0.75; if (on && lockT < 0) { lockT = now; sfx('lock'); }
+      const on = t > 0.75; if (on && lockT < 0) { lockT = now; }
       const bw = 112; rect(150, 126, bw, 16, on ? TEAL : [26, 41, 51], on ? 0.95 : 0.9); rect(150, 126, bw, 1, on ? WHITE : TEAL, 0.6);
       if (on) { const s = PLAYER, w = width3m(s) + 4 + width3('— ' + T_.locked); let x = 150 + ((bw - w) >> 1); x += text3m(s, x, 132, DARK) + 4; text3('— ' + T_.locked, x, 132, DARK); }
       else text3(T_.lock, 150 + ((bw - width3(T_.lock)) >> 1), 132, TEAL);
@@ -5754,14 +5646,14 @@
       now += dt; if (G.hold) { stepAim(dt); return; }
       stT += dt;
       if (st === 'boot' && !failed && loaded === 4 && AGA && stT > 1.0) setState('lock');
-      else if (st === 'lock' && stT > 2.2) { setState('buy'); sfx('tick'); }
-      else if (st === 'buy' && stT > 3) { setState('live'); sfx('go'); }
+      else if (st === 'lock' && stT > 2.2) { setState('buy'); }
+      else if (st === 'buy' && stT > 3) { setState('live'); }
       else if (st === 'live') {
         roundT -= dt;
-        if (aceAt && now >= aceAt) { aceAt = 0; setState('ace'); sfx('ace'); }
-        else if (roundT <= 0) { roundT = 0; setState('lose'); sfx('lose'); }
+        if (aceAt && now >= aceAt) { aceAt = 0; setState('ace'); }
+        else if (roundT <= 0) { roundT = 0; setState('lose'); }
       }
-      else if (st === 'ace' && stT > 1.5) { setState('win'); foundSecret('ace'); sfx('win'); }
+      else if (st === 'ace' && stT > 1.5) { setState('win'); foundSecret('ace'); }
       else if (st === 'win' && stT > 2.8 && !G.manual) { stop(); quit(); return; }
       if (reloadT > 0) { reloadT -= dt; if (reloadT <= 0) { const n = Math.min(25, reserve); reserve -= n; ammo = n; reloadT = 0; } }
       stepEnemies(dt); stepAim(dt);
@@ -5784,27 +5676,6 @@
     cv.addEventListener('pointermove', onMove); cv.addEventListener('pointerdown', onDown); document.addEventListener('keydown', onKey);
     function stop() { stopped = true; cancelAnimationFrame(raf); cv.removeEventListener('pointermove', onMove); cv.removeEventListener('pointerdown', onDown); document.removeEventListener('keydown', onKey); }
     // ---- the sounds: made here, original, quiet (the master is a true background)
-    function sfx(kind, n) {
-      if (!SND.on || !SND.ctx) return;
-      const ctx = SND.ctx, t = ctx.currentTime;
-      const tone = (f, d, type, gain, at, f2) => {
-        const o = ctx.createOscillator(), e = ctx.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t + (at || 0));
-        if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + (at || 0) + d);
-        e.gain.setValueAtTime(0.0001, t + (at || 0)); e.gain.exponentialRampToValueAtTime(gain, t + (at || 0) + 0.008); e.gain.exponentialRampToValueAtTime(0.0001, t + (at || 0) + d);
-        o.connect(e); e.connect(SND.master); o.start(t + (at || 0)); o.stop(t + (at || 0) + d + 0.02);
-      };
-      if (kind === 'shot') { sndBurst(0.13, 6500, 900, 0.05, 0.15); tone(130, 0.09, 'sine', 0.035, 0, 48); sndBurst(0.03, 12000, 7000, 0.02, 0.2); }
-      else if (kind === 'hs') { tone(2600, 0.12, 'sine', 0.011); tone(3900, 0.08, 'sine', 0.006); }
-      else if (kind === 'kill') { const b = 523 * Math.pow(2, ((n || 1) - 1) * 2 / 12); tone(b, 0.09, 'triangle', 0.009, 0.05); tone(b * 1.5, 0.12, 'triangle', 0.008, 0.12); }
-      else if (kind === 'enemy') { sndBurst(0.18, 2600, 380, 0.03, (Math.random() - 0.5) * 0.6); tone(95, 0.12, 'sine', 0.02, 0, 40); }
-      else if (kind === 'hurt') { tone(85, 0.22, 'sine', 0.04, 0, 38); sndBurst(0.12, 1800, 300, 0.015, 0); }
-      else if (kind === 'ace') [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.16, 'square', 0.006, i * 0.09));
-      else if (kind === 'win') [523, 659, 784].forEach((f) => tone(f, 0.9, 'triangle', 0.008, 0.05));
-      else if (kind === 'lose') [392, 330, 262].forEach((f, i) => tone(f, 0.22, 'triangle', 0.008, i * 0.16));
-      else if (kind === 'lock') { sndBurst(0.35, 400, 4000, 0.02, 0); tone(440, 0.4, 'triangle', 0.007, 0.08); tone(660, 0.4, 'triangle', 0.006, 0.08); }
-      else if (kind === 'tick') tone(1200, 0.04, 'square', 0.003);
-      else if (kind === 'go') { tone(660, 0.12, 'square', 0.004); tone(990, 0.16, 'square', 0.004, 0.1); }
-    }
     const G = { cv, stop, manual: false, hold: false, get state() { return st; }, get kills() { return kills; }, get enemy() { return cur; },
       step(dt) { update(dt); draw(); }, aim(x, y) { C.x = x; C.y = y; tol = TOL_MOUSE; }, fire, head() { return headOf(cur && cur.vis && cur.alive ? cur : null); } };
     raf = requestAnimationFrame(loop);
@@ -5995,7 +5866,7 @@
     }
   };
   wlMask.onload = wlLit.onload = wlBuild;
-  wlMask.src = 'assets/window_panes.png?v=1'; wlLit.src = 'assets/window_lit_ukki.png?v=1';   // (droite-09: Ukki-kun, his potted plant, on the first pane's sill: its shadow cut out of the light)
+  wlMask.src = 'assets/window_panes.png?v=1'; wlLit.src = 'assets/window_lit_ukki.webp?v=2';   // (droite-09: Ukki-kun, his potted plant, on the first pane's sill: its shadow cut out of the light)
   // ---- Naruto in the room behind that window (build_zzzchar_naruto.py): silhouettes of a jointed body posed joint by
   // joint (rig_naruto.py; the walk and the run from normative joint-angle curves, his soles rolling on the floor without
   // slipping; the stop, the start, a stepping turn and his gestures by IK; the headband's tails and his hair on springs),
@@ -6014,7 +5885,7 @@
   // seal, two puffs, a clone beside him and one beyond, gone in a puff ----
   const NG = { vx: 810, vy: 615, uzn: 1293.936, kzn: 74.8, zn: 18.7166, ppm: 75, walkD: 0.847, runD: 1.5674, walkV: 0.985, runV: 2.85, xa0: 0.223, xr0: -0.211 };
   const NC = { walkT: [0, 50, 125, 16, 24, 119], walkA: [125, 50, 125, 16, 26, 118], runT: [250, 58, 125, 12, 29, 118], runA: [375, 58, 118, 12, 29, 111], settleT: [493, 50, 126, 6, 21, 122], settleA: [743, 50, 125, 6, 29, 116], startT: [619, 50, 124, 4, 21, 120], startA: [868, 50, 125, 4, 29, 118], turn: [993, 46, 124, 9, 23, 119], look: [1117, 55, 123, 4, 27, 118], seal: [1240, 46, 123, 3, 27, 118] };   // the sheet's rows: top, cell w, h, frames, the floor point under his pelvis in the cell
-  const nSheet = new Image(); nSheet.src = 'assets/naruto_sil.webp?v=2';
+  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_sil.webp?v=2');   // (late: he is never due before 26 s)
   const nU = (s) => NG.vx + (NG.uzn - NG.vx) * NG.zn / (NG.zn - s);                 // s (m along the glass) -> scene x
   const nV = (u) => NG.vy + (260 - NG.vy) * (u - NG.vx) / (NG.uzn - NG.vx);          // the floor line under him at x
   const nK = (u) => NG.kzn * (u - NG.vx) / (NG.uzn - NG.vx);                          // px per metre there
@@ -6115,7 +5986,7 @@
         const tk = W2.t - k * 0.45; if (tk < 0) { W2.I[k] = 0; continue; }
         const f = Math.floor(tk / 0.06); W2.I[k] = f < FLICK.length ? FLICK[f] : 0.95 + 0.05 * Math.sin(W2.t * 1.3 + k);
       }
-      if (!busy && (NAR.next -= dt) < 0 && W2.t > 3 && W2.next - W2.t > 9) { nPlan(); NAR.next = 14 + Math.random() * 16; }
+      if (!busy && (NAR.next -= dt) < 0 && W2.t > 3 && W2.next - W2.t > 9 && nSheet.complete && nSheet.naturalWidth) { nPlan(); NAR.next = 14 + Math.random() * 16; }   // (his sheet in)
       if ((W2.t > W2.next || openK('balcony') < 0.5) && !busy) { W2.state = 'off-going'; W2.t = 0; }
     } else {                                                                         // going out, in the same order
       for (let k = 0; k < WL.n; k++) { const tk = W2.t - k * 0.3; W2.I[k] = tk < 0 ? W2.I[k] : Math.max(0, 1 - tk / 0.25); }
@@ -6457,7 +6328,7 @@
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, hk0: -1, graded: false };
   const IRA = { W: 1104, H: 504, cw: 48, ch: 84 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
-  const irLanTex = irTex('assets/ichiraku_lanterns.png?v=1'), irNorTex = irTex('assets/ichiraku_noren.png?v=1');
+  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.png?v=1');
   function irUV(m, x, y, w, h, AW, AH) {         // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = x / AW, u1 = (x + w) / AW, v0 = 1 - y / AH, v1 = 1 - (y + h) / AH;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
@@ -6719,7 +6590,7 @@
   const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 33.4129, ppm: 44, w0: -4.43, D: 1.0066, v: 1.007, xa0: 0.266, xr0: -0.248 };
   const ZRC = { walkT: [0, 36, 73, 16, 18, 69], walkA: [73, 36, 73, 16, 18, 68], settle: [146, 35, 74, 7, 16, 71], idle: [220, 32, 72, 4, 17, 69], toss: [292, 38, 101, 38, 17, 98], turn: [393, 35, 73, 12, 17, 69], start: [466, 37, 73, 6, 20, 68] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
   const ZRB = [null,null,null,null,null,null,null,[34.0,23.8],[34.0,13.0],[34.0,6.6],[34.0,4.5],[34.0,6.6],[34.0,13.1],[34.0,24.0],[34.0,39.1],null,null,null,null,null,null,null,null,[34.0,17.9],[34.0,9.3],[34.0,5.0],[34.0,5.0],[34.0,9.4],[34.0,18.0],[34.0,31.0],null,null,null,null,null,null,null,null];   // the toss row: the Poké Ball's place in each cell (px), null while it is in his hand (red_meta.json)
-  const zrSheet = new Image(); zrSheet.src = 'assets/red_sil.webp?v=2';
+  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=2');   // (late; his visit already waits for the sheet)
   function z1Red(g, ox, oy, f) {                  // his frame f = { row, i, w } into the door's canvas (its box at ox, oy)
     const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
     g.drawImage(zrSheet, f.i * c[1], c[0], c[1], c[2], 700 + ZR.x * s - c[4] * k - ox, 615 - ZR.kf * s - c[5] * k - oy, c[1] * k, c[2] * k);
@@ -7125,7 +6996,7 @@
       }
     }
   }
-  function startDash(x0, y0, x1, y1) { KIL.dash = { pts: jagged(x0, y0, x1, y1, 10), t0: KIL.t, x0, y0, x1, y1 }; flMesh.visible = true; soundFx('crack'); }
+  function startDash(x0, y0, x1, y1) { KIL.dash = { pts: jagged(x0, y0, x1, y1, 10), t0: KIL.t, x0, y0, x1, y1 }; flMesh.visible = true; }
   function drawDash(t) {                                      // the bolt grows in 0.14 s, a bright head; then it fades
     const D = KIL.dash; if (!D) return;
     const u = Math.min(1, (t - D.t0) / 0.14), fade = Math.max(0, 1 - (t - D.t0 - 0.14) / 0.45);
@@ -7226,7 +7097,7 @@
     if (KIL.state !== 'sit') return;
     if (YO.t >= 0) { YO.t = -1; yoMesh.visible = false; YO.next = 60 + Math.random() * 60; }   // (the yo-yo away first)
     Object.assign(KIL, { state: 'go', t: 0, up: false, down: false, dash: null, sparks: [], tick: 0, ph: kilPh() }); for (const n in KREST) kilShow(n, KREST[n]);
-    gsMesh.visible = true; soundFx('zap');
+    gsMesh.visible = true;
   }
   // ---- the four heroes (the secret 'killua': its id and its line in the list kept). Kirua on his roof, Naruto behind
   // the balcony's lit glass, Red at the balcony door above the shop, Luffy on the ramen shop's board: each clicked (or
@@ -7287,26 +7158,6 @@
     S.m.position.set(Math.round(x) + 0.5, -(Math.round(y) + 0.5), 1.95); S.m.material.opacity = faint ? 0.4 : 0.9;
     S.m.material.map.offset.x = (S.still ? 3 : 0) / HSTAR.n; S.m.visible = true;
   }
-  function heroSnd(k, x, all) {                  // the chime (two soft notes; the fourth: on up), under the music; his own little sound
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t0 = ctx.currentTime, pan = Math.max(-1, Math.min(1, (x - 728) / 728));
-    for (const [f, at] of all ? [[987.8, 0], [1318.5, 0.09], [1661.2, 0.2], [1975.5, 0.32]] : [[987.8, 0], [1318.5, 0.09]]) {
-      const o = ctx.createOscillator(), e = ctx.createGain(); o.type = 'sine'; o.frequency.value = f;
-      e.gain.setValueAtTime(0.0001, t0 + at); e.gain.exponentialRampToValueAtTime(0.009, t0 + at + 0.012); e.gain.exponentialRampToValueAtTime(0.0001, t0 + at + 0.7);
-      let node = e; if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; e.connect(p); node = p; }
-      o.connect(e); node.connect(SND.master); o.start(t0 + at); o.stop(t0 + at + 0.75);
-    }
-    if (reduced) return;
-    if (k === 'kirua') for (let i = 0; i < 4; i++) setTimeout(() => SND.on && sndBurst(0.03, 9000, 4000, 0.01, pan), i * 70 + Math.random() * 30);
-    else if (k === 'naruto') sndBurst(0.2, 900, 280, 0.008, pan);
-    else if (k === 'red') { sndBurst(0.012, 5200, 3200, 0.012, pan); setTimeout(() => SND.on && sndBurst(0.012, 5200, 3200, 0.01, pan), 70); }
-    else {
-      const o = ctx.createOscillator(), e = ctx.createGain(); o.type = 'triangle';
-      o.frequency.setValueAtTime(240, t0); o.frequency.exponentialRampToValueAtTime(480, t0 + 0.1); o.frequency.exponentialRampToValueAtTime(320, t0 + 0.3);
-      e.gain.setValueAtTime(0.0001, t0); e.gain.exponentialRampToValueAtTime(0.006, t0 + 0.02); e.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
-      o.connect(e); e.connect(SND.master); o.start(t0); o.stop(t0 + 0.4);
-    }
-  }
   function heroToss() {                          // Red standing at the glass: a quick toss of his Poké Ball (his own frames, twice their pace)
     const F = Z1F.who, A = F && F.a; if (!A || A.k !== 'frames' || !F.fig || F.fig.row !== 'idle') return;
     let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
@@ -7320,7 +7171,6 @@
     if (again) return;
     FOUR.k.push(k); const all = HEROK.every((q) => FOUR.k.includes(q)); if (all) FOUR.at = [Math.round(x), Math.round(y)];
     try { localStorage.setItem('mtsfj-four', JSON.stringify(FOUR)); } catch (e) {}
-    heroSnd(k, x, all);
     if (!reduced) {
       if (k === 'kirua') { HERO.kil = 0.7; gsMesh.visible = true; }
       else if (k === 'naruto') {               // (the clone's puff by his head, a body's width off, on the side that has room)
@@ -7438,48 +7288,6 @@
     return { x: camera.left + u * (camera.right - camera.left), y: -(camera.top + v * (camera.bottom - camera.top)) };
   }
   // sounds: short, original, a true background (the page's master is at 0.3; these peak at 0.04-0.09 before it)
-  function cbSnd(k, a) { try { cbSnd0(k, a); } catch (e) { /* a sound must never stop the show */ } }
-  function cbSnd0(k, a) {
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t0 = ctx.currentTime;
-    const tone = (f, at, d, g, type, f2) => {
-      const o = ctx.createOscillator(), v = ctx.createGain(); o.type = type || 'triangle';
-      o.frequency.setValueAtTime(f, t0 + at); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + at + d);
-      v.gain.setValueAtTime(0.0001, t0 + at); v.gain.exponentialRampToValueAtTime(g, t0 + at + 0.012); v.gain.exponentialRampToValueAtTime(0.0001, t0 + at + d);
-      o.connect(v); v.connect(SND.master); o.start(t0 + at); o.stop(t0 + at + d + 0.03);
-    };
-    if (k === 'leaves') {                      // leafy: a few grains of band-passed noise (2.4-6.8 kHz), thick at each push and thinning as the limb settles, over a faint bed
-      if (!SND.noise) return;
-      const pl = a && a.pulses ? a : { dur: 2, pulses: [{ t: 0.16, a: 1 }] }, dur = pl.dur;
-      const env = (t) => { let e = 0.1; for (const p of pl.pulses) { const u = t - p.t; if (u > -0.1 && u < 0.75) e = Math.max(e, p.a * Math.sin(Math.PI * (u + 0.1) / 0.85)); } return e * Math.min(1, (dur - t) / 0.6 + 0.2); };
-      const bed = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), bg = ctx.createGain();
-      bed.buffer = SND.noise; bed.loop = true; bp.type = 'bandpass'; bp.frequency.value = 3000; bp.Q.value = 0.5; bg.gain.setValueAtTime(0.0001, t0); bed.connect(bp); bp.connect(bg); bg.connect(SND.master);
-      for (let t = 0.05; t < dur + 0.05; t += 0.05) bg.gain.linearRampToValueAtTime(0.005 * env(Math.min(t, dur)) + 0.0001, t0 + t);
-      bed.start(t0, Math.random() * 2); bed.stop(t0 + dur + 0.1);
-      const n = Math.round(10 + 12 * Math.min(1, dur / 2.5));
-      for (let i = 0; i < n; i++) {
-        let t = Math.random() * dur, tries = 0; while (Math.random() > env(t) && tries++ < 8) t = Math.random() * dur;          // more grains where the gust is strong
-        const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), len = 0.014 + Math.random() * 0.034, at = t0 + t;
-        s.buffer = SND.noise; f.type = 'bandpass'; f.frequency.value = 2400 + Math.random() * Math.random() * 4400; f.Q.value = 1.1;
-        g.gain.setValueAtTime(0.0001, at); g.gain.linearRampToValueAtTime((0.006 + Math.random() * 0.012) * env(t), at + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, at + len);
-        let node = g; if (ctx.createStereoPanner) { const pn = ctx.createStereoPanner(); pn.pan.value = Math.random() * 1.2 - 0.6; g.connect(pn); node = pn; }
-        s.connect(f); f.connect(g); node.connect(SND.master); s.start(at, Math.random() * 3, len + 0.03);
-      }
-    }
-    else if (k === 'flash') sndBurst(0.5, 500, 6000, 0.03, 0);
-    else if (k === 'sparkle') { [1568, 1976, 2349, 3136].forEach((f, i) => tone(f, i * 0.07, 0.5, 0.05, 'sine')); for (let i = 0; i < 6; i++) tone(3500 + Math.random() * 2500, 0.3 + i * 0.09, 0.15, 0.012, 'sine'); }
-    else if (k === 'tick') tone(1180, 0, 0.05, 0.025);
-    else if (k === 'ok') { tone(880, 0, 0.06, 0.04); tone(1318, 0.06, 0.1, 0.04); }
-    else if (k === 'throw') sndBurst(0.4, 700, 3200, 0.035, -0.3);
-    else if (k === 'pop') { tone(520, 0, 0.12, 0.06, 'triangle', 1100); sndBurst(0.12, 6000, 1500, 0.04, 0); }
-    else if (k === 'suck') tone(1900, 0, 0.45, 0.04, 'sine', 320);
-    else if (k === 'drop') tone(150, 0, 0.12, 0.09, 'sine', 70);
-    else if (k === 'wobble') { tone(320, 0, 0.09, 0.06); tone(480, 0.01, 0.07, 0.03, 'sine'); }
-    else if (k === 'click') { tone(1760, 0, 0.05, 0.06); tone(2640, 0.03, 0.08, 0.04, 'sine'); }
-    else if (k === 'caught') { [[784, 0, 0.25], [988, 0.12, 0.25], [1175, 0.24, 0.25], [1568, 0.36, 0.3], [1175, 0.66, 0.25], [1568, 0.78, 0.25], [1976, 0.9, 0.9], [988, 0.9, 0.9]].forEach(([f, at, d]) => tone(f, at, d, 0.05, 'triangle')); }
-    else if (k === 'lamp') tone([587, 740, 880, 1109, 1319, 1760][a | 0], 0, 0.5, 0.05, 'sine');
-    else if (k === 'ding') { tone(1760, 0, 1, 0.05, 'sine'); tone(2349, 0.04, 0.9, 0.03, 'sine'); tone(587, 0, 0.8, 0.04, 'triangle'); }
-  }
 
   // ---- the cherry tree: somewhere in it, on a limb, a monkey's worth of foliage is shaken from inside. Each rustle picks one of a few
   // spots (worked out from the tree's own dark limbs: the thick inner parts and forks, hidden in the blossoms, never out at the twig
@@ -7685,7 +7493,7 @@
           treeSetup(si); B.last = si; B.windy = true; B.keepNext = B.next;
           B.t = 0; B.t0 = B.clock; B.acc = 1; B.dur = Math.min(4, Math.max(1.5, gust.dur - 0.4));
           B.gust = treeGust(B.dur); const a = 0.45 + 0.4 * Math.min(1.35, gust.peak); for (const q of B.gust) q.a *= a;
-          B.tab = treeTables(B.dur, B.gust); B.hintT = -99; treeSpawn(); cbSnd('leaves', { dur: B.dur, pulses: B.gust });
+          B.tab = treeTables(B.dur, B.gust); B.hintT = -99; treeSpawn();
           return;
         }
       }
@@ -7693,7 +7501,7 @@
         const si = B.pick(); if (si < 0) { B.next = 4; return; }                 // no spot in the frame (a phone, panned away): not now
         treeSetup(si); B.last = si; B.windy = false;
         B.t = 0; B.t0 = B.clock; B.acc = 1; B.dur = 1.5 + Math.random() * 1.5; B.gust = treeGust(B.dur); B.tab = treeTables(B.dur, B.gust);
-        B.hintT = B.dur * (0.3 + 0.2 * Math.random()); treeSpawn(); cbSnd('leaves', { dur: B.dur, pulses: B.gust });
+        B.hintT = B.dur * (0.3 + 0.2 * Math.random()); treeSpawn();
       }
       return;
     }
@@ -7742,7 +7550,7 @@
     X.cv.width = kind === 'heal' ? 160 : 256; X.cv.height = kind === 'heal' ? 112 : 192; X.g.imageSmoothingEnabled = false;
     cbFit(); X.el.setAttribute('aria-label', CB_TX[kind === 'heal' ? 'labelh' : 'label'][cbLang()]);
     X.el.classList.remove('show'); X.el.classList.add('on'); X.fl.style.opacity = '0';
-    X.ph = reduced ? 'wait' : 'flash'; if (!reduced) cbSnd('flash');
+    X.ph = reduced ? 'wait' : 'flash';
     X.last = 0; X.raf = requestAnimationFrame(cbLoop);
   }
   function cbShow() {
@@ -7800,7 +7608,7 @@
     cbRects().forEach((r, i) => { const dx = Math.max(r[0] - p.x, 0, p.x - (r[0] + r[2])), dy = Math.max(r[1] - p.y, 0, p.y - (r[1] + r[3])), d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = i; } });
     return best;
   }
-  function cbHover(p) { const X = CBX; if (X.ph !== 'menu') return; const i = cbHit(p); if (i >= 0 && X.sel !== i) { X.sel = i; cbSnd('tick'); } }
+  function cbHover(p) { const X = CBX; if (X.ph !== 'menu') return; const i = cbHit(p); if (i >= 0 && X.sel !== i) { X.sel = i; } }
   function cbPress(p) {
     const X = CBX;
     if (X.ph === 'intro') { if (X.pt > 0.8) cbMenu(); return; }
@@ -7811,7 +7619,7 @@
     const i = cbHit(p); if (i >= 0) { X.sel = i; cbChoose(i); }
   }
   function cbChoose(i) {
-    const X = CBX; cbSnd('ok');
+    const X = CBX;
     if (X.sub === 'main') {
       if (i === 0) cbSayThen('notnow', cbMenu);
       else if (i === 1) { X.sub = 'bag'; X.sel = 0; cbSay('bag', 112); }
@@ -7836,7 +7644,6 @@
     } else if (X.ph === 'menu' && (k === 'arrowleft' || k === 'arrowright' || k === 'a' || k === 'd' || k === 'arrowup' || k === 'arrowdown' || k === 'w' || k === 's')) {
       const n = cbRects().length, s = X.sel;
       if (n === 2) X.sel = (s + 1) % 2; else if (k === 'arrowleft' || k === 'arrowright' || k === 'a' || k === 'd') X.sel = s ^ 1; else X.sel = s ^ 2;
-      if (X.sel !== s) cbSnd('tick');
     } else used = false;
     if (used) { ev.preventDefault(); ev.stopPropagation(); }
   }
@@ -7853,34 +7660,34 @@
     } else if (X.ph === 'wait') { if (cbReady()) cbShow(); }
     else if (X.ph === 'intro') {
       const L = X.rm ? 0.01 : 0.7, G = X.G;                                      // he lands (the sparkle), then the player's Pokemon is sent out
-      if (!X.landed && pt >= L) { X.landed = true; X.land = pt; cbSay('appear'); cbSnd('sparkle'); }
+      if (!X.landed && pt >= L) { X.landed = true; X.land = pt; cbSay('appear'); }
       if (X.landed && X.hpIn < 0 && pt >= L + (X.rm ? 0 : 0.8)) X.hpIn = pt;
-      if (!X.went && pt >= G) { X.went = true; cbSay('go'); if (!X.rm) cbSnd('throw'); }
-      if (X.went && !X.rel && pt >= G + (X.rm ? 0 : 0.5)) { X.rel = pt; if (!X.rm) cbSnd('pop'); }
+      if (!X.went && pt >= G) { X.went = true; cbSay('go'); }
+      if (X.went && !X.rel && pt >= G + (X.rm ? 0 : 0.5)) { X.rel = pt; }
       if (X.rel && X.ahp < 0 && pt >= X.rel + (X.rm ? 0 : 0.45)) X.ahp = pt;
       if (pt >= G + (X.rm ? 1.4 : 1.7)) cbMenu();
     } else if (X.ph === 'say') {
       if (X.msg && X.msg.t >= X.msg.n / 34 + X.hold && X.after) { const f = X.after; X.after = null; f(); }
     } else if (X.ph === 'throw') {
       const th = X.th;
-      if (pt >= 0.3 && !th.a) { th.a = 1; cbSnd('throw'); }
-      if (pt >= 1.05 && !th.b) { th.b = 1; cbSnd('pop'); }
-      if (pt >= 1.2 && !th.c) { th.c = 1; cbSnd('suck'); }
-      if (pt >= 1.95 && !th.e) { th.e = 1; cbSnd('drop'); }
-      CB_EV.forEach((e, i) => { if (pt >= e[0] && !th['w' + i] && i < 2 * X.wob) { th['w' + i] = 1; cbSnd(e[1]); } });
+      if (pt >= 0.3 && !th.a) { th.a = 1; }
+      if (pt >= 1.05 && !th.b) { th.b = 1; }
+      if (pt >= 1.2 && !th.c) { th.c = 1; }
+      if (pt >= 1.95 && !th.e) { th.e = 1; }
+      CB_EV.forEach((e, i) => { if (pt >= e[0] && !th['w' + i] && i < 2 * X.wob) { th['w' + i] = 1; } });
       if (X.wob < 3) {                                                          // it breaks open: he is out, his box back, a word, the menu
         const tb = cbBreak();
         if (pt >= tb + (X.rm ? 0.1 : 0.45) && !th.x) { th.x = 1; X.hpBack = X.T; cbSayThen(X.wob >= 2 ? 'escaped2' : 'escaped', cbMenu, 1); }
         return;
       }
-      if (pt >= 5.25 && !th.k) { th.k = 1; cbSnd('click'); }
-      if (pt >= 5.55 && !th.s) { th.s = 1; X.won = true; foundSecret('catch'); cbSay('caught'); cbSnd('caught'); }
+      if (pt >= 5.25 && !th.k) { th.k = 1; }
+      if (pt >= 5.55 && !th.s) { th.s = 1; X.won = true; foundSecret('catch'); cbSay('caught'); }
       if (pt >= 8.3) cbClose();
     } else if (X.ph === 'heal') {
       const th = X.th;
-      if (pt >= 0.5 && !th.d) { th.d = 1; cbSnd('drop'); }
-      for (let i = 0; i < 6; i++) if (pt >= 1.0 + 0.22 * i && !th['l' + i]) { th['l' + i] = 1; cbSnd('lamp', i); }
-      if (pt >= 2.5 && !th.g) { th.g = 1; cbSnd('ding'); }
+      if (pt >= 0.5 && !th.d) { th.d = 1; }
+      for (let i = 0; i < 6; i++) if (pt >= 1.0 + 0.22 * i && !th['l' + i]) { th['l' + i] = 1; }
+      if (pt >= 2.5 && !th.g) { th.g = 1; }
       if (pt >= 2.8 && !th.s) { th.s = 1; cbSay('heal', 140); }
       if (pt >= 8) cbClose();
     }
@@ -8070,36 +7877,6 @@
     T.slice(0, 3).forEach((t, i) => d.appendChild(pkDP(t, i ? '#e9e3f5' : '#ff8ad1', side)));
     const tx = document.createElement('div'); tx.className = 'cb-dex-txt'; tx.appendChild(pkDP(T[3], '#ffffff', pkInner(el, 2 * Math.max(10, 8 * k) + 2 * Math.max(2, k))));
     box.replaceChild(tx, box.children[2]); el.appendChild(box); return box;
-  }
-
-  // ---- the sound engine is gone (the owner's call): no pill, no rain bed, no piano, no track. SND stays as an inert stub so the effect
-  // calls in the other systems, all guarded by SND.on / SND.ctx, are dead until the final pass removes them with it ----
-  const SND = { ctx: null, on: false, master: null, rain: null, noise: null, piano: null, timer: null, heroIn: true };   // (inert stub: the effect calls are dead until the final pass)
-  function sndBurst(dur, f0, f1, gain, pan) {        // a filtered noise burst: a drop, a firework
-    const ctx = SND.ctx, t = ctx.currentTime, s0 = ctx.createBufferSource(); s0.buffer = SND.noise; s0.playbackRate.value = 1 + Math.random() * 0.3;
-    const bp = ctx.createBiquadFilter(); bp.type = 'lowpass'; bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
-    const g = ctx.createGain(); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    let node = g; if (ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; g.connect(p); node = p; }
-    s0.connect(bp); bp.connect(g); node.connect(SND.master); s0.start(t, Math.random() * 3); s0.stop(t + dur + 0.05);
-  }
-  function soundFx(kind) {                     // the fireworks, heard from a distance
-    if (!SND.on || !SND.ctx) return;
-    const ctx = SND.ctx, t = ctx.currentTime;
-    if (kind === 'launch') {
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(700, t); o.frequency.exponentialRampToValueAtTime(2000, t + 0.85);
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.01, t + 0.1); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
-      o.connect(g); g.connect(SND.master); o.start(t); o.stop(t + 0.95);
-    } else if (kind === 'bang') {
-      sndBurst(1.2, 1100, 110, 0.22, (Math.random() - 0.5) * 0.6);
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.setValueAtTime(65, t); o.frequency.exponentialRampToValueAtTime(36, t + 0.4);
-      g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.45); o.connect(g); g.connect(SND.master); o.start(t); o.stop(t + 0.5);
-      for (let i = 0; i < 5; i++) setTimeout(() => SND.on && sndBurst(0.07, 5000, 2500, 0.025, Math.random() * 2 - 1), 400 + Math.random() * 900);
-    } else if (kind === 'beam') sndBurst(1.4, 300, 3000, 0.07, -0.3);
-    else if (kind === 'zap') {                   // Godspeed: the charge crackles, louder and faster
-      for (let i = 0; i < 9; i++) setTimeout(() => SND.on && sndBurst(0.04 + Math.random() * 0.05, 9000, 3000, 0.03 + i * 0.006, (Math.random() - 0.5) * 0.4), i * 85 + Math.random() * 40);
-    } else if (kind === 'crack') {               // the bolt: a crack and its whoosh
-      sndBurst(0.3, 8000, 300, 0.1, 0.05); sndBurst(0.08, 12000, 6000, 0.06, -0.1);
-    }
   }
 
   // ---- live water reflections: the puddles and the wet road mirror the street as it is right now (a neon that
@@ -8493,7 +8270,7 @@
   // comes down. Its own colours (lit by the rising sun behind us). Once per session; none under reduced motion
   const HOOH = { W: 64, H: 52, AX: 34, AY: 26, cols: 12, rows: 3, period: 0.72, mesh: null, tex: null, done: false };
   if (!reduced) {
-    HOOH.tex = crisp('assets/hooh.png?v=1'); HOOH.tex.repeat.set(1 / HOOH.cols, 1 / HOOH.rows);
+    HOOH.tex = crispLate('assets/hooh.png?v=1', 'hooh', () => { HOOH.ready = true; }); HOOH.tex.repeat.set(1 / HOOH.cols, 1 / HOOH.rows);
     HOOH.mesh = new THREE.Mesh(new THREE.PlaneGeometry(HOOH.W, HOOH.H), new THREE.MeshBasicMaterial({ map: HOOH.tex, transparent: true, depthWrite: false }));
     HOOH.mesh.visible = false; HOOH.mesh.position.z = -1.32; scene.add(HOOH.mesh);   // (just behind the tower: it rises from behind its top; in front of Fuji, behind the tree)
   }
@@ -8547,7 +8324,7 @@
         else {
           const row = vy < -18 ? 0 : vy > 18 ? 2 : 1, col = row === 2 ? 4 : Math.floor(((tf / H.period) % 1) * H.cols) % H.cols;   // (flapping as it climbs, gliding as it comes down)
           H.tex.offset.set(col / H.cols, 1 - (row + 1) / H.rows);
-          H.mesh.position.set(Math.round(x) - H.AX + H.W / 2, -(Math.round(y) - H.AY + H.H / 2), -1.32); H.mesh.visible = true;
+          H.mesh.position.set(Math.round(x) - H.AX + H.W / 2, -(Math.round(y) - H.AY + H.H / 2), -1.32); H.mesh.visible = !!H.ready;   // (not before its sheet is in)
           if (!SKYD.bowDone) U.uPhi.value = phi - 0.035;
         }
       }
@@ -8831,7 +8608,7 @@
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
   }
   (function () {
-    const M = PKS.m, tex = crisp('assets/pkpc.png?v=3', null, () => { PKS.dead = true; for (const k in M) M[k].visible = false; });
+    const M = PKS.m, tex = crisp('assets/pkpc.webp?v=4', null, () => { PKS.dead = true; for (const k in M) M[k].visible = false; });
     const mk = (r, z, add) => {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(r[2], r[3]), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
       pkUV(m, r); m.position.set(PKS.x + r[2] / 2, -(PKS.y + r[3] / 2), z); scene.add(m); return m;
@@ -8868,7 +8645,7 @@
   // motion: it never comes; nor in a power cut (the PC is dark then). Its canvas: the door's upper glass, x 868-898, y 590-616,
   // at 2x, the door's two mullions (x 878, 884) cut out of it as out of the PC ----
   const GG = { on: false, t: 0, next: 150 + Math.random() * 450, dir: 1, img: new Image(), c: document.createElement('canvas'), acc: 0 };
-  GG.img.src = 'assets/gengar_shadow.png?v=1'; GG.c.width = 60; GG.c.height = 52;
+  lateImg(GG.img, 'assets/gengar_shadow.png?v=1'); GG.c.width = 60; GG.c.height = 52;
   const ggg = GG.c.getContext('2d');
   const ggTex = new THREE.CanvasTexture(GG.c); ggTex.magFilter = ggTex.minFilter = THREE.NearestFilter; ggTex.generateMipmaps = false;
   const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(30, 26), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
@@ -8878,6 +8655,7 @@
     if (!GG.on) {
       if (openK('centerNight') < 0.5 || PW.on) return;                          // (the Center's night mode, 1 h-6 h)
       if ((GG.next -= dt) > 0) return;
+      if (!(GG.img.complete && GG.img.naturalWidth)) { GG.next = 2; return; }   // (its sheet not in yet)
       if (!STAGE.ask('gengar', 10)) { GG.next = 3 + Math.random() * 4; return; }
       Object.assign(GG, { on: true, t: 0, dir: Math.random() < 0.5 ? 1 : -1 }); ggMesh.visible = true;
     }
@@ -9040,7 +8818,6 @@
     PK.el.classList.remove('app'); PK.el.classList.add('on'); PK.el.setAttribute('aria-label', PK_TX.label[L]);
     pkFit(); pkSay(PK_TX.boot[L]);
     if (reduced) pkMenu(); else PK.ph = 'wipe';
-    pkSnd('boot');
     try { PK.cv.focus({ preventScroll: true }); } catch (e) { PK.cv.focus(); }
     PK.last = 0; cancelAnimationFrame(PK.raf); PK.raf = requestAnimationFrame(pkLoop);
   }
@@ -9058,7 +8835,7 @@
     for (let i = 0; i <= PK.items.length; i++) { const y = 17 + i * 16; if (p.x >= 6 && p.x <= PK.mw + 10 && p.y >= y - 6 && p.y < y + 10) return i; }
     return -1;
   }
-  function pkHover(p) { const i = pkHit(p); if (i >= 0 && i !== PK.sel) { PK.sel = i; pkSnd('tick'); } }
+  function pkHover(p) { const i = pkHit(p); if (i >= 0 && i !== PK.sel) { PK.sel = i; } }
   function pkPress(p) {
     if (PK.ph === 'wipe') { PK.ph = 'boot'; PK.t = 0; if (PK.msg) PK.msg.t = 0; return; }
     if (PK.ph === 'boot') { if (PK.msg && PK.msg.t * 34 < PK.msg.n) PK.msg.t = PK.msg.n / 34; else pkMenu(); return; }
@@ -9066,11 +8843,11 @@
   }
   function pkChoose(i) {
     if (i >= PK.items.length) { pkClose(); return; }
-    if (!PK.ok[i]) { pkSnd('buzz'); return; }
+    if (!PK.ok[i]) return;
     const a = PK.items[i], b = PK.body; PK.ph = 'app'; PK.cur = i; PK.el.classList.add('app');
     b.textContent = ''; b.scrollTop = 0;
     PK.rw = 0; try { a.render(b); } catch (e) { b.textContent = '…'; }
-    pkFit(); PK.rw = PK.bw * PK.k; pkDrawBar(); pkSnd('pick'); PK.sr.textContent = pkName(a);
+    pkFit(); PK.rw = PK.bw * PK.k; pkDrawBar(); PK.sr.textContent = pkName(a);
     try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); }
   }
   function pkEnd() {                             // an app leaving: its close(el) if it has one, its content cleared
@@ -9079,14 +8856,14 @@
   }
   function pkBack() {
     if (PK.ph !== 'app') return;
-    pkEnd(); PK.el.classList.remove('app'); pkMenu(); pkSnd('tick');
+    pkEnd(); PK.el.classList.remove('app'); pkMenu();
     try { PK.cv.focus({ preventScroll: true }); } catch (e) { PK.cv.focus(); }
   }
   function pkClose() {
     if (!PK.on) return;
     if (PK.ph === 'app') pkEnd();
     try { if (PK.el.contains(document.activeElement)) document.activeElement.blur(); } catch (e) {}
-    PK.on = false; PK.ph = ''; cancelAnimationFrame(PK.raf); PK.el.classList.remove('on', 'app'); pkSnd('off');
+    PK.on = false; PK.ph = ''; cancelAnimationFrame(PK.raf); PK.el.classList.remove('on', 'app');
   }
   function pkKey(ev) {
     if (!PK.on) return;
@@ -9097,25 +8874,9 @@
     else if (PK.ph === 'app') used = false;      // (the app's own keys: its scrolling, its buttons)
     else if (k === 'enter' || k === ' ' || k === 'z') { if (PK.ph === 'menu') pkChoose(PK.sel); else pkPress({ x: -1, y: -1 }); }
     else if (PK.ph === 'menu' && (k === 'arrowup' || k === 'arrowdown' || k === 'w' || k === 's')) {
-      const n = PK.items.length + 1, s = PK.sel; PK.sel = (s + (k === 'arrowup' || k === 'w' ? n - 1 : 1)) % n; if (PK.sel !== s) pkSnd('tick');
+      const n = PK.items.length + 1, s = PK.sel; PK.sel = (s + (k === 'arrowup' || k === 'w' ? n - 1 : 1)) % n;
     } else used = false;
     if (used) { ev.preventDefault(); ev.stopPropagation(); }
-  }
-  function pkSnd(k) {                            // DP's PC, quietly: its boot and log-off arpeggios, the cursor's tick, a choice, a refusal
-    try {
-      if (!SND.on || !SND.ctx || !SND.master) return;
-      const ctx = SND.ctx, t0 = ctx.currentTime + 0.01, lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600; lp.connect(SND.master);
-      const tone = (f, at, d, g, type) => {
-        const o = ctx.createOscillator(), v = ctx.createGain(); o.type = type || 'triangle'; o.frequency.setValueAtTime(f, t0 + at);
-        v.gain.setValueAtTime(0.0001, t0 + at); v.gain.exponentialRampToValueAtTime(g, t0 + at + 0.008); v.gain.setValueAtTime(g, t0 + at + d * 0.6);
-        v.gain.exponentialRampToValueAtTime(0.0001, t0 + at + d); o.connect(v); v.connect(lp); o.start(t0 + at); o.stop(t0 + at + d + 0.02);
-      };
-      if (k === 'boot') [659.3, 784, 1046.5, 1318.5].forEach((f, i) => tone(f, i * 0.06, i === 3 ? 0.2 : 0.07, 0.03));
-      else if (k === 'off') [1046.5, 784, 659.3, 523.3].forEach((f, i) => tone(f, i * 0.06, i === 3 ? 0.18 : 0.07, 0.026));
-      else if (k === 'tick') tone(1568, 0, 0.035, 0.016, 'square');
-      else if (k === 'pick') { tone(784, 0, 0.05, 0.026); tone(1174.7, 0.055, 0.09, 0.026); }
-      else if (k === 'buzz') tone(185, 0, 0.12, 0.02, 'square');
-    } catch (e) { /* a sound never stops the PC */ }
   }
   const nSmooth = (a, b, x) => { const u = Math.max(0, Math.min(1, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
   function nightState(h, S) {                    // the state at hour h (0-24), e: hours since noon (9 = 21 h, 14 = 2 h)
@@ -9301,7 +9062,6 @@
       if (T.done || CLOCK.over || CLOCK.h < 0.917 || CLOCK.h >= 1.417) return;
       if ((T.wait -= dt) > 0) return;
       T.t = 0; trainPts.visible = true;
-      if (typeof nightSound === 'function') nightSound('train');
     }
     T.t += dt;
     const head = T.x0 - 14 + T.v * T.t, P = trainPts.geometry.attributes.position.array, Cc = trainPts.geometry.attributes.color.array;
@@ -9311,71 +9071,6 @@
     });
     trainPts.geometry.attributes.position.needsUpdate = true; trainPts.geometry.attributes.color.needsUpdate = true;
     if (head - 14 > T.x1) { T.t = -1; T.done = true; trainPts.visible = false; }
-  }
-  // ---- small sounds of the street, original, well under the rain (about -40 dB under the master, as the opening's cues), only
-  // with the sound on: the rain's taps on the awnings near the camera, the drinks machines' hum, the neons' buzz (with their
-  // light: its stutters, its hours), a distant train now and then (5 h to 1 h; the last one with the valley's). Each placed
-  // where it is on the street: panned, quieter the farther from the view's centre (a phone's pan moves them); the hum and the
-  // buzz go with the power. Built when the sound is first turned on; through the master ----
-  const AMB = { built: false, bus: null, v: {}, trainNext: 150 + Math.random() * 240, trainT: -1 };
-  const AMBL = { awnL: 0.012, awnR: 0.01, vend: 0.002, neonR: 0.003, neonC: 0.0025, train: 0.015 };   // gains into the master (which plays at 0.3): measured offline, the rain's taps
-  // about 26 dB under the rain bed (the rain itself 14 dB under the music), the buzz 25, the hum 22 (its 100 Hz far quieter to the ear), the train's rumble 15 at its height
-  function ambBuild() {
-    const ctx = SND.ctx; if (!ctx || AMB.built) return; AMB.built = true;
-    const bus = ctx.createGain(); bus.gain.value = 1; bus.connect(SND.master); AMB.bus = bus;
-    const voice = (x, node) => { const g = ctx.createGain(); g.gain.value = 0; let out = g, pan = null;
-      if (ctx.createStereoPanner) { pan = ctx.createStereoPanner(); g.connect(pan); out = pan; } node.connect(g); out.connect(bus); return { x, g, pan }; };
-    const buf = (sec, fill) => { const b = ctx.createBuffer(1, Math.floor(ctx.sampleRate * sec), ctx.sampleRate); fill(b.getChannelData(0), ctx.sampleRate); return b; };
-    const loop = (b, rate) => { const s0 = ctx.createBufferSource(); s0.buffer = b; s0.loop = true; s0.playbackRate.value = rate; s0.start(ctx.currentTime + Math.random() * 0.5); return s0; };
-    const bp = (f, q) => { const b = ctx.createBiquadFilter(); b.type = 'bandpass'; b.frequency.value = f; b.Q.value = q; return b; };
-    const taps = (seed, rate, f) => buf(5, (d, sr) => {            // drops on cloth and tin: short damped taps at random
-      let r = seed; const rnd = () => (r = (r * 16807) % 2147483647) / 2147483647;
-      for (let tt = rnd() * 0.05; tt < 4.98; tt += -Math.log(1 - rnd() * 0.999) / rate) {
-        const i0 = Math.floor(tt * sr), a = 0.25 + 0.75 * rnd(), len = Math.floor(sr * (0.004 + 0.006 * rnd())), fr = f * (0.8 + 0.4 * rnd());
-        for (let k = 0; k < len && i0 + k < d.length; k++) d[i0 + k] += a * Math.exp(-4 * k / len) * Math.sin(2 * Math.PI * fr * k / sr);
-      } });
-    const t1 = loop(taps(11, 38, 1700), 1), f1 = bp(1500, 0.7); t1.connect(f1);
-    const t2 = loop(taps(29, 30, 2300), 0.97), f2 = bp(1900, 0.7); t2.connect(f2);
-    AMB.v.awnL = voice(400, f1); AMB.v.awnR = voice(860, f2);       // (the oden's eave and the kiosk's lean-to | the Center's red awning)
-    const hum = ctx.createGain();                                    // the drinks machines: the compressor's hum, a fan
-    [[100, 1], [200, 0.45], [300, 0.2], [400, 0.08]].forEach(([f, a]) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f * (1 + (Math.random() - 0.5) * 0.004); g.gain.value = a; o.connect(g); g.connect(hum); o.start(); });
-    const fan = loop(SND.noise, 1), ff = bp(900, 4), fg = ctx.createGain(); fg.gain.value = 0.15; fan.connect(ff); ff.connect(fg); fg.connect(hum);
-    AMB.v.vend = voice(305, hum);
-    const buzz = (f) => { const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
-      const hp = ctx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 180; o.connect(lp); lp.connect(hp); o.start(); return hp; };
-    AMB.v.neonR = voice(1196, buzz(120)); AMB.v.neonC = voice(874, buzz(119.6));   // (Ichiraku's neon | the Pokeball sign)
-    const rum = loop(SND.noise, 0.5), rl = ctx.createBiquadFilter(); rl.type = 'lowpass'; rl.frequency.value = 170; rum.connect(rl);
-    AMB.v.train = voice(560, rl);                                    // the train's rumble, far
-  }
-  function nightSound(kind) { if (kind === 'train') { AMB.trainT = 0; } }    // (the last train: its rumble with it)
-  function ambClack(g) {                         // a wheel's beat on a rail joint, far off: a low thump
-    const ctx = SND.ctx, t = ctx.currentTime, o = ctx.createOscillator(), gg = ctx.createGain();
-    o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(70, t + 0.12);
-    gg.gain.setValueAtTime(0.0001, t); gg.gain.exponentialRampToValueAtTime(Math.max(0.0002, g), t + 0.01); gg.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
-    o.connect(gg); gg.connect(AMB.bus); o.start(t); o.stop(t + 0.2);
-  }
-  function stepAmbient(dt) {
-    if (!SND.on || !SND.ctx) return;
-    if (!AMB.built) ambBuild();
-    const now = SND.ctx.currentTime, cx = (camera.left + camera.right) / 2, hw = Math.max(1, (camera.right - camera.left) / 2), seen = SND.heroIn ? 1 : 0.4;
-    const set = (v, level) => { const dd = (v.x - cx) / hw; v.g.gain.setTargetAtTime(level / (1 + 0.8 * dd * dd), now, 0.4);
-      if (v.pan) v.pan.pan.setTargetAtTime(Math.max(-0.85, Math.min(0.85, dd * 0.7)), now, 0.4); };
-    const pw = (x) => (PW.on ? pwAt(x, 1) : 1);
-    const rainK = (0.7 + 0.6 * gust.k) * NIGHT.rain * seen;
-    set(AMB.v.awnL, AMBL.awnL * rainK); set(AMB.v.awnR, AMBL.awnR * rainK);
-    set(AMB.v.vend, AMBL.vend * pw(314) * seen);
-    const em = comps.find((c) => c.userData.name === 'z4_emblem');
-    set(AMB.v.neonR, AMBL.neonR * Math.max(0, Math.min(1, SHOP.neon || 0)) * pw(1196) * seen);
-    set(AMB.v.neonC, AMBL.neonC * (em ? em.material.opacity : 0) * pw(874) * seen);
-    if (AMB.trainT < 0 && dt > 0 && (CLOCK.h >= 5 || CLOCK.h < 0.9) && (AMB.trainNext -= dt) < 0) { AMB.trainT = 0; AMB.trainNext = 180 + Math.random() * 300; }   // now and then, in service hours
-    let tk = 0;
-    if (AMB.trainT >= 0 && dt > 0) {
-      const u = (AMB.trainT += dt); tk = u < 5 ? u / 5 : u < 12 ? 1 : Math.max(0, 1 - (u - 12) / 7);
-      if (Math.floor(u / 0.92) !== Math.floor((u - dt) / 0.92) && tk > 0.2) { ambClack(0.006 * tk); setTimeout(() => { if (SND.on) ambClack(0.005 * tk); }, 160); }   // its wheels: da-dum
-      AMB.v.train.x = 560 + 22 * u;                                  // crossing, left to right
-      if (u > 19) AMB.trainT = -1;
-    }
-    set(AMB.v.train, AMBL.train * tk * seen);
   }
   function stepNight(dt) {
     const C = CLOCK;
@@ -9396,7 +9091,7 @@
         if (!nightOpen('study') && ws.state !== 'empty') Object.assign(ws, { state: 'empty', t: 0, next: 30, light: false, screen: false, L: 0, S: 0, seated: false, dirty: true });
         if (!nightOpen('ramen')) Object.assign(SHOP, { open: false, k: 0, t: 99, neon: 0 });
       } else NIGHT.snap = false;
-      stepTrain(dt); stepAmbient(dt);
+      stepTrain(dt);
     }
     C.rT = Math.min(C.rDur, C.rT + dt); const ru = C.rDur > 0 ? C.rT / C.rDur : 1; C.rouge = C.rFrom + (C.rTo - C.rFrom) * ru * ru * (3 - 2 * ru);
     const S = C.S, r = C.rouge;
@@ -9453,20 +9148,6 @@
     openTry(() => { if (openK('balcony') > 0.5) Object.assign(WIN2, { state: 'on', t: 10, I: [1, 1, 1, 1], next: openRnd(120, 480) }); });
     openTry(() => { if (nightOpen('study')) Object.assign(ws, { state: 'sit', light: true, screen: true, L: 1, S: 1, seated: false, next: openRnd(45, 80), dirty: true }); });
   }
-  function openSnd(kind, after) {   // -40 dB under the master; nothing unless the pill is on (and no context is ever created here)
-    const go = () => {
-      if (!SND.on || !SND.ctx || !SND.master) return;
-      try {
-        const ctx = SND.ctx, tn = ctx.currentTime;
-        if (kind === 'tic') {       // a tube catching: a 2 kHz tick, 40 ms
-          const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 2000;
-          g.gain.setValueAtTime(0.0001, tn); g.gain.exponentialRampToValueAtTime(0.01, tn + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, tn + 0.04);
-          o.connect(g); g.connect(SND.master); o.start(tn); o.stop(tn + 0.05);
-        } else if (kind === 'door') sndBurst(0.08, 1500, 800, 0.01, -0.5);     // the oden door: wood, filtered noise 1.5 k -> 800 Hz, 80 ms
-      } catch (err) { }
-    };
-    if (after) setTimeout(go, after * 1000); else go();
-  }
   // watchers: a beat that has to wait for something (the bus's images, the oden door's own step) hands over to a function called
   // every frame until it returns true (the hand-over drops what is left)
   function openBus(e) {         // the Battle Bus: sent at the fade, high and far, and lost behind Killua's roof (which hides it up to x ~250-260 at
@@ -9479,11 +9160,7 @@
   function openOden() {         // the master, from the counter (left to right); he stops a moment at the glass to look at the rain
     const W = OIN.who; if (!W) return false;
     W.dir = 1; W.x = 407; W.wait = 0; if (W.stop === null) W.stop = 430 + Math.random() * 24;
-    openOdenEnd(); return true;
-  }
-  function openOdenEnd() {      // the door again when he is gone: after the hand-over, as a rule, so it is polled on its own (30 s at most)
-    let n = 0; const poll = () => { if (!OIN.who) openSnd('door'); else if (++n < 120) setTimeout(poll, 250); };
-    setTimeout(poll, 250);
+    return true;
   }
   function openFar() {          // a floor of the far city goes out for 40 s: a group of four lit windows
     const lit = (g) => g.every((W) => W.lit && !W.out);
@@ -9514,7 +9191,7 @@
   const OPENING = [
     [0.0, () => { OPEN.watch.push(openBus); }],                       // the Battle Bus is sent now, behind Killua's roof (it emerges at 10 s: openBus)
     [0.0, () => { PAN.wait = Math.max(PAN.wait, 3); }],               // a phone's drift starts 3 s after the fade (not after the load; a touch's 8 s stands)
-    [1.3, () => { if (!nightOpen('ramen')) return; SHOP.open = true; SHOP.t = 0; openSnd('tic', 0.06); openSnd('tic', 0.18); openSnd('tic', 0.30); }],   // (at its hours)   // Ichiraku catches: tubes stutter (FLICK), lanterns and window rise in 0.8 s, the steam starts
+    [1.3, () => { if (!nightOpen('ramen')) return; SHOP.open = true; SHOP.t = 0; }],   // (at its hours)   // Ichiraku catches: tubes stutter (FLICK), lanterns and window rise in 0.8 s, the steam starts
     [1.3, () => { const o = openComp('z4_emblem'); if (o && nightOpen('emblem')) o.userData.burst = 0.4; }],          // and, an echo for the phone, the Pokeball sign stutters
     [2.2, () => { const z = openComp('win_z4_shop'); if (z && nightOpen('center')) { z.userData.on = true; z.userData.stut = openRnd(0.3, 0.15); } }],   // the Center opens, all its lights at once, stuttering
     [3.5, () => { gust.target = 0.9; gust.hold = 2.5; }],                       // the gust (2.5 s): the rain lies down, the oden lantern swings
@@ -9522,7 +9199,7 @@
     [5.2, () => { const P = KIL.ph; P.kick = 0.12; P.f = -6; P.next = openRnd(5, 10); }],       // Killua's little kick
     [5.5, () => { CAT.here = true; }],                                                          // the cat's eyes in the gap of the door
     [6.0, () => { if (nightOpen('study')) ws.next = -1; }],                                                             // Mathis comes in and the lamp goes on (in, turn, sitdown, sit: the machine's own)
-    [7.5, () => { OIN.next = -1; OPEN.watch.push(openOden); openSnd('door'); }],                // the oden door slides: the master comes to look at the rain
+    [7.5, () => { OIN.next = -1; OPEN.watch.push(openOden); }],                // the oden door slides: the master comes to look at the rain
     [9.0, openFar],                                                                             // a floor of the far city goes out
     [9.5, () => { const v = openComp('z7_vending'); if (v) v.userData.burst = 0.6; }],          // the right-hand vending machine's tube fails a moment
     [10.5, () => { shoot.active = true; shoot.t = 0; streak.position.set(600, -118, -2.75); }], // a shooting star over Fuji
