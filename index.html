@@ -529,7 +529,7 @@
           <li><div class="eng-t">Quantization INT8/FP8 <span class="eng-y">Thales · 2024</span></div>
             <div data-lang="fr">Quantization et sparsité des poids de Transformers pour FPGA et GPU ; latence sous la milliseconde grâce à la fusion de couches et à l'optimisation des accès mémoire.</div>
             <div data-lang="en" lang="en" hidden>Transformer quantization and weight sparsity for FPGA and GPU; sub-millisecond latency through hardware-aware layer fusion and memory-access optimization.</div></li>
-          <li><div class="eng-t"><a href="https://github.com/mtsfj/f1-conversational-ai">LoRA vs fine-tuning complet</a> <span class="eng-y">Mistral-7B</span></div>
+          <li><div class="eng-t"><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="fr">LoRA vs fine-tuning complet</a><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="en" lang="en" hidden>LoRA vs full fine-tuning</a> <span class="eng-y">Mistral-7B</span></div>
             <div data-lang="fr">1 536 paires d'instructions construites de zéro, fine-tuning de bout en bout sur une H100 (QLoRA) : LoRA atteint 72,3 % contre 46,1 % pour le modèle de base, le fine-tuning complet s'effondre après une époque.</div>
             <div data-lang="en" lang="en" hidden>1,536 instruction pairs built from scratch, end-to-end fine-tuning on one H100 (QLoRA): LoRA reaches 72.3% vs 46.1% for the base model, while full fine-tuning mode-collapses after one epoch.</div></li>
           <li><div class="eng-t">GRACE <span class="eng-y">2024 – 2025</span></div>
@@ -4755,7 +4755,7 @@
 
   // ---- easter egg: the graded card in the Pokémon Center's showcase, shown up close on hover (tap on touch) ----
   const slabTip = document.createElement('div'); slabTip.className = 'slab-tip';
-  slabTip.innerHTML = '<img alt="Léviator chromatique, carte gradée 10">';
+  slabTip.innerHTML = '<img alt="Léviator chromatique, carte gradée 10 / shiny Gyarados, graded 10">';
   hero.appendChild(slabTip);
   let slabOK = false; slabTip.querySelector('img').onload = () => { slabOK = true; }; lateImg(slabTip.querySelector('img'), 'assets/slab_gyarados.webp?v=1');   // (late; the tip waits for it)
   function overWin(ev) {                      // pointer -> picture coordinates, through the same camera as the render
