@@ -5992,20 +5992,29 @@
   }
   const WIN2 = { state: 'off', t: 0, next: 4 + Math.random() * 5, I: [0, 0, 0, 0], acc: 0, shown: true };
   const FLICK = [0, 0.75, 0.1, 0.95, 0.35, 1];                                     // a tube catching, step 60 ms
+  // the night: from 1 h to 8 h the balcony is dark (openK('balcony'): the hours stay the rule). A few times an hour Naruto, who cannot
+  // sleep, lights it for 30-60 s and crosses or stands at the glass (so the four heroes can be found at any hour); never during the
+  // finale, the red night or the power cut. Debug: ?heroes in the URL brings it 4 s after the page opens
+  const NNV = { on: false, next: /[?&]heroes\b/.test(location.search) ? 4 : 240 + Math.random() * 480 };
+  const heroNight = () => { try { return !(FIN.t >= 0) && !REDN.on && !PW.on; } catch (e) { return true; } };
   function stepWindow(dt) {
     const W2 = WIN2; W2.t += dt; stepNFin(dt);
     const busy = !!(NAR.a || NAR.q.length);
-    if (W2.state === 'off') { if (W2.t > W2.next && openK('balcony') > 0.5 && (!NAR.away || NFIN.on)) { W2.state = 'on'; W2.t = 0; W2.next = 240 + Math.random() * 480; NAR.next = 4 + Math.random() * 6; NAR.jutsu = false; } }   // (lit for minutes; dark from 1 h)
+    if (W2.state === 'off') {
+      if (W2.t > W2.next && openK('balcony') > 0.5 && (!NAR.away || NFIN.on)) { W2.state = 'on'; W2.t = 0; W2.next = 240 + Math.random() * 480; NAR.next = 4 + Math.random() * 6; NAR.jutsu = false; }
+      else if (openK('balcony') <= 0.5 && !reduced && !NAR.away && !NFIN.on && heroNight() && (NNV.next -= dt) < 0) {   // the night visit: 30-60 s, him at the glass
+        NNV.on = true; W2.state = 'on'; W2.t = 0; W2.next = 30 + Math.random() * 30; NAR.next = 3 + Math.random() * 3; NAR.jutsu = false; }
+    }   // (lit for minutes; dark from 1 h)
     else if (W2.state === 'on') {
       for (let k = 0; k < WL.n; k++) {                                              // pane after pane, left to right
         const tk = W2.t - k * 0.45; if (tk < 0) { W2.I[k] = 0; continue; }
         const f = Math.floor(tk / 0.06); W2.I[k] = f < FLICK.length ? FLICK[f] : 0.95 + 0.05 * Math.sin(W2.t * 1.3 + k);
       }
       if (!busy && (NAR.next -= dt) < 0 && W2.t > 3 && W2.next - W2.t > 9 && nSheet.complete && nSheet.naturalWidth) { nPlan(); NAR.next = 14 + Math.random() * 16; }   // (his sheet in)
-      if ((W2.t > W2.next || openK('balcony') < 0.5) && !busy) { W2.state = 'off-going'; W2.t = 0; }
+      if ((W2.t > W2.next || (openK('balcony') < 0.5 && !NNV.on)) && !busy) { W2.state = 'off-going'; W2.t = 0; }   // (the night visit: its own 30-60 s)
     } else {                                                                         // going out, in the same order
       for (let k = 0; k < WL.n; k++) { const tk = W2.t - k * 0.3; W2.I[k] = tk < 0 ? W2.I[k] : Math.max(0, 1 - tk / 0.25); }
-      if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 60 + Math.random() * 180; W2.I = [0, 0, 0, 0]; }
+      if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 60 + Math.random() * 180; W2.I = [0, 0, 0, 0]; if (NNV.on) { NNV.on = false; NNV.next = 600 + Math.random() * 600; } }
     }
     const here = nStep(dt);
     W2.acc += dt; if (W2.acc < 1 / 20) return; W2.acc = 0;
@@ -6621,13 +6630,13 @@
     if (G.mask.complete && G.mask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(G.mask, 0, 0, w * K, h * K); g.globalCompositeOperation = 'source-over'; }
     G.tex.needsUpdate = true;
   }
-  function z1RPlan() {                            // his visit: in, the stop, the tosses between two pauses, the turn, out
+  function z1RPlan(night) {                       // his visit: in, the stop, the tosses between two pauses (at night: he just stands there, up late), the turn, out
     const F = { w: ZR.w0, q: [], a: null, fig: null }, run = (row, n, dt) => Array.from({ length: n }, (_, i) => [row, i, dt]);
     const idle = (t) => { const q = []; for (let i = 0; t > 0; t -= 0.8, i = (i + 1) % 4) q.push(['idle', i, 0.8]); return q; };   // breathing
     F.q.push({ k: 'go', to: -ZR.xa0, dir: 1, row: 'walkT', ph0: -ZR.xa0 });                 // there his left heel strikes
     F.q.push({ k: 'frames', seq: run('settle', ZRC.settle[3], 0.1), after: () => { F.w += ZR.xa0; } });   // the last step
-    F.q.push({ k: 'frames', seq: idle(1.5 + Math.random() * 2).concat(run('toss', ZRC.toss[3], 0.1), idle(0.8 + Math.random() * 2.4),
-      run('turn', ZRC.turn[3], 0.1), run('start', ZRC.start[3], 0.1)), after: () => { F.w += ZR.xr0; } });
+    F.q.push({ k: 'frames', seq: (night ? idle(16 + Math.random() * 8) : idle(1.5 + Math.random() * 2).concat(run('toss', ZRC.toss[3], 0.1), idle(0.8 + Math.random() * 2.4)))
+      .concat(run('turn', ZRC.turn[3], 0.1), run('start', ZRC.start[3], 0.1)), after: () => { F.w += ZR.xr0; } });
     F.q.push({ k: 'go', to: ZR.w0, dir: -1, row: 'walkA', init() { this.ph0 = F.w; } });
     return F;
   }
@@ -6655,7 +6664,20 @@
   }
   const Z1S = { who: null, next: 20 + Math.random() * 40, acc: 0 }, Z1F = { who: null, next: 80 + Math.random() * 120, acc: 0 };
   const z1Busy = (n) => !!((n === 'win_z1_warm' && Z1S.who) || (n === 'win_z1_top' && Z1F.who));   // someone crossing that window now
+  // the night: Red's window is dark from 1 h to 4 h (the comp's hours: the rule). A few times an hour he is up late on his Game Boy:
+  // its screen's glow lights the glass (a cool light at 0.62, over the comp's own level, never under it) and he comes to stand there,
+  // breathing, 16-24 s; then the glow goes. Never during the finale, the red night or the power cut. Debug: ?heroes brings it 4 s in
+  const RNV = { on: false, k: 0, t: 0, next: /[?&]heroes\b/.test(location.search) ? 4 : 300 + Math.random() * 600 };
   function stepZ1(dt, t) {
+    if (Z1.top) {                                // (the glow serves the reduced-motion still too: only the visit's own start waits for motion)
+      const u = Z1.top.userData, m = Z1.top.material;
+      if (!reduced && !RNV.on && !u.on && m.opacity < 0.05 && !Z1F.who && heroNight() && (RNV.next -= dt) < 0) { RNV.on = true; RNV.k = 0; RNV.t = 0; Z1F.next = 2 + Math.random() * 3; }
+      if (RNV.on) {
+        RNV.t += dt; RNV.k += (((RNV.t < 30 || Z1F.who) && heroNight() ? 1 : 0) - RNV.k) * Math.min(1, dt * 3);
+        m.opacity = Math.max(m.opacity, 0.62 * RNV.k); m.color.setRGB(1 - 0.22 * RNV.k, 1 - 0.1 * RNV.k, 1);
+        if (RNV.t > 30 && !Z1F.who && RNV.k < 0.01) { RNV.on = false; RNV.next = 600 + Math.random() * 600; m.color.setRGB(1, 1, 1); }
+      }
+    }
     // the curtain: crosses the room (2-5 s in the window), sometimes stops a moment; only with the light on
     if (Z1.warm) {
       let W = Z1S.who; const light = Z1.warm.material.opacity;
@@ -6685,7 +6707,7 @@
       let F = Z1F.who; const light = Z1.top.material.opacity;
       if (!F) {
         Z1F.next -= dt;
-        if (Z1F.next < 0 && light > 0.95 && Z1.top.userData.next > 22) { F = Z1F.who = z1RPlan(); z1Door.mesh.visible = true; Z1F.acc = 1; }
+        if (Z1F.next < 0 && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) { F = Z1F.who = z1RPlan(RNV.on); z1Door.mesh.visible = true; Z1F.acc = 1; }
       }
       if (F) {
         if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 120 + Math.random() * 150; z1Door.mesh.visible = false; }
@@ -7196,6 +7218,21 @@
     }
     paintSecrets(false);
     if (all) { XI_AT.killua = FOUR.at; foundSecret('killua'); }
+  }
+  if (reduced) {                                 // reduced motion (no animation): now and then Naruto stands at the lit glass and Red at his lit
+    const HS = { on: false, k: 0 };               // door, cut in and out with one frame, no motion, clickable; 25-40 s, every 60-120 s
+    const narStill = (on) => { const N = NAR, W2 = WIN2;
+      if (on) { N.s = -1.5; N.a = null; N.q = [nFrames([['look', 1, 1e9]])]; N.figs = []; N.puffs = []; W2.state = 'on'; W2.t = 10; W2.next = 1e9; W2.I = [1, 1, 1, 1]; }
+      else { N.a = null; N.q = []; N.fig = null; N.figs = []; W2.state = 'off'; W2.t = 0; W2.next = 1e9; W2.I = [0, 0, 0, 0]; }
+      W2.acc = 1; W2.shown = true; };
+    const redStill = (on) => {
+      if (on) { Z1F.who = { w: 0, q: [], a: { k: 'frames', seq: [['idle', 0, 1e9]], t: 0 }, fig: null }; z1Door.mesh.visible = true; Z1F.acc = 1; RNV.on = true; RNV.k = 1; RNV.t = 0; }
+      else { Z1F.who = null; z1Door.mesh.visible = false; RNV.on = false; RNV.k = 0; if (Z1.top) Z1.top.material.color.setRGB(1, 1, 1); } };
+    const show = (on) => { HS.on = on; try { narStill(on); redStill(on); frame(); } catch (e) {} };
+    const tick = () => {
+      if (document.hidden || FIN.t >= 0) { setTimeout(tick, 20000); return; }
+      show(true); setTimeout(() => { show(false); setTimeout(tick, 60000 + Math.random() * 60000); }, 25000 + Math.random() * 15000); };
+    setTimeout(tick, /[?&]heroes\b/.test(location.search) ? 3000 : 20000 + Math.random() * 20000);
   }
   function stepFour(dt) {
     for (const S of HERO.stars) {
