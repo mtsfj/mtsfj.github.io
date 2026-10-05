@@ -4018,7 +4018,7 @@
   const FIN = { die: null, blast: null, dawn: -1, objs: null };
   const PW_DIE = [[1, 0.3, 0.9, 0.1, 0.6, 0], [0.4, 1, 0.2, 0.7, 0], [1, 0.5, 0, 0.8, 0.2, 0], [0.7, 0.1, 0.9, 0]];   // a light's last stutters
   const dieAt = (at, seed, t) => { const u = t - at; if (u < 0) return 1; const f = PW_DIE[seed & 3], k = (u / 0.06) | 0; return k < f.length ? f[k] : 0; };
-  function finDie(dur) {                         // the lights out, one by one, over dur s (each its turn and its stutter)
+  function finDie(dur, calm) {                   // the lights out, one by one, over dur s (each its turn and its stutter; calm: a smooth fade)
     pwUnlit(() => {
       if (!PW.list) { PW.list = pwList(); PW.keep = new Array(PW.list.length * 2); }
       // a place's lights die together (a light inside a painted zone with the zone, the parts of one light with each
@@ -4032,12 +4032,18 @@
         at.push(byX[e.x][0]); sd.push(byX[e.x][1]);
       });
       const ka = PW_ZONES.findIndex((z) => z[4] === 1406);   // (the arcade: with its zone)
-      FIN.die = { t: 0, at, sd, zat, amb: rnd(0.6, 0.9) * dur, arc: ka >= 0 ? zat[ka] : rnd(0, 0.5) * dur, arcSd: ka >= 0 ? ka : 2 };
+      FIN.die = { t: 0, at, sd, zat, amb: rnd(0.6, 0.9) * dur, arc: ka >= 0 ? zat[ka] : rnd(0, 0.5) * dur, arcSd: ka >= 0 ? ka : 2, calm: !!calm };
       PW.on = true; PW.ext = finDieStep; pwShade.visible = true;
     });
   }
   function finDieStep(dt) {
     const D = FIN.die, t = (D.t += dt), L = PW.list, U = pwShade.material.uniforms;
+    if (D.calm) {                                // (reduced motion: each light its turn, a smooth 0.8 s fade, no stutter)
+      const f = (at) => { const u = Math.min(1, Math.max(0, (t - at) / 0.8)); return 1 - u * u * (3 - 2 * u); };
+      for (let i = 0; i < L.length; i++) L[i].p = f(D.at[i]);
+      PW.arc = f(D.arc); U.uFront.value = -1e4; U.uAmb.value = f(D.amb); for (let k = 0; k < PW_ZONES.length; k++) U.uPow.value[k] = f(D.zat[k]);
+      return;
+    }
     for (let i = 0; i < L.length; i++) L[i].p = dieAt(D.at[i], D.sd[i], t);
     PW.arc = dieAt(D.arc, D.arcSd, t); U.uFront.value = -1e4; U.uAmb.value = dieAt(D.amb, 1, t);
     for (let k = 0; k < PW_ZONES.length; k++) U.uPow.value[k] = dieAt(D.zat[k], k, t);
@@ -4286,6 +4292,7 @@
   function finDawn() {                           // under the flash: the night system's 6 h, then pushed to the morning; the horde down
     REDN.on = false; BUS.forceZ = REDN.busZ0; CREW.api.fellAll();
     if (nightSys()) { setMode(null, 0); setTimeOverride(6, 0); setTimeOverride(6, 9, { push: 1 }); } else PW.tint(null, 0);
+    REDN.k = REDN.to; stepNR(0);                 // (the street's red away in this frame, with the sky's: its step ran before this one)
     FIN.dawn = 0; finEv('dawn');
   }
   function stepDawn(dt) {                        // no stars, no Mars; fewer drops (650 -> 120 in 8 s; their opacity: the night system's, with its push)
@@ -4377,11 +4384,18 @@
   const finTxt = (op) => { for (const e of document.querySelectorAll('.hero-text, .scroll-hint')) { e.style.transition = 'opacity 1.5s'; e.style.opacity = op; } };   // (the page's title)
   function finStart(calm) {                      // (the lever: startEleven)
     finOffs(); finClear(true);                   // (another finale: the last one's street, its dawn away)
-    Object.assign(FINS, { t: 0, calm, st: calm ? 'calm' : 'wait', at: 0, fight: -1, stand: -1, plate: -1 });
+    Object.assign(FINS, { t: 0, calm, st: calm ? 'calm' : 'wait', at: 0, fight: -1, stand: -1, plate: -1, cd: false });
+    pwUnlit();                                   // (the street with its power out, ready for its dying: the fuse box preloads it only with motion)
+    if (reduced) { FINS.till = performance.now() + 2000; if (!FINS.drive) { FINS.drive = true; requestAnimationFrame(finDrive); } }
     finEvN = 0; finEv('start'); finHold(true);
     if (REDN.gone) moonGone(false);              // (gone: it comes back, to go again)
   }
   function finStage(st) { FINS.st = st; FINS.at = FINS.t; }
+  function finDrive() {                          // reduced motion: no loop runs (the page draws on demand); the calm finale's
+    const now = performance.now();               // own frames, while it runs and 2 s on (its battery, its standby settled)
+    if (FINS.t >= 0) FINS.till = now + 2000; else if (now > FINS.till) { FINS.drive = false; return; }
+    frame(); requestAnimationFrame(finDrive);
+  }
   // the finale is a closed set: the street's own events don't start during it, and come back one by one after its end.
   // The street director holds the ones it directs (STAGE.hold('finale'); its called TranZit passes with prio 2); the
   // others (the shooting star, zone 1's two scenes, the far city's events, the cat's comings and goings) have their
@@ -4424,6 +4438,7 @@
     }
     if (FINS.calm) {                             // the calm variant: the moon at 4 s (faded, its still ring), the plate at 9 s
       if (t >= 1) finEv('stand'); if (t >= 2) finEv('dying'); if (t >= 3) finEv('rain');   // (its beats, marks only)
+      if (t >= 2 && !FINS.cd) { FINS.cd = true; finDie(1.2, true); }   // its lights out as the full one's, each a smooth 0.8 s fade (all by 4 s)
       if (FINS.st === 'calm' && t >= 4) { finStage('calm-moon'); finEv('blast'); finBlast(); }
       if (t >= 9) finPlate();
       return;
@@ -5839,7 +5854,7 @@
     return x >= sx - g && x <= sx + sw + g && y >= sy - g && y <= sy + sh + g;
   }
   hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') { showSlab(ev, overWin(ev) && !inPkpc(ev)); } });   // no pointer cursor over the secrets: it would give them away
-  hero.addEventListener('pointerleave', () => showSlab(null, false));
+  hero.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse') showSlab(null, false); });   // (a mouse's hover only: a lifted finger leaves too)
   // ---- the balcony window (top right): the four panes light up one after the other, stay lit a while, go out in the
   // same order; while they are lit, Naruto passes behind the frosted glass now and then (below) ----
   const WL = { x: 1188, y: 100, w: 80, h: 200, n: 4 };
@@ -8639,17 +8654,47 @@
     M.scr.visible = M.glow.visible = S.lv > 0.004;
   }
   // ---- droite-07: a Gengar in the Pokémon Center at night. The Center never shuts (lumieres-11); in its night mode (1 h-6 h), once in a
-  // long while (the street director's 'gengar'), a round shadow with two pointed ears drifts behind the door glass in front
-  // of its PC: only the screen's light (and the dim shop's) shows it, a soft dark shape (rule 5); it stops, opens two red
-  // eyes once, and as it goes the screen stutters twice (a ghost and electronics). Nothing to hover, no cursor. Reduced
-  // motion: it never comes; nor in a power cut (the PC is dark then). Its canvas: the door's upper glass, x 868-898, y 590-616,
-  // at 2x, the door's two mullions (x 878, 884) cut out of it as out of the PC ----
-  const GG = { on: false, t: 0, next: 150 + Math.random() * 450, dir: 1, img: new Image(), c: document.createElement('canvas'), acc: 0 };
-  lateImg(GG.img, 'assets/gengar_shadow.png?v=1'); GG.c.width = 60; GG.c.height = 52;
-  const ggg = GG.c.getContext('2d');
+  // long while (the street director's 'gengar'), Gengar floats in behind the door glass in front of its PC and reads as himself:
+  // his silhouette (the round body, the two tall pointed ears, the spiky fringe down his back, the stubby arms; 26 px, 0.75 m;
+  // gengar_shadow.png v2, antialiased), dark against the dim room of the night mode, his ears rising beside the screen and his
+  // head cutting into its light; that light wraps round his edges near the screen, soft and broken (fixed clumps that move with
+  // him: never a lit frame, never a line); two red eyes once, a blink; then he sinks away, fading, and the screen stutters twice
+  // (a ghost and electronics). Seen only through the glass: the door's frames and mullions stay in front of him (the shop's
+  // comp's own glass, read at run time). Nothing to hover, no cursor. Reduced motion: he never comes; nor in a power cut ----
+  const GG = { on: false, t: 0, next: 150 + Math.random() * 450, img: new Image(), c: document.createElement('canvas'), acc: 0, sil: null, edge: null, nz: null, mask: null };
+  lateImg(GG.img, 'assets/gengar_shadow.png?v=2'); GG.c.width = 88; GG.c.height = 96;   // (the canvas: x 860-904, y 580-628, 2 px per scene px)
+  const ggg = GG.c.getContext('2d', { willReadFrequently: true }), ggD = ggg.createImageData(88, 96);
   const ggTex = new THREE.CanvasTexture(GG.c); ggTex.magFilter = ggTex.minFilter = THREE.NearestFilter; ggTex.generateMipmaps = false;
-  const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(30, 26), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
-  ggMesh.position.set(883, -603, 1.1009); ggMesh.visible = false; scene.add(ggMesh);   // (in front of the PC's screen and glow, 1.1007-1.1008)
+  const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(44, 48), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
+  ggMesh.position.set(882, -604, 1.1009); ggMesh.visible = false; scene.add(ggMesh);   // (in front of the PC's screen and glow, 1.1007-1.1008)
+  function ggRead() {                            // his sheet, once: the silhouette's coverage, its inner edge, a clumped noise; the glass
+    const c = document.createElement('canvas'); c.width = 64; c.height = 64; const g = c.getContext('2d'); g.drawImage(GG.img, 0, 0);
+    const d = g.getImageData(0, 0, 64, 64).data, S = new Float32Array(4096), E = new Float32Array(4096), N = new Float32Array(4096), M = new Uint8Array(88 * 96);
+    for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) S[y * 64 + x] = d[(y * 64 + x) * 4 + 3] / 255;
+    for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
+      let mn = 1; for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) { const yy = y + j, xx = x + i; mn = Math.min(mn, yy < 0 || xx < 0 || yy > 63 || xx > 63 ? 0 : S[yy * 64 + xx]); }
+      E[y * 64 + x] = Math.max(0, S[y * 64 + x] - mn);
+      const h1 = Math.sin((x >> 2) * 12.9898 + (y >> 2) * 78.233) * 43758.5453, h2 = Math.sin(x * 39.35 + y * 11.13) * 9631.17;   // clumps of 2 scene px, a finer grain
+      N[y * 64 + x] = 0.35 + 0.45 * (h1 - Math.floor(h1)) + 0.2 * (h2 - Math.floor(h2));
+    }
+    // the door's glass: where the shop's comp shows the room (its alpha), not its mullions (its dark columns); else (its image
+    // unreadable) all of it but the three mullions
+    const sh = PKS.shop, si = sh && sh.material.map && sh.material.map.image;
+    let cd = null, cw = 0, cx0 = 0, cy0 = 0;
+    try {
+      if (si && (si.naturalWidth || si.width)) {
+        const p = sh.geometry.parameters; cw = p.width; cx0 = sh.position.x - p.width / 2; cy0 = -sh.position.y - p.height / 2;
+        const k = document.createElement('canvas'); k.width = p.width; k.height = p.height; const kg = k.getContext('2d');
+        kg.drawImage(si, 0, 0, p.width, p.height); cd = kg.getImageData(0, 0, p.width, p.height).data;
+      }
+    } catch (e) { cd = null; }
+    for (let y = 0; y < 96; y++) for (let x = 0; x < 88; x++) {
+      const sx = Math.floor(860 + x / 2), sy = Math.floor(580 + y / 2);
+      if (cd) { const qx = sx - cx0, qy = sy - cy0, o = (qy * cw + qx) * 4; M[y * 88 + x] = qx >= 0 && qy >= 0 && qx < cw && cd[o + 3] > 20 && 0.299 * cd[o] + 0.587 * cd[o + 1] + 0.114 * cd[o + 2] > 40 ? 1 : 0; }
+      else M[y * 88 + x] = sx >= 873 && sx <= 902 && sx !== 878 && sx !== 884 && sx !== 890 ? 1 : 0;
+    }
+    Object.assign(GG, { sil: S, edge: E, nz: N, mask: M });
+  }
   function stepGengar(dt) {
     if (reduced || PKS.dead) return;
     if (!GG.on) {
@@ -8657,26 +8702,34 @@
       if ((GG.next -= dt) > 0) return;
       if (!(GG.img.complete && GG.img.naturalWidth)) { GG.next = 2; return; }   // (its sheet not in yet)
       if (!STAGE.ask('gengar', 10)) { GG.next = 3 + Math.random() * 4; return; }
-      Object.assign(GG, { on: true, t: 0, dir: Math.random() < 0.5 ? 1 : -1 }); ggMesh.visible = true;
+      if (!GG.sil) ggRead();
+      Object.assign(GG, { on: true, t: 0 }); ggMesh.visible = true;
     }
     const T = 7.2, t = (GG.t += dt);
     if (t > T || PW.on) { GG.on = false; ggMesh.visible = false; STAGE.done('gengar'); GG.next = 600 + Math.random() * 900; return; }
-    if (Math.abs(t - 4.6) < dt / 2 + 1e-4 || Math.abs(t - 5.15) < dt / 2 + 1e-4) PKS.dip = 0.24;   // the screen stutters as it goes
+    if (Math.abs(t - 4.6) < dt / 2 + 1e-4 || Math.abs(t - 5.15) < dt / 2 + 1e-4) PKS.dip = 0.24;   // the screen stutters as he goes
     GG.acc += dt; if (GG.acc < 1 / 15) return; GG.acc = 0;
-    // its path: in from one side (2.2 s), a stop before the screen (eyes at 2.6-3.6 s), out the other way, fading in and out
-    const u = t < 2.2 ? t / 2.2 : t < 4.2 ? 1 : 1 + (t - 4.2) / 3;
-    const x = GG.dir * (u < 1 ? -12 * (1 - u) * (1 - u) : u > 1 ? 13 * (u - 1) * (u - 1) : 0), bob = Math.sin(t * 2.6) > 0 ? 1 : 0;
-    const al = Math.min(1, t / 0.8, (T - t) / 1.2);
-    const g = ggg; g.clearRect(0, 0, 60, 52); g.imageSmoothingEnabled = false;
-    if (GG.img.complete && GG.img.naturalWidth) {
-      g.globalAlpha = 0.86 * al; g.drawImage(GG.img, bob * 16, 0, 16, 15, (7 + Math.round(x)) * 2, 6 * 2, 32, 30);
-      g.globalAlpha = 1; g.globalCompositeOperation = 'source-in'; g.fillStyle = '#08060e'; g.fillRect(0, 0, 60, 52);
-      g.globalCompositeOperation = 'destination-out'; g.fillRect((878 - 868) * 2, 0, 2, 52); g.fillRect((884 - 868) * 2, 0, 2, 52);
-      g.globalCompositeOperation = 'source-over';
-      const open = t > 2.6 && t < 3.6 && !(t > 3.05 && t < 3.15);     // two red eyes, once (a blink)
-      if (open) { g.fillStyle = 'rgba(226,52,64,' + (0.85 * al) + ')'; for (const ex of [11, 17]) if (ex + Math.round(x) !== 10 && ex + Math.round(x) !== 16) g.fillRect((ex + Math.round(x)) * 2, (10 + bob) * 2, 2, 2); }
+    // his path (scene px from his place: his cell's corner at 873.5, 595, his ears either side of the screen's light, his head cutting
+    // into it from below, his body against the dim room): in from the right, eased (2.2 s); he hovers; his eyes at
+    // 2.6-3.6 s (a blink); from 4.2 s he sinks away, fading
+    const ein = Math.min(1, t / 2.2), dx = 18 * (1 - ein) * (1 - ein) * (1 - ein);
+    const sink = t > 4.2 ? Math.min(1, (t - 4.2) / 3) : 0, dy = 0.5 * Math.round(1.6 * Math.sin(t * 2.2)) + 12 * sink * sink;
+    const al = Math.min(1, t / 0.8, (T - t) / 1.8), lv = Math.max(0, Math.min(1, PKS.lv));
+    const ox = Math.round((873.5 + dx - 860) * 2), oy = Math.round((595 + dy - 580) * 2);
+    const S = GG.sil, E = GG.edge, N = GG.nz, M = GG.mask, D = ggD.data, eyes = t > 2.6 && t < 3.6 && !(t > 3.05 && t < 3.15);
+    for (let y = 0; y < 96; y++) for (let x = 0; x < 88; x++) {
+      const o = (y * 88 + x) * 4, sx = x - ox, sy = y - oy;
+      if (!M[y * 88 + x] || sx < 0 || sy < 0 || sx > 63 || sy > 63) { D[o + 3] = 0; continue; }
+      const k = sy * 64 + sx, s = S[k];
+      if (s < 0.02) { D[o + 3] = 0; continue; }
+      const px = 860 + (x + 0.5) / 2, py = 580 + (y + 0.5) / 2;               // the screen's light round his edge (within 5 px of it)
+      const dist = Math.hypot(Math.max(877 - px, 0, px - 889), Math.max(601 - py, 0, py - 610));
+      const rim = Math.min(1, E[k] * 1.6) * Math.max(0, 1 - dist / 5) * N[k] * lv * 0.8;
+      let r = 18 + 132 * rim, g = 10 + 212 * rim, b = 28 + 227 * rim;
+      if (eyes && sy >= 30 && sy < 32 && ((sx >= 24 && sx < 28) || (sx >= 36 && sx < 40))) { r = 226; g = 52; b = 64; }   // two red eyes
+      D[o] = r; D[o + 1] = g; D[o + 2] = b; D[o + 3] = Math.round(255 * Math.min(1, s * 0.92) * al);
     }
-    ggTex.needsUpdate = true;
+    ggg.putImageData(ggD, 0, 0); ggTex.needsUpdate = true;
   }
   const inPkpc = (ev) => {                       // its pixels (a finger: a little round)
     const p = cbXY(ev), b = PKS.hit, g = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse) ? 2 : 0;
