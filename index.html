@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=51" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=52" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -61,7 +61,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=42) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=43) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -584,7 +584,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=51", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=52", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -1766,7 +1766,7 @@
   farState.needsUpdate = true;
   const farMat = new THREE.ShaderMaterial({
     uniforms: { tIds: { value: farTex('assets/far_ids.png?v=6') }, tOn: { value: farTex('assets/far_on.png?v=6') }, tOff: { value: farTex('assets/far_off.png?v=6') },
-      tAux: { value: farTex('assets/far_aux.png?v=13') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
+      tAux: { value: farTex('assets/far_aux.png?v=14') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
     vertexShader: 'varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: `
       uniform sampler2D tIds, tOn, tOff, tAux, tState;
@@ -1871,12 +1871,28 @@
       const sz = (2.4 + 1.2 * near) / 3; m.scale.set(sz, sz, 1);
     }
   }
-  // aircraft-warning lights on the roofs of the far city's three tallest towers: red, flashing slowly in the haze (a
-  // quick rise, held, a soft fall), each roof on its own rhythm, the lights of one roof together
-  const OBST = [{ p: [[700, 457], [707, 456]], per: 1.9, ph: 0 }, { p: [[636, 477], [649, 477]], per: 2.3, ph: 0.8 }, { p: [[672, 481]], per: 1.7, ph: 1.4 }];
-  for (const o of OBST) o.m = o.p.map(([x, y]) => {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshBasicMaterial({ map: plGlowTex, color: 0xff4636, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
-    m.position.set(x + 0.5, -(y + 0.5), 0.6); scene.add(m); return m;
+  // aircraft-warning lights on the far city's three tallest towers, each on its roof's own top pixel (never on the mountain):
+  // deep red, a soft core (the pixel, its four neighbours at 0.45, the diagonals at 0.18) and a faint broken glow round it
+  // (whole pixels in 2 x 2 dabs: 0.1, then 0.05 farther), in front of the skyline's haze; a slow regular beat (2 s: on for
+  // about 1, a soft rise, held, a soft fall), each roof on its own phase, the lights of one roof together; reduced motion: steady
+  const OBST = [{ p: [[700, 457], [706, 456]], ph: 0 }, { p: [[642, 475], [647, 475]], ph: 0.7 }, { p: [[673, 479]], ph: 1.3 }];
+  const obstTex = (sd) => {
+    const N = 7, cv = document.createElement('canvas'); cv.width = cv.height = N;
+    const g = cv.getContext('2d'), im = g.createImageData(N, N), d = im.data;
+    const hs = (a, b) => { let h = (a * 374761393 + b * 668265263 + sd * 2246822519) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      const dx = x - 3, dy = y - 3, r = Math.max(Math.abs(dx), Math.abs(dy)), o = (y * N + x) * 4;
+      const dab = hs(x >> 1, y >> 1) + (hs((x >> 1) + 7, (y >> 1) + 3) - 0.5) * 0.35;   // (the house stipple: one draw per 2 x 2 block)
+      const a = r === 0 ? 1 : r === 1 ? (dx === 0 || dy === 0 ? 0.45 : 0.18) : r === 2 ? (dab < 0.55 ? 0.1 : 0) : (dab < 0.3 ? 0.05 : 0);
+      d[o] = 230; d[o + 1] = 36; d[o + 2] = 30; d[o + 3] = Math.round(255 * a);   // (deep red, a touch lighter than the dusk's haze: a light at every hour)
+    }
+    g.putImageData(im, 0, 0);
+    const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t;
+  };
+  const obstK = (u) => { const sm = (v) => v * v * (3 - 2 * v); return u < 0.06 ? sm(u / 0.06) : u < 0.44 ? 1 : u < 0.56 ? 1 - sm((u - 0.44) / 0.12) : 0; };
+  for (const o of OBST) o.m = o.p.map(([x, y], i) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), new THREE.MeshBasicMaterial({ map: obstTex(x * 31 + y + i), transparent: true, opacity: reduced ? 0.76 : 0, depthWrite: false }));
+    m.position.set(x + 0.5, -(y + 0.5), 0.71); m.visible = reduced; scene.add(m); return m;
   });
 
   // ---- the steams (meteo-02, meteo-09): the ramen vent's and the air-con's puffs share one material. A puff is a whole-pixel blob
@@ -3861,7 +3877,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=26', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=27', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7959,7 +7975,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=20') }, tMirror: { value: tex('assets/wet_mirror.png?v=18') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=21') }, tMirror: { value: tex('assets/wet_mirror.png?v=19') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -8407,7 +8423,7 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.png?v=8') },
+      tNRfar: { value: crisp('assets/night_far.png?v=9') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) },   // the red night's lights: their hue (max channel 1)
       uNT: { value: 0 }, uDW: { value: 0 }, uDP: { value: 0 }, uSun: { value: new THREE.Vector4(256, 6, 0, 0) },   // the hours on the far planes (package 1: skyHours)
@@ -8550,15 +8566,16 @@
         if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) { float far = texture2D(tNRfar, vec2(fu.x, 1.0 - fu.y)).r; fc = far > 0.9 ? 3.0 : far > 0.55 ? 2.0 : (far > 0.2 && far < 0.39) ? 1.0 : 0.0; }
         if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) keep = step(0.5, texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).g * 255.0); }   // (its own lights: the signs and lanterns, aux G; aux R is the air's shimmer, the haze's too)
         b = fc > 0.5 ? mix(c * (fc < 1.5 ? uRSky : uRFar), c, keep) : c;   // its plane's grade, not the street's; the far city's lights keep theirs
-        on = (fc > 0.5 && fc < 1.5) || fc > 2.5 ? 1.0 : 0.0;          // (the sky's and the far city's pixels: their plane's hours too; the mountain-or-tree ones: its grade)
-        soft = 1.0;
+        bool ch = fc > 1.5 && fc < 2.5 && skCherry(q, t);            // (the mountain's colour: the mountain's hours; the cherry's: hands off)
+        on = (fc > 0.5 && fc < 1.5) || fc > 2.5 || (fc > 1.5 && !ch) ? 1.0 : 0.0;   // (the sky's, the far city's and the mountain-coloured pixels: their plane's hours)
+        soft = fc > 2.5 || fc < 1.5 ? 1.0 : 0.0;
       } else if (mode > 0.5 && mode < 1.5 && tree > 0.5) on = 0.0;    // (the cherry tree: the far layers' multiply only, as before: hands off)
       bool sk = mode < 0.5 || (fc > 0.5 && fc < 1.5), tw = mode > 1.5 && mode < 2.5;
       float k = (1.0 - keep) * on;                                    // (one return: ANGLE warns of early ones)
       if (uNT > 0.0 && k > 0.0) b = mix(b, (sk || tw) ? ntSky(Lt) : ntFar(b, Lt, soft, q), uNT * k);
       if (uDW > 0.0 && k > 0.0) b = mix(b, sk ? dwSky(Lt) : tw ? dwTower(b, Lt, ta) : dwFar(b, Lt, soft, q), uDW * k);
       if (uGlw.x > 0.0 && k > 0.0) {                                  // the far city's light in the valley's haze: added over the mountain's foot, over the
-        float gw = fc > 2.5 ? mix(0.55, 1.0, smoothstep(0.3, 0.42, Lt)) : (mode > 0.5 && mode < 1.5 && tree < 0.5) ? 1.0 : 0.0;   // city's hazy rows, less over its
+        float gw = fc > 2.5 ? mix(0.55, 1.0, smoothstep(0.3, 0.42, Lt)) : ((mode > 0.5 && mode < 1.5 && tree < 0.5) || (fc > 1.5 && on > 0.5)) ? 1.0 : 0.0;   // city's hazy rows, less over its
         if (gw > 0.0) b += uGlwC * (skGlowF(q) * uGlw.x * gw);         // dark silhouettes (they stand in it: the skyline reads against the haze behind)
       }
       if (mode > 2.5 && fc < 0.5) {                                   // the street's faces lit by the low sun: its key light gone with the night, the dawn's
@@ -9440,7 +9457,7 @@
     else { shoot.t += dt; const u = shoot.t / 0.7; streak.position.x += 260 * dt; streak.position.y -= 105 * dt; streak.material.opacity = u < 0.25 ? u * 4 : Math.max(0, 1 - (u - 0.25) / 0.75); if (u >= 1) { shoot.active = false; streak.material.opacity = 0; shoot.next = 20 + Math.random() * 45; } }
     // the far city's lights
     stepFar(dt, t);
-    for (const o of OBST) { const u = ((t + o.ph) % o.per) / o.per, k = u < 0.04 ? u / 0.04 : u < 0.3 ? 1 : u < 0.42 ? 1 - (u - 0.3) / 0.12 : 0; for (const m of o.m) { m.material.opacity = 0.52 * k; m.visible = k > 0.005; } }
+    for (const o of OBST) { const k = reduced ? 0.8 : obstK(((t + o.ph) % 2) / 2); for (const m of o.m) { m.material.opacity = 0.95 * k; m.visible = k > 0.005; } }   // (2 s: on for about 1)
     // the air-con's steam: whole-pixel puffs (the vent's), lit by the street; they rise, swell, drift left with the wind, fade in steps
     for (const p of puffs) {
       const u = p.userData; u.t += dt; if (u.t > 3.6) { u.t -= 3.6 + Math.random() * 0.3; u.dx = Math.random(); }   // (a breath between two: never exactly periodic)
