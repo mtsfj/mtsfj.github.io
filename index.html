@@ -1107,11 +1107,11 @@
   // ---- STAGE, the street director (package 8): the big events ask it before they start, so that two never run at once on
   // the street, none starts within 15 s of another (any lane), a street quiet for 45 s pulls in the event that is soonest
   // due, and the opening or the finale can close the set. Two lanes: the street (the TranZit and the crew, the oden master,
-  // the OM flyer, the dojo bout, Gengar) and the sky (the Battle Bus, the summit climber: they never block the street).
+  // the OM flyer, Gengar) and the sky (the Battle Bus, the summit climber: they never block the street).
   // ask(name, seconds, { prio, lane }) answers now and reserves the lane for `seconds` at most (ask for the longest the
   // event may take; done(name) frees it the moment it ends; a reservation run out is freed by itself). prio 2 is a called
   // event (the finale's TranZit): it passes a closed set and the spacing. hold(reason, cast) closes the set: nothing
-  // ordinary starts, except the names in cast (the opening's beats: ['bbus', 'oden', 'dojo'], or '*' for everyone), which
+  // ordinary starts, except the names in cast (the opening's beats: ['bbus', 'oden'], or '*' for everyone), which
   // start freely; release(reason) opens it. due(name, seconds) is a street event's idle timer: unchanged, or 0 for the
   // pull-in (the soonest due within 4 min; a parked timer never is; the sky keeps its own rhythm).
   // Under reduced motion nothing asks (no event starts). stats: the answers, for the debug page ----
@@ -3766,7 +3766,7 @@
     add(() => lcCone, 882); add(() => lcPool, 882); add(() => lcRain, 882); add(() => wlMesh, 1228); add(() => neonMesh, 1196); add(() => rlMesh, 1190);
     add(() => luffyScr, 1139); add(() => lbGlow, 1139); add(() => z1Cur.mesh, 1096); add(() => z1Door.mesh, 984);
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
-    add(() => ODOOR.mesh, 442); add(() => lanMesh, 413); add(() => djMesh, 52);
+    add(() => ODOOR.mesh, 442); add(() => lanMesh, 413);
     try { for (const o of OBST) for (const m of o.m) add(() => m, -1); } catch (e) {}
     add(() => farQuad, -1, 'vis');
     scene.traverse((o) => {                    // the far skyline layer, a copy of the street's pixels there: with the far city
@@ -4480,7 +4480,7 @@
   // clocks parked, every frame of it (a clock its event sets again once over is parked again, the latest kept), and are
   // given back spread out at its end. The directed ones are parked too: harmless (a parked clock is never pulled in).
   // Its end is a street event's end to the director: the next start 15 s on at the soonest, a pull-in 45 s on
-  const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => Z1S, 12], [() => dojo, 16], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock's owner, back after (s), the clock ('next')]
+  const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => Z1S, 12], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock's owner, back after (s), the clock ('next')]
   function finHold(on) {
     try {
       if (typeof STAGE !== 'undefined' && STAGE && typeof STAGE.hold === 'function') {
@@ -4866,7 +4866,8 @@
   }
 
   // ---- secrets: one per easter egg found; a small counter shows up at the first one (kept in this browser only) ----
-  // (the dojo, the computer and the hidden file were secrets once: their shows stay, they count for nothing now)
+  // (the computer and the hidden file were secrets once: their shows stay, they count for nothing now; the dojo was one too,
+  // its bout is gone)
   const SECRETS = { slab: ['la carte en vitrine', 'the card in the showcase'], konami: ['le code aux 30 vies', 'the 30-lives code'],
     killua: ['les quatre héros', 'the four heroes'],          // (its id kept: Kirua, Naruto, Red and Luffy, each clicked: fourHit)
     stars: ['les seize étoiles', 'the sixteen stars'], fuses: ['les fusibles', 'the fuses'], mars: ['mars', 'Mars'], om: ["l'affiche de l'OM", 'the OM flyer'],
@@ -6372,7 +6373,7 @@
     }
     if (rlMask.complete && rlMask.naturalWidth) { rlg.globalCompositeOperation = 'destination-in'; rlg.drawImage(rlMask, 0, 0, rlC.width, rlC.height); rlg.globalCompositeOperation = 'source-over'; }
     // the people seated at the counter, between it and the doors (Naruto, droite-08; the customers): nearer the glass than Teuchi,
-    // so larger, crisper and darker (as the dojo's fighters nearest the paper), in front of the counter's things: drawn after
+    // so larger, crisper and darker, in front of the counter's things: drawn after
     // its mask, cut by the doors' own glass (their mullions and rail in front of them). Each: an atlas cell (sx, sy, w, h), its
     // place (x, the head's top), px per cell px; the lower back drawn down to the stool (half-widths at the shoulders' last row,
     // the waist, the stool)
@@ -6797,143 +6798,6 @@
     }
   }
 
-  // ---- the dojo (left garage): two karateka's shadows on the shoji paper; they bow, exchange techniques, bow again ----
-  const DJ = { x0: 0, y0: 375, w: 104, h: 386, K: 3, AW: 540, AH: 395 };   // screen box (the dojo 1.3x taller); 'A' = the facade's screen columns x 5.19
-  const djTop = (x) => 376.5 + 238.5 * x / 700, djBot = (x) => 760 - 145 * x / 700;
-  const djA = document.createElement('canvas'); djA.width = DJ.AW; djA.height = DJ.AH; const djAg = djA.getContext('2d');
-  const djB = document.createElement('canvas'); djB.width = DJ.w * DJ.K; djB.height = 290 * DJ.K; const djBg = djB.getContext('2d');
-  const djC = document.createElement('canvas'); djC.width = DJ.w * DJ.K; djC.height = DJ.h * DJ.K; const djCg = djC.getContext('2d');
-  const djMask = new Image(); djMask.src = 'assets/dojo_paper_mask.png?v=3';
-  const djTex = new THREE.CanvasTexture(djC); djTex.magFilter = djTex.minFilter = THREE.LinearFilter; djTex.generateMipmaps = false;
-  const djMesh = new THREE.Mesh(new THREE.PlaneGeometry(DJ.w, DJ.h), new THREE.MeshBasicMaterial({ map: djTex, transparent: true, depthWrite: false }));
-  djMesh.position.set(DJ.x0 + DJ.w / 2, -(DJ.y0 + DJ.h / 2), 0.05); djMesh.visible = false; scene.add(djMesh);
-  // the two karateka are our own: a rig each (pelvis, spine, neck, head; shoulder, elbow, fist; hip, knee, ankle, toes),
-  // posed by joint angles between eased keys (an anticipation before each strike, the hit held, a recoil), the feet planted
-  // on the dojo's floor by two-bone IK and lifted along an arc when they step, one foot after the other, the belt's tails on
-  // a damped spring. Each is drawn as a gi'd silhouette (capsules with round ends, in metres) over the facade's A columns,
-  // softened by his own distance from the paper (nearer the lamp: bigger and softer), then squeezed column by column onto
-  // the receding shoji and masked to the paper. Body space: metres, y up, facing the other (+x); one on each door. The bout
-  // plays only while the dojo is open (openK: its shadows go with its light), never under reduced motion; its timer goes
-  // through the street director (STAGE.due, STAGE.ask, STAGE.done); the opening's beat (its cast) and a click start one
-  const DJR = { thigh: 0.44, shin: 0.43, foot: 0.22, torso: 0.5, neck: 0.09, head: 0.11, uarm: 0.29, farm: 0.26,
-    SV: 118, SH: 189, FEET: 367, LAMP: 250 };   // A px per metre (up; along: the facade's squeeze), the floor's row, the lamp's row
-  // poses: the pelvis [x, y], the spine's lean and the head's nod (rad, + forward), each arm [shoulder from straight down,
-  // elbow] (rad, + forward), each foot [x, y] (y 0.08: the ankle of a foot on the floor); F front, B back
-  const DJP = {
-    stand: { p: [0, 0.93], lean: 0, nod: 0, aF: [0.12, 0.1], aB: [0.08, 0.1], fF: [0.07, 0.08], fB: [-0.07, 0.08] },
-    rei: { p: [-0.05, 0.92], lean: 0.55, nod: 0.25, aF: [0.3, 0], aB: [0.26, 0], fF: [0.07, 0.08], fB: [-0.07, 0.08] },
-    kamae: { p: [0.02, 0.8], lean: 0.08, nod: 0, aF: [1.05, 0.95], aB: [-0.55, 1.95], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
-    coil: { p: [-0.04, 0.8], lean: 0, nod: 0, aF: [1.35, 0.15], aB: [-0.78, 2.05], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
-    zuki: { p: [0.12, 0.78], lean: 0.14, nod: 0, aF: [-0.55, 1.95], aB: [1.52, 0], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
-    uke: { p: [-0.06, 0.81], lean: -0.06, nod: 0, aF: [1.15, 1.45], aB: [-0.5, 1.9], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
-    gedan: { p: [-0.07, 0.8], lean: -0.02, nod: 0, aF: [0.55, 0.05], aB: [-0.55, 1.95], fF: [0.44, 0.08], fB: [-0.4, 0.08] },
-    chamb: { p: [-0.1, 0.86], lean: -0.06, nod: 0, aF: [0.95, 1.0], aB: [-0.5, 1.9], fF: [0.3, 0.55], fB: [-0.4, 0.08] },
-    geri: { p: [-0.08, 0.86], lean: -0.2, nod: 0, aF: [0.8, 1.0], aB: [-0.5, 1.9], fF: [0.74, 0.78], fB: [-0.4, 0.08] } };
-  // the bout: [t, pose, distance from the paper (m), the way into it ('i' a strike's acceleration, 'o' a recoil's, else smooth)]
-  const DJT = [
-    [[0, 'stand', 0.25], [0.8, 'stand', 0.25], [1.3, 'rei', 0.25], [1.75, 'rei', 0.25], [2.25, 'stand', 0.25], [3.0, 'kamae', 0.25],
-      [3.3, 'kamae', 0.25], [3.48, 'coil', 0.25], [3.62, 'zuki', 0.2, 'i'], [3.88, 'zuki', 0.2], [4.25, 'kamae', 0.25, 'o'],
-      [4.62, 'kamae', 0.25], [4.82, 'gedan', 0.4], [5.05, 'gedan', 0.4], [5.45, 'kamae', 0.3], [5.82, 'kamae', 0.3], [6.0, 'uke', 0.45],
-      [6.3, 'uke', 0.45], [6.7, 'kamae', 0.3], [7.2, 'kamae', 0.25], [7.9, 'stand', 0.25], [8.2, 'stand', 0.25], [8.7, 'rei', 0.25],
-      [9.05, 'rei', 0.25], [9.45, 'stand', 0.25], [9.8, 'stand', 0.25]],
-    [[0, 'stand', 0.3], [0.8, 'stand', 0.3], [1.3, 'rei', 0.3], [1.75, 'rei', 0.3], [2.25, 'stand', 0.3], [3.0, 'kamae', 0.3],
-      [3.33, 'kamae', 0.3], [3.55, 'uke', 0.45], [3.88, 'uke', 0.5], [4.25, 'kamae', 0.35], [4.62, 'kamae', 0.35], [4.8, 'chamb', 0.3],
-      [4.93, 'geri', 0.25, 'i'], [5.08, 'chamb', 0.3, 'o'], [5.45, 'kamae', 0.35], [5.8, 'kamae', 0.35], [5.93, 'coil', 0.35],
-      [6.07, 'zuki', 0.3, 'i'], [6.33, 'zuki', 0.3], [6.7, 'kamae', 0.35, 'o'], [7.2, 'kamae', 0.3], [7.9, 'stand', 0.3], [8.2, 'stand', 0.3],
-      [8.7, 'rei', 0.3], [9.05, 'rei', 0.3], [9.45, 'stand', 0.3], [9.8, 'stand', 0.3]]];
-  const DJ_END = 9.8;
-  const djNewPose = () => ({ p: [0, 0], lean: 0, nod: 0, aF: [0, 0], aB: [0, 0], fF: [0, 0], fB: [0, 0], depth: 0 });
-  const dojo = { active: false, t: 0, next: 30 + Math.random() * 50, acc: 0,
-    F: [{ i: 0, cx: 66, face: 1, P: djNewPose(), px: 0, belt: 0, bv: 0 }, { i: 1, cx: 338, face: -1, P: djNewPose(), px: 0, belt: 0, bv: 0 }] };
-  const djEase = { s: (u) => u * u * (3 - 2 * u), i: (u) => u * u * u, o: (u) => 1 - (1 - u) * (1 - u) * (1 - u) };
-  function djPose(track, t, o) {                // a karateka's pose at t, between his keys
-    let i = 0; while (i < track.length - 2 && track[i + 1][0] <= t) i++;
-    const [t0, n0, d0] = track[i], [t1, n1, d1, e] = track[i + 1], A = DJP[n0], B = DJP[n1];
-    const r = Math.max(0, Math.min(1, (t - t0) / Math.max(1e-6, t1 - t0))), u = djEase[e || 's'](r), L = (a, b) => a + (b - a) * u;
-    o.p[0] = L(A.p[0], B.p[0]); o.p[1] = L(A.p[1], B.p[1]); o.lean = L(A.lean, B.lean); o.nod = L(A.nod, B.nod); o.depth = L(d0, d1);
-    for (const k of ['aF', 'aB']) { o[k][0] = L(A[k][0], B[k][0]); o[k][1] = L(A[k][1], B[k][1]); }
-    const step = (k) => A[k][1] < 0.1 && B[k][1] < 0.1 && Math.abs(B[k][0] - A[k][0]) > 0.04, both = step('fF') && step('fB');
-    for (const k of ['fF', 'fB']) {             // a foot on the floor stays there; a step lifts that foot alone along an arc (the back one first)
-      if (!step(k)) { o[k][0] = L(A[k][0], B[k][0]); o[k][1] = L(A[k][1], B[k][1]); continue; }
-      const w = both ? (k === 'fB' ? [0, 0.55] : [0.45, 1]) : [0, 1], v = djEase.s(Math.max(0, Math.min(1, (r - w[0]) / (w[1] - w[0]))));
-      o[k][0] = A[k][0] + (B[k][0] - A[k][0]) * v; o[k][1] = A[k][1] + 0.09 * Math.sin(Math.PI * v);
-    }
-    return o;
-  }
-  function djDraw(F) {                          // his silhouette into djA: body metres -> A px, scaled about the lamp's row by his distance
-    const J = DJR, P = F.P, g = djAg, [px, py] = P.p, l = P.lean, k = 1 + 0.22 * P.depth;
-    g.setTransform(F.face * J.SH * k, 0, 0, -J.SV * k, F.cx, J.LAMP + (J.FEET - J.LAMP) * k);
-    const seg = (a, b, w) => { g.lineWidth = w; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); };
-    const dot = (c, rx, ry) => { g.beginPath(); g.ellipse(c[0], c[1], rx, ry, 0, 0, Math.PI * 2); g.fill(); };
-    const sh = [px + 0.92 * J.torso * Math.sin(l), py + 0.92 * J.torso * Math.cos(l)], nk = [px + J.torso * Math.sin(l), py + J.torso * Math.cos(l)];
-    const hd = [nk[0] + (J.neck + J.head) * Math.sin(l + P.nod), nk[1] + (J.neck + J.head) * Math.cos(l + P.nod)];
-    for (const q of ['fF', 'fB']) {             // the legs: two-bone IK from the hip to the ankle, the knee forward
-      const f = P[q], dx = f[0] - px, dy = f[1] - py, d = Math.min(Math.hypot(dx, dy), J.thigh + J.shin - 1e-4), a = Math.atan2(dy, dx);
-      const kk = a + Math.acos(Math.max(-1, Math.min(1, (J.thigh * J.thigh + d * d - J.shin * J.shin) / (2 * J.thigh * d))));
-      const kn = [px + J.thigh * Math.cos(kk), py + J.thigh * Math.sin(kk)], ka = Math.atan2(f[1] - kn[1], f[0] - kn[0]);
-      const an = [kn[0] + J.shin * Math.cos(ka), kn[1] + J.shin * Math.sin(ka)];
-      const to = f[1] < 0.1 ? [an[0] + J.foot, 0.03] : [an[0] + J.foot * Math.cos(ka + 1.45), an[1] + J.foot * Math.sin(ka + 1.45)];
-      seg([px, py], kn, 0.17); seg(kn, an, 0.14); seg(an, to, 0.07);   // the gi's wide trousers
-    }
-    seg([px, py], nk, 0.3); seg([(px + nk[0]) / 2, (py + nk[1]) / 2], sh, 0.36); seg(nk, hd, 0.1); dot(hd, J.head, J.head * 1.06);
-    for (const q of ['aF', 'aB']) {             // the arms: shoulder and elbow, the fist
-      const a1 = l + P[q][0], el = [sh[0] + J.uarm * Math.sin(a1), sh[1] - J.uarm * Math.cos(a1)], a2 = a1 + P[q][1];
-      const fs = [el[0] + J.farm * Math.sin(a2), el[1] - J.farm * Math.cos(a2)];
-      seg(sh, el, 0.12); seg(el, fs, 0.1); dot(fs, 0.055, 0.055);
-    }
-    const kt = [px + 0.14 * Math.cos(l), py + 0.05 - 0.14 * Math.sin(l)];   // the belt's knot, its two tails on their spring
-    for (const s of [0, 0.22]) seg(kt, [kt[0] + 0.19 * Math.sin(F.belt + s), kt[1] - 0.19 * Math.cos(F.belt + s)], 0.035);
-    g.setTransform(1, 0, 0, 1, 0, 0);
-  }
-  function drawDojo() {
-    const t = dojo.t, fade = Math.min(1, t / 0.6, Math.max(0, (DJ_END - t) / 0.7));
-    djBg.clearRect(0, 0, djB.width, djB.height);
-    djAg.fillStyle = djAg.strokeStyle = '#1c0c08'; djAg.lineCap = djAg.lineJoin = 'round';
-    for (const F of dojo.F) {                   // each softened by his distance from the paper: a penumbra of 0.5-1 px (djB is ~2.3x a screen px)
-      djAg.clearRect(0, 0, DJ.AW, DJ.AH); djDraw(F);
-      djBg.filter = 'blur(' + ((0.5 + F.P.depth) * 2.27).toFixed(2) + 'px)'; djBg.drawImage(djA, 0, 0, djB.width, djB.height);
-    }
-    djBg.filter = 'none';
-    djCg.clearRect(0, 0, djC.width, djC.height); djCg.globalAlpha = 0.82 * fade;
-    for (let x = 0; x < DJ.w; x++) {           // one column at a time onto the receding facade
-      const y0 = (djTop(x + 0.5) - DJ.y0) * DJ.K, hh = (djBot(x + 0.5) - djTop(x + 0.5)) * DJ.K;
-      djCg.drawImage(djB, x * DJ.K, 0, DJ.K, djB.height, x * DJ.K, y0, DJ.K, hh);
-    }
-    djCg.globalAlpha = 1;
-    if (djMask.complete && djMask.naturalWidth) { djCg.globalCompositeOperation = 'destination-in'; djCg.drawImage(djMask, 0, 0, djC.width, djC.height); djCg.globalCompositeOperation = 'source-over'; }
-    djTex.needsUpdate = true;
-  }
-  function startDojo() {                        // a bout (the timer's, the opening's, a click on the paper): only lit, never under reduced motion
-    if (dojo.active || reduced || openK('dojo') <= 0) return false;
-    dojo.active = true; dojo.t = 0; dojo.acc = 1; djMesh.visible = true;
-    for (const F of dojo.F) { djPose(DJT[F.i], 0, F.P); F.px = F.P.p[0]; F.belt = F.bv = 0; }
-    return true;
-  }
-  function stepDojo(dt) {
-    if (!dojo.active) {                         // idle: the countdown through the street director's pull-in; due: open, and its yes
-      dojo.next = STAGE.due('dojo', dojo.next); dojo.next -= dt;
-      if (dojo.next > 0) return;
-      if (openK('dojo') <= 0) { dojo.next = 30 + Math.random() * 40; return; }      // shut: later
-      if (!STAGE.ask('dojo', 12)) { dojo.next = 3 + Math.random() * 4; return; }
-      if (!startDojo()) STAGE.done('dojo');
-      return;
-    }
-    dojo.t += dt; dojo.acc += dt;
-    for (const F of dojo.F) {                   // the poses; the belts' tails trail the hips (a damped spring)
-      djPose(DJT[F.i], dojo.t, F.P);
-      const vx = (F.P.p[0] - F.px) / Math.max(dt, 1e-3); F.px = F.P.p[0];
-      F.bv += (-55 * (F.belt + 0.9 * vx) - 7 * F.bv) * dt; F.belt = Math.max(-0.8, Math.min(0.8, F.belt + F.bv * dt));
-    }
-    const lit = openK('dojo'); djMesh.material.opacity = lit;          // its shadows go with its light (the power cut scales it again)
-    if (dojo.acc >= 1 / 20 && odenSeen([DJ.x0, DJ.y0, DJ.w, DJ.h])) { dojo.acc = 0; drawDojo(); }   // 20 fps is plenty for shadows
-    if (dojo.t > DJ_END || lit <= 0) { dojo.active = false; djMesh.visible = false; dojo.next = 60 + Math.random() * 60; STAGE.done('dojo'); }
-  }
-  function overDojo(ev) {
-    const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
-    const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top));
-    if (x < 2 || x > 100) return false;
-    const h = djBot(x) - djTop(x); return y >= djTop(x) + 0.40 * h && y <= djTop(x) + 0.81 * h;
-  }
   // ---- a nod to Hunter x Hunter: Killua sits on the front roof's edge near its far end, his legs over the street, looking
   // at the tower and the Fuji, his skateboard leaning on his back. Baked by build_zzzchar_killua.py from the owner's own
   // image, lit by the sunset (terracotta on what faces the far end of the street, violet on what faces the zenith), at
@@ -8011,7 +7875,7 @@
   }
 
   // ---- live water reflections: the puddles and the wet road mirror the street as it is right now (a neon that
-  // sputters, a window going dark, the ramen shop closing, the bus, the dojo's shadows). Each frame the scene, minus
+  // sputters, a window going dark, the ramen shop closing, the bus). Each frame the scene, minus
   // what must not be mirrored (rain, drop rings, road mists, steam, the flyer), is rendered small into a texture; a
   // sheet over the wet ground shows it mirrored about the line where the ground meets the wall above it
   // (assets/wet_mirror.png), rippled by the rain, streaked on the rough asphalt, nearly still in the puddles
@@ -8247,7 +8111,7 @@
     }
     hanaDraw();
   }
-  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overDojo(ev)) { startDojo(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
+  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the sky by the hour (package 1: ciel-01..12, meteo-13). skyHours, from stepNight each frame: the far planes' night
   // and dawn (NRU's uNT, uDW, uDP, uSun: the layers' shaders paint them from their own lightness), the street's far pixels'
@@ -9170,7 +9034,7 @@
   // its opening and at its closing time (NHOURS), so a driven hour (setTimeOverride, the finale's dawn) shuts the places one by one,
   // and the live clock over those minutes. The hour only: the power cut (pw) and the red night are not in it. Names: 'dojo', 'oden',
   // 'arcade', 'ramen', 'center' (the Pokémon Center never shuts, as in the games: always 1), 'dagashi', 'tabako', 'emblem',
-  // 'lantern9', 'study', 'balcony', 'luffy'; an unknown name: 1. Read by the street's lights, the ground's lights, the dojo's bout,
+  // 'lantern9', 'study', 'balcony', 'luffy'; an unknown name: 1. Read by the street's lights, the ground's lights,
   // Ichiraku's closing and Gengar's visit ----
   const OPEN_EASE = 0.1;                         // hours (6 min)
   const nRamp = (h, a, b) => Math.min(nSmooth(a, a + OPEN_EASE, h), 1 - nSmooth(b - OPEN_EASE, b, h));
@@ -9368,7 +9232,7 @@
   // ---- the opening: the first twelve seconds, scripted (the beat sheet agreed with the owner; c3/opening_storyboard.png) ----
   // From the first painted frame (OPEN.t0) a table of beats, OPENING = [[seconds, fn], ...], lights what is already animated, one
   // thing after another, and lays the gestures that exist (the gust, Killua's kick, the cat, the study, the oden door, a far floor,
-  // the vending tube, the Battle Bus, a star, the dojo) on a grid instead of a lottery. Nothing new is drawn. Until the fade begins
+  // the vending tube, the Battle Bus, a star) on a grid instead of a lottery. Nothing new is drawn. Until the fade begins
   // the street waits as openReset() sets it (all that is painted is there, the evening has not started: every timer that would
   // start something is put out of the way, and handed back at 12 s with bounds for the first minute). The only sounds are three
   // small cues under the rain, and only with the sound pill on: the opening never creates the audio context.
@@ -9385,8 +9249,8 @@
     openTry(() => { CAT.here = false; CAT.k = 0; CAT.stay = 1e9; });                                  // no cat
     openTry(() => { gust.target = 0; gust.hold = 0; gust.next = 1e9; });                              // no gust
     openTry(() => { KIL.ph.next = 1e9; });                                                           // no kick before its beat
-    openTry(() => STAGE.hold('opening', ['bbus', 'oden', 'dojo']));                                 // the set closed: only the opening's own beats start (STAGE, package 8)
-    [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => Z1S, () => Z1F, () => dojo, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
+    openTry(() => STAGE.hold('opening', ['bbus', 'oden']));                                 // the set closed: only the opening's own beats start (STAGE, package 8)
+    [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => Z1S, () => Z1F, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
   }
   function openSettled() {      // no opening (reduced motion, or a visitor who has seen it): the evening is under way
     openTry(() => { if (nightOpen('ramen')) Object.assign(SHOP, { open: true, k: 1, t: 10, neon: 1 }); });   // (each at the hour's state)
@@ -9427,7 +9291,6 @@
     openTry(() => { OIN.next = R(45, 75); });
     openTry(() => { Z1S.next = R(20, 40); Z1F.next = R(80, 120); });
     openTry(() => { NAR.next = R(14, 16); });                             // the balcony is lit: Naruto passes within the minute
-    openTry(() => { if (!dojo.active) dojo.next = R(60, 60); });          // (else the bout sets it itself at its end: 60 + rnd 60)
     openTry(() => { SHOP.next = R(80, 60); });
     openTry(() => { WIN2.next = R(120, 480); });
     openTry(() => { ws.next = R(45, 80); });                              // he stays at his desk
@@ -9449,7 +9312,6 @@
     [9.0, openFar],                                                                             // a floor of the far city goes out
     [9.5, () => { const v = openComp('z7_vending'); if (v) v.userData.burst = 0.6; }],          // the right-hand vending machine's tube fails a moment
     [10.5, () => { shoot.active = true; shoot.t = 0; streak.position.set(600, -118, -2.75); }], // a shooting star over Fuji
-    [11.5, () => { if (nightOpen('dojo')) startDojo(); }],                                                             // a bout at the dojo
     [12.0, () => { openHandover(); }],
   ];
   function openTick() {         // from frame(), before the systems step: the beats whose time has come, the watchers, the pill
@@ -9558,7 +9420,7 @@
     if (WET.on && WET.hide.indexOf(vendPool) < 0) WET.hide.push(vendPool);   // (the machines' pool: out of the water's picture, as the lamp's)
     // the Battle Bus
     stepBBus(dt, t); stepGlide(dt);
-    stepDojo(dt); stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
+    stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
     stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
     luffyTex.offset.x = Math.floor(t * 2.5) % 12 / 12; luffyScr.material.opacity = lightLife(t, 2.4, 0.035) * (0.3 + 0.7 * openK('luffy'));   // (standby once Ichiraku is shut: above overLuffy's 0.25)
     lbGlow.material.opacity = 0.9 * luffyScr.material.opacity;
