@@ -61,7 +61,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=41) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=42) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -687,16 +687,16 @@
   const moonMesh = plane('assets/moon.webp', MOONP.x, MOONP.y, MOONP.s, MOONP.s, -2.5, { opacity: 0.1 });   // le plus loin possible, à peine suggérée
 
   // mount Fuji and its sakura in the sky gap, behind the skyline and the flying events
-  const fujiNight = plane('assets/fuji_night.webp?v=26', 376, 66, 640, 640, -1.5);
+  const fujiNight = plane('assets/fuji_night.webp?v=27', 376, 66, 640, 640, -1.5);
   // the cherry tree, nearer than the mountain: the Battle Bus and fireworks pass behind it, in front of mount Fuji
-  const fujiTree = plane('assets/fuji_tree.webp?v=4', 376, 66, 640, 640, -0.9);
+  const fujiTree = plane('assets/fuji_tree.webp?v=5', 376, 66, 640, 640, -0.9);
   // Ho-Oh's tower (the Bell Tower of Ecruteak) far off in the evening mist: nearer than the mountain, behind the street;
   // the Battle Bus and fireworks pass in front of it
   const towerMesh = plane('assets/tower.webp?v=1', 378, 104, 163, 234, -1.3);
   // the far orange skyline, blurred and dimmed so the depth reads mount > distant city
   const skyDim = plane('assets/skyline_dim.webp?v=14', 540, 400, 260, 260, 0.05);
   // hand-picked pixels of the same layer promoted in front of the city, so the foliage covers the wires
-  const fujiFront = plane('assets/fuji_front.webp?v=32', 376, 66, 640, 640, 0.5);
+  const fujiFront = plane('assets/fuji_front.webp?v=33', 376, 66, 640, 640, 0.5);
 
 
 
@@ -1329,8 +1329,13 @@
       }
     }
     put(PH(head), S[2]);                                                              // (the head last: nothing over it)
-    let h = 0; for (let i = 0; i < px.length; i += 4) h = (h * 31 + px[i] * 7 + px[i + 1] * 3 + px[i + 2] + px[i + 3] * 5) | 0;
-    if (h !== F.sig) { F.sig = h; F.g.putImageData(F.img, 0, 0); F.tex.needsUpdate = true; }   // (uploaded only when its pixels changed)
+    let up = F.img; const CM = gldCherry(), X0 = Math.floor(F.x) - GLX, Y0 = Math.floor(F.y) - GLY;   // behind the cherry's lower half as behind the rest of it: its pixels are
+    if (CM && X0 + GLC > CM.x0 && X0 < CM.x1 && Y0 + GLC > CM.y0 && Y0 < CM.y1) {                       // in the mountain's layer since the split (z -1.5): those under them are not drawn
+      up = F.imgM || (F.imgM = F.g.createImageData(GLC, GLC)); up.data.set(px);                          // (on its canvas only: the figure stays whole for the street's test)
+      for (let i = 0; i < GLC * GLC; i++) { const X = X0 + i % GLC - CM.x0, Y = Y0 + (i / GLC | 0) - CM.y0; if (X >= 0 && Y >= 0 && X < CM.w && Y < CM.h && CM.m[Y * CM.w + X]) up.data[i * 4 + 3] = 0; }
+    }
+    const pu = up.data; let h = 0; for (let i = 0; i < pu.length; i += 4) h = (h * 31 + pu[i] * 7 + pu[i + 1] * 3 + pu[i + 2] + pu[i + 3] * 5) | 0;
+    if (h !== F.sig) { F.sig = h; F.g.putImageData(up, 0, 0); F.tex.needsUpdate = true; }   // (uploaded only when its pixels changed)
   }
   function stepGlide(dt) {
     const G = GLD, B = BBUS; G.t += dt;
@@ -1363,6 +1368,23 @@
       F.mesh.position.set(Math.floor(F.x) - GLX + GLC / 2, -(Math.floor(F.y) - GLY + GLC / 2), -0.99); F.mesh.visible = true; live++;
     }
     G.run = live > 0;
+  }
+  function gldCherry() {                             // the cherry's pixels in the mountain's layer, as the far layers' shader takes them (skCherry), read once
+    if (GLD.ch !== undefined) return GLD.ch;
+    try {
+      const im = fujiNight.material.map && fujiNight.material.map.image; if (!im || !im.width) return null;   // (not loaded yet: again next time)
+      const x0 = 760, y0 = 330, x1 = 1016, y1 = 706, w = x1 - x0, h = y1 - y0, c = document.createElement('canvas'); c.width = w; c.height = h;
+      const g = c.getContext('2d', { willReadFrequently: true }), pp = fujiNight.geometry.parameters;
+      g.drawImage(im, fujiNight.position.x - pp.width / 2 - x0, -fujiNight.position.y - pp.height / 2 - y0, pp.width, pp.height);
+      const d = g.getImageData(0, 0, w, h).data, m = new Uint8Array(w * h);
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+        const o = (j * w + i) * 4; if (d[o + 3] < 128) continue;
+        const xc = x0 + i + 0.5, yc = y0 + j + 0.5, f = 357 + (xc - 776) * 0.58, r = d[o] / 255, gg = d[o + 1] / 255, b = d[o + 2] / 255;
+        m[j * w + i] = xc > 760 && (yc < f - 0.5 || 0.299 * r + 0.587 * gg + 0.114 * b > 0.42 || (yc > f + 2.5 && r > b + 0.047 && r > gg + 0.086)) ? 1 : 0;
+      }
+      GLD.ch = { m, x0, y0, x1, y1, w, h };
+    } catch (e) { GLD.ch = null; }
+    return GLD.ch;
   }
   function gldOcc() {                                // what covers the bus: one alpha per scene pixel (the street and the dim skyline, the tree and the front pixels), read once; and the street's own (the tree does not hide them for good)
     if (GLD.occ) return GLD.occ;
@@ -1560,6 +1582,7 @@
   }
   function startFireworks() {
     if (FWK.active || !FWK.pts) return;
+    if (reduced) { foundSecret('konami'); fwkStatic(); return; }   // (no loop there: the picture, still)
     FWK.active = true; FWK.t = 0; foundSecret('konami');
     FWK.queue = [
       { at: 0, P: peony(170, 46, PINK), x: 615, y: 92, s: 1, expl: 0.5, hold: 0.2, fall: 1.3 },
@@ -1640,6 +1663,14 @@
     let objs = show([[OMP.troph, 705, 108, 2, 2, 0.94, 0.26], [OMP.year, 712, 168, 2.6, 2.2, 0.85, 0]]); frame();
     setTimeout(() => { drop(objs); objs = show(TIFO.map((T) => [T.P, T.x, T.y, 2, 2, 0.94, 0.38])); frame();
       setTimeout(() => { drop(objs); omStatic.on = false; frame(); }, 4500); }, 2600);
+  }
+  function fwkStatic() {                           // reduced motion: the Konami show's Gyarados held still, 4.5 s (as the OM's), no burst
+    if (fwkStatic.on || !FWK.pts) return; fwkStatic.on = true;
+    const P = FWK.pts, x = 785, y = 125, s = 2.2, S = newPoints(P.length);
+    P.forEach((p, i) => { S.pos.set([x + p[0] * s, -y + p[1] * s, 0], i * 3); S.col.set([p[2] * 0.94, p[3] * 0.94, p[4] * 0.94], i * 3); });
+    const gl = omGlow(P, s, x, y); gl.material.opacity = 0.32; scene.add(S.pts, gl); frame();
+    setTimeout(() => { for (const o of [S.pts, gl]) { scene.remove(o); o.geometry.dispose(); if (o.material.map) o.material.map.dispose(); o.material.dispose(); }
+      fwkStatic.on = false; frame(); }, 4500);
   }
   // under reduced motion the flyer never falls: there it lies on the wet road, a little askew (its four corners: the hit)
   const OMR = {"box":[604,731,100,20],"corners":[[605.72,744.02],[663.56,748.01],[701.3,736.22],[647.41,732.9]]};
@@ -2092,6 +2123,7 @@
     const S = busS;
     busZTick(dt); crewTick(dt); CREW.vis += dt;
     if (!CREW.tex && CREW.vis > 120 && crewMay()) crewLoad();   // (the crew's sheets well before it is due)
+    if (reduced && !S.active) return;                // (reduced motion: it never drives; rmBus parks it, by cuts)
     if (!S.active) {
       S.next = STAGE.due('tranzit', S.next);         // (a street quiet for 45 s pulls it in)
       S.next -= dt; if (S.next >= 0) return;
@@ -2114,6 +2146,7 @@
       if (!C_ || C_.riders) busZSpawn(BUS.forceZ);
       S.box = C_ ? 1 : ZP.some((q) => q.on) ? 0 : 2 + Math.floor(Math.random() * (BOX.texts.length - 2)); S.tele = -1;   // (LAST STAND, OUT OF SERVICE, or a stop)
     }
+    if (reduced) S.wait = Math.max(S.wait, 1);       // (reduced motion: parked until rmBus sends it off)
     if (S.wait > 0) busStage();                      // (the crew or a round at its stop: the street kept)
     // the ride: cruise, brake to its stop, wait (its tubes crackle harder, the headlights stutter), pull away
     if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) { S.stop = -1; S.bob = 0.3; S.bobN = 1; } S.v = 0; }
@@ -2130,7 +2163,7 @@
     S.bobN -= dt * (S.v / BUS.V);
     if (S.bobN < 0 && S.bob <= 0) { S.bob = 0.12 + Math.random() * 0.08; S.bobN = 0.7 + Math.random() * 1.6; }
     if (S.bob > 0) S.bob -= dt;
-    busCrackle(dt);
+    if (reduced) { S.k = 0.94; S.hk = 1; } else busCrackle(dt);   // (reduced motion: its tubes steady)
     const x0 = Math.round(S.x), y0 = Math.round(busGround(x0) - BUS.ground), bob = S.bob > 0 ? 1 : 0, L = S.dir < 0;
     const sx = (c) => (L ? BUS.W - 1 - c : c);                 // a sprite column, as drawn this way
     const yAt = (c, r) => y0 + r;                              // the scene y of the sprite's (column, row)
@@ -2180,7 +2213,7 @@
       busFaceGlow.material.opacity = S.k;
     }
     busZStep(dt, x0, y0, bob, L, S);
-    busDoorStep(dt, x0, y0 + bob, L, S);            // (an ordinary stop: its door opens)
+    if (!reduced) busDoorStep(dt, x0, y0 + bob, L, S);   // (an ordinary stop: its door opens; shut under reduced motion)
     if (S.crew && S.wait > 0 && !CREW.active) {     // stopped for the crew: it waits for their sheets a little, then they come
       if (CREW.need && CREW.loaded >= CREW.need) crewBegin(S, CREW.callForm || 'stop'); else if ((S.crewWait += dt) < (S.hold ? 1e9 : 6)) S.wait = Math.max(S.wait, 0.5); else { S.crew = false; CREW.keep = true; }   // (late sheets: the next pass, then)
     }
@@ -2203,7 +2236,8 @@
   // the bottom left; a round left alone 25 s, the bus drives off with its riders (the round comes back on a later pass:
   // once a round has begun, every pass brings riders).
   // Perk-a-Cola: zone 7's three machines each sell their perk (Speed Cola 3000, Double Tap 2000, Juggernog 2500): the
-  // bottle drunk in first person, its icon at the bottom left for good. Never under reduced motion (no bus then) ----
+  // bottle drunk in first person, its icon at the bottom left for good (under reduced motion: no drink, the icon at once;
+  // the bus parked by cuts, rmBus below) ----
   const BZ = {"W":1872,"H":840,"win":103,"roofCol":120,"plankY":50.65,"winSlots":[25,49,74,131,160],"roofSlots":[30,72,165,208],"soda":[281,569,347,724],"drink":{"w":96,"h":128,"n":25,"fps":8},"pull":{"w":48,"h":66,"ax":24,"ay":64,"fps":8,"n":39,"rows":{"A":0,"B":66},"eyes":{"A":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5]],"B":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5]]},"plank":[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,0.02,-50.03,-0.076],[1,0.3,-48.45,-0.272],[1,0.6,-47.58,-0.384],[1,0.21,-48.79,-0.229],[1,0.12,-49.24,-0.173],[1,0.38,-48.18,-0.306],[1,0.88,-46.96,-0.466],[1,1.05,-46.64,-0.512],[1,0.34,-48.32,-0.288],[1,0.36,-48.24,-0.299],[1,1.02,-46.7,-0.503],[1,1.4,-46.07,-0.593],[1,3.89,-46.05,0.573],[1,4.7,-45.35,0.088],[1,-2.85,-45.51,-1.33],[1,-11.96,-54.78,-2.414],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0]],"loop":28},"roof":{"w":40,"h":36,"ax":20,"ay":32,"fps":8,"n":26,"rows":{"A":132,"B":168},"eyes":{"A":[[34.5,16.0],[35.0,16.5],[35.5,17.0],[35.5,17.5],[35.5,17.5],[35.0,16.5],[34.5,16.5],[34.5,15.5],[34.0,15.5],[34.0,14.5],[33.5,14.5],[33.5,14.5],[34.0,15.5],[34.5,16.5],[35.0,16.5],[35.5,17.0],[35.5,17.5],[34.5,11.5],[29.5,3.0],0,0,0,0,[27.0,1.5],[31.5,7.5],[34.0,14.5]],"B":[[34.5,16.0],[35.0,16.5],[35.5,17.0],[35.5,17.5],[35.5,17.5],[35.0,16.5],[34.5,16.5],[34.5,15.5],[34.0,15.5],[34.0,14.5],[33.5,14.5],[33.5,14.5],[34.0,15.5],[34.5,16.5],[35.0,16.5],[35.5,17.0],[35.5,17.5],[34.5,11.5],[29.5,3.0],0,0,0,0,[27.0,1.5],[31.5,7.5],[34.0,14.5]]}},"fall":{"w":60,"h":70,"ax":26,"ay":64,"fps":10,"n":13,"rows":{"A":204,"B":274},"eyes":{"A":[0,0,[21.5,18.0],[17.5,32.5],[16.0,50.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5]],"B":[0,0,[21.5,18.0],[17.5,32.5],[16.0,50.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5]]}},"fallhi":{"w":60,"h":110,"ax":26,"ay":104,"fps":10,"n":15,"rows":{"A":344,"B":454},"eyes":{"A":[0,0,0,0,[20.0,15.5],[18.0,31.5],[16.5,50.5],[16.0,70.5],[15.5,91.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5]],"B":[0,0,0,0,[20.0,15.5],[18.0,31.5],[16.5,50.5],[16.0,70.5],[15.5,91.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5]]}},"climb":{"w":40,"h":72,"ax":20,"ay":68,"fps":10,"n":15,"rows":{"A":564,"B":636},"eyes":{"A":[0,0,[28.5,71.5],[28.5,67.0],[28.5,63.5],[28.5,63.5],[29.5,61.5],[30.5,59.5],[32.0,56.5],[33.0,54.5],[33.0,53.5],[33.5,53.5],[33.5,53.5],[34.0,52.5],[34.5,52.5]],"B":[0,0,[28.5,71.5],[28.5,67.0],[28.5,63.5],[28.5,63.5],[29.5,61.5],[30.5,59.5],[32.0,56.5],[33.0,54.5],[33.0,53.5],[33.5,53.5],[33.5,53.5],[34.0,52.5],[34.5,52.5]]}},"emerge":{"w":48,"h":66,"ax":24,"ay":64,"fps":10,"n":16,"rows":{"A":708,"B":774},"eyes":{"A":[[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[24.0,17.5],[29.0,18.0],[32.5,18.5],0,0,0,0,0,0,0],"B":[[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[24.0,17.5],[29.0,18.0],[32.5,18.5],0,0,0,0,0,0,0]},"front":[0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1]}};
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) {} };
@@ -2288,7 +2322,7 @@
     const sxe = (c) => (L ? x0 + BUS.W - c : x0 + c);  // a column's edge (heading right) as a scene x, mirrored heading left
     const gY = y0 + bob + BUS.ground, rY = y0 + bob + BUS.roof;
     ZG.lit = S.k;
-    if (ZG.active && S.wait > 0) {                 // a round: pulled up, the bus waits while its zombies come
+    if (ZG.active && S.wait > 0 && !reduced) {     // a round: pulled up, the bus waits while its zombies come (reduced motion: rmBusTick)
       S.wait = Math.max(S.wait, 0.5); ZG.quiet += dt; ZG.spawnT -= dt;
       const alive = ZP.filter((q) => q.on && !q.dying);
       if (ZG.spawnT <= 0 && ZG.spawned < ZG.n && alive.length < Math.min(5, 2 + ZG.round)) { zRoundSpawn(alive); ZG.spawnT = 1.1 + Math.random(); }
@@ -2298,7 +2332,7 @@
       if (!z.on || z.dying) continue;
       const X = sxe(z.col);
       if (z.kind === 'pull' && z.t < 0) { if (X > BUS.gap[0] + 14 && X < BUS.gap[1] - 30) z.t = 0; }   // its act once its window is in sight
-      else z.t += dt;
+      else if (!reduced) z.t += dt;                // (reduced motion: they stand still)
       if (z.kind === 'climb' && z.t >= BZ.climb.n / BZ.climb.fps) { z.kind = z.sheet = 'roof'; z.t = 0; }
       if (z.kind === 'emerge' && z.t >= BZ.emerge.n / BZ.emerge.fps) { z.kind = 'claw'; z.sheet = 'pull'; z.t = 0; }
       const f = zFrame(z), high = z.kind === 'roof' || z.kind === 'climb';
@@ -2318,11 +2352,14 @@
     }
   }
   function zRoundSpawn(alive) {                    // one more of the round: over the roof or out of a window, where there is room
-    const z = ZP.find((q) => !q.on); if (!z) return;
+    const z = ZP.find((q) => !q.on); if (!z) return false;
     const used = alive.map((q) => q.col), roofs = BZ.roofSlots.filter((c) => !used.includes(c)), wins = BZ.winSlots.filter((c) => !used.includes(c));
     const roof = roofs.length > 0 && (wins.length === 0 || Math.random() < 0.45), list = roof ? roofs : wins;
-    if (!list.length) return;
-    zStart(z, roof ? 'climb' : 'emerge', Math.random() < 0.5 ? 'A' : 'B', list[Math.floor(Math.random() * list.length)]); ZG.spawned++;
+    if (!list.length) return false;
+    const v = Math.random() < 0.5 ? 'A' : 'B', col = list[Math.floor(Math.random() * list.length)];
+    if (reduced) zStart(z, roof ? 'roof' : 'claw', v, col, Math.random() * 3);   // (reduced motion: there at once, crouched or clawing, still)
+    else zStart(z, roof ? 'climb' : 'emerge', v, col);
+    ZG.spawned++; return true;
   }
   function zPlankDraw() {                          // the plank: its angle's frame, or lying flat
     const p = ZS.pl;
@@ -2348,7 +2385,7 @@
     zPlankDraw();
     for (const z of ZP) {                          // shot: the drop to the road, a while lying there, gone
       if (!z.on || !z.dying) continue;
-      z.t += dt; z.lit = Math.max(0, 1 - z.t * 1.5);   // (out of the saloon's light as it falls)
+      z.t += reduced ? 0 : dt; z.lit = Math.max(0, 1 - z.t * 1.5);   // (out of the saloon's light as it falls; reduced motion: lying at once)
       const A = BZ[z.sheet], end = A.n / A.fps;
       z.fade = Math.min(1, Math.max(0, end + 3 - z.t));
       if (z.fade <= 0) { zOff(z); continue; }
@@ -2375,7 +2412,7 @@
         + '.tz-hud{position:absolute;z-index:2;left:clamp(20px,6vw,96px);bottom:48px;display:flex;align-items:flex-end;gap:14px;pointer-events:none}'   // (above the secrets' pill: it shares the corner)
         + '.hero .tz-hud canvas{position:static;inset:auto;width:72px;height:36px;image-rendering:pixelated}.tz-hud .tz-perkicon{width:64px;height:64px;background:0 0/100% 1300% repeat-y;image-rendering:pixelated}'
         + '.tz-pop{animation:tzpop .3s cubic-bezier(.3,1.6,.5,1) both,tzshine .42s steps(12) .3s both}@keyframes tzpop{from{transform:scale(0)}to{transform:scale(1)}}'
-        + '@keyframes tzshine{from{background-position:0 8.3333%}to{background-position:0 108.3333%}}@media (prefers-reduced-motion:reduce){.tz-pop{animation:none}}'   // (its 13 frames: the icon, the shine, the icon again)
+        + '@keyframes tzshine{from{background-position:0 8.3333%}to{background-position:0 108.3333%}}@media (prefers-reduced-motion:reduce){.tz-pop,.tz-plus,.tz-tag{animation:none}}'   // (its 13 frames: the icon, the shine, the icon again)
         + '.tz-plus,.tz-tag{position:absolute;z-index:3;font:12px/1 var(--pixel);pointer-events:none;transform:translate(-50%,-100%);animation:tzup 1s ease-out forwards}'
         + '.tz-plus{color:#ffd84a;text-shadow:1px 1px 0 #3b2306}.tz-tag{color:#d9493c;text-shadow:1px 1px 0 #1a0606;animation-duration:1.8s}'
         + '@keyframes tzup{to{transform:translate(-50%,-230%);opacity:0}}'
@@ -2425,7 +2462,7 @@
     return false;
   }
   function zKill(z, x, y) {                        // shot: it drops to the road
-    const hi = z.kind === 'roof' || z.kind === 'climb';
+    const hi = z.kind === 'roof' || z.kind === 'climb', was = ZG.active;
     Object.assign(z, { dying: true, kind: hi ? 'fallhi' : 'fall', sheet: hi ? 'fallhi' : 'fall', t: 0, Y: hi ? z.Y + BUS.ground - BUS.roof : z.Y });
     ZG.pts += 500; ZG.seen = true; lsSet('mtsfj-tz-points', ZG.pts);   // (500 a kill: the first round, 6 of them, buys the perk)
     tzPop('tz-plus', '+500', x, y - 4);
@@ -2442,11 +2479,51 @@
       } else { ZG.began = ZG.due = true; lsSet('mtsfj-tz-round', ZG.round); }   // (too far on to pull up in sight: the round on its next pass)
     }
     tzHud();
+    if (reduced) {                                 // (reduced motion: no fall, it lies on the road at once, gone 3 s on; the street drawn anew)
+      z.t = (BZ[z.sheet].n - 1) / BZ[z.sheet].fps; z.lit = 0;
+      setTimeout(() => { if (z.on && z.dying) { zOff(z); frame(); } }, 3000);
+      RMB.kill = performance.now(); if (was && !ZG.active) RMB.won = RMB.kill; else if (!was && ZG.active) RMB.spawnAt = RMB.kill + 600;
+      frame();
+    }
   }
   function tzRound() {                             // a round: its zombies' count; the riders still on it are its first
     Object.assign(ZG, { active: true, began: true, due: false, n: 6 + 4 * (ZG.round - 1), killed: 0, quiet: 0, spawnT: 0.6 });
     ZG.spawned = ZP.filter((q) => q.on && !q.dying).length;
     lsSet('mtsfj-tz-round', ZG.round); tzHud();
+  }
+  // ---- reduced motion (secrets regression E): no loop then, so the TranZit never drives; now and then (the passes'
+  // own spacing) it is simply there, parked at its stop: a cut in, its tubes steady, its door shut, its riders (as on a
+  // pass) still and clickable for the same +500. The first kill starts a round as at any stop: its zombies come by cuts
+  // (over the roof or at a window, still), one every 1.1-2.1 s, as many at once as a round allows. It goes by a cut:
+  // 25-40 s on without a round, 2.2 s after its round is won, or once the round is left alone 25 s; at once when a
+  // closed set begins (the finale). The street is drawn anew at each cut ----
+  const RMB = { tm: 0, at: 0, stay: 0, kill: 0, spawnAt: 0, won: 0 };
+  const rmBusNext = (sec) => { clearTimeout(RMB.tm); RMB.tm = setTimeout(rmBusTick, Math.max(0.1, sec) * 1000); };
+  function rmBusPark() {
+    const S = busS;
+    if (!visible || document.hidden || !LATE.ready.bus || STAGE.holds.size || !STAGE.ask('tranzit', 120, { prio: 2 })) { rmBusNext(5 + Math.random() * 5); return; }   // (out of sight, its sheets not in, or a closed set: later)
+    Object.assign(S, { active: true, dir: Math.random() < 0.5 ? 1 : -1, x: BUS.stop, stop: BUS.stop, v: 0, ang: 0, wait: 1e9, bob: 0, bobN: 1, crew: false, crewWait: 0, hold: false, call: null, tz: false, tele: -1, hf: 0, stP: 2, stT: t });
+    for (const m of BUS.list) m.visible = true;
+    busZSpawn(BUS.forceZ);
+    S.box = ZP.some((q) => q.on) ? 0 : 2 + Math.floor(Math.random() * (BOX.texts.length - 2));   // (OUT OF SERVICE with riders, else a stop)
+    Object.assign(RMB, { at: performance.now(), stay: 25000 + Math.random() * 15000, won: 0 }); RMB.kill = RMB.at;
+    if (ZG.due) { tzRound(); RMB.spawnAt = RMB.at + 600; }   // (a round owed: it starts at once)
+    frame(); rmBusNext(0.25);
+  }
+  function rmBusTick() {
+    const S = busS, now = performance.now();
+    if (!S.active) { rmBusPark(); return; }
+    let cut = false;
+    if (ZG.active) {
+      const alive = ZP.filter((q) => q.on && !q.dying);
+      if (now >= RMB.spawnAt && ZG.spawned < ZG.n && alive.length < Math.min(5, 2 + ZG.round)) { cut = zRoundSpawn(alive); RMB.spawnAt = now + 1100 + Math.random() * 1000; }
+      if (now - RMB.kill > 25000) { ZG.active = false; tzHud(); RMB.won = now - 1400; }   // (left alone: it goes 0.8 s on, its riders with it)
+    }
+    if (STAGE.holds.size || (RMB.won ? now - RMB.won > 2200 : !ZG.active && now - RMB.at > RMB.stay)) {   // (a cut out)
+      busOff(true); S.next = 70 + Math.random() * 110; frame(); rmBusNext(S.next); return;
+    }
+    if (cut) frame();
+    rmBusNext(0.25);
   }
   function tzSoda(x) {                             // a machine: its perk for its price (its tag, in its colour, when short of points)
     const k = x < PERKS.speed.x1 ? 'speed' : x < PERKS.tap.x1 ? 'tap' : 'jugg', P = PERKS[k];
@@ -2478,6 +2555,7 @@
     if (k === 'jugg') foundSecret('jugg');
   }
   tzHud();
+  if (reduced) rmBusNext(busS.next);                // (reduced motion: the first parked bus, after a pass's first wait)
   // ---- the crew (Dempsey, Nikolai, Takeo, Richtofen: the owner's images, rigged and baked by bus/crew/): now and then
   // the TranZit pulls up at its stop heading right, its front door folds open and the four step down one by one, walk past
   // its nose to their spots and fire toward us, at the horde coming up the right half of the street from our side, seen
@@ -3716,7 +3794,7 @@
           pw = mix(pw, uPow[i], a.x * a.y);
         }
         vec4 c = texture2D(tUnlit, vUv);                                          // the street, unlit, as much as it lacks power
-        vec3 b0 = c.rgb * uCC, b = (uNT > 0.0 || uDW > 0.0) ? skHours(b0, c.rgb, c.a, p, 3.0, 1.0) : b0; b = uNR > 0.0 ? mix(b, nrStreet(b0, p), uNR) : b;   // (its far pixels: their planes' hour, package 1)
+        vec3 b0 = c.rgb * uCC, b = (uNT > 0.0 || uDW > 0.0) ? skHours(b0, c.rgb, c.a, p, 3.0, 1.0) : b0; b = uNR > 0.0 ? mix(b, nrStreet(skPlane(b0, p), p), uNR) : b;   // (its far pixels: their planes' hour, package 1)
         gl_FragColor = vec4(b, c.a * (1.0 - pw));
       }`,
     transparent: true, depthWrite: false }));
@@ -6937,12 +7015,12 @@
   // rim a moment after (his head's own cells, frame for frame): his hint ----
   const LT = { next: 60 + Math.random() * 90, t: -1, pulses: [], end: 0, k: 0, kil: 0 };
   const ltGlow = (() => {                        // the flash's light in the sky behind the summit: nothing over the filled mountain and tree
-    const t = loader.load('assets/fuji_flash_glow.png?v=3'); t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false;   // (1:1, full resolution)
+    const t = loader.load('assets/fuji_flash_glow.png?v=4'); t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false;   // (1:1, full resolution)
     const m = new THREE.Mesh(new THREE.PlaneGeometry(760, 380), new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
     m.position.set(611, -250, -2.0); m.visible = false; scene.add(m); return m;
   })();
-  const ltRidge = plane('assets/fuji_flash_ridge.png?v=4', 376, 66, 640, 640, -1.49, { opacity: 0, blending: THREE.AdditiveBlending });
-  const ltTree = plane('assets/fuji_flash_tree.png?v=4', 376, 66, 640, 640, 0.51, { opacity: 0, blending: THREE.AdditiveBlending });
+  const ltRidge = plane('assets/fuji_flash_ridge.png?v=5', 376, 66, 640, 640, -1.49, { opacity: 0, blending: THREE.AdditiveBlending });
+  const ltTree = plane('assets/fuji_flash_tree.png?v=5', 376, 66, 640, 640, 0.51, { opacity: 0, blending: THREE.AdditiveBlending });
   ltRidge.visible = ltTree.visible = false;   // (their tints are in their images)
   // the first stage: the whole sky, cold, for an instant (over the sky plane, under all that stands before it; it rides the sky's parallax)
   const ltSky = pxq(IW + 2 * PAD, IH + 2 * PAD, 0xc0d2ff, 0, -2.9); ltSky.material.blending = THREE.AdditiveBlending; ltSky.visible = false;
@@ -7064,6 +7142,7 @@
   }
   const kilNear = (v, x) => { let j = 0; for (let i = 1; i < v.length; i++) if (Math.abs(v[i] - x) < Math.abs(v[j] - x)) j = i; return j; };
   function kilIdle(dt) {                                        // his life on the roof, frames only
+    if (reduced) dt = 0;                                        // (reduced motion: his pose held still, drawn as it is)
     const K = KIL;
     K.br = (K.br + dt) % 4.6;                                   // a breath every 4.6 s: the chest up by 0, 1/2, 1 px
     const br = 0.5 - 0.5 * Math.cos(K.br / 4.6 * 2 * Math.PI), b = Math.round(br * 2);
@@ -8016,7 +8095,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=19') }, tMirror: { value: tex('assets/wet_mirror.png?v=17') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=20') }, tMirror: { value: tex('assets/wet_mirror.png?v=18') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -8193,13 +8272,15 @@
     if (F.dawnT >= 0) F.dawnT += dt;
     F.nt = skSm(0, 0.42, S.n); F.dw = Math.min(1, S.b);
     let dp = h > 4 && h < 9 ? skSm(5.5, 6.7, h) + skSm(6.9, 7.5, h) : 0;   // the visitor's dawn: 5:30 the Belt of Venus, 6:40 the sun on Fuji, 7:30 the morning
-    if (F.dawnT >= 0) dp = Math.max(dp, Math.min(1, CLOCK.push) + (reduced ? 0 : skSm(9, 16, F.dawnT)));   // the finale's: its push (0-9 s: the alpenglow), then its morning (9-16 s: gold, then daylight)
+    if (F.dawnT >= 0) dp = Math.max(dp, Math.min(1, CLOCK.push) + (reduced ? (F.morn || F.dawnT >= 9 ? 1 : 0) : skSm(9, 16, F.dawnT)));   // (reduced motion: the morning at once, with the plate)   // the finale's: its push (0-9 s: the alpenglow), then its morning (9-16 s: gold, then daylight)
     F.dp = dp; F.star = 1 - 0.45 * F.dw; F.mars = 1 - 0.3 * F.dw; F.rim = (1 - F.nt) * (1 - F.dw);
     const U = NRU, d1 = Math.min(1, dp);
     U.uNT.value = F.nt; U.uDW.value = F.dw; U.uDP.value = dp;
-    U.uSun.value.set(252 + 160 * d1 + 100 * Math.max(0, dp - 1), 7 + 7 * d1, Math.max(0, dp - 1), skSm(0.02, 0.3, dp));   // the first sun's line on Fuji: its y, softness, its light (0 the alpenglow .. 0.5 gold .. 1 daylight), strength
+    U.uSun.value.set(252 + 160 * d1 + 260 * Math.max(0, dp - 1), 7 + 7 * d1, Math.max(0, dp - 1), skSm(0.02, 0.3, dp));   // the first sun's line on Fuji: its y, softness, its light (0 the alpenglow .. 0.5 gold .. 1 daylight), strength
     const c = city.material.color, sk = sky.material.color, fj = fujiNight.material.color;
     U.uRSky.value.setRGB(sk.r / c.r, sk.g / c.g, sk.b / c.b); U.uRFar.value.setRGB(fj.r / c.r, fj.g / c.g, fj.b / c.b);   // (the street's far pixels: their plane's multiply)
+    const fz = PW.on ? pwShade.material.uniforms.uPow.value[PW_ZONES.findIndex((z) => z[4] === -1)] : 1;   // (the far city's power: the fuses' cut puts its light out)
+    U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw);                                  // the valley's lit haze: the night's, the far city's light, gone at dawn
     marsDot.material.color.setScalar(F.mars);
     let mu, up;                                                            // the moon: mu 0 at its place .. 1 set; up its light
     if (h >= 19.5) { mu = Math.min(1, (h - 19.5) / 2.75); up = 1 - skSm(0.9, 1, mu); }
@@ -8328,8 +8409,10 @@
   }
   // the rainbow in its wake (meteo-13, the dawn's now): where the light puts it at sunrise, the sun low behind us: an arc
   // round the antisolar point on the horizon (the street's vanishing point, 700, 615), its top just inside the frame (outer
-  // radius 585), its legs down behind the houses; six bands of three whole pixels (red outside, violet inside), their light
-  // added in a stipple (alpha 0.14-0.34, stronger toward its ends), in front of the sky, Fuji and the tower, behind the tree
+  // radius 585), its legs down behind the houses; six bands of three whole pixels (red outside, violet inside), each pixel's
+  // band from its own radius (clean arcs), a band's first row shared with the one outside it in the house stipple, its light
+  // added (alpha 0.14-0.34, stronger toward its ends) in steps, stippled within the bands, its outer and inner edges soft over
+  // 3 px (no holes through it), in front of the sky, Fuji and the tower, behind the tree
   // and the street; it forms behind Ho-Oh as it flies, holds, and goes as the rain thins. Once per session; under reduced
   // motion it is simply there for the plate
   const skBow = (() => {
@@ -8346,12 +8429,17 @@
         }
         void main() {
           vec2 p = vec2(floor(vP.x) + 0.5, floor(-vP.y) + 0.5), d = p - uC.xy;   // (scene px, y down)
-          float r = length(d), band = floor((uC.z - r) / 3.0);
-          if (band < 0.0 || band > 5.0) discard;
+          float u = uC.z - length(d);                                         // (px in from its outer edge)
+          if (u < -1.5 || u > 19.5) discard;
           float phi = atan(d.x, -d.y);                                        // (from the arc's top, positive to the right)
           float form = smoothstep(uPhi, uPhi - 0.08, phi);                    // (formed behind Ho-Oh)
-          if (form <= 0.0 || dab(p) > 0.62 * form) discard;
-          float a = mix(0.34, 0.14, band / 5.0) * (0.85 + 0.35 * smoothstep(0.25, 0.5, abs(phi))) * uA;
+          if (form <= 0.0) discard;
+          float s1 = dab(p), s2 = dab(p + vec2(23.0, 9.0)), s3 = dab(p + vec2(5.0, 31.0));
+          float band = clamp(floor(u / 3.0), 0.0, 5.0);                       // (its band: whole pixels, by the pixel's own radius)
+          if (u - 3.0 * floor(u / 3.0) < 0.5 && band > 0.5 && band < 5.5 && u < 18.0 && s1 < 0.5) band -= 1.0;   // (a band's first row shared with the one outside it)
+          float e = clamp(min(u + 1.5, 19.5 - u) / 3.5, 0.0, 1.0);            // (its outer and inner edges soft)
+          float a = mix(0.34, 0.14, band / 5.0) * (0.85 + 0.35 * smoothstep(0.25, 0.5, abs(phi))) * uA * e * form * mix(0.7, 1.0, step(s2, 0.62));
+          a = (floor(a * 48.0) + step(s3, fract(a * 48.0))) / 48.0;           // (its light in steps, the house stipple between them)
           vec3 c = band < 0.5 ? vec3(1.0, 0.24, 0.16) : band < 1.5 ? vec3(1.0, 0.56, 0.16) : band < 2.5 ? vec3(0.98, 0.9, 0.3) : band < 3.5 ? vec3(0.36, 0.86, 0.38) : band < 4.5 ? vec3(0.28, 0.55, 1.0) : vec3(0.58, 0.32, 0.92);
           gl_FragColor = vec4(c * a * 0.75, 1.0);
         }`,
@@ -8394,8 +8482,30 @@
     stepShards(dt, t, red);
     stepDawnSky(dt);
   }
+  // the skyline haze (fogs[0]): its soft blob painted at 1:1 (420 x 190), the same radial mean as the old canvas gradient
+  // (so the dusk stays as it was), its edge broken by the air, in horizontal streaks, in eight steps with the house stipple
+  (function () {
+    const Wd = 420, Hd = 190, cv = document.createElement('canvas'); cv.width = Wd; cv.height = Hd;
+    const g = cv.getContext('2d'), im = g.createImageData(Wd, Hd), d = im.data, G = 24, gr = new Float32Array((G + 2) * (G + 2));
+    let r0 = 4242; const rnd = () => (r0 = (r0 * 16807) % 2147483647) / 2147483647;
+    for (let i = 0; i < gr.length; i++) gr[i] = rnd();
+    const vn = (x, y, sx, sy, o) => { const u = x / sx + o, v = y / sy + o, i = Math.floor(u) % G, j = Math.floor(v) % G, fu = u - Math.floor(u), fv = v - Math.floor(v), su = fu * fu * (3 - 2 * fu), sv = fv * fv * (3 - 2 * fv), R = G + 2;
+      return (gr[j * R + i] * (1 - su) + gr[j * R + i + 1] * su) * (1 - sv) + (gr[(j + 1) * R + i] * (1 - su) + gr[(j + 1) * R + i + 1] * su) * sv; };
+    for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) {
+      const r = Math.hypot(((x + 0.5) / Wd - 0.5) * 256, ((y + 0.5) / Hd - 0.5) * 256);
+      const tt = Math.max(0, Math.min(1, (r - 10) / 116 + 0.09 * (vn(x, y, 23, 9, 1.3) - 0.5)));
+      let a = tt < 0.55 ? 0.5 - 0.26 * tt / 0.55 : 0.24 * (1 - (tt - 0.55) / 0.45);
+      a *= 0.8 + 0.4 * vn(x, y, 48, 6, 7.1);
+      const s8 = Math.max(0, a) / 0.5 * 8, lo = Math.floor(s8), lv = Math.min(8, lo + skDab(x, y, s8 - lo, 90)) / 8 * 0.5, o = (y * Wd + x) * 4;
+      d[o] = 180; d[o + 1] = 170; d[o + 2] = 215; d[o + 3] = Math.round(255 * lv);
+    }
+    g.putImageData(im, 0, 0);
+    const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    fogs[0].material.map = t; fogs[0].material.needsUpdate = true;
+  })();
   FIN.api.on('blast', () => { SKYD.shardsT = Date.now(); lsSet('mtsfj-shards', SKYD.shardsT); });   // (the moon goes: its shards' first day)
-  FIN.api.on('dawn', () => { SKYD.fin = true; SKYF.dawnT = 0; });                                   // (the dawn's clock: Aka-Fuji by the push, the shards, Ho-Oh, the rainbow)
+  FIN.api.on('dawn', () => { SKYD.fin = true; SKYF.dawnT = 0; SKYF.morn = false; });
+  FIN.api.on('plate', () => { SKYF.morn = true; });                                                 // (reduced motion: its morning comes with the plate)                                   // (the dawn's clock: Aka-Fuji by the push, the shards, Ho-Oh, the rainbow)
   FIN.api.on('end', () => { if (reduced) { SKYD.bowDone = true; skBow.visible = false; } });        // (reduced motion: the still rainbow goes with the finale)
 
   // ---- the night follows the visitor's clock (IDEAS.md idea 1): the painted dusk is the evening (18-21 h); later the
@@ -8411,7 +8521,7 @@
     sky: [[0.64, 0.6, 0.82], [0.78, 0.92, 1.25], [1, 1, 1]],      // (the late night deeper and cooler: the coral horizon dims to a dull violet glow)
     fuji: [[0.76, 0.74, 0.88], [0.86, 0.94, 1.12], [1, 1, 1]],
     tower: [[0.64, 0.6, 0.82], [0.78, 0.92, 1.25], [1, 1, 1]],    // (the far tower in its haze takes the sky's own grade: no lighter aura round it at night)
-    haze: [[0.66, 0.65, 0.8], [0.85, 0.95, 1.15], [1.07, 0.3, 0.26]],   // (the red night: a red veil about as light as the haze under it, as the dusk's lavender one: the far city a haze of windows)
+    haze: [[0.4, 0.33, 0.46], [0.85, 0.95, 1.15], [1.07, 0.3, 0.26]],   // (the red night: a red veil about as light as the haze under it, as the dusk's lavender one: the far city a haze of windows)
     mist: [[0.8, 0.8, 0.9], [0.88, 0.96, 1.1], [0.62, 0.24, 0.26]],
     city: [[0.93, 0.92, 0.97], [0.9, 0.95, 1.05], [1, 1, 1]] };
   // the red night on the painted layers: not a colour filter but a red night painted from their own values. Each pixel's
@@ -8438,7 +8548,9 @@
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) },   // the red night's lights: their hue (max channel 1)
       uNT: { value: 0 }, uDW: { value: 0 }, uDP: { value: 0 }, uSun: { value: new THREE.Vector4(256, 6, 0, 0) },   // the hours on the far planes (package 1: skyHours)
       uRSky: { value: new THREE.Color(1, 1, 1) }, uRFar: { value: new THREE.Color(1, 1, 1) }, uSkyO: { value: new THREE.Vector2(0, 0) },
-      tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) } };
+      uGlw: { value: new THREE.Vector4(0, 0, 0, 0) }, uGlwC: { value: new THREE.Vector3(0.17, 0.115, 0.15) },   // the valley's lit haze: its strength now; its light (the far city's, warm mauve)
+      tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
+      tSunL: { value: crisp('assets/street_sun.png?v=1') } };   // (the street's faces lit by the low sun: build_zzzsunlit.py)
   })();
   const NR_HEAD = `
     uniform float uNR, uNRmoon, uNRmode;
@@ -8495,7 +8607,7 @@
     // pixel's own dusk lightness (its grain, its order kept), as the red night is; the street's far pixels as their own
     // plane; the sky's painted grain. uNT: the night's depth, uDW: the dawn's, uDP: its progress (0 before the sun, 1 the
     // sun on Fuji, 2 the morning), uSun: the first sun's line on the mountain (its y, its softness, its warmth, its strength)
-    uniform float uNT, uDW, uDP, uNRtree; uniform vec4 uSun, uNRauxR; uniform vec3 uRSky, uRFar; uniform vec2 uSkyO; uniform sampler2D tUnder, tNRaux;
+    uniform float uNT, uDW, uDP, uNRtree; uniform vec4 uSun, uNRauxR, uGlw; uniform vec3 uGlwC; uniform vec3 uRSky, uRFar; uniform vec2 uSkyO; uniform sampler2D tUnder, tNRaux, tSunL;
     float skH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float skV(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
       return mix(mix(skH(i), skH(i + vec2(1.0, 0.0)), f.x), mix(skH(i + vec2(0.0, 1.0)), skH(i + vec2(1.0, 1.0)), f.x), f.y); }
@@ -8509,10 +8621,44 @@
       float p = clamp(uDP, 0.0, 2.0);
       return p < 1.0 ? mix(skRamp(L, vec3(0.1098, 0.1333, 0.3216), vec3(0.1333, 0.1569, 0.3608), vec3(0.2353, 0.2275, 0.4392), vec3(0.3843, 0.2824, 0.4706), vec3(0.4588, 0.3216, 0.4745), vec3(0.3255, 0.2745, 0.4314), vec3(0.2039, 0.2157, 0.3608), vec3(0.2000, 0.2157, 0.3569)), skRamp(L, vec3(0.2039, 0.2824, 0.5490), vec3(0.2353, 0.3216, 0.5882), vec3(0.4235, 0.4627, 0.6902), vec3(0.6902, 0.5490, 0.6902), vec3(0.8275, 0.5882, 0.6706), vec3(0.6157, 0.5255, 0.6588), vec3(0.3765, 0.4000, 0.5725), vec3(0.3725, 0.3961, 0.5686)), p) : mix(skRamp(L, vec3(0.2039, 0.2824, 0.5490), vec3(0.2353, 0.3216, 0.5882), vec3(0.4235, 0.4627, 0.6902), vec3(0.6902, 0.5490, 0.6902), vec3(0.8275, 0.5882, 0.6706), vec3(0.6157, 0.5255, 0.6588), vec3(0.3765, 0.4000, 0.5725), vec3(0.3725, 0.3961, 0.5686)), skRamp(L, vec3(0.2510, 0.3765, 0.6667), vec3(0.2902, 0.4235, 0.7059), vec3(0.4392, 0.5490, 0.7686), vec3(0.5882, 0.6431, 0.8000), vec3(0.6667, 0.6902, 0.8078), vec3(0.6980, 0.7059, 0.8000), vec3(0.6902, 0.6980, 0.7765), vec3(0.6745, 0.6824, 0.7608)), p - 1.0);
     }
-    vec3 ntFar(vec3 c, float Lt, float soft, vec2 q) {               // the night on Fuji (the far city's pixels gentler): the sunset's chroma out, cooler, darker
-      float Lc = dot(c, NRW); vec3 d = (vec3(Lc) + (c - vec3(Lc)) * mix(0.3, 0.6, soft)) * vec3(0.9, 0.96, 1.18);   // (the rock more than the snow); the valley's air
-      float snow = smoothstep(0.3, 0.55, Lt);                                                                     // lit by the far city at its foot
-      return d * mix(0.58 + 0.14 * snow, 0.66 + 0.14 * snow, soft) + vec3(0.051, 0.035, 0.067) * smoothstep(370.0, 460.0, q.y) * (1.0 - soft);
+    vec3 ntFar(vec3 c, float Lt, float soft, vec2 q) {               // the night on Fuji and on the far city alike (one mapping: no seam at the skyline):
+      float Lc = dot(c, NRW); vec3 d = (vec3(Lc) + (c - vec3(Lc)) * 0.3) * vec3(0.9, 0.96, 1.18);   // the sunset's chroma out, cooler, darker (the rock more
+      float snow = smoothstep(0.3, 0.55, Lt);                                                     // than the snow); the valley's lit haze: skGlowF, in skHours
+      return d * (0.58 + 0.14 * snow);
+    }
+    float skDabG(vec2 p) {                                           // the house stipple's draw for a scene pixel (as the lamp cone's): dabs of 2 x 2, or two
+      vec2 b = floor(p / 2.0), o = mod(floor(p), 2.0); float sh = skH(b + 3.1), qd = o.x + 2.0 * o.y;   // 2 x 1, or two 1 x 2, a hash per block; a hash
+      float key = sh < 0.5 ? 0.0 : sh < 0.75 ? 1.0 + floor(qd / 2.0) : 3.0 + mod(qd, 2.0);             // per 4 x 4 patch thickens or thins them in clumps
+      return skH(b + vec2(7.3 * key, 1.7)) + (skH(floor(b / 2.0) + 11.0) - 0.5) * 0.35;
+    }
+    float skGlowF(vec2 q) {                                          // the valley's lit haze, 0..1: between the near houses, rising from the far city into the
+      vec2 p = floor(q) + 0.5;                                      // mountain's foot, thinner down in the city (nearer), in broken streaks; five steps, stippled
+      float n1 = skV(p * vec2(0.02, 0.05)), n2 = skV(p * vec2(0.015, 0.06) + 3.0), n3 = skV(p / vec2(38.0, 7.0));
+      float vx = smoothstep(565.0, 620.0, p.x + 22.0 * (n1 - 0.5)) * (1.0 - smoothstep(760.0, 815.0, p.x - 22.0 * (n1 - 0.5)));
+      float mid = 1.0 - abs(p.x - 690.0) / 110.0;                    // (higher over the middle of the city, where its light is)
+      float up = smoothstep(380.0 - 34.0 * max(mid, 0.0), 484.0, p.y + 26.0 * (n2 - 0.5)), dn = 1.0 - 0.6 * smoothstep(505.0, 585.0, p.y);
+      float g = clamp(vx * up * dn * (0.7 + 0.6 * n3), 0.0, 1.0) * 5.0, lo = floor(g);
+      return min(1.0, (lo + step(skDabG(p), g - lo)) / 5.0);
+    }
+    float skSunA(vec2 q) {                                          // the street's faces lit by the low sun (street_sun.png): how much of the pixel's colour is
+      vec2 u = q / vec2(1456.0, 816.0);                              // its warm key light
+      return (u.x > 0.0 && u.y > 0.0 && u.x < 1.0 && u.y < 1.0) ? texture2D(tSunL, vec2(u.x, 1.0 - u.y)).r : 0.0;
+    }
+    vec3 skSunN(vec3 c, float w) {                                  // their night: the sun's warm key out, the face in the night sky's cool light, from the
+      return w > 0.0 ? mix(c, dot(c, NRW) * 0.46 * vec3(0.8, 0.96, 1.7), w) : c;   // pixel's own lightness (the wood's grain, the ivy kept)
+    }
+    vec3 skSunM(vec3 c) {                                           // their dawn: the blue hour's light, then the morning's (by uDP), from the same lightness
+      float m = clamp(uDP - 1.0, 0.0, 1.0);
+      return dot(c, NRW) * mix(0.58, 0.64, m) * mix(vec3(0.82, 0.97, 1.55), vec3(0.9, 0.97, 1.3), m);
+    }
+    vec3 skPlane(vec3 c, vec2 q) {                                   // a street pixel graded as the plane night_far puts it in (the far city and what is the
+      vec2 fu = (q - uNRfarR.xy) / uNRfarR.zw; float far = 0.0;       // mountain's or the tree's: Fuji's grade; the sky's: the sky's), for the red night's input:
+      if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) far = texture2D(tNRfar, vec2(fu.x, 1.0 - fu.y)).r;   // so its red is mapped from the same
+      return far > 0.55 ? c * uRFar : (far > 0.2 && far < 0.39) ? c * uRSky : skSunN(c, skSunA(q));   // lightness as the mountain's beside it (no light line round the skyline); the street's sunlit faces unlit
+    }
+    bool skCherry(vec2 q, vec3 t) {                                  // a pixel of the far layers that is the cherry's: right of x 760, above the mountain's right
+      float f = 357.0 + (q.x - 776.0) * 0.58;                        // flank, as light as blossom (no snow down there), or pink under the flank (its lower half,
+      return q.x > 760.0 && (q.y < f - 0.5 || dot(t, NRW) > 0.42 || (q.y > f + 2.5 && t.r > t.b + 0.047 && t.r > t.g + 0.086));   // in the mountain's layer since the split)
     }
     vec3 dwFar(vec3 c, float Lt, float soft, vec2 q) {               // the dawn on Fuji: in the Earth's shadow its cool light; above the first sun's line, the
       float Lc = dot(c, NRW), snow = smoothstep(0.3, 0.46, Lt);      // alpenglow (Aka-Fuji: rose-gold snow over red-brown rock), then gold, then daylight
@@ -8523,8 +8669,10 @@
       vec3 day = mix(vec3(0.33, 0.34, 0.39) * rk, vec3(0.96, 0.96, 0.99) * sn, snow);
       vec3 lit = uSun.z < 0.5 ? mix(alp, gold, uSun.z * 2.0) : mix(gold, day, uSun.z * 2.0 - 1.0);
       lit = min(lit * (0.6 + 0.4 * clamp(uDP, 0.0, 1.0)), vec3(1.0));
+      if (soft > 0.5) lit = min(c * mix(vec3(1.16, 1.0, 0.88), vec3(1.14, 1.1, 1.04), uSun.z), vec3(1.0));   // (the far city: lit in its own colours, warm, then by day)
+      lit = mix(lit, vec3(0.66, 0.68, 0.76) * (0.8 + 0.4 * Lt), clamp(uDP - 1.0, 0.0, 1.0) * (soft > 0.5 ? 0.45 : 0.55 * smoothstep(380.0, 505.0, q.y)));   // (by day the valley's air: the far city and the mountain's foot in the same morning haze)
       float yl = uSun.x + 14.0 * (skV(q * vec2(0.012, 0.05)) - 0.5) + 6.0 * (skV(q * vec2(0.05, 0.18)) - 0.5) + 2.0 * (skV(q * vec2(0.2, 0.5)) - 0.5);   // (the line broken by the slopes)
-      float k = uSun.w * (1.0 - smoothstep(yl - uSun.y, yl + uSun.y, q.y)) * (1.0 - soft);   // (the far city, low in its valley: the sun later)
+      float k = uSun.w * (1.0 - smoothstep(yl - uSun.y, yl + uSun.y, q.y));   // (the far city, low in its valley, takes the sun when the line comes down to it)
       return mix(sh, lit, k);
     }
     vec3 dwTower(vec3 c, float Lt, float ta) {                       // the dawn on the far tower: a silhouette in the sky's light; lit itself only once the sun
@@ -8536,7 +8684,7 @@
       if (mode > 2.5) {
         vec2 fu = (q - uNRfarR.xy) / uNRfarR.zw;
         if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) { float far = texture2D(tNRfar, vec2(fu.x, 1.0 - fu.y)).r; fc = far > 0.9 ? 3.0 : far > 0.55 ? 2.0 : (far > 0.2 && far < 0.39) ? 1.0 : 0.0; }
-        if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) keep = smoothstep(0.0, 6.0, texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).r * 255.0); }
+        if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) keep = step(0.5, texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).g * 255.0); }   // (its own lights: the signs and lanterns, aux G; aux R is the air's shimmer, the haze's too)
         b = fc > 0.5 ? mix(c * (fc < 1.5 ? uRSky : uRFar), c, keep) : c;   // its plane's grade, not the street's; the far city's lights keep theirs
         on = (fc > 0.5 && fc < 1.5) || fc > 2.5 ? 1.0 : 0.0;          // (the sky's and the far city's pixels: their plane's hours too; the mountain-or-tree ones: its grade)
         soft = 1.0;
@@ -8545,6 +8693,14 @@
       float k = (1.0 - keep) * on;                                    // (one return: ANGLE warns of early ones)
       if (uNT > 0.0 && k > 0.0) b = mix(b, (sk || tw) ? ntSky(Lt) : ntFar(b, Lt, soft, q), uNT * k);
       if (uDW > 0.0 && k > 0.0) b = mix(b, sk ? dwSky(Lt) : tw ? dwTower(b, Lt, ta) : dwFar(b, Lt, soft, q), uDW * k);
+      if (uGlw.x > 0.0 && k > 0.0) {                                  // the far city's light in the valley's haze: added over the mountain's foot, over the
+        float gw = fc > 2.5 ? mix(0.55, 1.0, smoothstep(0.3, 0.42, Lt)) : (mode > 0.5 && mode < 1.5 && tree < 0.5) ? 1.0 : 0.0;   // city's hazy rows, less over its
+        if (gw > 0.0) b += uGlwC * (skGlowF(q) * uGlw.x * gw);         // dark silhouettes (they stand in it: the skyline reads against the haze behind)
+      }
+      if (mode > 2.5 && fc < 0.5) {                                   // the street's faces lit by the low sun: its key light gone with the night, the dawn's
+        float w = skSunA(q);                                          // light in its place
+        if (w > 0.0) { b = skSunN(b, w * uNT); b = mix(b, skSunM(c), w * uDW); }
+      }
       return b;
     }
     vec3 skGrain(vec3 c, vec2 q) {                                    // the painting's grain on the sky (ciel-02), per scene pixel of the sky: a slow brush
@@ -8569,14 +8725,14 @@
       vec3 c = diffuseColor.rgb, b = c; vec2 q = vec2(vNRw.x, -vNRw.y);
       float tree = uNRtree;
       if (tree > 1.5) { vec4 u = texture2D(tUnder, vUv); vec3 dd = abs(texelColor.rgb - u.rgb); tree = (u.a > 0.5 && max(dd.r, max(dd.g, dd.b)) < 0.016) ? 0.0 : 1.0; }   // (fuji_front: its copies of the mountain are the mountain)
-      if (uNRmode > 0.5 && uNRmode < 1.5 && q.x > 760.0 && (q.y < 357.0 + (q.x - 776.0) * 0.58 - 0.5 || dot(texelColor.rgb, NRW) > 0.42)) tree = 1.0;   // (by the tree: what is above the mountain's right flank, or as bright as blossom (no snow down there), is the tree's)
+      if (uNRmode > 0.5 && uNRmode < 1.5 && skCherry(q, texelColor.rgb)) tree = 1.0;   // (by the tree: what is above the mountain's right flank, as bright as blossom (no snow down there), or pink under the flank (its lower half, in the mountain's layer since the split) is the tree's: hands off, at every hour)
       if (uNT > 0.0 || uDW > 0.0) b = skHours(c, texelColor.rgb, texelColor.a, q, uNRmode, tree);
       if (uNR > 0.0) {                            // the red night (off: skipped)
         vec3 p;
         if (uNRmode < 0.5) p = nrSky(c, q);
         else if (uNRmode < 1.5) p = nrFar(c, q);
         else if (uNRmode < 2.5) p = nrTower(c, q);
-        else p = nrStreet(c, q);                  // the street (its far skyline as what is behind it)
+        else p = nrStreet(skPlane(c, q), q);      // the street (its far skyline as what is behind it; its far pixels from their plane's grade)
         b = mix(b, p, uNR);
       }
       if (uNRmode < 0.5) b = skGrain(b, q);      // the sky's painted grain
@@ -8605,7 +8761,7 @@
       sh.fragmentShader = sh.fragmentShader.replace('void main() {', NR_HEAD + `
       vec3 nrOff(vec3 c) { vec3 t = c; c *= uNRcity; vec2 q = vec2(${B[0]} + vUv.x * ${B[2]}, ${B[1]} + (1.0 - vUv.y) * ${B[3]});   // (the night's multiply, the street's;
         vec3 b = (uNT > 0.0 || uDW > 0.0) ? skHours(c, t, 1.0, q, 3.0, 1.0) : c;   // the hours as the far city's own pixels under them take them (package 1);
-        return uNR > 0.0 ? mix(b, nrFarCity(c, q), uNR) : b; }                     // the red night's far city)
+        return uNR > 0.0 ? mix(b, nrFarCity(c * uRFar, q), uNR) : b; }           // the red night's far city, from the mountain's grade)
       void main() {`).split('texture2D(tOff, vUv).rgb').join('nrOff(texture2D(tOff, vUv).rgb)');
     };
     farMat.customProgramCacheKey = () => 'far-nr'; farMat.needsUpdate = true;
