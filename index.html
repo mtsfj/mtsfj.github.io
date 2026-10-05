@@ -4414,7 +4414,7 @@
   // then let go straight up, at the flash: the bolt climbs out of the top of the sky, forking, the sky lit an instant,
   // the charge dying out on him; he stays on his roof. (The bolt is his own light: no grade.) ----
   function kilCharge(on) {
-    if (on && KIL.state === 'sit') { Object.assign(KIL, { state: 'charge', t: 0, dash: null, sparks: [] }); for (const n in KREST) kilShow(n, KREST[n]); gsMesh.visible = true; }
+    if (on && KIL.state === 'sit') { Object.assign(KIL, { state: 'charge', t: 0, dash: null, sparks: [] }); for (const n in KREST) kilShow(n, KREST[n]); yoRest(); gsMesh.visible = true; }   // (the yo-yo in his hand)
     else if (!on && KIL.state === 'charge') { KIL.state = 'sit'; gsg.clearRect(0, 0, gsC.width, gsC.height); gsTex.needsUpdate = true; gsMesh.visible = false; }
   }
   function kilSky() {                            // (not while he is up on the spire: then he stays there)
@@ -6836,7 +6836,7 @@
     f: {}, br: Math.random() * 4.6, wind: 0, wt: 0, pitch: 2, pt: 0, doze: 30 + Math.random() * 40, dz: -1, start: 0, jolt: 0, ph: null };
   // his legs, his shirt's hem and the board at rest: the shin's angle k (rad, + under) and speed, the foot's lag a, the
   // hem e (steps), the board's lean b (rad) and speed; the next little kick; the bursts' clock
-  const kilPh = () => ({ k: 0, kv: 0, a: 0, av: 0, e: 0, ev: 0, b: 11 * Math.PI / 180, bv: 0, kt: -9, kick: 0, f: 0, next: 3 + Math.random() * 8, t: Math.random() * 60, acc: 0 });
+  const kilPh = () => ({ k: 0, kv: 0, a: 0, av: 0, k2: 0, kv2: 0, a2: 0, av2: 0, e: 0, ev: 0, b: 11 * Math.PI / 180, bv: 0, kt: -9, kick: 0, f: 0, next: 3 + Math.random() * 8, t: Math.random() * 60, acc: 0 });   // (k2, a2: the far leg's)
   KIL.ph = kilPh();
   const KSRC = { board: 'assets/killua_board.webp?v=2', body: 'assets/killua_body.webp?v=4', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=1' };
   const kilMesh = new THREE.Group(); scene.add(kilMesh);        // his four layers, hidden together while he is a bolt
@@ -6845,48 +6845,72 @@
     const m = KM[n], p = plane(KSRC[n], m.x, m.y, m.w, m.h, z);
     p.material.map.repeat.set(1 / m.cols, 1 / m.rows); kilMesh.add(p); kilPart[n] = p;
   }
+  // his far leg: the source has him in profile, one leg in view, and the sheets carry that one shin; the other hangs a step
+  // behind it (4 px toward his back, 1 up): the legs sheet again, a shade darker and cooler (the sunset's rim is the near leg's),
+  // behind his body (which hides its knee as it hides the near thigh's) and behind the near shin, so what shows is its back edge
+  // and its boot's heel; swung by its own pendulum (kilPhys), a little slower and later, so the two never move in lockstep
+  KM.far = Object.assign({}, KM.legs, { x: KM.legs.x - 4, y: KM.legs.y - 1 });
+  kilPart.far = plane(KSRC.legs, KM.far.x, KM.far.y, KM.far.w, KM.far.h, 0.0175);
+  kilPart.far.material.map.repeat.set(1 / KM.far.cols, 1 / KM.far.rows); kilPart.far.material.color.setRGB(0.84, 0.8, 0.92); kilMesh.add(kilPart.far);   // (a shade darker, cooler: the roof's edge behind it is dark)
   function kilShow(n, i) {                                      // frame i of a layer (its sheet's cells, row by row from the top)
     if (KIL.f[n] === i) return; KIL.f[n] = i;
     const m = KM[n]; kilPart[n].material.map.offset.set((i % m.cols) / m.cols, 1 - (Math.floor(i / m.cols) + 1) / m.rows);
   }
   const KREST = { board: 1, body: 0, legs: 16, head: 18 };    // at rest: the board on his back, still air, breath out, legs still, head upright
-  for (const n in KREST) kilShow(n, KREST[n]);
+  for (const n in KREST) kilShow(n, KREST[n]); kilShow('far', KREST.legs);
   const KTIP = { x: 459, y: 106, k: KM.tip.h / KM.rest.h };     // the spire's tip; how small he is up there
   const KCH = [KM.chest[0] - KIL.x, KM.chest[1] - KIL.y], KSEAT = [KM.seat[0] - KIL.x, KM.seat[1] - KIL.y];   // his chest and seat, in his box
   const kilTip = plane('assets/killua_tip.webp?v=2', Math.round(KTIP.x - KM.tip.seat[0]), Math.round(KTIP.y - KM.tip.seat[1]), KM.tip.w, KM.tip.h, -1.28); kilTip.visible = false;   // tiny, far off: on the spire's tip
-  // ---- his yo-yo (a nod to his weapon): now and then, from his hand on his thigh, it drops on its string past his legs and
-  // the eave, sleeps spinning below his feet, a flick of the wrist, and it winds back up into his hand. A small canvas at the
-  // scene's own pixels (the string 1 px, the yo-yo 3 px of steel, a cold glint that turns), between his body and his legs, in his group
-  // (hidden with him while he is a bolt, graded with him); in a gust the string leans with the rain. Rare, 3.4 s; not under
-  // reduced motion. Debug: ?yoyo in the URL brings it 4 s after the page opens ----
-  const YO = { x: 318, y: 190, w: 30, h: 60, K: 2, hand: [326, 196], drop: 44, t: -1, next: /[?&]yoyo\b/.test(location.search) ? 4 : 150 + Math.random() * 150, acc: 0 };   // (debug: ?yoyo brings it 4 s after the page opens)
+  // ---- his yo-yo (his weapon): always in his hand at rest, the hand on his thigh (3 px of steel, its string looped on a finger),
+  // and every 20-45 s a trick, never the same twice running: the sleeper (it drops on its string past his legs and the eave, sleeps
+  // spinning below his feet, a flick of the wrist, it winds back up), a quick throw and catch (down and straight back), a loop (thrown
+  // forward, round and back into his hand). A small canvas at the scene's own pixels (the string 1 px, a cold glint that turns),
+  // between his body and his legs, in his group (hidden with him while he is a bolt, graded with him); in a gust the sleeper's string
+  // leans with the rain. Under reduced motion it stays in his hand, still; Godspeed and the finale's charge put it back there at
+  // once. Debug: ?yoyo in the URL brings a trick 4 s after the page opens ----
+  const YO = { x: 310, y: 172, w: 44, h: 78, K: 2, hand: [326, 184], drop: 56, t: -1, kind: 'sleeper', drawn: false, acc: 0, next: /[?&]yoyo\b/.test(location.search) ? 4 : 20 + Math.random() * 25 };   // (debug: ?yoyo brings a trick 4 s after the page opens)
+  const YO_KIND = ['sleeper', 'throw', 'loop'], YO_DUR = { sleeper: 3.4, throw: 0.95, loop: 1.15 };
   const yoC = document.createElement('canvas'); yoC.width = YO.w * YO.K; yoC.height = YO.h * YO.K; const yog = yoC.getContext('2d');
   const yoTex = new THREE.CanvasTexture(yoC); yoTex.magFilter = yoTex.minFilter = THREE.NearestFilter; yoTex.generateMipmaps = false;
   const yoMesh = new THREE.Mesh(new THREE.PlaneGeometry(YO.w, YO.h), new THREE.MeshBasicMaterial({ map: yoTex, transparent: true, depthWrite: false }));
-  yoMesh.position.set(YO.x + YO.w / 2, -(YO.y + YO.h / 2), 0.0185); yoMesh.visible = false; kilMesh.add(yoMesh);
-  function yoDraw(L, spin, lean) {               // the string L px down from his hand (its end `lean` px along the wind), the yo-yo at its end
-    const K = YO.K, g = yog, px = (x, y, c) => { g.fillStyle = c; g.fillRect(Math.round(x - YO.x) * K, Math.round(y - YO.y) * K, K, K); };
+  yoMesh.position.set(YO.x + YO.w / 2, -(YO.y + YO.h / 2), 0.0185); kilMesh.add(yoMesh);   // (seen with him: at rest the yo-yo is in his hand)
+  function yoDraw(L, spin, lean, ox, oy) {       // the string L px down from his hand (its end `lean` px along the wind) and the yo-yo at
+    const K = YO.K, g = yog, px = (x, y, c) => { g.fillStyle = c; g.fillRect(Math.round(x - YO.x) * K, Math.round(y - YO.y) * K, K, K); };   // its end; or (ox, oy) from the hand: the loop
     g.clearRect(0, 0, yoC.width, yoC.height);
-    const [hx, hy] = YO.hand, ex = hx + lean, ey = hy + L;
-    for (let y = hy + 1; y < ey - 1; y++) px(hx + (ex - hx) * (y - hy) / Math.max(1, L), y, 'rgba(196,190,204,0.5)');   // the string, 1 px
-    const cx = Math.round(ex), cy = Math.round(ey);
+    const [hx, hy] = YO.hand; px(hx, hy - 1, 'rgba(196,190,204,0.55)'); px(hx - 1, hy - 2, 'rgba(196,190,204,0.3)');   // the string's loop on his finger
+    let ex = hx + lean, ey = hy + L;
+    if (ox !== undefined) { ex = hx + ox; ey = hy + oy; }
+    const n = Math.round(Math.hypot(ex - hx, ey - hy));
+    for (let k = 2; k < n - 1; k++) px(hx + (ex - hx) * k / n, hy + (ey - hy) * k / n, 'rgba(196,190,204,0.5)');   // the string, 1 px, from the finger
+    const cx = Math.round(ex), cy = Math.round(ey) + (n < 2 ? 1 : 0);              // (in his hand: in the palm, on his thigh)
     for (let dx = -1; dx <= 1; dx++) { px(cx + dx, cy - 1, '#777d8a'); px(cx + dx, cy, dx ? '#5c6270' : '#30343c'); px(cx + dx, cy + 1, '#3a3e48'); }   // the yo-yo, 3 px of steel, its axle dark
-    px(cx + (spin % 2 ? 1 : -1), cy - 1, '#d6e2f2');                               // its cold glint, turning
+    px(cx + (spin % 2 ? 1 : -1), cy - 1, n < 2 ? '#b4bfd0' : '#d6e2f2');          // its cold glint, turning (quieter in his hand)
     yoTex.needsUpdate = true;
   }
+  function yoRest(next) { const Y = YO; Y.t = -1; Y.drawn = true; if (next) Y.next = next; yoDraw(0, 0, 0); }   // back in his hand
   function stepYoyo(dt) {
     const Y = YO;
-    if (Y.t < 0) { if (reduced || KIL.state !== 'sit') return; if ((Y.next -= dt) > 0) return; Y.t = 0; Y.acc = 1; yoMesh.visible = true; }
-    if (KIL.state !== 'sit') { Y.t = -1; yoMesh.visible = false; Y.next = 60 + Math.random() * 60; return; }
-    Y.t += dt; const t = Y.t; let L;
-    if (t < 0.6) L = Y.drop * Math.pow(t / 0.6, 2);                                  // the drop (gravity)
-    else if (t < 2.0) L = Y.drop;                                                     // it sleeps, spinning
-    else if (t < 2.12) L = Y.drop - 2 * Math.sin(Math.PI * (t - 2.0) / 0.12);         // the flick: a tug on the string
-    else if (t < 2.7) L = Y.drop * Math.pow(1 - (t - 2.12) / 0.58, 2);              // and up it winds
-    else L = 0;
+    if (Y.t < 0) {                                                                    // in his hand (drawn once: so it stays, still, under reduced motion)
+      if (!Y.drawn) yoRest();
+      if (reduced || KIL.state !== 'sit' || (Y.next -= dt) > 0) return;
+      Y.t = 0; Y.acc = 1; Y.kind = YO_KIND.filter(k => k !== Y.kind)[Math.floor(Math.random() * 2)];   // (never the same twice running)
+    }
+    if (KIL.state !== 'sit') { yoRest(20 + Math.random() * 25); return; }
+    Y.t += dt; const t = Y.t; let L = 0, ox, oy, lean = 0;
+    if (Y.kind === 'sleeper') {
+      if (t < 0.6) L = Y.drop * Math.pow(t / 0.6, 2);                                // the drop (gravity)
+      else if (t < 2.0) L = Y.drop;                                                   // it sleeps, spinning
+      else if (t < 2.12) L = Y.drop - 2 * Math.sin(Math.PI * (t - 2.0) / 0.12);       // the flick: a tug on the string
+      else if (t < 2.7) L = Y.drop * Math.pow(1 - (t - 2.12) / 0.58, 2);            // and up it winds
+      lean = gust.k * 3 * Math.min(1, L / Y.drop);
+    } else if (Y.kind === 'throw') {                                                  // a quick throw and catch: down 24 px, straight back
+      const u = Math.min(1, t / 0.9); L = 24 * (u < 0.4 ? Math.pow(u / 0.4, 1.7) : Math.pow(1 - (u - 0.4) / 0.6, 1.5));
+    } else {                                                                          // the loop: thrown forward and low, round, back from above
+      const th = 2 * Math.PI * Math.min(1, t / 1.1); ox = 12 * (1 - Math.cos(th)); oy = 8 * Math.sin(th);
+    }
     Y.acc += dt;
-    if (Y.acc >= 1 / 30) { Y.acc = 0; yoDraw(L, Math.floor(t * 10), gust.k * 3 * Math.min(1, L / Y.drop)); }
-    if (t > 3.4) { Y.t = -1; yoMesh.visible = false; Y.next = 150 + Math.random() * 150; }
+    if (Y.acc >= 1 / 30) { Y.acc = 0; yoDraw(L, Math.floor(t * 10), lean, ox, oy); }
+    if (t > YO_DUR[Y.kind]) yoRest(20 + Math.random() * 25);
   }
 
   // ---- now and then, silent sheet lightning behind Fuji: 1 to 3 in ten minutes, never two close (none under reduced
@@ -7009,9 +7033,11 @@
     const g = gust.k, om = 2 * Math.PI / 1.15, D2R = Math.PI / 180; P.t += h;
     const turb = 0.5 * Math.sin(13 * P.t) * Math.sin(3.7 * P.t + 1.1) + 0.5 * Math.sin(7.3 * P.t + 2.3);   // the gust's bursts
     if ((P.next -= h) < 0) { P.kick = 0.12; P.f = -(4.5 + 2.5 * Math.random()); P.next = 5 + Math.random() * 10; }   // a little kick
-    const ka = -om * om * P.k - 0.2 * om * P.kv + (P.kick > 0 ? P.f : 0); P.kick -= h;   // the shin: a pendulum from the knee
-    P.kv += ka * h; P.k += P.kv * h;
+    const ka = -om * om * P.k - 0.2 * om * P.kv + (P.kick > 0 ? P.f : 0);   // the shin: a pendulum from the knee
+    const om2 = om * 0.93, ka2 = -om2 * om2 * P.k2 - 0.2 * om2 * P.kv2 + (P.kick > 0 && P.kick < 0.1 ? 0.8 * P.f : 0); P.kick -= h;   // the far shin: its own, a little slower, kicked a touch later and less
+    P.kv += ka * h; P.k += P.kv * h; P.kv2 += ka2 * h; P.k2 += P.kv2 * h;
     const aa = -160 * P.a - 10 * P.av - 0.55 * ka; P.av += aa * h; P.a += P.av * h;   // the foot lags it
+    const aa2 = -160 * P.a2 - 10 * P.av2 - 0.55 * ka2; P.av2 += aa2 * h; P.a2 += P.av2 * h;
     const ea = -300 * (P.e - 1.86 * g * (1 + 0.6 * turb)) - 15 * P.ev; P.ev += ea * h; P.e += P.ev * h;   // the hem, lifted by the gust
     // the board: gravity rolls it onto his back (its rest moves with his breath); the bursts push it off, the less the
     // further off it is (2-3 deg at most); falling back fast, it knocks
@@ -7051,6 +7077,7 @@
     if (n > 6) P.acc = 0;
     kilShow('board', kilNear(KM.lean, P.b * 180 / Math.PI)); kilShow('body', Math.min(2, Math.max(0, Math.round(P.e))) * 3 + b);
     kilShow('legs', kilNear(KM.knee, P.k) * 3 + kilNear(KM.ankle, P.a)); kilShow('head', K.pitch * 9 + K.wind * 3 + b);
+    kilShow('far', kilNear(KM.knee, P.k2) * 3 + kilNear(KM.ankle, P.a2));
   }
   function stepKillua(dt) {
     if (KIL.state === 'sit') { kilIdle(dt); stepYoyo(dt); return; }
@@ -7091,7 +7118,7 @@
   }
   function godspeed() {
     if (KIL.state !== 'sit') return;
-    if (YO.t >= 0) { YO.t = -1; yoMesh.visible = false; YO.next = 60 + Math.random() * 60; }   // (the yo-yo away first)
+    yoRest(20 + Math.random() * 25);                            // (a trick is off: the yo-yo back in his hand)
     Object.assign(KIL, { state: 'go', t: 0, up: false, down: false, dash: null, sparks: [], tick: 0, ph: kilPh() }); for (const n in KREST) kilShow(n, KREST[n]);
     gsMesh.visible = true;
   }
