@@ -3507,7 +3507,7 @@
   // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
   // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
   // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
-  const spill = plane('assets/arcade_spill.png?v=5', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
+  const spill = plane('assets/arcade_spill.png?v=6', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
@@ -3519,7 +3519,7 @@
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
   arcImg.src = 'assets/arcade_interior.webp?v=10';
-  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=1';   // (droite-01)
+  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=2';   // (droite-01)
   // screens in the room texture (100x332): [x, y, w, h, light]
   const ARC_SCREENS = [[1, 162, 16, 28, '#7fe0d8'], [18, 160, 14, 27, '#7fd0e8'], [37, 163, 11, 19, '#7fe0d8'], [58, 115, 20, 15, '#6fe8e0'], [5, 110, 13, 18, '#e8a0d0'], [80, 90, 20, 160, '#ff9ad0']];
   const roomY = (lx, y) => topAt(lx) + bandAt(lx) + y * (botAt(lx) - thrAt(lx) - topAt(lx) - bandAt(lx)) / 332;
