@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=52" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=53" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -584,7 +584,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=52", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=53", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -1895,12 +1895,11 @@
     m.position.set(x + 0.5, -(y + 0.5), 0.71); m.visible = reduced; scene.add(m); return m;
   });
 
-  // ---- the steams (meteo-02, meteo-09): the ramen vent's and the air-con's puffs share one material. A puff is a whole-pixel blob
+  // ---- the steam (meteo-02, meteo-09): the ramen vent's puffs. A puff is a whole-pixel blob
   // (ventTex: three alpha steps, a 2 x 2 dither, a lumpy outline, a few rim pixels missing) lit by the street around it: its colour is
   // read from the water's pass (WET.rt, the street as lit right now: its lights' states, the power cut, the red night) at its centre
   // and a ring of taps round it, as the drips do; dark where nothing lights it, warm by a window, pink by a neon, red at its own
-  // luminance in the red night (nrSprite, as the drips); a mid light without the water's pass. The air-con's (bottom right): eight
-  // puffs that rise 34 px, swell from 4 to 15 px, drift left with the wind and dissolve, their spacing a little irregular ----
+  // luminance in the red night (nrSprite, as the drips); a mid light without the water's pass ----
   const STEAM_VS = 'varying vec2 vUv; varying vec2 vC;\n'
     + 'void main() { vUv = uv; vec4 c = modelMatrix * vec4(0.0, 0.0, 0.0, 1.0); vC = vec2(c.x, -c.y); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
   const STEAM_FS = `uniform sampler2D map, tLight; uniform vec4 uCam; uniform float uLive, uOpacity; varying vec2 vUv; varying vec2 vC;
@@ -1929,17 +1928,11 @@
     m.customProgramCacheKey = () => 'steam1';
     return m;
   }
-  const puffs = [];
-  const STEAM = { x: 1226, y: 712 };
 
   // fog: one soft blob texture shared by a haze over the far skyline and two mists drifting on the road
   const fogC = document.createElement('canvas'); fogC.width = fogC.height = 256;
   (function () { const g = fogC.getContext('2d'); const r = g.createRadialGradient(128, 128, 10, 128, 128, 126); r.addColorStop(0, 'rgba(180,170,215,.5)'); r.addColorStop(0.55, 'rgba(180,170,215,.24)'); r.addColorStop(1, 'rgba(180,170,215,0)'); g.fillStyle = r; g.fillRect(0, 0, 256, 256); })();
   const fogTex = new THREE.CanvasTexture(fogC); fogTex.magFilter = fogTex.minFilter = THREE.LinearFilter;
-  for (let i = 0; i < 8; i++) {                 // the air-con's puffs (their blobs are the vent's, set as they rise: ventTex, below)
-    const p = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), steamMat());
-    p.position.z = 2.2; p.userData = { t: i * 0.45 + Math.random() * 0.2, dx: Math.random() }; scene.add(p); puffs.push(p);
-  }
   const fogs = [];
   // [w, h, cx, cy, z, opacity, drift]: the skyline haze sits between the towers and the street lights
   for (const [w, h, cx, cy, z, o, dr] of [[420, 190, 675, 540, 0.7, 0.5, 0], [760, 130, 520, 766, 2.05, 0.3, 14], [560, 110, 1010, 742, 2.05, 0.24, 18]]) {
@@ -2031,7 +2024,7 @@
   // end; its lamps' glows, the headlights' beam in the mist and its pool on the road. Every layer hidden row by row
   // behind the buildings in front of the cross street (BUS.occ: the oden shop's corner, the Pokemon Center's awning
   // and wall). Its own power: the fuse box's blackout leaves it lit (not in pwList) ----
-  const BUS = { W: 268, H: 88, fh: 88, shH: 14, z: 0.65, ground: 87, roof: 9, wheels: [[46,73],[183,73]], wd: 27, eyes: [[215,33],[217,33]], head: [236,56.0], tail: [8.5,54], marker: [233.5,17.5], clear: [222,8], front: 232, rear: 8, face: [230,-11], cell: 24, gap: [504,881], stop: 516, V: 38.1, ACC: 11.6, PF: 0.0591, PM: 0.0296, FACE: 0.0591, beam: [116,33], pool: [80,7], forceZ: false, occ: {"y0":470,"L":[504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,505,506,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,509,509,509,507,506,506,506,506,506,506,506,506,506,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504],"R":[849,849,849,849,849,849,850,850,850,851,851,852,853,854,854,881,880,878,860,863,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,868,866,865,863,861,859,857,856,854,853,852,851,850,849,848,848,847,846,846,845,845,845,844,844,844,844,844,844,870,870,870,870,870,870,870,870,870,870,870,870,870,869,869,868,868,868,869,869,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870]}, list: [] };
+  const BUS = { W: 268, H: 88, fh: 88, shH: 14, z: 0.65, ground: 87, roof: 9, wheels: [[46,73],[183,73]], wd: 27, eyes: [[215,33],[217,33]], head: [236,56.0], tail: [8.5,54], marker: [233.5,17.5], clear: [222,8], front: 232, rear: 8, face: [230,-11], cell: 24, gap: [504,881], stop: 516, V: 38.1, ACC: 11.6, PF: 0.0591, PM: 0.0296, FACE: 0.0591, beam: [116,33], pool: [80,7], occ: {"y0":470,"L":[504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,505,506,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,508,509,509,509,507,506,506,506,506,506,506,506,506,506,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504,504],"R":[849,849,849,849,849,849,850,850,850,851,851,852,853,854,854,881,880,878,860,863,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,868,866,865,863,861,859,857,856,854,853,852,851,850,849,848,848,847,846,846,845,845,845,844,844,844,844,844,844,870,870,870,870,870,870,870,870,870,870,870,870,870,869,869,868,868,868,869,869,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,866,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870,870]}, list: [] };
   const busGround = (x) => 648;                    // the wheels' line: lane A, level
   const busOccT = (function () {                   // the near buildings' edges, row by row: L - 400 in R, R - 700 in G
     const n = BUS.occ.L.length, d = new Uint8Array(n * 4);
@@ -2159,7 +2152,7 @@
         if (!due && S.dir > 0 && S.stop >= 0) crewCount();   // (a stop heading right without them: the crew's count)
       }
       S.active = true; for (const m of BUS.list) m.visible = true;
-      if (!C_ || C_.riders) busZSpawn(BUS.forceZ);
+      if (!C_ || C_.riders) busZSpawn();
       S.box = C_ ? 1 : ZP.some((q) => q.on) ? 0 : 2 + Math.floor(Math.random() * (BOX.texts.length - 2)); S.tele = -1;   // (LAST STAND, OUT OF SERVICE, or a stop)
     }
     if (reduced) S.wait = Math.max(S.wait, 1);       // (reduced motion: parked until rmBus sends it off)
@@ -2240,7 +2233,7 @@
   // ---- TranZit's zombies, riding the bus (bus/zombie_rig.py: rigged figures, joints posed by rotations and IK; dressed
   // and lit by bus/zombie_look.py: torn clothes on spring chains, rotting grey-green skin, tufts of hair, lit by the
   // dusk and the street, by the bus's saloon light (its own layer, crackling with the tubes) and by the oden's orange
-  // and the awning's red by where they are; orange eyes with a faint glow). A pass in three, one crouches on the roof,
+  // and the awning's red by where they are; orange eyes with a faint glow). On every pass (the crew's aside), one crouches on the roof,
   // holding on to the rack and swaying, now and then rearing up to claw at the air; one hangs at a window, its back to
   // the street, wrenches the loose plank nailed across it, rips it off and flings it back along the bus, then claws at
   // the glass, looking round at the street. The plank falls on its arc, bounces and clatters on the wet road, lies there
@@ -2302,10 +2295,9 @@
     z.base.visible = z.glow.visible = true;
   }
   function zOff(z) { z.on = z.dying = false; z.base.visible = z.glow.visible = z.eye.visible = false; }
-  function busZSpawn(force) {                      // riders on a pass in three (on every pass once one is playing: its rounds come back)
+  function busZSpawn() {                           // riders on every pass (the crew's own passes aside)
     for (const z of ZP) if (!z.dying) zOff(z);
     ZG.puller = null;
-    if (!(force || ZG.began || Math.random() < 1 / 3)) return;
     const a = ZP.find((q) => !q.on); zStart(a, 'pull', 'A', BZ.win, -1); ZG.puller = a;
     const b = ZP.find((q) => !q.on); zStart(b, 'roof', 'B', BZ.roofCol, Math.random() * 3);
     if (ZS.pl.st === 'none') { ZS.pl.st = 'nailed'; zPlank.material.opacity = 1; }
@@ -2520,7 +2512,7 @@
     if (!visible || document.hidden || !LATE.ready.bus || STAGE.holds.size || !STAGE.ask('tranzit', 120, { prio: 2 })) { rmBusNext(5 + Math.random() * 5); return; }   // (out of sight, its sheets not in, or a closed set: later)
     Object.assign(S, { active: true, dir: Math.random() < 0.5 ? 1 : -1, x: BUS.stop, stop: BUS.stop, v: 0, ang: 0, wait: 1e9, bob: 0, bobN: 1, crew: false, crewWait: 0, hold: false, call: null, tz: false, tele: -1, hf: 0, stP: 2, stT: t });
     for (const m of BUS.list) m.visible = true;
-    busZSpawn(BUS.forceZ);
+    busZSpawn();
     S.box = ZP.some((q) => q.on) ? 0 : 2 + Math.floor(Math.random() * (BOX.texts.length - 2));   // (OUT OF SERVICE with riders, else a stop)
     Object.assign(RMB, { at: performance.now(), stay: 25000 + Math.random() * 15000, won: 0 }); RMB.kill = RMB.at;
     if (ZG.due) { tzRound(); RMB.spawnAt = RMB.at + 600; }   // (a round owed: it starts at once)
@@ -2606,7 +2598,7 @@
     door: [['richtofen', 24, 650.2], ['nikolai', 9, 651.0], ['takeo', -9, 650.6], ['dempsey', -24, 651.2]] };   // (x from the door: a step off it)
   const CGUN = { garand: [1, 0, 8, 0.42], ppsh: [7, 0.066, 71, 1.0], type100: [5, 0.075, 30, 0.85], mp40: [5, 0.11, 32, 0.95] };   // burst, gap, magazine, pause
   const CWHO = { dempsey: 'garand', nikolai: 'ppsh', takeo: 'type100', richtofen: 'mp40' };
-  const COCC = {"pole":{"d":9.95,"runs":[[0,5,1029,1063],[6,6,1028,1063],[7,9,1029,1063],[10,10,1024,1063],[11,12,1023,1063],[13,13,1023,1024],[13,13,1028,1063],[14,14,1023,1023],[14,19,1029,1063],[18,19,1023,1024],[20,20,1023,1026],[20,20,1028,1063],[21,21,1023,1063],[22,22,1024,1063],[23,26,1029,1063],[27,34,1029,1064],[35,43,1029,1063],[44,47,1023,1063],[48,48,1024,1063],[49,49,1025,1063],[50,52,1026,1063],[53,53,1024,1063],[54,57,1023,1063],[58,65,1025,1063],[66,90,1025,1064],[91,93,1024,1064],[94,454,1023,1064],[455,529,1023,1068],[530,665,1022,1068],[666,719,1023,1068],[720,742,1023,1065],[743,749,1024,1065],[750,751,1036,1065]]},"ac":{"d":6.6,"runs":[[711,715,1204,1266],[716,716,1204,1269],[717,717,1204,1280],[718,718,1204,1283],[719,719,1204,1287],[720,721,1204,1296],[722,722,1204,1300],[723,739,1204,1301],[740,815,1203,1301]]}};   // the pole, the AC unit: traced from the painting (bus/occ_trace.py), spans [y0, y1, x0, x1] and their depths (m)
+  const COCC = {"pole":{"d":9.95,"runs":[[0,5,1029,1063],[6,6,1028,1063],[7,9,1029,1063],[10,10,1024,1063],[11,12,1023,1063],[13,13,1023,1024],[13,13,1028,1063],[14,14,1023,1023],[14,19,1029,1063],[18,19,1023,1024],[20,20,1023,1026],[20,20,1028,1063],[21,21,1023,1063],[22,22,1024,1063],[23,26,1029,1063],[27,34,1029,1064],[35,43,1029,1063],[44,47,1023,1063],[48,48,1024,1063],[49,49,1025,1063],[50,52,1026,1063],[53,53,1024,1063],[54,57,1023,1063],[58,65,1025,1063],[66,90,1025,1064],[91,93,1024,1064],[94,454,1023,1064],[455,529,1023,1068],[530,665,1022,1068],[666,719,1023,1068],[720,742,1023,1065],[743,749,1024,1065],[750,751,1036,1065]]}};   // the pole: traced from the painting (bus/occ_trace.py), spans [y0, y1, x0, x1] and their depths (m)
   function crewLoad() {                                    // the sheets, once: the event waits for them
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
@@ -3515,7 +3507,7 @@
   // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
   // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
   // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
-  const spill = plane('assets/arcade_spill.png?v=1', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
+  const spill = plane('assets/arcade_spill.png?v=2', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
@@ -3873,11 +3865,11 @@
   // ?night=red shows the red night without finding anything; once the eleventh is found, MATHIS-PC keeps it
   // ('mtsfj-night') ----
   const REDN = { on: false, k: 0, to: 0, rate: 1, T0: [1, 0.12, 0.08], list: null, keep: [], wave: false, wu: 0, V: 150,
-    W0: 0.3, FAR: 10.6, seq: -1, plated: false, sLast: 0, gone: lsGet('mtsfj-moon') === 'gone', busZ0: BUS.forceZ, wander: { on: false, max: 3 } };
+    W0: 0.3, FAR: 10.6, seq: -1, plated: false, sLast: 0, gone: lsGet('mtsfj-moon') === 'gone', wander: { on: false, max: 3 } };
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=27', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=28', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -4052,7 +4044,6 @@
     o = o || {}; REDN.on = on; const fade = o.fade === undefined ? 3 : o.fade;
     if (on && FINS.t < 0) finClear(true);       // (after a finale: its street, its dawn away)
     if (nightSys()) setMode(on ? 'rouge' : null, fade); else PW.tint(on ? REDN.T0 : null, fade);
-    BUS.forceZ = on ? true : REDN.busZ0;         // the TranZit: riders on every pass (its rounds stay playable)
     REDN.wander.on = false;                      // (the wandering horde waits for the horde module: off)
     if (o.persist) lsSet('mtsfj-night', on ? 'red' : 'off');
   }
@@ -4087,7 +4078,7 @@
     }
   }
   function startEleven() {                     // the lever pulled: the street's power goes red, rue par rue
-    REDN.seq = 0; REDN.plated = false; secBtn.classList.add('red'); REDN.on = true; BUS.forceZ = true;
+    REDN.seq = 0; REDN.plated = false; secBtn.classList.add('red'); REDN.on = true;
     if (reduced) { nightRed(true, { fade: 3 }); finStart(true); return; }
     nrHookAll();
     if (nightSys()) setMode('rouge', REDN.FAR - 1);   // the sky charges as the wave goes (the lights: the wave, below)
@@ -4384,7 +4375,7 @@
     A.position.needsUpdate = true; A.rgba.needsUpdate = true; A.kw.needsUpdate = true;
   }
   function finDawn() {                           // under the flash: the night system's 6 h, then pushed to the morning; the horde down
-    REDN.on = false; BUS.forceZ = REDN.busZ0; CREW.api.fellAll();
+    REDN.on = false; CREW.api.fellAll();
     if (nightSys()) { setMode(null, 0); setTimeOverride(6, 0); setTimeOverride(6, 9, { push: 1 }); } else PW.tint(null, 0);
     REDN.k = REDN.to; stepNR(0);                 // (the street's red away in this frame, with the sky's: its step ran before this one)
     FIN.dawn = 0; finEv('dawn');
@@ -8002,7 +7993,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=21') }, tMirror: { value: tex('assets/wet_mirror.png?v=19') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=22') }, tMirror: { value: tex('assets/wet_mirror.png?v=19') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -8014,7 +8005,7 @@
     const prog = renderer.properties.get(mat).currentProgram;
     if (!prog || (prog.diagnostics && !prog.diagnostics.runnable)) throw new Error('wet shader');
     scene.add(WET.mesh);
-    WET.hide = [rain, rain2, lcRain, lcPool, flyer, spill, fogs[1], fogs[2], fadeQuad].concat(puffs, vent, DRIP2.pools.map((q) => q.P));   // (the rain's rings: in the drips' pools)
+    WET.hide = [rain, rain2, lcRain, lcPool, flyer, spill, fogs[1], fogs[2], fadeQuad].concat(vent, DRIP2.pools.map((q) => q.P));   // (the rain's rings: in the drips' pools)
     WET.on = true; wetResize(); window.addEventListener('resize', wetResize);
   }
   function wetResize() { WET.rt.setSize(Math.max(16, Math.round(view.w * WET.q)), Math.max(16, Math.round(view.h * WET.q))); }
@@ -8044,7 +8035,7 @@
   // street lamp's pool is one of them: at its glass's centre (881) at the pole's depth, the painted pool and the live one in one
   // place (the old faint lamp_pool plane retired); in the red night it keeps half its light, as its glass ----
   const GL = { list: [
-    { src: 'lamp', url: 'assets/gl_lamp.png?v=1', box: [296, 720, 903, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
+    { src: 'lamp', url: 'assets/gl_lamp.png?v=2', box: [296, 720, 1011, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
     { src: 'oden', url: 'assets/gl_oden.png?v=1', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
     { src: 'z7_vending', url: 'assets/gl_z7_vending.png?v=1', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
     { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.png?v=1', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
@@ -8052,7 +8043,7 @@
     { src: 'z4_emblem', url: 'assets/gl_z4_emblem.png?v=1', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
     { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.png?v=1', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
     { src: 'win_z1_violet', url: 'assets/gl_win_z1_violet.png?v=1', box: [204, 688, 815, 85], comp: 'win_z1_violet' },   // 1.1 % of the ground's light, +9 at most
-    { src: 'ramen', url: 'assets/gl_ramen.png?v=1', box: [370, 716, 833, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
+    { src: 'ramen', url: 'assets/gl_ramen.png?v=2', box: [370, 716, 937, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
     { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.png?v=1', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
     { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.png?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
     { src: 'dojo', url: 'assets/gl_dojo.png?v=1', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
@@ -9485,15 +9476,6 @@
     // the far city's lights
     stepFar(dt, t);
     for (const o of OBST) { const k = reduced ? 0.8 : obstK(((t + o.ph) % 2) / 2); for (const m of o.m) { m.material.opacity = 0.95 * k; m.visible = k > 0.005; } }   // (2 s: on for about 1)
-    // the air-con's steam: whole-pixel puffs (the vent's), lit by the street; they rise, swell, drift left with the wind, fade in steps
-    for (const p of puffs) {
-      const u = p.userData; u.t += dt; if (u.t > 3.6) { u.t -= 3.6 + Math.random() * 0.3; u.dx = Math.random(); }   // (a breath between two: never exactly periodic)
-      if (u.t < 0) { p.material.uniforms.uOpacity.value = 0; continue; }
-      const k = u.t / 3.6, D = Math.round(4 + 11 * k), env = Math.round(6 * Math.sin(Math.PI * Math.min(1, k * 1.15))) / 6;
-      const cx = STEAM.x + 2 * k - (4 + 9 * gust.k) * k * k + Math.sin(t * 1.3 + u.dx * 6) * 1.5 * k, X = Math.round(cx - D / 2), Y = Math.round(STEAM.y - 34 * k - D / 2);
-      p.position.set(X + D / 2, -(Y + D / 2), 2.2); p.scale.set(D, D, 1);
-      p.material.uniforms.map.value = ventTex(Math.floor(u.dx * 997) % 3, D); p.material.uniforms.uOpacity.value = 0.6 * env * (0.75 + 0.25 * u.dx);
-    }
     stepGust(dt);                                 // the wind: its gusts, their shapes and kinds (gust.k; the opening's plateau)
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
