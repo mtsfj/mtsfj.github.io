@@ -3519,7 +3519,7 @@
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
   arcImg.src = 'assets/arcade_interior.webp?v=11';
-  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=5';   // (droite-01)
+  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=6';   // (droite-01)
   // screens in the room texture (100x332, mirrored: its aisle runs to the street's vanishing point): [x, y, w, h, light]
   const ARC_SCREENS = [[83, 162, 16, 28, '#7fe0d8'], [68, 160, 14, 27, '#7fd0e8'], [52, 163, 11, 19, '#7fe0d8'], [22, 115, 20, 15, '#6fe8e0'], [82, 110, 13, 18, '#e8a0d0'], [0, 90, 20, 160, '#ff9ad0']];
   const roomY = (lx, y) => topAt(lx) + bandAt(lx) + y * (botAt(lx) - thrAt(lx) - topAt(lx) - bandAt(lx)) / 332;
