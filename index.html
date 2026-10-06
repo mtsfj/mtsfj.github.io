@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=56" crossorigin="anonymous" fetchpriority="high">
+<link rel="preload" as="image" href="assets/layer_city_off.webp?v=57" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
@@ -584,7 +584,7 @@
 <script src="assets/three.min.js"></script>
 <script>
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=56", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=57", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -3507,7 +3507,7 @@
   // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
   // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
   // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
-  const spill = plane('assets/arcade_spill.png?v=6', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
+  const spill = plane('assets/arcade_spill.png?v=7', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
@@ -3518,10 +3518,10 @@
   const bandAt = (lx) => 0, thrAt = (lx) => 6 * hAt(lx);
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
-  arcImg.src = 'assets/arcade_interior.webp?v=10';
-  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=2';   // (droite-01)
-  // screens in the room texture (100x332): [x, y, w, h, light]
-  const ARC_SCREENS = [[1, 162, 16, 28, '#7fe0d8'], [18, 160, 14, 27, '#7fd0e8'], [37, 163, 11, 19, '#7fe0d8'], [58, 115, 20, 15, '#6fe8e0'], [5, 110, 13, 18, '#e8a0d0'], [80, 90, 20, 160, '#ff9ad0']];
+  arcImg.src = 'assets/arcade_interior.webp?v=11';
+  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=3';   // (droite-01)
+  // screens in the room texture (100x332, mirrored: its aisle runs to the street's vanishing point): [x, y, w, h, light]
+  const ARC_SCREENS = [[83, 162, 16, 28, '#7fe0d8'], [68, 160, 14, 27, '#7fd0e8'], [52, 163, 11, 19, '#7fe0d8'], [22, 115, 20, 15, '#6fe8e0'], [82, 110, 13, 18, '#e8a0d0'], [0, 90, 20, 160, '#ff9ad0']];
   const roomY = (lx, y) => topAt(lx) + bandAt(lx) + y * (botAt(lx) - thrAt(lx) - topAt(lx) - bandAt(lx)) / 332;
   function quad(y0, y1, color) {              // a band between two functions of lx, across the door
     ag.fillStyle = color; ag.beginPath(); ag.moveTo(0, y0(0) * AK);
@@ -3547,8 +3547,8 @@
       for (const q of ARC_ROW.concat([BOOT_Q[2][0]])) q.forEach(([qx, qy], k) => { const X = qx * AK, Y = roomY(qx, qy) * AK; if (k) ag.lineTo(X, Y); else ag.moveTo(X, Y); });
       { const [x, y, w, h] = ARC_SCREENS[3], cx = x + w / 2; ag.rect(x * AK, roomY(cx, y) * AK, w * AK, (roomY(cx, y + h) - roomY(cx, y)) * AK); }
       ag.clip('evenodd'); ag.fillStyle = 'rgba(6,4,16,' + Math.max(0, a2) + ')'; ag.fillRect(0, 0, ACW, ACH); ag.restore();
-      ag.globalAlpha = (1 - hk) * pwr; ag.fillStyle = '#1f9b52'; ag.fillRect(60 * AK, 90 * AK, 6 * AK, 3 * AK);   // 非常口: the exit sign, always lit
-      ag.fillStyle = '#9dffbf'; ag.fillRect(61 * AK, 91 * AK, 1 * AK, 1 * AK); ag.fillRect(63 * AK, 91 * AK, 2 * AK, 1 * AK); ag.globalAlpha = 1;
+      ag.globalAlpha = (1 - hk) * pwr; ag.fillStyle = '#1f9b52'; fzPx(34, 71.2, 6, 2.7);   // 非常口: the exit sign, always lit
+      ag.fillStyle = '#9dffbf'; fzPx(38, 72.1, 1, 0.9); fzPx(35, 72.1, 2, 0.9); ag.globalAlpha = 1;
     }
     // cabinet screens, the cyan sign and the claw machine breathe a little
     ag.globalCompositeOperation = 'lighter';
@@ -3583,8 +3583,8 @@
     atex.needsUpdate = true;
   }
   // ---- the fuses (2003, the last of three secrets hiding a date): the row's first cabinet, nearest the door (scene x
-  // 1357-1373: on screen down to 16:10 laptops), is out of order, its screen dark but for a prompt in dim amber, FUSE
-  // stacked down the screen and a ? in turn (phones and 3:2 screens never see the arcade: the grey fuse box on the
+  // 1438-1456, the room mirrored to the street's perspective: on 16:9 screens), is out of order, its screen dark but for a prompt in dim amber, FUSE
+  // stacked down the screen and a ? in turn (phones, 3:2 and 16:10 screens never see it: the grey fuse box on the
   // Pokémon Center's corner pier and the terminal's hidden fusebox command open the same box). Click it: a fuse box,
   // eleven switches whose only live setting is a year in base 2,
   // the high bit on the left. Right: the box powers up and shuts; the street's power goes out and comes back as a wave
@@ -3593,8 +3593,8 @@
   // the box). Reduced motion: no blackout, no wave; the high scores in the box and, still, on its screen ----
   // the year; the cabinet's screen, seen at an angle: a slanted band, its rows y 165-189 in the room texture, each row's
   // first and last x (read off the painting, smoothed)
-  const FZ_CODE = 2003, FZS = { y: 165, q: [[0, 6], [0, 6], [0, 7], [1, 7], [1, 8], [1, 8], [1, 9], [1, 9], [2, 10], [2, 10], [3, 11], [3, 11], [3, 12],
-    [4, 12], [4, 12], [5, 13], [5, 13], [5, 14], [6, 14], [6, 14], [6, 15], [6, 15], [7, 15], [7, 16], [7, 16]] };
+  const FZ_CODE = 2003, FZS = { y: 165, q: [[93, 99], [93, 99], [92, 99], [92, 98], [91, 98], [91, 98], [90, 98], [90, 98], [89, 97], [89, 97], [88, 96], [88, 96], [87, 96],
+    [87, 95], [87, 95], [86, 94], [86, 94], [85, 94], [85, 93], [85, 93], [84, 93], [84, 93], [84, 92], [83, 92], [83, 92]] };
   const FZ = { sw: new Array(11).fill(false), won: false, state: 'dead', boot: -1, live: 0 };   // its screen: dead, boot, live
   // a 3x5 pixel font (rows top to bottom), one room pixel a dot: the prompt and the high scores
   const PXF = { F: '111100110100100', U: '101101101101111', S: '111100111001111', E: '111100110100111', '?': '111001011000010',
@@ -3603,15 +3603,15 @@
   function fzPx(x, y, w, h) {                  // room texture px onto the arcade's canvas, through the wall's perspective
     const c = x + w / 2, y0 = roomY(c, y), y1 = roomY(c, y + h); ag.fillRect(x * AK, y0 * AK, w * AK, (y1 - y0) * AK);
   }
-  // on the slanted screen: its outline as the current path (a staircase along its rows), the box around it (room x 0-17,
-  // its 25 rows), a glyph down it (each glyph upright, set on its rows' middle)
+  // on the slanted screen: its outline as the current path (a staircase along its rows), the box around it (room x 83-100,
+  // the room mirrored; its 25 rows), a glyph down it (each glyph upright, set on its rows' middle)
   function fzClip() {
     const Q = FZS.q, P = (x, y) => ag.lineTo(x * AK, roomY(x, y) * AK); ag.beginPath();
     for (let v = 0; v < 25; v++) { P(Q[v][0], FZS.y + v); P(Q[v][0], FZS.y + v + 1); }
     for (let v = 24; v >= 0; v--) { P(Q[v][1] + 1, FZS.y + v + 1); P(Q[v][1] + 1, FZS.y + v); }
     ag.closePath();
   }
-  const fzBox = (v0, n) => fzPx(0, FZS.y + v0, 17, n);
+  const fzBox = (v0, n) => fzPx(83, FZS.y + v0, 17, n);
   function fzGlyph(ch, v0) {
     const g = PXF[ch]; if (!g) return;
     const m = FZS.q[Math.max(0, Math.min(24, v0 + 2))], x = Math.round((m[0] + m[1]) / 2 - 1);
@@ -3623,7 +3623,7 @@
   }
   function fzScreen(pw) {
     const tt = arcS.t, b = FZ.boot;
-    const gl = ag.createLinearGradient(0, roomY(8, FZS.y) * AK, 0, roomY(8, FZS.y + 25) * AK);
+    const gl = ag.createLinearGradient(0, roomY(92, FZS.y) * AK, 0, roomY(92, FZS.y + 25) * AK);
     gl.addColorStop(0, '#16121f'); gl.addColorStop(1, '#08060e'); ag.fillStyle = gl; fzBox(0, 25);   // the glass, dark
     if (pw < 0.5) return;
     const glow = (col, a) => { ag.globalCompositeOperation = 'lighter'; ag.globalAlpha = a * pw; ag.fillStyle = col; fzBox(0, 25); ag.globalCompositeOperation = 'source-over'; ag.globalAlpha = 1; };
@@ -3652,18 +3652,18 @@
     glow('#9ff6ff', 0.08);
   }
   // the row's three screens, seen at an angle: their corners in the room texture (px)
-  const ARC_ROW = [[[2, 166], [7, 165], [16, 189], [8, 189]], [[18, 161], [20, 161], [29, 184], [27, 184]], [[37, 165], [43, 165], [48, 183], [41, 183]]];
+  const ARC_ROW = [[[98, 166], [93, 165], [84, 189], [92, 189]], [[82, 161], [80, 161], [71, 184], [73, 184]], [[63, 165], [57, 165], [52, 183], [59, 183]]];
   function rowPath(q) {                        // a screen's quad, through the wall's perspective, as the current path
     ag.beginPath(); q.forEach(([qx, qy], k) => { const X = qx * AK, Y = roomY(qx, qy) * AK; if (k) ag.lineTo(X, Y); else ag.moveTo(X, Y); }); ag.closePath();
   }
   // the other cabinets, after the fuse one: the row's second and third, the one at the end of the aisle (facing the street)
-  const BOOT_Q = [[ARC_ROW[1], ARC_SCREENS[1][4]], [ARC_ROW[2], ARC_SCREENS[2][4]], [[[60, 159], [75, 159], [75, 175], [60, 175]], '#bfe8ff']];
+  const BOOT_Q = [[ARC_ROW[1], ARC_SCREENS[1][4]], [ARC_ROW[2], ARC_SCREENS[2][4]], [[[40, 159], [25, 159], [25, 175], [40, 175]], '#bfe8ff']];
   function drawBoot() {                        // the cabinets boot one after the other: flash, bars, check, attract
     if (FZ.boot < 0) return;
     for (let i = 0; i < 3; i++) {
       const b = FZ.boot - 0.18 * (i + 1), [q, col] = BOOT_Q[i];
       if (b < 0 || b > 2.6) continue;
-      const x = q[0][0], w = q[2][0] - x, y = Math.min(q[0][1], q[1][1]), h = q[2][1] - y;
+      const xs = q.map((p) => p[0]), x = Math.min(...xs), w = Math.max(...xs) - x, y = Math.min(q[0][1], q[1][1]), h = q[2][1] - y;
       ag.save(); rowPath(q); ag.clip();             // on its own glass only
       if (b < 0.12) { ag.globalAlpha = 0.85; ag.fillStyle = '#eaf6ff'; fzPx(x, y, w, h); }
       else if (b < 0.5) ['#ff5a8a', '#ffd36b', '#6dff9b', '#6ad5ff'].forEach((c, k) => { ag.globalAlpha = 0.75; ag.fillStyle = c; fzPx(x, y + k * h / 4, w, h / 4); });
@@ -3676,11 +3676,11 @@
     }
   }
   const FZG = [863, 601, 13, 26];             // the grey box on the Pokémon Center's corner pier: its pixels and 2 px (scene)
-  function overFuse(ev) {                      // the fuse cabinet: its top, screen and controls (room x 0-18, y 150-198); the grey box
+  function overFuse(ev) {                      // the fuse cabinet: its top, screen and controls (room x 82-100, y 150-198); the grey box
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top)), lx = x - ARC.x, ly = y - ARC.y;
     if (x >= FZG[0] && x <= FZG[0] + FZG[2] && y >= FZG[1] && y <= FZG[1] + FZG[3]) return true;
-    return lx >= 0 && lx <= 18 && ly >= roomY(lx, 150) && ly <= roomY(lx, 198);
+    return lx >= 82 && lx <= 100 && ly >= roomY(lx, 150) && ly <= roomY(lx, 198);
   }
   // the fuse box: a pixel panel in MATHIS-PC's look, eleven switches (real buttons: Tab, Space, a tap), a LED over each,
   // the main LED dead (a short try at each wrong setting); Esc, x or a click outside closes it
@@ -3869,7 +3869,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=31', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=32', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -5012,7 +5012,7 @@
     { id: 'lampe', at: [883, 139], fr: 'se poser sur la lampe', en: 'land on the lamp', kind: 'land', base: 0.12, gain: 0.24, dur: 1.5 },
     { id: 'mars', at: [757, 226], fr: 'répondre à Mars', en: 'answer Mars', kind: 'morse', base: 0.1, gain: 0.3, dur: 2.6 },
     { id: 'affiche', at: [770, 430], fr: "attraper l'affiche", en: 'catch the flyer', kind: 'chase', dur: 6 },
-    { id: 'arcade', at: [1396, 592], fr: "rallumer l'arcade", en: 'relight the arcade', kind: 'hover', base: 0, gain: 0, dur: 1.0 },
+    { id: 'arcade', at: [1416, 592], fr: "rallumer l'arcade", en: 'relight the arcade', kind: 'hover', base: 0, gain: 0, dur: 1.0 },
     { id: 'etoile', at: [640, 262], fr: 'toucher une étoile', en: 'touch a star', kind: 'climb', base: 0.05, gain: 0, dur: 1.4 }];
   const XP_HOME = [556, 531], XP_BUDGET = 60, XP_EPS = 0.2, XP_OK = 0.8;
   const XP = { on: false, ph: '', t: 0, T: 0, x: 0, y: 0, a: 0, g: null, why: '', alp: 0, from: null, to: null, dur: 0, rows: [], C: {}, tried: {},
