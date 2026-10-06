@@ -61,7 +61,7 @@
   .pc-bar { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 6px 12px; background: linear-gradient(90deg, #ff8ad1, #8a6bff); color: #141026; font-family: var(--pixel); font-size: 13px; letter-spacing: .06em; }
   .pc-x { width: 24px; height: 22px; border: 2px solid #141026; background: #f3dbe6; color: #141026; font: 700 14px/1 var(--pixel); cursor: pointer; padding: 0; }
   .pc-x:hover, .pc-x:focus-visible { background: #fff; outline: none; }
-  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=43) center / cover no-repeat; image-rendering: pixelated; }
+  .pc-desk { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 18px 8px; padding: 26px 18px 30px; min-height: 280px; background: #2a1f55 url(assets/pc_wallpaper.webp?v=44) center / cover no-repeat; image-rendering: pixelated; }
   .pc-app { display: flex; flex-direction: column; align-items: center; gap: 8px; color: #fff; text-decoration: none; font-size: 13px; text-shadow: 0 1px 0 #141026; padding: 6px 2px; border: 1px solid transparent; }
   .pc-app:hover, .pc-app:focus-visible { border-color: rgba(255,255,255,.55); background: rgba(255,255,255,.08); outline: none; }
   .pc-app img { width: 96px; height: 96px; image-rendering: pixelated; filter: drop-shadow(0 3px 0 rgba(10,7,24,.6)); }
@@ -3507,7 +3507,7 @@
   // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
   // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
   // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
-  const spill = plane('assets/arcade_spill.png?v=7', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
+  const spill = plane('assets/arcade_spill.png?v=8', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
@@ -3519,7 +3519,7 @@
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
   arcImg.src = 'assets/arcade_interior.webp?v=11';
-  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=6';   // (droite-01)
+  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=7';   // (droite-01)
   // screens in the room texture (100x332, mirrored: its aisle runs to the street's vanishing point): [x, y, w, h, light]
   const ARC_SCREENS = [[83, 162, 16, 28, '#7fe0d8'], [68, 160, 14, 27, '#7fd0e8'], [52, 163, 11, 19, '#7fe0d8'], [22, 115, 20, 15, '#6fe8e0'], [82, 110, 13, 18, '#e8a0d0'], [0, 90, 20, 160, '#ff9ad0']];
   const roomY = (lx, y) => topAt(lx) + bandAt(lx) + y * (botAt(lx) - thrAt(lx) - topAt(lx) - bandAt(lx)) / 332;
@@ -3869,7 +3869,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=32', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=33', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7993,7 +7993,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=25') }, tMirror: { value: tex('assets/wet_mirror.png?v=19') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=28') }, tMirror: { value: tex('assets/wet_mirror.png?v=22') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
