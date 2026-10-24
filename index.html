@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="assets/site.css?v=6">
+<link rel="stylesheet" href="assets/site.css?v=10">
 <link rel="preload" as="image" href="assets/layer_city_off.webp?v=57" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
@@ -292,11 +292,26 @@
 
 <main class="page"><div class="container">
   <section class="section" id="bio">
-    <header class="section-head"><span class="section-num">01</span><h2 class="section-title">Bio</h2></header>
+    <header class="section-head"><div><span class="section-num">01</span><h2 class="section-title">Bio</h2></div></header>
     <div class="split">
       <div>
+        <p class="lead" data-lang="fr">J'étudie comment des agents curieux peuvent cartographier ce qu'un grand modèle génératif sait faire, et où il échoue. En novembre 2026, je commence une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer. Le sujet : l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs. Plutôt qu'un benchmark figé, des agents se fixent leurs propres objectifs, puis découvrent et cartographient les capacités et les vulnérabilités du modèle.</p>
+        <p class="lead" data-lang="en" lang="en" hidden>I study how curious agents can map what a large generative model can do, and where it fails. In November 2026 I start a PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer. The topic: autotelic exploration for the automatic evaluation of large generative models. Instead of a fixed benchmark, agents set their own goals, then discover and map the model's capabilities and vulnerabilities.</p>
+      </div>
+      <figure class="fig">
+        <div class="fig-frame"><span class="fig-label">FIG. 01</span><canvas class="fig-map" data-seed="autotelic" role="img" aria-label="Agents explorant une grille"></canvas></div>
+        <figcaption data-lang="fr"><b>Exploration autotélique.</b> Chaque agent se fixe son propre but, s'y rend et laisse une trace : l'espace de ce que sait faire un modèle se cartographie peu à peu.</figcaption>
+        <figcaption data-lang="en" lang="en" hidden><b>Autotelic exploration.</b> Each agent sets its own goal, walks to it and leaves a trail: the space of what a model can do is mapped, bit by bit.</figcaption>
+      </figure>
+    </div>
+    <ul class="stats">
+      <li><span class="stat-v lit">NeurIPS 2026</span><span class="stat-l" data-lang="fr">Pinductor, accepté en poster</span><span class="stat-l" data-lang="en" lang="en" hidden>Pinductor, accepted as a poster</span></li>
+      <li><span class="stat-v">164</span><span class="stat-l" data-lang="fr">tactiques de sycophancie cartographiées sur un modèle local</span><span class="stat-l" data-lang="en" lang="en" hidden>sycophancy tactics mapped on a local model</span></li>
+      <li><span class="stat-v">×40</span><span class="stat-l" data-lang="fr">kernels d'attention HIP écrits à la main, face au CPU</span><span class="stat-l" data-lang="en" lang="en" hidden>hand-written HIP attention kernels, against the CPU</span></li>
+    </ul>
+    <div class="split bio-more">
+      <div>
       <div class="prose" data-lang="fr">
-        <p class="lead">J'étudie comment des agents curieux peuvent cartographier ce qu'un grand modèle génératif sait faire, et où il échoue. En novembre 2026, je commence une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer. Le sujet : l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs. Plutôt qu'un benchmark figé, des agents se fixent leurs propres objectifs, puis découvrent et cartographient les capacités et les vulnérabilités du modèle.</p>
         <div class="news panel">
           <span class="label">Actualités</span>
           <ul class="dated">
@@ -319,7 +334,6 @@
         </ul>
       </div>
       <div class="prose" data-lang="en" lang="en" hidden>
-        <p class="lead">I study how curious agents can map what a large generative model can do, and where it fails. In November 2026 I start a PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer. The topic: autotelic exploration for the automatic evaluation of large generative models. Instead of a fixed benchmark, agents set their own goals, then discover and map the model's capabilities and vulnerabilities.</p>
         <div class="news panel">
           <span class="label">News</span>
           <ul class="dated">
@@ -366,13 +380,12 @@
     </div>
   </section>
 
-  <section class="section band" id="articles">
-    <header class="section-head"><span class="section-num">02</span><h2 class="section-title">Articles</h2></header>
+  <section class="section" id="articles">
+    <header class="section-head"><div><span class="section-num">02</span><h2 class="section-title">Articles</h2></div><p class="section-intro" data-lang="fr">Chaque article existe en deux versions : une page interactive, pour manipuler les idées, et le document classique.</p><p class="section-intro" data-lang="en" lang="en" hidden>Each article comes in two versions: an interactive page where you can try the ideas, and the written document.</p></header>
     <div data-lang="fr">
-        <p class="section-intro">Chaque article existe en deux versions : une page interactive, pour manipuler les idées, et le document classique.</p>
         <ul class="entries-grid">
           <li class="entry">
-            <a class="entry-media" href="articles/pinductor.html" tabindex="-1" aria-hidden="true"><img class="vignette" src="assets/thumb_pinductor.webp" alt="" width="168" height="112"></a>
+            <a class="entry-media cover" href="articles/pinductor.html" tabindex="-1" aria-hidden="true"><img src="assets/cover_pinductor.webp" alt="" width="1200" height="800" loading="lazy"></a>
             <div class="entry-body">
             <p class="entry-meta"><span>2026 · NeurIPS 2026 (poster) · arXiv</span><span class="badge live">interactif</span></p>
             <h3 class="entry-title"><a href="articles/pinductor.html">Pinductor : apprendre des modèles du monde POMDP à partir d'observations, avec des priors de LLM</a></h3>
@@ -381,7 +394,7 @@
             </div>
           </li>
           <li class="entry">
-            <a class="entry-media" href="articles/sycophancy.html" tabindex="-1" aria-hidden="true"><img class="vignette" src="assets/thumb_sycophancy.webp" alt="" width="168" height="112"></a>
+            <a class="entry-media cover" href="articles/sycophancy.html" tabindex="-1" aria-hidden="true"><img src="assets/cover_sycophancy.webp" alt="" width="1200" height="800" loading="lazy"></a>
             <div class="entry-body">
             <p class="entry-meta"><span>2026 · projet de recherche</span><span class="badge live">interactif</span></p>
             <h3 class="entry-title"><a href="articles/sycophancy.html">Quality-diversity autotélique pour découvrir la sycophancie des LLM</a></h3>
@@ -393,10 +406,9 @@
         <p class="more"><a href="blog/">Tous les billets et articles →</a></p>
       </div>
     <div data-lang="en" lang="en" hidden>
-        <p class="section-intro">Each article comes in two versions: an interactive page where you can try the ideas, and the written document.</p>
         <ul class="entries-grid">
           <li class="entry">
-            <a class="entry-media" href="articles/pinductor.html" tabindex="-1" aria-hidden="true"><img class="vignette" src="assets/thumb_pinductor.webp" alt="" width="168" height="112"></a>
+            <a class="entry-media cover" href="articles/pinductor.html" tabindex="-1" aria-hidden="true"><img src="assets/cover_pinductor.webp" alt="" width="1200" height="800" loading="lazy"></a>
             <div class="entry-body">
             <p class="entry-meta"><span>2026 · NeurIPS 2026 (poster) · arXiv</span><span class="badge live">interactive</span></p>
             <h3 class="entry-title"><a href="articles/pinductor.html">Pinductor: learning POMDP world models from observations with language-model priors</a></h3>
@@ -405,7 +417,7 @@
             </div>
           </li>
           <li class="entry">
-            <a class="entry-media" href="articles/sycophancy.html" tabindex="-1" aria-hidden="true"><img class="vignette" src="assets/thumb_sycophancy.webp" alt="" width="168" height="112"></a>
+            <a class="entry-media cover" href="articles/sycophancy.html" tabindex="-1" aria-hidden="true"><img src="assets/cover_sycophancy.webp" alt="" width="1200" height="800" loading="lazy"></a>
             <div class="entry-body">
             <p class="entry-meta"><span>2026 · research project</span><span class="badge live">interactive</span></p>
             <h3 class="entry-title"><a href="articles/sycophancy.html">Autotelic quality-diversity for discovering LLM sycophancy</a></h3>
@@ -419,7 +431,7 @@
   </section>
 
   <section class="section" id="publications">
-    <header class="section-head"><span class="section-num">03</span><h2 class="section-title">Publications</h2></header>
+    <header class="section-head"><div><span class="section-num">03</span><h2 class="section-title">Publications</h2></div></header>
     <div class="panel pub">
       <ul class="rows">
         <li><div><a href="https://arxiv.org/abs/2605.13740">Pinductor: Learning POMDP World Models from Observations with Language-Model Priors</a></div><div class="row-sub">V. Six*, F. Panse*, <strong>M. Fajeau</strong>*, L. Da Costa*, M. Sharma, A. Amayuelas, T. Z. Xiao, D. Hyland, P. Hennig, B. Schölkopf · <span data-lang="fr">* co-premiers auteurs</span><span data-lang="en" lang="en" hidden>* equal first authors</span></div><div class="row-venue">NeurIPS 2026 (poster) · arXiv 2605.13740</div><div class="links"><a class="primary" href="https://arxiv.org/pdf/2605.13740">PDF</a><a href="https://arxiv.org/abs/2605.13740">arXiv</a><a href="https://github.com/atomresearch/pinductor">Code</a><button type="button" class="bib-toggle" aria-expanded="false" aria-controls="bib-pinductor">BibTeX</button></div><pre class="codeblock" id="bib-pinductor" hidden>@inproceedings{six2026pinductor,
@@ -433,21 +445,19 @@
     </div>
   </section>
 
-  <section class="section band" id="engineering">
-    <header class="section-head"><span class="section-num">04</span><h2 class="section-title"><span data-lang="fr">Ingénierie</span><span data-lang="en" lang="en" hidden>Engineering</span></h2></header>
-    <p class="section-intro" data-lang="fr">Côté systèmes, j'écris mes propres kernels et je mesure où part le temps.</p>
-    <p class="section-intro" data-lang="en" lang="en" hidden>On the systems side, I write my own kernels and measure where the time goes.</p>
+  <section class="section" id="engineering">
+    <header class="section-head"><div><span class="section-num">04</span><h2 class="section-title"><span data-lang="fr">Ingénierie</span><span data-lang="en" lang="en" hidden>Engineering</span></h2></div><p class="section-intro" data-lang="fr">Côté systèmes, j'écris mes propres kernels et je mesure où part le temps.</p><p class="section-intro" data-lang="en" lang="en" hidden>On the systems side, I write my own kernels and measure where the time goes.</p></header>
     <ul class="projects">
-          <li class="project"><div class="row-title">HIP-Transformer <span class="row-meta">2024 – 2025</span></div>
+          <li class="project"><div class="metric"><span class="metric-v">×40</span><span class="metric-l" data-lang="fr">face au CPU</span><span class="metric-l" data-lang="en" lang="en" hidden>vs the CPU</span></div><div class="bars-mini" aria-hidden="true"><div><span>CPU</span><i style="width:2.5%"></i><b>1</b></div><div><span>HIP</span><i class="hi" style="width:100%"></i><b>×40</b></div></div><div class="row-title">HIP-Transformer <span class="row-meta">2024 – 2025</span></div>
             <div class="row-sub" data-lang="fr">Transformer décodeur en C++/HIP, avec des kernels d'attention écrits à la main (tuilage SRAM, backward manuel). ×40 par rapport au CPU ; compute-bound d'après l'analyse Roofline.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>Decoder-only Transformer in C++/HIP with hand-written attention kernels (SRAM tiling, manual backward pass). 40× faster than the CPU baseline; compute-bound by Roofline analysis.</div></li>
-          <li class="project"><div class="row-title"><span data-lang="fr">Quantification INT8/FP8</span><span data-lang="en" lang="en" hidden>Quantization INT8/FP8</span> <span class="row-meta">Thales · 2024</span></div>
+          <li class="project"><div class="metric"><span class="metric-v">&lt; 1 ms</span><span class="metric-l" data-lang="fr">de latence, FPGA et GPU</span><span class="metric-l" data-lang="en" lang="en" hidden>latency, FPGA and GPU</span></div><div class="row-title"><span data-lang="fr">Quantification INT8/FP8</span><span data-lang="en" lang="en" hidden>Quantization INT8/FP8</span> <span class="row-meta">Thales · 2024</span></div>
             <div class="row-sub" data-lang="fr">Quantification et sparsité des poids de Transformers pour FPGA et GPU. Latence sous la milliseconde, par fusion de couches et optimisation des accès mémoire.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>Transformer quantization and weight sparsity for FPGA and GPU. Sub-millisecond latency through hardware-aware layer fusion and memory-access optimization.</div></li>
-          <li class="project"><div class="row-title"><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="fr">LoRA vs fine-tuning complet</a><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="en" lang="en" hidden>LoRA vs full fine-tuning</a> <span class="row-meta">Mistral-7B</span></div>
+          <li class="project"><div class="metric"><span class="metric-v" data-lang="fr">72,3 %</span><span class="metric-v" data-lang="en" lang="en" hidden>72.3%</span><span class="metric-l" data-lang="fr">avec LoRA</span><span class="metric-l" data-lang="en" lang="en" hidden>with LoRA</span></div><div class="bars-mini" aria-hidden="true"><div><span data-lang="fr">base</span><span data-lang="en" lang="en" hidden>base</span><i style="width:46.1%"></i><b data-lang="fr">46,1 %</b><b data-lang="en" lang="en" hidden>46.1%</b></div><div><span>LoRA</span><i class="hi" style="width:72.3%"></i><b data-lang="fr">72,3 %</b><b data-lang="en" lang="en" hidden>72.3%</b></div></div><div class="row-title"><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="fr">LoRA vs fine-tuning complet</a><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="en" lang="en" hidden>LoRA vs full fine-tuning</a> <span class="row-meta">Mistral-7B</span></div>
             <div class="row-sub" data-lang="fr">1 536 paires d'instructions construites de zéro et un fine-tuning de bout en bout sur une H100 (QLoRA). LoRA atteint 72,3 %, contre 46,1 % pour le modèle de base ; le fine-tuning complet s'effondre après une époque.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>1,536 instruction pairs built from scratch and end-to-end fine-tuning on one H100 (QLoRA). LoRA reaches 72.3%, against 46.1% for the base model; full fine-tuning mode-collapses after one epoch.</div></li>
-          <li class="project"><div class="row-title">GRACE <span class="row-meta">2024 – 2025</span></div>
+          <li class="project"><div class="metric"><span class="metric-v" data-lang="fr">+16 %</span><span class="metric-v" data-lang="en" lang="en" hidden>+16%</span><span class="metric-l" data-lang="fr">sur GSM8K, sans fine-tuning</span><span class="metric-l" data-lang="en" lang="en" hidden>on GSM8K, no fine-tuning</span></div><div class="row-title">GRACE <span class="row-meta">2024 – 2025</span></div>
             <div class="row-sub" data-lang="fr">Décodage chain-of-thought pas à pas, guidé par un vérificateur contrastif. +16 % sur GSM8K, sans fine-tuning supplémentaire.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>Step-by-step chain-of-thought decoding guided by a contrastive step verifier. +16% on GSM8K, without extra fine-tuning.</div></li>
         </ul>
@@ -455,12 +465,12 @@
   </section>
 
   <section class="section" id="contact">
-    <header class="section-head"><span class="section-num">05</span><h2 class="section-title">Contact</h2></header>
+    <header class="section-head"><div><span class="section-num">05</span><h2 class="section-title">Contact</h2></div></header>
     <div class="panel cta">
       <p class="cta-text" data-lang="fr">Une question, une idée de collaboration : écrivez-moi.</p>
       <p class="cta-text" data-lang="en" lang="en" hidden>A question, an idea for a collaboration: write to me.</p>
       <ul class="btns">
-        <li><button type="button" class="btn mail-reveal"><span data-lang="fr">E-mail</span><span data-lang="en" lang="en" hidden>Email</span></button><noscript><span class="btn">fajeaumathis8 [at] gmail.com</span></noscript></li>
+        <li><button type="button" class="btn primary mail-reveal"><span data-lang="fr">E-mail</span><span data-lang="en" lang="en" hidden>Email</span></button><noscript><span class="btn">fajeaumathis8 [at] gmail.com</span></noscript></li>
         <li><a class="btn" href="https://github.com/mtsfj">GitHub</a></li>
         <li><a class="btn" href="https://scholar.google.com/citations?user=kMFBjk4AAAAJ">Google Scholar</a></li>
         <li><a class="btn" href="https://www.linkedin.com/in/mathis-fajeau/">LinkedIn</a></li>
@@ -475,7 +485,7 @@
   <span class="pixel">© 2026 Mathis Fajeau</span>
 </footer>
 
-<script src="assets/site.js?v=2"></script>
+<script src="assets/site.js?v=4"></script>
 
 <script src="assets/three.min.js"></script>
 <script>
