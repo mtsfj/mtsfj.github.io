@@ -53,7 +53,7 @@
   .hero { position: relative; height: 100svh; min-height: 540px; overflow: hidden; background: var(--night-deep) url(data:image/webp;base64,UklGRmoBAABXRUJQVlA4IF4BAADwBwCdASowABsAPrVInksnJCKhqrgN+OAWiWIAtPYi8j07fIin6I6CFjbOuV1/HelPXn1CNPU4/Wi67AL1zb0qwxSCz5JInwAA/vbwddqFDj70M1LvCREuuDCTH2qq2IBzxyRJ78d9W05g4YINol1y3dh498RL4FQ9Sj1rew+BuHgVV1wP60SVFrjw3+q0h9yU0SNv2dGXwSG2WyOQa6hwRXqc9sYRr/0UdL+hkHaujeO2DLMH5O3JhYfoLgtOFSbUE5lR4Cq44zO9kVNKN6exjtxOEm9l1hZm9sjCOyo2b9+fuU2qpTmEtowPabeM76P6PXfF+kEQZnB7rrRDz77efRB6/DAe6UIZG80820RVpXycWa9+oGhh/Scod2e1Xfa0v456TRKWiRp5U+hE7ve8+zZOPFyeuczup1vB9XAXehMUMYraofHtie2wWNz/L8hkbGvLL8mqJvyRxp8AAA==) center 55% / cover no-repeat; }
   .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
   .hero { touch-action: pan-y; }   /* a horizontal drag pans the street (script), a vertical one scrolls the page */
-  .hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 22%; background: linear-gradient(to top, rgba(15,12,34,.35), rgba(15,12,34,0)); pointer-events: none; }
+  .hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 26%; background: linear-gradient(to top, var(--night-deep) 0, rgba(15,12,34,.55) 14%, rgba(15,12,34,.18) 50%, rgba(15,12,34,0)); pointer-events: none; }
   .pc { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; background: rgba(8,6,20,.55); backdrop-filter: blur(2px); }
   .pc.on { display: flex; }
   .pc-win { width: min(660px, calc(100vw - 32px)); background: #141026; border: 2px solid #ff8ad1; box-shadow: 0 0 0 2px #0a0718, 0 0 40px rgba(255,138,209,.35); image-rendering: pixelated; animation: pc-pop .16s steps(4); }
@@ -232,11 +232,11 @@
   [hidden] { display: none !important; }
   .scroll-hint { position: absolute; z-index: 1; right: clamp(20px, 6vw, 96px); bottom: 34px; font-family: var(--pixel); font-size: 11px; color: var(--paper-dim); }
 
-  main { padding: 0 clamp(20px, 6vw, 96px); }
+  main { padding: 0 clamp(20px, 6vw, 96px); background: linear-gradient(var(--night-deep), var(--night) 360px); }
   section { padding: 84px 0; position: relative; }
   section + section::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 16' preserveAspectRatio='none'%3E%3Cpath d='M0 3 Q 600 17 1200 3' fill='none' stroke='%233d3560' stroke-width='1.6'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
   .grid { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 40px 64px; }
-  h2 { font-family: var(--pixel); font-weight: 400; font-size: 15px; margin: 4px 0 0; color: var(--pink); }
+  h2 { font-family: var(--pixel); font-weight: 400; font-size: 15px; margin: 4px 0 0; color: var(--pink); text-shadow: 0 0 10px rgba(255,138,209,.45), 0 0 26px rgba(255,138,209,.18); }
   .prose { max-width: var(--measure); }
   .prose p { margin: 0 0 1.2em; }
   .prose p:last-child { margin-bottom: 0; }
@@ -253,7 +253,7 @@
   .article p { margin: 0 0 10px; color: var(--paper-dim); max-width: 60ch; }
   .article .links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; }
   .article .links a.live { color: var(--sodium); text-decoration-color: var(--sodium); }
-  .article .date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); margin-bottom: 8px; display: block; }
+  .article .date { font-size: 13px; font-weight: 500; letter-spacing: .01em; color: var(--sodium); margin-bottom: 6px; display: block; }
   /* the timeline: a vertical chronological list in the bio's left column (no captured wheel; the page scrolls as a page) */
   #bio .grid { align-items: start; }
   #bio .prose .news { margin-top: 34px; }
@@ -263,7 +263,7 @@
   .tl li:last-child::before { display: none; }
   .tl li::after { content: ""; position: absolute; left: 1px; top: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--pink); box-shadow: 0 0 10px rgba(255,138,209,.7), 0 0 24px rgba(255,138,209,.25); }
   .tl li:last-child::after { background: var(--sodium); box-shadow: 0 0 10px rgba(255,195,107,.7), 0 0 24px rgba(255,195,107,.25); }
-  .tl-date { font-family: var(--pixel); font-size: 10px; color: var(--sodium); display: block; margin-bottom: 3px; }
+  .tl-date { font-size: 13px; font-weight: 500; letter-spacing: .01em; font-variant-numeric: tabular-nums; color: var(--sodium); display: block; margin-bottom: 2px; }
   .tl-label { display: block; font-size: 16px; font-weight: 500; line-height: 1.2; margin-bottom: 2px; }
   .tl-sub { display: block; font-size: 13px; color: var(--paper-dim); max-width: 24ch; }
   .pubs .links { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 15px; margin-top: 8px; }
@@ -272,7 +272,7 @@
   .pubs .links button:hover { text-decoration-color: var(--coral); }
   .bib { margin: 10px 0 0; padding: 12px 14px; font: 12px/1.5 ui-monospace, Consolas, monospace; color: var(--paper-dim); background: rgba(241,235,228,.04); border: 1px solid var(--rule); border-radius: 6px; white-space: pre; overflow-x: auto; }
   .drives { margin: 30px 0 0; }
-  .drives .k { font-family: var(--pixel); font-size: 11px; color: var(--pink); display: block; margin-bottom: 8px; }
+  .drives .k { font-family: var(--pixel); font-size: 12px; color: var(--pink); display: block; margin-bottom: 8px; }
   .drives p { margin: 0; max-width: var(--measure); }
   .pubs { margin: 0; padding: 0; list-style: none; max-width: 760px; }
   .pubs li { padding: 14px 0; border-top: 1px dashed var(--rule); }
@@ -281,7 +281,7 @@
   .pubs .venue { color: var(--sodium); font-size: 15px; }
   .pubs .contrib { margin-top: 6px; font-size: 15px; max-width: 70ch; }
   .news { margin: 0 0 30px; }
-  .news .k { font-family: var(--pixel); font-size: 11px; color: var(--pink); display: block; margin-bottom: 10px; }
+  .news .k { font-family: var(--pixel); font-size: 12px; color: var(--pink); display: block; margin-bottom: 10px; }
   .news ul { margin: 0; padding: 0; list-style: none; }
   .news li { display: grid; grid-template-columns: 6.5em 1fr; gap: 12px; padding: 5px 0; }
   .news .d { color: var(--sodium); font-variant-numeric: tabular-nums; }
@@ -289,12 +289,12 @@
   .eng .eng-t { font-weight: 600; }
   .eng .eng-y { font-weight: 400; color: var(--sodium); font-size: 14px; margin-left: 8px; }
   .eng li > div + div { color: var(--paper-dim); font-size: 15px; margin-top: 4px; max-width: 70ch; }
-  .eng-tools { margin: 22px 0 0; font-family: var(--pixel); font-size: 11px; color: var(--paper-dim); letter-spacing: .04em; }
+  .eng-tools { margin: 22px 0 0; font-size: 14px; color: var(--paper-dim); letter-spacing: .02em; }
   .contact-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px 14px; }
-  .contact-list li span, .contact-list li a { display: inline-block; padding: 8px 16px; border: 1px solid var(--rule); border-radius: 6px; text-decoration: none; }
-  .contact-list li a:hover { border-color: #a8e6ff; color: #a8e6ff; box-shadow: 0 0 12px rgba(168,230,255,.22); }
+  .contact-list li span, .contact-list li a, .contact-list li button { display: inline-block; padding: 8px 16px; border: 1px solid var(--rule); border-radius: 6px; text-decoration: none; font: inherit; color: inherit; background: none; cursor: pointer; }
+  .contact-list li a:hover, .contact-list li button:hover { border-color: #a8e6ff; color: #a8e6ff; box-shadow: 0 0 12px rgba(168,230,255,.22); }
   footer { padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  footer .pixel { font-family: var(--pixel); font-size: 10px; }
+  footer .pixel { font-family: var(--pixel); font-size: 11px; }
   footer .credit { flex-basis: 100%; font-size: 12px; opacity: .75; }
   @media (max-width: 720px) { .grid { grid-template-columns: 1fr; gap: 20px; } section { padding: 60px 0; } .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; } .article { flex-direction: column; gap: 16px; } .article .thumb { width: 100%; height: auto; }
     .bio-side { display: contents; } #bio .grid > .prose { order: 2; } .tl { order: 3; margin-top: 6px; } .tl-sub { max-width: none; } }   /* (on a phone the timeline follows the bio's text) */
@@ -545,7 +545,7 @@
     <div class="grid">
       <h2>Contact</h2>
       <ul class="contact-list">
-        <li><span>nomprenom8@gmail.com</span></li>
+        <li class="mail"><button type="button" class="mail-reveal"><span data-lang="fr">E-mail</span><span data-lang="en" lang="en" hidden>Email</span></button><noscript><span>fajeaumathis8 [at] gmail.com</span></noscript></li>
         <li><a href="https://github.com/mtsfj">GitHub</a></li>
         <li><a href="https://scholar.google.com/citations?user=kMFBjk4AAAAJ">Google Scholar</a></li>
         <li><a href="https://www.linkedin.com/in/mathis-fajeau/">LinkedIn</a></li>
@@ -574,6 +574,11 @@
     btn.addEventListener('click', () => { lang = lang === 'fr' ? 'en' : 'fr'; apply(); });
     apply();
   })();
+  // the email: built on a click (never in the page's text), then a plain link
+  document.querySelectorAll('.mail-reveal').forEach((b) => b.addEventListener('click', () => {
+    const at = ['fajeau', 'mathis', '8'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.'), a = document.createElement('a');
+    a.href = 'mailto:' + at; a.textContent = at; b.replaceWith(a); a.focus();
+  }));
   // the publication's BibTeX, shown on demand
   document.querySelectorAll('.bib-toggle').forEach((b) => b.addEventListener('click', () => {
     const pre = document.getElementById(b.getAttribute('aria-controls')); if (!pre) return;
@@ -9377,7 +9382,7 @@
     // camera window (scroll pushes the view down a little, like the page pulling the street away)
     stepPan(dt); stepPanY(dt);                    // the street's pan (phones), its vertical drift (wide ratios)
     stepNight(dt);                                // the night's hour, its grades (CLOCK)
-    const cx = Math.max(view.w / 2, Math.min(IW - view.w / 2, view.cx + PAN.x)) + px * 6, cy = Math.max(view.h / 2, Math.min(IH - view.h / 2, view.cy + PAN.y)) + py * 4 + scrollK * 40;
+    const cx = Math.max(view.w / 2, Math.min(IW - view.w / 2, view.cx + PAN.x + px * 6)), cy = Math.max(view.h / 2, Math.min(IH - view.h / 2, view.cy + PAN.y + py * 4 + scrollK * 40));   // (bounded after the parallax and the scroll's push: never past the painting's edge, where only the sky's colour is)
     camera.left = cx - view.w / 2; camera.right = cx + view.w / 2; camera.top = -(cy - view.h / 2); camera.bottom = -(cy + view.h / 2);
     camera.updateProjectionMatrix();
     placeTitle();                                 // the title on the wall follows the camera
