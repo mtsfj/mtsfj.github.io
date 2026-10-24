@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="assets/site.css?v=1">
+<link rel="stylesheet" href="assets/site.css?v=4">
 <link rel="preload" as="image" href="assets/layer_city_off.webp?v=57" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
@@ -212,11 +212,9 @@
   .hero-nav a:hover { color: var(--pink); }
   .scroll-hint { position: absolute; z-index: 1; right: clamp(20px, 6vw, 96px); bottom: 34px; font-family: var(--pixel); font-size: 11px; color: var(--paper-dim); }
 
-  #bio .prose .news { margin-top: 34px; }
   .drives { margin: 30px 0 0; } .drives p { margin: 0; max-width: var(--measure); }
-  .more { margin: 22px 0 0; font-size: 15px; } .tools { margin: 22px 0 0; letter-spacing: .02em; }
   @media (max-width: 720px) { .hero-nav { gap: 18px; font-size: 14px; } .scroll-hint { display: none; }
-    .bio-side { display: contents; } #bio .section-grid > .prose { order: 2; } #bio .chrono { order: 3; margin-top: 6px; } #bio .chrono-sub { max-width: none; } }   /* (on a phone the timeline follows the bio's text) */
+ }
   /* the catch: a battle panel (and a heal scene) over the hero; whole-device-pixel scale, set from JS (--k, --w, --h) */
   .cb { position: fixed; inset: 0; z-index: 1100; display: none; align-items: center; justify-content: center; }
   .cb.on { display: flex; }
@@ -292,34 +290,14 @@
   <div class="scroll-hint" data-lang="en" lang="en" hidden>↓ scroll</div>
 </header>
 
-<main class="page">
+<main class="page"><div class="container">
   <section class="section" id="bio">
-    <div class="section-grid">
-      <div class="bio-side">
-      <h2 class="section-title">Bio</h2>
-      <ol class="chrono" data-lang="fr" aria-label="Parcours">
-        <li><span class="chrono-date">2020 – 2022</span><span class="chrono-label">CPGE MP</span><span class="chrono-sub">mathématiques théoriques</span></li>
-        <li><span class="chrono-date">août 2022 – mars 2026</span><span class="chrono-label">IMT Atlantique</span><span class="chrono-sub">ingénieur IA et systèmes embarqués</span></li>
-        <li><span class="chrono-date">2024</span><span class="chrono-label">Thales</span><span class="chrono-sub">quantification INT8/FP8, R&amp;D en deep learning</span></li>
-        <li><span class="chrono-date">2025</span><span class="chrono-label">Airbus</span><span class="chrono-sub">RAG et validation de LLM en milieu critique</span></li>
-        <li><span class="chrono-date">déc. 2025</span><span class="chrono-label">Georgia Tech</span><span class="chrono-sub">M.Sc. CS, systèmes et machine learning</span></li>
-        <li><span class="chrono-date">fév. 2026</span><span class="chrono-label">MPI-IS / ELLIS Tübingen</span><span class="chrono-sub">groupe Schölkopf, Pinductor</span></li>
-        <li><span class="chrono-date">nov. 2026</span><span class="chrono-label">Thèse, Inria Flowers</span><span class="chrono-sub">exploration autotélique, jusqu'en 2029</span></li>
-      </ol>
-      <ol class="chrono" data-lang="en" lang="en" hidden aria-label="Timeline">
-        <li><span class="chrono-date">2020 – 2022</span><span class="chrono-label">CPGE MP</span><span class="chrono-sub">theoretical mathematics</span></li>
-        <li><span class="chrono-date">Aug 2022 – Mar 2026</span><span class="chrono-label">IMT Atlantique</span><span class="chrono-sub">M.Eng. AI and embedded systems</span></li>
-        <li><span class="chrono-date">2024</span><span class="chrono-label">Thales</span><span class="chrono-sub">INT8/FP8 quantization, deep learning R&amp;D</span></li>
-        <li><span class="chrono-date">2025</span><span class="chrono-label">Airbus</span><span class="chrono-sub">RAG and LLM validation in safety-critical settings</span></li>
-        <li><span class="chrono-date">Dec 2025</span><span class="chrono-label">Georgia Tech</span><span class="chrono-sub">M.Sc. CS, systems and machine learning</span></li>
-        <li><span class="chrono-date">Feb 2026</span><span class="chrono-label">MPI-IS / ELLIS Tübingen</span><span class="chrono-sub">Schölkopf group, Pinductor</span></li>
-        <li><span class="chrono-date">Nov 2026</span><span class="chrono-label">PhD, Inria Flowers</span><span class="chrono-sub">autotelic exploration, through 2029</span></li>
-      </ol>
-      </div>
+    <header class="section-head"><span class="section-num">01</span><h2 class="section-title">Bio</h2></header>
+    <div class="split">
       <div>
       <div class="prose" data-lang="fr">
-        <p>J'étudie comment des agents curieux peuvent cartographier ce qu'un grand modèle génératif sait faire, et où il échoue. En novembre 2026, je commence une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer. Le sujet : l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs. Plutôt qu'un benchmark figé, des agents se fixent leurs propres objectifs, puis découvrent et cartographient les capacités et les vulnérabilités du modèle.</p>
-        <div class="news">
+        <p class="lead">J'étudie comment des agents curieux peuvent cartographier ce qu'un grand modèle génératif sait faire, et où il échoue. En novembre 2026, je commence une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer. Le sujet : l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs. Plutôt qu'un benchmark figé, des agents se fixent leurs propres objectifs, puis découvrent et cartographient les capacités et les vulnérabilités du modèle.</p>
+        <div class="news panel">
           <span class="label">Actualités</span>
           <ul class="dated">
             <li><span class="d">nov. 2026</span><span>Début de ma thèse dans l'équipe Flowers (Inria Bordeaux).</span></li>
@@ -341,8 +319,8 @@
         </ul>
       </div>
       <div class="prose" data-lang="en" lang="en" hidden>
-        <p>I study how curious agents can map what a large generative model can do, and where it fails. In November 2026 I start a PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer. The topic: autotelic exploration for the automatic evaluation of large generative models. Instead of a fixed benchmark, agents set their own goals, then discover and map the model's capabilities and vulnerabilities.</p>
-        <div class="news">
+        <p class="lead">I study how curious agents can map what a large generative model can do, and where it fails. In November 2026 I start a PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer. The topic: autotelic exploration for the automatic evaluation of large generative models. Instead of a fixed benchmark, agents set their own goals, then discover and map the model's capabilities and vulnerabilities.</p>
+        <div class="news panel">
           <span class="label">News</span>
           <ul class="dated">
             <li><span class="d">Nov 2026</span><span>My PhD starts in the Flowers team (Inria Bordeaux).</span></li>
@@ -364,15 +342,35 @@
         </ul>
       </div>
       </div>
+      <aside class="panel chrono-panel">
+        <span class="label" data-lang="fr">Parcours</span><span class="label" data-lang="en" lang="en" hidden>Timeline</span>
+        <ol class="chrono" data-lang="fr" aria-label="Parcours">
+        <li><span class="chrono-date">2020 – 2022</span><span class="chrono-label">CPGE MP</span><span class="chrono-sub">mathématiques théoriques</span></li>
+        <li><span class="chrono-date">août 2022 – mars 2026</span><span class="chrono-label">IMT Atlantique</span><span class="chrono-sub">ingénieur IA et systèmes embarqués</span></li>
+        <li><span class="chrono-date">2024</span><span class="chrono-label">Thales</span><span class="chrono-sub">quantification INT8/FP8, R&amp;D en deep learning</span></li>
+        <li><span class="chrono-date">2025</span><span class="chrono-label">Airbus</span><span class="chrono-sub">RAG et validation de LLM en milieu critique</span></li>
+        <li><span class="chrono-date">déc. 2025</span><span class="chrono-label">Georgia Tech</span><span class="chrono-sub">M.Sc. CS, systèmes et machine learning</span></li>
+        <li><span class="chrono-date">fév. 2026</span><span class="chrono-label">MPI-IS / ELLIS Tübingen</span><span class="chrono-sub">groupe Schölkopf, Pinductor</span></li>
+        <li><span class="chrono-date">nov. 2026</span><span class="chrono-label">Thèse, Inria Flowers</span><span class="chrono-sub">exploration autotélique, jusqu'en 2029</span></li>
+      </ol>
+        <ol class="chrono" data-lang="en" lang="en" hidden aria-label="Timeline">
+        <li><span class="chrono-date">2020 – 2022</span><span class="chrono-label">CPGE MP</span><span class="chrono-sub">theoretical mathematics</span></li>
+        <li><span class="chrono-date">Aug 2022 – Mar 2026</span><span class="chrono-label">IMT Atlantique</span><span class="chrono-sub">M.Eng. AI and embedded systems</span></li>
+        <li><span class="chrono-date">2024</span><span class="chrono-label">Thales</span><span class="chrono-sub">INT8/FP8 quantization, deep learning R&amp;D</span></li>
+        <li><span class="chrono-date">2025</span><span class="chrono-label">Airbus</span><span class="chrono-sub">RAG and LLM validation in safety-critical settings</span></li>
+        <li><span class="chrono-date">Dec 2025</span><span class="chrono-label">Georgia Tech</span><span class="chrono-sub">M.Sc. CS, systems and machine learning</span></li>
+        <li><span class="chrono-date">Feb 2026</span><span class="chrono-label">MPI-IS / ELLIS Tübingen</span><span class="chrono-sub">Schölkopf group, Pinductor</span></li>
+        <li><span class="chrono-date">Nov 2026</span><span class="chrono-label">PhD, Inria Flowers</span><span class="chrono-sub">autotelic exploration, through 2029</span></li>
+      </ol>
+      </aside>
     </div>
-</section>
+  </section>
 
   <section class="section" id="articles">
-    <div class="section-grid">
-      <h2 class="section-title">Articles</h2>
-      <div data-lang="fr">
+    <header class="section-head"><span class="section-num">02</span><h2 class="section-title">Articles</h2></header>
+    <div data-lang="fr">
         <p class="section-intro">Chaque article existe en deux versions : une page interactive, pour manipuler les idées, et le document classique.</p>
-        <ul class="entries">
+        <ul class="entries-grid">
           <li class="entry">
             <a class="entry-media" href="articles/pinductor.html" tabindex="-1" aria-hidden="true"><img class="vignette" src="assets/thumb_pinductor.webp" alt="" width="168" height="112"></a>
             <div class="entry-body">
@@ -394,9 +392,9 @@
         </ul>
         <p class="more"><a href="blog/">Tous les billets et articles →</a></p>
       </div>
-      <div data-lang="en" lang="en" hidden>
+    <div data-lang="en" lang="en" hidden>
         <p class="section-intro">Each article comes in two versions: an interactive page where you can try the ideas, and the written document.</p>
-        <ul class="entries">
+        <ul class="entries-grid">
           <li class="entry">
             <a class="entry-media" href="articles/pinductor.html" tabindex="-1" aria-hidden="true"><img class="vignette" src="assets/thumb_pinductor.webp" alt="" width="168" height="112"></a>
             <div class="entry-body">
@@ -418,12 +416,11 @@
         </ul>
         <p class="more"><a href="blog/">All posts and articles →</a></p>
       </div>
-    </div>
   </section>
 
   <section class="section" id="publications">
-    <div class="section-grid">
-      <h2 class="section-title">Publications</h2>
+    <header class="section-head"><span class="section-num">03</span><h2 class="section-title">Publications</h2></header>
+    <div class="panel pub">
       <ul class="rows">
         <li><div><a href="https://arxiv.org/abs/2605.13740">Pinductor: Learning POMDP World Models from Observations with Language-Model Priors</a></div><div class="row-sub">V. Six*, F. Panse*, <strong>M. Fajeau</strong>*, L. Da Costa*, M. Sharma, A. Amayuelas, T. Z. Xiao, D. Hyland, P. Hennig, B. Schölkopf · <span data-lang="fr">* co-premiers auteurs</span><span data-lang="en" lang="en" hidden>* equal first authors</span></div><div class="row-venue">NeurIPS 2026 (poster) · arXiv 2605.13740</div><div class="links"><a class="primary" href="https://arxiv.org/pdf/2605.13740">PDF</a><a href="https://arxiv.org/abs/2605.13740">arXiv</a><a href="https://github.com/atomresearch/pinductor">Code</a><button type="button" class="bib-toggle" aria-expanded="false" aria-controls="bib-pinductor">BibTeX</button></div><pre class="codeblock" id="bib-pinductor" hidden>@inproceedings{six2026pinductor,
   title     = {Pinductor: Learning {POMDP} World Models from Observations with Language-Model Priors},
@@ -437,33 +434,31 @@
   </section>
 
   <section class="section" id="engineering">
-    <div class="section-grid">
-      <h2 class="section-title"><span data-lang="fr">Ingénierie</span><span data-lang="en" lang="en" hidden>Engineering</span></h2>
-      <div>
-        <p class="section-intro" data-lang="fr">Côté systèmes, j'écris mes propres kernels et je mesure où part le temps.</p>
-        <p class="section-intro" data-lang="en" lang="en" hidden>On the systems side, I write my own kernels and measure where the time goes.</p>
-        <ul class="rows">
-          <li><div class="row-title">HIP-Transformer <span class="row-meta">2024 – 2025</span></div>
+    <header class="section-head"><span class="section-num">04</span><h2 class="section-title"><span data-lang="fr">Ingénierie</span><span data-lang="en" lang="en" hidden>Engineering</span></h2></header>
+    <p class="section-intro" data-lang="fr">Côté systèmes, j'écris mes propres kernels et je mesure où part le temps.</p>
+    <p class="section-intro" data-lang="en" lang="en" hidden>On the systems side, I write my own kernels and measure where the time goes.</p>
+    <ul class="projects">
+          <li class="project"><div class="row-title">HIP-Transformer <span class="row-meta">2024 – 2025</span></div>
             <div class="row-sub" data-lang="fr">Transformer décodeur en C++/HIP, avec des kernels d'attention écrits à la main (tuilage SRAM, backward manuel). ×40 par rapport au CPU ; compute-bound d'après l'analyse Roofline.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>Decoder-only Transformer in C++/HIP with hand-written attention kernels (SRAM tiling, manual backward pass). 40× faster than the CPU baseline; compute-bound by Roofline analysis.</div></li>
-          <li><div class="row-title"><span data-lang="fr">Quantification INT8/FP8</span><span data-lang="en" lang="en" hidden>Quantization INT8/FP8</span> <span class="row-meta">Thales · 2024</span></div>
+          <li class="project"><div class="row-title"><span data-lang="fr">Quantification INT8/FP8</span><span data-lang="en" lang="en" hidden>Quantization INT8/FP8</span> <span class="row-meta">Thales · 2024</span></div>
             <div class="row-sub" data-lang="fr">Quantification et sparsité des poids de Transformers pour FPGA et GPU. Latence sous la milliseconde, par fusion de couches et optimisation des accès mémoire.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>Transformer quantization and weight sparsity for FPGA and GPU. Sub-millisecond latency through hardware-aware layer fusion and memory-access optimization.</div></li>
-          <li><div class="row-title"><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="fr">LoRA vs fine-tuning complet</a><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="en" lang="en" hidden>LoRA vs full fine-tuning</a> <span class="row-meta">Mistral-7B</span></div>
+          <li class="project"><div class="row-title"><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="fr">LoRA vs fine-tuning complet</a><a href="https://github.com/mtsfj/f1-conversational-ai" data-lang="en" lang="en" hidden>LoRA vs full fine-tuning</a> <span class="row-meta">Mistral-7B</span></div>
             <div class="row-sub" data-lang="fr">1 536 paires d'instructions construites de zéro et un fine-tuning de bout en bout sur une H100 (QLoRA). LoRA atteint 72,3 %, contre 46,1 % pour le modèle de base ; le fine-tuning complet s'effondre après une époque.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>1,536 instruction pairs built from scratch and end-to-end fine-tuning on one H100 (QLoRA). LoRA reaches 72.3%, against 46.1% for the base model; full fine-tuning mode-collapses after one epoch.</div></li>
-          <li><div class="row-title">GRACE <span class="row-meta">2024 – 2025</span></div>
+          <li class="project"><div class="row-title">GRACE <span class="row-meta">2024 – 2025</span></div>
             <div class="row-sub" data-lang="fr">Décodage chain-of-thought pas à pas, guidé par un vérificateur contrastif. +16 % sur GSM8K, sans fine-tuning supplémentaire.</div>
             <div class="row-sub" data-lang="en" lang="en" hidden>Step-by-step chain-of-thought decoding guided by a contrastive step verifier. +16% on GSM8K, without extra fine-tuning.</div></li>
         </ul>
-        <p class="small tools">CUDA · HIP · Triton · <span data-lang="fr">tuilage SRAM</span><span data-lang="en" lang="en" hidden>SRAM tiling</span> · Roofline · Nsight / Omniperf · Slurm</p>
-      </div>
-    </div>
+    <ul class="chips tools"><li class="chip">CUDA</li><li class="chip">HIP</li><li class="chip">Triton</li><li class="chip"><span data-lang="fr">tuilage SRAM</span><span data-lang="en" lang="en" hidden>SRAM tiling</span></li><li class="chip">Roofline</li><li class="chip">Nsight / Omniperf</li><li class="chip">Slurm</li></ul>
   </section>
 
   <section class="section" id="contact">
-    <div class="section-grid">
-      <h2 class="section-title">Contact</h2>
+    <header class="section-head"><span class="section-num">05</span><h2 class="section-title">Contact</h2></header>
+    <div class="panel cta">
+      <p class="cta-text" data-lang="fr">Une question, une idée de collaboration : écrivez-moi.</p>
+      <p class="cta-text" data-lang="en" lang="en" hidden>A question, an idea for a collaboration: write to me.</p>
       <ul class="btns">
         <li><button type="button" class="btn mail-reveal"><span data-lang="fr">E-mail</span><span data-lang="en" lang="en" hidden>Email</span></button><noscript><span class="btn">fajeaumathis8 [at] gmail.com</span></noscript></li>
         <li><a class="btn" href="https://github.com/mtsfj">GitHub</a></li>
@@ -472,14 +467,15 @@
       </ul>
     </div>
   </section>
-</main>
+</div></main>
 
+<div class="skyline" aria-hidden="true"><canvas data-seed="mtsfj"></canvas></div>
 <footer class="site-footer">
   <span>Inria Bordeaux Sud-Ouest · 200 avenue de la Vieille Tour, 33405 Talence</span>
   <span class="pixel">© 2026 Mathis Fajeau</span>
 </footer>
 
-<script src="assets/site.js?v=1"></script>
+<script src="assets/site.js?v=2"></script>
 
 <script src="assets/three.min.js"></script>
 <script>

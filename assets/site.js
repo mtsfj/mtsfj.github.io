@@ -58,4 +58,29 @@
     }
     g.fillStyle = 'rgba(255,138,209,.10)'; g.fillRect(0, H - 6, W, 6);   // the street's glow
   });
+
+  // ---- the skyline: the street's roofs at the page's foot, one pixel of it = 4 of the screen, the same for the
+  // same seed. <div class="skyline"><canvas data-seed="…"></canvas></div>
+  function skyline(cv) {
+    const W = Math.max(160, Math.min(720, Math.round(cv.clientWidth / 4))), H = Math.max(14, Math.round(cv.clientHeight / 4));
+    cv.width = W; cv.height = H;
+    const g = cv.getContext('2d'), r = rnd(cv.dataset.seed || 'skyline'), lit = ['#ffc36b', '#ffc36b', '#ffc36b', '#ff8ad1', '#5ee6ff'];
+    g.clearRect(0, 0, W, H);
+    let x = 0;
+    while (x < W) {
+      const bw = 6 + Math.floor(r() * 14), bh = Math.round(H * (0.32 + 0.6 * r())), top = H - bh, c = r() < 0.5 ? '#1b1533' : '#211a3e';
+      g.fillStyle = c; g.fillRect(x, top, bw, bh);
+      if (r() < 0.25) { g.fillRect(x + Math.floor(bw / 2), top - 2 - Math.floor(r() * 3), 1, 3); }   // an antenna
+      if (r() < 0.2 && bw > 8) { g.fillStyle = '#ff3b3b'; g.globalAlpha = 0.8; g.fillRect(x + Math.floor(bw / 2), top - 1, 1, 1); g.globalAlpha = 1; }   // its red light
+      for (let wy = top + 2; wy < H - 1; wy += 3) for (let wx = x + 1; wx < x + bw - 1; wx += 2) {
+        if (r() < 0.16) { g.fillStyle = lit[Math.floor(r() * lit.length)]; g.globalAlpha = 0.35 + 0.5 * r(); g.fillRect(wx, wy, 1, 1); g.globalAlpha = 1; }
+      }
+      x += bw + (r() < 0.3 ? 1 : 0);
+    }
+  }
+  const skies = [...document.querySelectorAll('.skyline canvas')];
+  if (skies.length) {
+    skies.forEach(skyline);
+    let tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => skies.forEach(skyline), 150); });
+  }
 })();
