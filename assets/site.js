@@ -218,10 +218,8 @@
 
   // ---- the walls: on a wide screen the street goes on down the page's margins, a facade on each side drawn in the
   // scene's pixels (4 screen px a pixel): floors of windows lit or dark (curtains, plants, a cat), vertical neon signs
-  // with pictograms, red lanterns, vending machines, noren, balconies and their washing, wires and crows, small neon
-  // words. The same for the same page; it lives a little (neon flicker, windows, lanterns swaying) at 12 frames a
+  // with pictograms, red lanterns, vending machines, noren, balconies and their washing, wires and crows. The same for the same page; it lives a little (neon flicker, windows, lanterns swaying) at 12 frames a
   // second while seen, still under reduced motion. The content keeps its own ground: the walls fade toward it.
-  const FONT = { O: '111101101101111', P: '111101111100100', E: '111100110100111', N: '101111111111101', '2': '111001111100111', '4': '101101111001001', H: '101101111101101', B: '110101110101110', A: '010101111101101', R: '110101110101101' };
   const PICT = {
     bowl: ['.#..#..', '..#..#.', '#######', '#.....#', '.#...#.', '..###..'],
     cup: ['.#.#..', '#.#...', '......', '#####.', '#...##', '#...#.', '.###..'],
@@ -266,7 +264,6 @@
         } else if (kind === 'shop') {
           it.push({ k: 'noren', y: y + 6, c: pick(['#283a8f', '#8f2338', '#3a2a6f']) });
           it.push({ k: 'lantern', x: 4, y: y + 4, ph: r() * 6 }); if (W > 30) it.push({ k: 'lantern', x: W - 11, y: y + 4, ph: r() * 6 });
-          if (W > 44) it.push({ k: 'word', x: Math.round(W / 2 - 8), y: y + 30, w: pick(['OPEN', 'BAR', 'RAMEN']), c: pick(NEON), ph: r() * 9 });
         } else if (kind === 'sign') {
           const picts = [0, 1, 2].map(() => pick(Object.keys(PICT)));
           it.push({ k: 'sign', x: left ? 3 : W - 13, y: y + 2, picts, c: pick(NEON), ph: r() * 9 });
@@ -274,7 +271,6 @@
         } else if (kind === 'machines') {
           const m = Math.max(1, Math.min(3, Math.floor((W - 4) / 15)));
           for (let k = 0; k < m; k++) it.push({ k: 'vend', x: 3 + k * 15, y: y + F - 25, c: pick(['#e8e3f2', '#ff8ad1', '#5ee6ff', '#ffc36b']), seed: r() });
-          if (W - m * 15 > 14) it.push({ k: 'word', x: W - 15, y: y + 8, w: '24H', c: pick(NEON), ph: r() * 9 });
         }
         else if (kind === 'stairs') {
           it.push({ k: 'stairs', y, F, dir: r() < 0.5 ? 1 : -1 });
@@ -340,11 +336,6 @@
           for (let x = 2; x < W - 2; x += 6) R(x, it.y + 1, 5, 10, it.c);
           const cx = Math.floor(W / 2); R(cx - 2, it.y + 4, 5, 3, 'rgba(244,239,233,.75)'); R(cx - 1, it.y + 3, 3, 5, 'rgba(244,239,233,.75)');
         }
-        else if (k === 'word') {
-          if (!vis(it.y, 9)) continue; const off = !still && hash(Math.floor(t * 12), it.ph) < 0.05;
-          R(it.x - 2, it.y - 2, it.w.length * 4 + 3, 9, '#0c0a1b');
-          [...it.w].forEach((ch, j) => { const f = FONT[ch]; if (!f) return; for (let q = 0; q < 15; q++) if (f[q] === '1') { const px = it.x + j * 4 + q % 3, py = it.y + (q / 3 | 0); off ? R(px, py, 1, 1, 'rgba(255,255,255,.1)') : E(px, py, 1, 1, it.c, .9); } });
-        }
         else if (k === 'vend') {
           if (!vis(it.y, 25)) continue; const x = it.x, y = it.y;
           h.globalAlpha = .2; h.fillStyle = '#bfefff'; h.fillRect(x - 3, y - 2 - oy, 19, 30); h.globalAlpha = 1;
@@ -406,11 +397,11 @@
       }
     }
     function layout() {
-      const pr = pg.getBoundingClientRect(), cr = ct.getBoundingClientRect(), room = Math.floor(cr.left - pr.left - 36);
-      on = room >= 110;
+      const pr = pg.getBoundingClientRect(), cr = ct.getBoundingClientRect(), room = Math.min(240, Math.floor((cr.left - pr.left) * 0.55));   // (a little over half the margin: the content leads)
+      on = room >= 90;
       sides.forEach((S) => { S.wrap.style.display = on ? '' : 'none'; });
       if (!on) return;
-      P = room >= 220 ? 4 : 3; Hh = Math.ceil(pg.offsetHeight / P);
+      P = room >= 170 ? 4 : 3; Hh = Math.ceil(pg.offsetHeight / P);
       sides.forEach((S, k) => { S.wrap.style.width = room + 'px'; S.W = Math.floor(room / P); S.items = populate(S.W, Hh, rnd('wall' + k), S.side === 'left'); });
       frame();
     }
