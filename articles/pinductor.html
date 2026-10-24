@@ -16,6 +16,7 @@
 <meta name="theme-color" content="#0e1219">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/site.css?v=1">
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/Newsreader-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/IBMPlexSans-400-latin.woff2" crossorigin>
 <script type="application/ld+json">
@@ -231,29 +232,29 @@ footer.foot .cols{display:grid; grid-template-columns:repeat(auto-fit, minmax(26
 }
 </style>
 <style>
-/* ---- site direction artistique: Osaka at dusk palette, forced dark ---- */
+/* ---- the site's charter (../assets/site.css) over the walkthrough's own tokens: the street's palette, forced dark ---- */
 :root, :root[data-theme="dark"], :root:not([data-theme="light"]), :root[data-theme="light"]{
   color-scheme: dark;
-  --bg:#17132c; --surface:#1e1838; --surface-2:#241d44; --ink:#f1ebe4; --ink-2:#cfc8d8; --muted:#a59fbb; --line:rgba(241,235,228,.13); --line-2:rgba(241,235,228,.28);
-  --accent:#ff8ad1; --accent-ink:#ffb3e0; --accent-soft:rgba(255,138,209,.13); --orange:#ff7a63; --orange-soft:rgba(255,122,99,.16); --aqua:#3ee08a; --violet:#9d7bff; --violet-soft:rgba(157,123,255,.16); --lava:#ff7a63; --goal:#3ee08a;
-  --s1:#5ee6ff; --s2:#ff7a63; --s3:#3ee08a; --s1l:#a9f0ff; --ord1:#2b6f86; --ord2:#3ba7c4; --ord3:#5ee6ff; --ord4:#c2f5ff;
-  --grid:#2a2348; --axis:#3d3560; --code-bg:#0f0c22; --code-ink:#f1ebe4; --code-dim:#a59fbb; --stage-bg:#0f0c22; --shadow:0 12px 32px rgba(0,0,0,.35); --radius:12px;
-  --display:"Inter Tight", system-ui, sans-serif; --body:"Inter Tight", system-ui, sans-serif; --mono:"JetBrains Mono", ui-monospace, monospace;
+  --bg:var(--night); --surface:var(--panel); --surface-2:var(--panel-2); --ink:var(--paper); --ink-2:#cfc8d8; --muted:var(--paper-dim); --line:var(--rule); --line-2:var(--rule-2);
+  --accent:var(--pink); --accent-ink:#ffb3e0; --accent-soft:rgba(255,138,209,.13); --violet:#9d7bff; --orange:var(--coral); --orange-soft:rgba(255,122,99,.16); --aqua:var(--green); --violet-soft:rgba(157,123,255,.16); --lava:var(--coral); --goal:var(--green);
+  --s1:var(--cyan); --s2:var(--coral); --s3:var(--green); --s1l:#a9f0ff; --ord1:#2b6f86; --ord2:#3ba7c4; --ord3:var(--cyan); --ord4:#c2f5ff;
+  --grid:#2a2348; --axis:#3d3560; --code-bg:var(--night-deep); --code-ink:var(--paper); --code-dim:var(--paper-dim); --stage-bg:var(--night-deep); --shadow:0 12px 32px rgba(0,0,0,.35); --radius:12px;
+  --display:var(--sans); --body:var(--sans); --mono:"JetBrains Mono", ui-monospace, monospace;
 }
-h1{font-family:"Silkscreen", monospace; font-weight:400; font-size:clamp(34px, 5vw, 60px); letter-spacing:0; text-shadow:0 0 26px rgba(255,138,209,.45)}
+h1{font-family:var(--pixel); font-weight:400; font-size:clamp(34px, 5vw, 60px); letter-spacing:0; text-shadow:0 0 26px rgba(255,138,209,.45)}
 h2{font-weight:500} h3{font-weight:500}
-.lede{font-style:normal; font-family:var(--body); color:var(--muted)}
-.eyebrow{font-family:"Silkscreen", monospace; font-size:10px; letter-spacing:.02em; text-transform:none; color:var(--accent)}
+.lede{font-style:normal; font-family:var(--sans); color:var(--muted)}
+.eyebrow{font-family:var(--pixel); font-size:11px; letter-spacing:.02em; text-transform:none; color:var(--pink)}
 .btn.primary{color:var(--bg)}
-a{border-bottom-color:rgba(255,138,209,.45)} a:hover{border-bottom-color:var(--orange)}
-.site-top{padding:20px clamp(20px, 6vw, 96px); display:flex; justify-content:space-between; align-items:center; font-size:15px; border-bottom:1px solid var(--line)}
-.site-top a{border:0; color:var(--muted)} .site-top a:hover{color:var(--ink)}
-.site-top .brand{font-family:"Silkscreen", monospace; font-size:13px; color:var(--ink)}
-.site-note{padding:14px clamp(20px, 6vw, 96px); font-size:13.5px; color:var(--muted)}
+a{border-bottom-color:rgba(255,138,209,.45)} a:hover{border-bottom-color:var(--coral)}
+.site-bar a{border:0}
+/* (the charter's own spacing for these is the blog's; the walkthrough keeps its masthead's) */
+.eyebrow{margin:0} .masthead .lede{margin:0 0 14px} .masthead .links{font-size:14px; line-height:1.6}
+.site-note{padding:14px var(--gutter); font-size:13.5px; color:var(--muted)}
 </style>
 </head>
 <body>
-<nav class="site-top"><a class="brand" href="../index.html?lang=en">Mathis Fajeau</a><a href="../index.html?lang=en#articles">← All articles</a></nav>
+<header class="site-bar"><a class="brand" href="../?lang=en">Mathis Fajeau</a><nav aria-label="Navigation"><a href="../?lang=en#bio">Bio</a><a href="../blog/?lang=en">Blog</a><a href="../?lang=en#publications">Publications</a><a href="../?lang=en#contact">Contact</a></nav></header>
 
 
 <header class="masthead">

@@ -4,8 +4,12 @@ Site statique, aucun build : ouvrir `index.html` suffit.
 
 ```
 index.html              accueil (hero three.js + bio + articles + publications + contact), FR/EN
+blog/index.html         le blog : tous les billets et articles, en cartes (FR/EN)
+blog/modele.html        le modèle d'un billet (non référencé) : tous les composants de texte
 articles/pinductor.html walkthrough interactif du papier Pinductor (EN)
-articles/sycophancy.html article interactif du projet sycophancie (FR/EN)
+articles/sycophancy.html article interactif du projet sycophancie (EN)
+assets/site.css         la charte graphique : couleurs, polices, composants (partagée par toutes les pages)
+assets/site.js          langue FR/EN, e-mail révélé au clic, BibTeX, vignettes pixel générées
 assets/                 couches de l'illustration (WebP) et sprites
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
@@ -31,9 +35,22 @@ Un `.fr`/`.com` à ~10 €/an chez n'importe quel registrar, puis Settings → P
 
 `?lang=fr` ou `?lang=en` dans l'URL force la langue ; sinon celle du navigateur (français uniquement pour un navigateur en français).
 
-## Ajouter un article
+## La charte graphique
 
-Dupliquer `articles/sycophancy.html` (les styles sont dans le fichier), écrire le contenu, puis ajouter l'entrée dans les deux listes (FR et EN) de la section `#articles` de `index.html`.
+Toutes les pages chargent `assets/fonts/fonts.css`, puis `assets/site.css`, et `assets/site.js` en fin de page. Le `<style>` d'une page ne garde que ce qui lui est propre (la rue de l'accueil, les widgets d'un article).
+
+- **Couleurs** : la rue la nuit. `--night` (fond), `--night-deep` (barre, haut de page), `--panel` (surfaces), `--paper` / `--paper-dim` (texte), `--pink` (néons : titres, étiquettes), `--sodium` (lampadaire : dates, chiffres, action principale). Cyan, vert et violet : données seulement.
+- **Polices** : Silkscreen (pixel) pour les titres de page et les petites étiquettes, jamais pour du texte courant ; Inter Tight pour tout le reste ; JetBrains Mono pour le code.
+- **Composants** : `.site-bar` (barre du haut), `.masthead` + `.eyebrow` + `.display` + `.lede` (en-tête de page), `.section` + `.section-grid` + `.section-title` (sections), `.entry` (la carte d'un billet : vignette, méta, titre, phrase, liens) dans `.entries` ou `.entries-grid`, `.badge`, `.chip`, `.btn`, `.links`, `.rows`, `.kv`, `.dated`, `.chrono` (frise), `.tile`, `.panel`, `.prose` (texte long), `.takeaway` (encadré), `.site-footer`. Chacun est décrit en une ligne dans `site.css`.
+
+## Ajouter un billet
+
+1. Dupliquer `blog/modele.html` en `blog/<slug>.html`, écrire le texte avec les composants qu'il montre, enlever la ligne `robots`.
+2. Ajouter sa carte (`<li class="entry">`) en tête des deux listes de `blog/index.html`, FR et EN. Sans image, la vignette se dessine seule : `<canvas class="vignette" data-seed="<slug>"></canvas>`.
+3. Pour qu'il apparaisse aussi sur l'accueil, ajouter la même carte dans la section `#articles` de `index.html`.
+4. L'ajouter à `sitemap.xml`.
+
+Un article interactif (comme `articles/sycophancy.html`) suit le même chemin ; ses widgets restent dans son propre `<style>`.
 
 ## Le hero
 

@@ -16,53 +16,27 @@
 <meta name="theme-color" content="#0f0c22">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/site.css?v=1">
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/InterTight-400-latin.woff2" crossorigin>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"TechArticle","headline":"Autotelic quality-diversity for discovering LLM sycophancy","author":{"@type":"Person","name":"Mathis Fajeau","url":"https://mtsfj.github.io/"},"url":"https://mtsfj.github.io/articles/sycophancy.html","image":"https://mtsfj.github.io/og.png?v=3","description":"Autotelic quality-diversity search for the tactics that make a language model cave: a repertoire instead of a score."}
 </script>
 <style>
-  :root {
-    --night: #17132c; --night-deep: #0f0c22; --panel: #1e1838; --panel-2: #241d44;
-    --paper: #f1ebe4; --paper-dim: #a59fbb; --pink: #ff8ad1; --coral: #ff7a63; --sodium: #ffc36b; --cyan: #5ee6ff; --green: #3ee08a; --violet: #9d7bff;
-    --rule: rgba(241,235,228,.13); --rule-2: rgba(241,235,228,.28);
-    --sans: "Inter Tight", system-ui, sans-serif; --pixel: "Silkscreen", monospace; --mono: "JetBrains Mono", ui-monospace, monospace;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
-  body { margin: 0; background: var(--night); color: var(--paper); font-family: var(--sans); font-size: 16.5px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
-  a { color: inherit; text-decoration-color: var(--pink); text-underline-offset: 3px; }
-  a:hover { text-decoration-color: var(--coral); }
-  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
-  code, .mono { font-family: var(--mono); font-size: .88em; }
-  code { background: rgba(255,255,255,.06); padding: .1em .35em; border-radius: 4px; }
-
-  .top { padding: 20px clamp(20px, 6vw, 96px); display: flex; justify-content: space-between; align-items: center; font-size: 15px; border-bottom: 1px solid var(--rule); }
-  .top a { text-decoration: none; color: var(--paper-dim); } .top a:hover { color: var(--paper); }
-  .top .brand { font-family: var(--pixel); font-size: 13px; color: var(--paper); }
-
+  /* the charter (tokens, base, site bar, eyebrow, lede, chips, tiles, footer) is ../assets/site.css; here the article's own */
   .masthead { max-width: 1112px; margin: 0 auto; padding: 44px clamp(20px, 6vw, 96px) 30px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 40px; }
-  .eyebrow { font-family: var(--pixel); font-size: 10px; color: var(--pink); margin-bottom: 14px; }
   h1 { font-family: var(--pixel); font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.05; margin: 0 0 16px; text-shadow: 0 0 26px rgba(255,138,209,.45); }
-  .lede { font-size: clamp(18px, 1.6vw, 22px); color: var(--paper-dim); max-width: 34ch; margin: 0; }
   .meta { font-size: 14.5px; color: var(--paper-dim); display: flex; flex-direction: column; gap: 14px; justify-content: flex-end; }
   .meta b { color: var(--paper); font-weight: 500; }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip { display: inline-flex; align-items: center; gap: 7px; padding: 5px 10px; border: 1px solid var(--rule-2); border-radius: 999px; font-size: 13px; text-decoration: none; color: var(--paper); }
-  .chip .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sodium); }
   .tldr { margin: 0 auto; width: calc(100% - 2 * clamp(20px, 6vw, 96px)); max-width: 920px; padding: 22px 24px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; }
   .tldr p { margin: 0; max-width: 70ch; }
   .numbers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-  .tile { background: var(--panel-2); border-radius: 10px; padding: 12px; }
-  .tile .v { font-family: var(--pixel); font-size: 20px; color: var(--sodium); }
-  .tile .l { font-size: 12.5px; color: var(--paper-dim); line-height: 1.35; margin-top: 4px; }
   nav.toc { margin: 22px clamp(20px, 6vw, 96px) 0; font-size: 13.5px; }
   nav.toc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 0; margin: 0; }
   nav.toc a { text-decoration: none; color: var(--paper-dim); } nav.toc a:hover { color: var(--pink); }
   @media (max-width: 800px) { .masthead, .tldr { grid-template-columns: 1fr; } .numbers { grid-template-columns: 1fr; } }
 
-  main { max-width: 1112px; margin: 0 auto; padding: 0 clamp(20px, 6vw, 96px) 60px; }
+  main { max-width: 1112px; margin: 0 auto; padding: 0 clamp(20px, 6vw, 96px) 60px; line-height: 1.6; }
   section { padding: 60px 0 6px; max-width: 920px; border-top: 1px solid var(--rule); margin: 40px auto 0; }
   section:first-of-type { border-top: 0; margin-top: 0; }
   h2 { font-size: clamp(24px, 2.6vw, 32px); font-weight: 500; line-height: 1.15; margin: 0 0 18px; }
@@ -132,13 +106,12 @@
   .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   @media (max-width: 760px) { .chat, .chan, .two { grid-template-columns: 1fr; } .loop { grid-template-columns: 1fr 1fr; } .findings li { grid-template-columns: 1fr; } }
 
-  footer { max-width: 1112px; margin: 0 auto; padding: 40px clamp(20px, 6vw, 96px) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-  footer .pixel { font-family: var(--pixel); font-size: 10px; }
+  .site-footer { max-width: 1112px; margin: 0 auto; }
 </style>
 </head>
 <body>
 
-<nav class="top"><a class="brand" href="../index.html">Mathis Fajeau</a><a href="../index.html#articles">← All articles</a></nav>
+<header class="site-bar"><a class="brand" href="../">Mathis Fajeau</a><nav aria-label="Navigation"><a href="../#bio">Bio</a><a href="../blog/">Blog</a><a href="../#publications">Publications</a><a href="../#contact">Contact</a></nav></header>
 
 <header class="masthead">
   <div>
@@ -468,7 +441,7 @@
 
 </main>
 
-<footer>
+<footer class="site-footer">
   <span>Written from the project report: every number above is from the logs or the report's tables · code, data and runs on GitHub</span>
   <span class="pixel">© 2026 Mathis Fajeau</span>
 </footer>

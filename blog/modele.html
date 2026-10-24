@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- The model of a post. Duplicate it as blog/<slug>.html, replace the text, drop the robots line,
+     then add its card at the top of blog/index.html (and on the home if it should show there).
+     A post in one language: lang="fr" or "en" on <html>, no data-lang anywhere.
+     A post in two: give each block data-lang="fr" / data-lang="en" (the second hidden) and the titles as
+     data-title-fr / data-title-en; the language button then appears useful (keep it, or remove it for one language). -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Titre du billet · Mathis Fajeau</title>
+<meta name="description" content="Une phrase qui dit de quoi parle le billet.">
+<link rel="icon" type="image/png" href="../favicon.png">
+<meta property="og:title" content="Titre du billet">
+<meta property="og:description" content="Une phrase qui dit de quoi parle le billet.">
+<meta property="og:image" content="https://mtsfj.github.io/og.png?v=4">
+<meta property="og:type" content="article">
+<meta name="theme-color" content="#0f0c22">
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<link rel="stylesheet" href="../assets/site.css?v=1">
+</head>
+<body>
+
+<header class="site-bar">
+  <a class="brand" href="../">Mathis Fajeau</a>
+  <nav aria-label="Navigation">
+    <a href="../#bio">Bio</a>
+    <a href="./">Blog</a>
+    <a href="../#publications">Publications</a>
+    <a href="../#contact">Contact</a>
+  </nav>
+</header>
+
+<main class="page"><div class="container">
+  <header class="masthead">
+    <p class="eyebrow">Note · 24 octobre 2026 · 5 min</p>
+    <h1 class="display">Titre du billet</h1>
+    <p class="lede">Le chapeau : une ou deux phrases qui disent ce que le lecteur va apprendre.</p>
+    <div class="chips">
+      <span class="chip"><span class="dot"></span>exploration autotélique</span>
+      <a class="chip" href="#"><span class="dot"></span>code</a>
+    </div>
+  </header>
+
+  <article class="prose">
+    <p>Le texte courant : 17 px, 62 caractères par ligne au plus, des paragraphes courts. Les <a href="#">liens</a> sont soulignés de rose, le <code>code en ligne</code> est en JetBrains Mono.</p>
+
+    <h2>Un intertitre</h2>
+    <p>Les intertitres sont dans la police du texte, pas en pixel : le pixel reste pour les titres de page et les petites étiquettes.</p>
+    <ul>
+      <li>une liste à puces, ses puces en rose ;</li>
+      <li>des éléments courts.</li>
+    </ul>
+
+    <div class="takeaway"><p><b>À retenir.</b> Un encadré pour une seule idée importante.</p></div>
+
+    <h3>Un sous-titre</h3>
+    <blockquote>Une citation, en italique, avec son filet rose.</blockquote>
+
+    <figure>
+      <canvas class="vignette" data-seed="modele"></canvas>
+      <figcaption>Une légende de figure. Sans image, une vignette pixel se dessine d'après son data-seed.</figcaption>
+    </figure>
+
+    <pre>def exemple(x):
+    return x  # un bloc de code</pre>
+
+    <table>
+      <thead><tr><th>Méthode</th><th>Score</th></tr></thead>
+      <tbody><tr><td>A</td><td>72,3 %</td></tr><tr><td>B</td><td>46,1 %</td></tr></tbody>
+    </table>
+
+    <div class="tiles">
+      <div class="tile"><div class="v">164</div><div class="l">une tuile : un nombre, ce qu'il compte</div></div>
+      <div class="tile"><div class="v">×40</div><div class="l">une autre</div></div>
+    </div>
+
+    <hr>
+    <p class="small">Une note de fin, en petit.</p>
+  </article>
+
+</div></main>
+
+<footer class="site-footer">
+  <span><a href="./">← Tous les billets</a></span>
+  <span class="pixel">© 2026 Mathis Fajeau</span>
+</footer>
+
+<script src="../assets/site.js?v=1"></script>
+</body>
+</html>
