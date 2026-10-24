@@ -41,7 +41,7 @@ Toutes les pages chargent `assets/fonts/fonts.css`, puis `assets/site.css`, et `
 
 - **Couleurs** : la rue la nuit. `--night` (fond), `--night-deep` (barre, haut de page), `--panel` (surfaces), `--paper` / `--paper-dim` (texte), `--pink` (néons : titres, étiquettes), `--sodium` (lampadaire : dates, chiffres, action principale). Cyan, vert et violet : données seulement.
 - **Polices** : Silkscreen (pixel) pour les titres de page et les petites étiquettes, jamais pour du texte courant ; Inter Tight pour tout le reste ; JetBrains Mono pour le code.
-- **Composants** : `.site-bar` (barre du haut), `.masthead` + `.eyebrow` + `.display` + `.lede` (en-tête de page), `.section` + `.section-grid` + `.section-title` (sections), `.entry` (la carte d'un billet : vignette, méta, titre, phrase, liens) dans `.entries` ou `.entries-grid`, `.badge`, `.chip`, `.btn`, `.links`, `.rows`, `.kv`, `.dated`, `.chrono` (frise), `.tile`, `.panel`, `.prose` (texte long), `.takeaway` (encadré), `.site-footer`. Chacun est décrit en une ligne dans `site.css`.
+- **Composants** : `.site-bar` (barre du haut), `.masthead` + `.eyebrow` + `.display` + `.lede` (en-tête de page), `.section` + `.section-head` (numéro, titre pixel, filet néon) (sections), `.split` (texte + panneau à droite), `.lead` (premier paragraphe), `.projects` / `.project` (cartes de projet), `.cta` (appel à l'action), `.skyline` (la ligne d'immeubles du bas de page), `.entry` (la carte d'un billet : vignette, méta, titre, phrase, liens) dans `.entries` ou `.entries-grid`, `.badge`, `.chip`, `.btn`, `.links`, `.rows`, `.kv`, `.dated`, `.chrono` (frise), `.tile`, `.panel`, `.prose` (texte long), `.takeaway` (encadré), `.site-footer`. Chacun est décrit en une ligne dans `site.css`.
 
 ## Ajouter un billet
 

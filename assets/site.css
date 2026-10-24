@@ -48,16 +48,23 @@ code, kbd, .mono { font-family: var(--mono); font-size: .88em; }
 /* ---- layout ---- */
 .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 var(--gutter); }
 /* a page that follows the hero (or a site bar): it starts on the sky's last blue */
-.page { padding: 0 var(--gutter); background: linear-gradient(var(--night-deep), var(--night) 360px); }
+.page { padding: 0 var(--gutter) 40px; background: radial-gradient(900px 520px at 88% 18%, rgba(255,138,209,.055), transparent 62%), radial-gradient(760px 560px at 6% 58%, rgba(94,230,255,.035), transparent 62%), linear-gradient(var(--night-deep), var(--night) 360px); }
 /* a section: generous room, a faint curved rule between two (a wire across the street) */
-.section { padding: 84px 0; position: relative; }
-.section + .section::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 16' preserveAspectRatio='none'%3E%3Cpath d='M0 3 Q 600 17 1200 3' fill='none' stroke='%233d3560' stroke-width='1.6'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
+.section { padding: 72px 0; position: relative; }
+.section:first-child { padding-top: 96px; }
+/* a section's head: its number in sodium, its lit title, a neon rule fading out */
+.section-head { display: flex; align-items: baseline; gap: 14px; margin: 0 0 34px; padding-bottom: 14px; position: relative; }
+.section-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, rgba(255,138,209,.55), rgba(255,138,209,.12) 40%, transparent); }
+.section-num { font-family: var(--pixel); font-size: 13px; color: var(--sodium); }
+.section-head .section-title { font-size: 20px; margin: 0; }
 /* the page's width for a blog, a post: centred */
 .container { max-width: var(--wide); margin: 0 auto; }
 .section.tight { padding-top: 12px; }
 /* the label column on the left, the content on the right; one column on a phone */
 .section-grid { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 40px 64px; align-items: start; }
-@media (max-width: 720px) { .section { padding: 60px 0; } .section-grid { grid-template-columns: 1fr; gap: 20px; } }
+/* text on the left, an aside (a panel) on the right; the aside follows the text on a phone */
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 330px); gap: 40px 64px; align-items: start; }
+@media (max-width: 720px) { .section { padding: 52px 0; } .section:first-child { padding-top: 64px; } .section-grid, .split { grid-template-columns: 1fr; gap: 28px; } }
 
 /* ---- type ---- */
 /* a section's title: a lit pixel sign */
@@ -70,6 +77,10 @@ code, kbd, .mono { font-family: var(--mono); font-size: .88em; }
 .display { font-family: var(--pixel); font-weight: 400; font-size: clamp(30px, 4.6vw, 54px); line-height: 1.05; margin: 0 0 16px; text-shadow: 0 0 26px rgba(255,138,209,.45); text-wrap: balance; }
 .lede { font-size: clamp(18px, 1.6vw, 22px); color: var(--paper-dim); max-width: 38ch; margin: 0; }
 .section-intro { color: var(--paper-dim); margin: 0 0 26px; max-width: var(--measure); }
+/* the first paragraph of a text: larger, the reader's way in */
+.lead { font-size: clamp(19px, 1.5vw, 21px); line-height: 1.55; color: var(--paper); }
+/* a 'more' link under a list */
+.more { margin: 26px 0 0; font-size: 15px; }
 
 /* ---- the site bar: every page but the home (the home has its street) ---- */
 .site-bar { padding: 18px var(--gutter); display: flex; justify-content: space-between; align-items: center; gap: 18px; font-size: 15px; border-bottom: 1px solid var(--rule); background: var(--night-deep); }
@@ -113,7 +124,7 @@ a.chip:hover { border-color: var(--pink); }
    <div class="entry-body"> <p class="entry-meta">…</p> <h3 class="entry-title"><a href>…</a></h3> <p class="entry-text">…</p> <div class="links">…</div> </div> </article>
    .entries stacks them (the home); .entries-grid lays them in columns (the blog) */
 .entries { margin: 0; padding: 0; list-style: none; max-width: 820px; display: flex; flex-direction: column; gap: 18px; }
-.entries-grid { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.entries-grid { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 22px; }
 .entry { position: relative; display: flex; gap: 24px; padding: 20px; border: 1px solid var(--rule); border-radius: var(--radius); background: rgba(241,235,228,.025); transition: border-color .25s, box-shadow .25s, transform .25s; }
 .entry:hover { border-color: rgba(255,138,209,.5); box-shadow: 0 0 22px rgba(255,138,209,.12); }
 .entries-grid .entry { flex-direction: column; gap: 16px; }
@@ -140,6 +151,19 @@ a.chip:hover { border-color: var(--pink); }
 .row-note { margin-top: 6px; font-size: 15px; max-width: 70ch; }
 .row-venue { color: var(--sodium); font-size: 15px; }
 .rows .links { margin-top: 8px; }
+/* projects: one panel each, in a grid */
+.projects { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+.project { background: rgba(30,24,56,.6); border: 1px solid var(--rule); border-radius: 12px; padding: 18px 20px; transition: border-color .25s, box-shadow .25s; }
+.project:hover { border-color: rgba(255,138,209,.45); box-shadow: 0 0 20px rgba(255,138,209,.10); }
+.project .row-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 8px; }
+.project .row-meta { margin-left: 0; }
+.project .row-sub { margin-top: 0; }
+.chips.tools { margin: 24px 0 0; padding: 0; list-style: none; }
+.chips.tools .chip { color: var(--paper-dim); }
+/* a call to action: one sentence, its buttons */
+.cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 28px; padding: 28px 30px; }
+.cta-text { margin: 0; font-size: clamp(18px, 1.5vw, 21px); max-width: 34ch; }
+.pub .rows { max-width: none; }
 /* key / value lines (a bio's facts) */
 .kv { margin: 28px 0 0; padding: 0; list-style: none; font-size: 15px; }
 .kv li { padding: 8px 0; border-top: 1px dashed var(--rule); display: flex; gap: 18px; }
@@ -148,6 +172,7 @@ a.chip:hover { border-color: var(--pink); }
 .dated { margin: 0; padding: 0; list-style: none; }
 .dated li { display: grid; grid-template-columns: 6.5em 1fr; gap: 12px; padding: 5px 0; }
 .dated .d { color: var(--sodium); font-variant-numeric: tabular-nums; }
+@media (max-width: 480px) { .dated li { grid-template-columns: 1fr; gap: 0; padding: 6px 0; } }
 
 /* ---- the chronology (a timeline): lit dots on a wire, the last one in sodium ---- */
 .chrono { margin: 22px 0 0; padding: 0; list-style: none; }
@@ -161,7 +186,12 @@ a.chip:hover { border-color: var(--pink); }
 .chrono-sub { display: block; font-size: 13px; color: var(--paper-dim); max-width: 24ch; }
 
 /* ---- surfaces ---- */
-.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; }
+.panel { background: rgba(30,24,56,.72); border: 1px solid var(--rule); border-radius: 14px; padding: 22px 24px; }
+.panel > .label:first-child { margin-bottom: 14px; }
+.prose .panel { margin: 30px 0; }
+.chrono-panel .chrono { margin-top: 6px; }
+.chrono-panel .chrono-sub { max-width: none; }
+@media (min-width: 721px) { .chrono-panel { position: sticky; top: 28px; } }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
 /* a tile: one number, what it counts */
 .tile { background: var(--panel-2); border-radius: var(--radius); padding: 12px; }
@@ -192,6 +222,11 @@ a.chip:hover { border-color: var(--pink); }
 /* a takeaway: one thing to keep */
 .takeaway { margin: 1.4em 0; padding: 14px 18px; background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--sodium); border-radius: 0 8px 8px 0; }
 .takeaway > :last-child { margin-bottom: 0; }
+
+/* ---- the skyline: a row of pixel roofs, lit windows, before the footer (drawn by site.js) ---- */
+.skyline { line-height: 0; background: linear-gradient(transparent 0, var(--night-deep) 100%); }
+.skyline canvas { display: block; width: 100%; height: clamp(56px, 8vw, 110px); image-rendering: pixelated; }
+.skyline + .site-footer { border-top: 0; background: var(--night-deep); }
 
 /* ---- the footer ---- */
 .site-footer { padding: 40px var(--gutter) 48px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
