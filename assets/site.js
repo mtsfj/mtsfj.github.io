@@ -83,4 +83,62 @@
     skies.forEach(skyline);
     let tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => skies.forEach(skyline), 150); });
   }
+
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- reveal: the page's blocks come in as they are reached, a grid's items one after the other
+  const io = 'IntersectionObserver' in window && !still ? new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }) : null;
+  if (io) {
+    const blocks = document.querySelectorAll('.page .section-head, .page .split > *, .page .stats > li, .page .entries-grid > li, .page .projects > li, .page .chips.tools, .page .pub, .page .cta, .page .more, .page .masthead > *, .page .prose > *, .page .chrono');
+    blocks.forEach((el) => {
+      const sib = el.parentElement ? [...el.parentElement.children].indexOf(el) : 0;
+      el.classList.add('reveal'); el.style.transitionDelay = Math.min(sib, 6) * 80 + 'ms'; io.observe(el);
+    });
+    document.querySelectorAll('.chrono li').forEach((li, i, all) => li.style.setProperty('--i', [...li.parentElement.children].indexOf(li)));
+  }
+
+  // ---- the glow under the pointer, on the glass (cards, projects, spotlit panels)
+  document.querySelectorAll('.entry, .project, .panel.spot, .cta').forEach((el) => el.addEventListener('pointermove', (e) => {
+    const r = el.getBoundingClientRect(); el.style.setProperty('--mx', (e.clientX - r.left) + 'px'); el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
+
+  // ---- FIG. 01, the research drawn: a grid (a model's space of behaviours), a few explorers that each set themselves a
+  // goal, walk to it cell by cell and leave a fading trail, so the grid is slowly mapped. Pixels, like the street.
+  // <canvas class="fig-map" data-seed="…"></canvas> (4:3); still (already mapped) under reduced motion
+  document.querySelectorAll('canvas.fig-map').forEach((cv) => {
+    const W = 96, H = 72, CELL = 6, cols = W / CELL, rows = H / CELL;
+    cv.width = W; cv.height = H;
+    const g = cv.getContext('2d'), R = rnd(cv.dataset.seed || 'fig'), map = new Float32Array(cols * rows), hue = new Uint8Array(cols * rows);
+    const COL = [[255, 138, 209], [94, 230, 255], [255, 195, 107]];
+    const agents = [0, 1, 2].map((k) => ({ x: Math.floor(R() * cols), y: Math.floor(R() * rows), gx: 0, gy: 0, k, wait: R(), step: 0 }));
+    const goal = (a) => { a.gx = Math.floor(R() * cols); a.gy = Math.floor(R() * rows); };
+    agents.forEach(goal);
+    function tick(dt) {
+      for (const a of agents) {
+        if (a.wait > 0) { a.wait -= dt; continue; }
+        a.step += dt; if (a.step < 0.22) continue; a.step = 0;
+        if (a.x === a.gx && a.y === a.gy) { a.wait = 0.5 + R(); goal(a); continue; }
+        if (a.x !== a.gx && (a.y === a.gy || R() < 0.5)) a.x += Math.sign(a.gx - a.x); else a.y += Math.sign(a.gy - a.y);
+        map[a.y * cols + a.x] = 1; hue[a.y * cols + a.x] = a.k;
+      }
+      for (let i = 0; i < map.length; i++) if (map[i] > 0.18) map[i] = Math.max(0.18, map[i] - dt * 0.05);
+    }
+    function draw() {
+      g.clearRect(0, 0, W, H);
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        const v = map[r * cols + c], x = c * CELL, y = r * CELL;
+        if (v > 0) { const [cr, cg, cb] = COL[hue[r * cols + c]]; g.fillStyle = `rgba(${cr},${cg},${cb},${0.1 + 0.55 * v})`; g.fillRect(x + 1, y + 1, CELL - 2, CELL - 2); }
+        else { g.fillStyle = 'rgba(205,198,220,.14)'; g.fillRect(x + 2, y + 2, 2, 2); }
+      }
+      for (const a of agents) { const [cr, cg, cb] = COL[a.k]; g.fillStyle = `rgba(${cr},${cg},${cb},.25)`; g.fillRect(a.x * CELL - 1, a.y * CELL - 1, CELL + 2, CELL + 2); g.fillStyle = '#fff'; g.fillRect(a.x * CELL + 1, a.y * CELL + 1, CELL - 2, CELL - 2); }
+    }
+    for (let k = 0; k < (still ? 900 : 60); k++) tick(0.1);   // (a little mapped already; much more when it will not move)
+    draw();
+    if (still) return;
+    let on = false, last = 0;
+    if ('IntersectionObserver' in window) new IntersectionObserver((es) => { on = es[0].isIntersecting; }).observe(cv); else on = true;
+    (function loop(now) { if (on && !document.hidden) { tick(Math.min(0.1, (now - (last || now)) / 1000)); draw(); last = now; } else last = 0; requestAnimationFrame(loop); })(performance.now());
+  });
 })();
