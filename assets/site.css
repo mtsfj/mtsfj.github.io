@@ -24,8 +24,8 @@
   --pixel: "Silkscreen", monospace;       /* titles and small labels only, never running text */
   --mono: "JetBrains Mono", ui-monospace, monospace;
   --measure: 62ch;
-  --gutter: clamp(20px, 6vw, 96px);
-  --wide: 1112px;
+  --gutter: clamp(20px, 4vw, 64px);
+  --wide: 1240px;
   --radius: 10px;
 }
 
@@ -48,12 +48,22 @@ code, kbd, .mono { font-family: var(--mono); font-size: .88em; }
 /* ---- layout ---- */
 .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 var(--gutter); }
 /* a page that follows the hero (or a site bar): it starts on the sky's last blue */
-.page { padding: 0 var(--gutter) 40px; background: radial-gradient(900px 520px at 88% 18%, rgba(255,138,209,.055), transparent 62%), radial-gradient(760px 560px at 6% 58%, rgba(94,230,255,.035), transparent 62%), linear-gradient(var(--night-deep), var(--night) 360px); }
+/* the page under the street: its fine rain, three of its lights (a pink sign high right, a cyan screen left, a street lamp low right) */
+.page { position: relative; isolation: isolate; overflow-x: clip; padding: 0 var(--gutter) 40px;
+  background: repeating-linear-gradient(103deg, transparent 0 11px, rgba(216,208,255,.022) 11px 12px),
+    radial-gradient(1000px 620px at 94% 4%, rgba(255,138,209,.10), transparent 60%),
+    radial-gradient(900px 760px at -4% 44%, rgba(94,230,255,.06), transparent 62%),
+    radial-gradient(900px 640px at 104% 86%, rgba(255,195,107,.06), transparent 60%),
+    linear-gradient(var(--night-deep), var(--night) 360px); }
 /* a section: generous room, a faint curved rule between two (a wire across the street) */
-.section { padding: 72px 0; position: relative; }
-.section:first-child { padding-top: 96px; }
+.section { padding: 60px 0; position: relative; }
+.section:first-child { padding-top: 84px; }
+/* a band: the section on a lighter strip across the whole width, neon hairlines at its edges (every other section) */
+.section.band::before { content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; width: 100vw; transform: translateX(-50%);
+  background: linear-gradient(rgba(40,32,76,.70), rgba(30,24,56,.38)); box-shadow: inset 0 1px 0 rgba(255,138,209,.16), inset 0 -1px 0 rgba(94,230,255,.10); }
+.section.band + .section, .section + .section.band { margin-top: 8px; }
 /* a section's head: its number in sodium, its lit title, a neon rule fading out */
-.section-head { display: flex; align-items: baseline; gap: 14px; margin: 0 0 34px; padding-bottom: 14px; position: relative; }
+.section-head { display: flex; align-items: baseline; gap: 14px; margin: 0 0 28px; padding-bottom: 14px; position: relative; }
 .section-head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, rgba(255,138,209,.55), rgba(255,138,209,.12) 40%, transparent); }
 .section-num { font-family: var(--pixel); font-size: 13px; color: var(--sodium); }
 .section-head .section-title { font-size: 20px; margin: 0; }
@@ -63,7 +73,8 @@ code, kbd, .mono { font-family: var(--mono); font-size: .88em; }
 /* the label column on the left, the content on the right; one column on a phone */
 .section-grid { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 40px 64px; align-items: start; }
 /* text on the left, an aside (a panel) on the right; the aside follows the text on a phone */
-.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, 330px); gap: 40px 64px; align-items: start; }
+.split { display: grid; grid-template-columns: minmax(0, 70ch) minmax(260px, 340px); justify-content: space-between; gap: 40px 56px; align-items: start; }
+.split .prose { max-width: none; }
 @media (max-width: 720px) { .section { padding: 52px 0; } .section:first-child { padding-top: 64px; } .section-grid, .split { grid-template-columns: 1fr; gap: 28px; } }
 
 /* ---- type ---- */
@@ -130,7 +141,10 @@ a.chip:hover { border-color: var(--pink); }
 .entries-grid .entry { flex-direction: column; gap: 16px; }
 .entry-media { flex-shrink: 0; display: block; line-height: 0; }
 .vignette { display: block; width: 168px; height: 112px; image-rendering: pixelated; border-radius: 6px; border: 1px solid var(--rule); background: var(--night-deep); }
-.entries-grid .vignette { width: 100%; height: auto; aspect-ratio: 3 / 2; }
+/* in a grid the vignette is shown at a whole multiple of its pixels (168 x 112 at 3, 96 x 64 at 5), centred on the night */
+.entries-grid .entry-media { display: flex; justify-content: center; background: var(--night-deep); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.entries-grid .vignette { width: min(100%, 504px); height: auto; aspect-ratio: 3 / 2; border: 0; border-radius: 0; }
+.entries-grid canvas.vignette { width: min(100%, 480px); }
 .entry-body { min-width: 0; }
 .entry-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 6px; font-size: 13px; font-weight: 500; letter-spacing: .01em; color: var(--sodium); }
 .entry-title { margin: 0 0 6px; font-size: 22px; font-weight: 500; line-height: 1.25; text-wrap: balance; }
@@ -209,6 +223,7 @@ a.chip:hover { border-color: var(--pink); }
 .prose ul, .prose ol { margin: 0 0 1.2em; padding-left: 1.3em; }
 .prose li { margin: .3em 0; }
 .prose li::marker { color: var(--pink); }
+.prose .dated, .prose .kv { padding: 0; } .prose .dated li, .prose .kv li { margin: 0; }   /* (lists that are components keep their own layout) */
 .prose blockquote { margin: 1.4em 0; padding: 4px 0 4px 18px; border-left: 3px solid var(--pink); color: var(--paper-dim); font-style: italic; }
 .prose hr { border: 0; height: 14px; margin: 2.4em 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 16' preserveAspectRatio='none'%3E%3Cpath d='M0 3 Q 600 17 1200 3' fill='none' stroke='%233d3560' stroke-width='1.6'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
 .prose figure { margin: 1.6em 0; }
