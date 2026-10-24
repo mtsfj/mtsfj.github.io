@@ -20,7 +20,7 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="assets/site.css?v=10">
+<link rel="stylesheet" href="assets/site.css?v=14">
 <link rel="preload" as="image" href="assets/layer_city_off.webp?v=57" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
@@ -298,17 +298,17 @@
         <p class="lead" data-lang="fr">J'étudie comment des agents curieux peuvent cartographier ce qu'un grand modèle génératif sait faire, et où il échoue. En novembre 2026, je commence une thèse dans l'équipe Flowers (Inria Bordeaux), sous la direction de Pierre-Yves Oudeyer. Le sujet : l'exploration autotélique pour l'évaluation automatique des grands modèles génératifs. Plutôt qu'un benchmark figé, des agents se fixent leurs propres objectifs, puis découvrent et cartographient les capacités et les vulnérabilités du modèle.</p>
         <p class="lead" data-lang="en" lang="en" hidden>I study how curious agents can map what a large generative model can do, and where it fails. In November 2026 I start a PhD in the Flowers team at Inria Bordeaux, advised by Pierre-Yves Oudeyer. The topic: autotelic exploration for the automatic evaluation of large generative models. Instead of a fixed benchmark, agents set their own goals, then discover and map the model's capabilities and vulnerabilities.</p>
       </div>
-      <figure class="fig">
-        <div class="fig-frame"><span class="fig-label">FIG. 01</span><canvas class="fig-map" data-seed="autotelic" role="img" aria-label="Agents explorant une grille"></canvas></div>
-        <figcaption data-lang="fr"><b>Exploration autotélique.</b> Chaque agent se fixe son propre but, s'y rend et laisse une trace : l'espace de ce que sait faire un modèle se cartographie peu à peu.</figcaption>
-        <figcaption data-lang="en" lang="en" hidden><b>Autotelic exploration.</b> Each agent sets its own goal, walks to it and leaves a trail: the space of what a model can do is mapped, bit by bit.</figcaption>
+      <figure class="fig game" data-seed="autotelic">
+        <div class="fig-frame">
+          <span class="fig-label">FIG. 01 · <span data-lang="fr">AGENTS AUTOTÉLIQUES</span><span data-lang="en" lang="en" hidden>AUTOTELIC AGENTS</span></span>
+          <canvas class="game-board" role="img" aria-label="Quatre agents se disputent une grille / Four agents compete for a grid"></canvas>
+          <ol class="game-score"></ol>
+          <p class="game-round"></p>
+        </div>
+        <figcaption data-lang="fr"><b>Quatre agents se disputent la grille.</b> Personne ne leur dit quoi faire : chacun se fixe son prochain but (s'étendre, attaquer le meneur, reprendre ce qu'il a perdu) et choisit le type de but où il progresse le plus vite. Leur programme d'apprentissage est le leur.</figcaption>
+        <figcaption data-lang="en" lang="en" hidden><b>Four agents compete for the grid.</b> No one tells them what to do: each sets its own next goal (expand, raid the leader, take back what it lost) and picks the kind of goal where it is improving fastest. Their curriculum is their own.</figcaption>
       </figure>
     </div>
-    <ul class="stats">
-      <li><span class="stat-v lit">NeurIPS 2026</span><span class="stat-l" data-lang="fr">Pinductor, accepté en poster</span><span class="stat-l" data-lang="en" lang="en" hidden>Pinductor, accepted as a poster</span></li>
-      <li><span class="stat-v">164</span><span class="stat-l" data-lang="fr">tactiques de sycophancie cartographiées sur un modèle local</span><span class="stat-l" data-lang="en" lang="en" hidden>sycophancy tactics mapped on a local model</span></li>
-      <li><span class="stat-v">×40</span><span class="stat-l" data-lang="fr">kernels d'attention HIP écrits à la main, face au CPU</span><span class="stat-l" data-lang="en" lang="en" hidden>hand-written HIP attention kernels, against the CPU</span></li>
-    </ul>
     <div class="split bio-more">
       <div>
       <div class="prose" data-lang="fr">
@@ -485,7 +485,7 @@
   <span class="pixel">© 2026 Mathis Fajeau</span>
 </footer>
 
-<script src="assets/site.js?v=4"></script>
+<script src="assets/site.js?v=9"></script>
 
 <script src="assets/three.min.js"></script>
 <script>

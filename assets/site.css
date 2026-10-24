@@ -53,14 +53,19 @@ strong, b { color: var(--paper); font-weight: 600; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition: none !important; animation: none !important; } }
 
-/* ---- the page under the street: a flat deep ground (the references are flat: the richness is in what they show),
-   the hero's foot fading into it, two hairline guides at the content's edges ---- */
+/* ---- the page under the street: a flat deep ground, the hero's foot fading into it; on a wide screen the street
+   goes on in its margins (the walls) ---- */
 .page { position: relative; isolation: isolate; overflow-x: clip; padding: 0 var(--gutter) 56px; background: linear-gradient(var(--night-deep), var(--ground) 320px); }
 .page > .container { position: relative; }
-.page > .container::before, .page > .container::after { content: ""; position: absolute; top: 0; bottom: 0; width: 1px; pointer-events: none;
-  background: linear-gradient(transparent, rgba(255,255,255,.06) 12%, rgba(255,255,255,.06) 88%, transparent); }
-.page > .container::before { left: -32px; } .page > .container::after { right: -32px; }
-@media (max-width: 1320px) { .page > .container::before, .page > .container::after { display: none; } }
+/* the walls (site.js): a facade in each margin, sticky to the screen, fading toward the content */
+.wall { position: absolute; top: 0; bottom: 0; z-index: -1; pointer-events: none; }
+.wall-left { left: 0; } .wall-right { right: 0; }
+.wall-in { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.wall canvas { position: absolute; top: 0; display: block; image-rendering: pixelated; will-change: transform; }
+.wall-left canvas { left: 0; } .wall-right canvas { right: 0; }
+.wall .wall-glow { filter: blur(7px); mix-blend-mode: screen; opacity: .9; image-rendering: auto; }
+.wall-left .wall-in { -webkit-mask-image: linear-gradient(90deg, #000 60%, transparent); mask-image: linear-gradient(90deg, #000 60%, transparent); }
+.wall-right .wall-in { -webkit-mask-image: linear-gradient(270deg, #000 60%, transparent); mask-image: linear-gradient(270deg, #000 60%, transparent); }
 .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 var(--gutter); }
 .container { max-width: var(--wide); margin: 0 auto; }
 
@@ -78,7 +83,7 @@ strong, b { color: var(--paper); font-weight: 600; }
   background: linear-gradient(180deg, #fff 20%, #c9bfe0 120%); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .section-grid { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 40px 64px; align-items: start; }
 /* text on the left, an aside on the right; the aside follows the text on a phone */
-.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 420px); gap: 48px 72px; align-items: start; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 500px); gap: 48px 72px; align-items: start; }
 .split .prose { max-width: var(--measure); }
 @media (max-width: 760px) { .section { padding: 56px 0; } .section:first-child { padding-top: 72px; } .section-head { margin-bottom: 30px; } .section-grid, .split { grid-template-columns: 1fr; gap: 32px; } }
 
@@ -278,12 +283,20 @@ a.chip:hover { border-color: var(--rule-2); color: var(--paper); }
 .fig figcaption b { color: var(--text); font-weight: 500; }
 
 .bio-more { margin-top: 80px; }
-/* ---- stats: a few numbers, large (as Apple and Stripe set theirs) ---- */
-.stats { margin: 72px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 32px 40px; }
-.stat-v { display: block; white-space: nowrap; font-size: clamp(36px, 4.4vw, 60px); font-weight: 600; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums;
-  background: linear-gradient(180deg, #fff 10%, #b7acd6 110%); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.stat-v.lit { background-image: linear-gradient(180deg, #ffe3a6 0%, var(--sodium) 60%, #e08a3a 120%); }
-.stat-l { display: block; margin-top: 12px; font-size: 15px; line-height: 1.45; color: var(--paper-dim); max-width: 26ch; }
+/* ---- the game (FIG. 01, site.js): its board, its scores (colour, share, current goal, rounds won), its round ---- */
+.game .fig-frame { padding-bottom: 16px; }
+.game-board { display: block; margin: 12px 18px 0; width: calc(100% - 36px); height: auto; aspect-ratio: 24 / 16; image-rendering: pixelated; }
+.game-score { margin: 16px 18px 0; padding: 0; list-style: none; display: grid; gap: 7px; font-size: 13px; }
+.game-score li { display: grid; grid-template-columns: 9px 4.2em minmax(0, 1fr) 2.8em 7.6em 1.4em; align-items: center; gap: 10px; color: var(--paper-dim); }
+.game-score i { width: 9px; height: 9px; border-radius: 2px; background: var(--c); box-shadow: 0 0 8px var(--c); }
+.g-name { color: var(--text); }
+.g-bar { height: 5px; border-radius: 5px; background: rgba(255,255,255,.07); overflow: hidden; }
+.g-bar b { display: block; height: 100%; border-radius: 5px; background: var(--c); transition: width .25s linear; }
+.g-pct { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); }
+.g-goal { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.g-wins { text-align: right; font-family: var(--pixel); font-size: 11px; color: var(--sodium); }
+.game-round { margin: 12px 18px 0; font-family: var(--pixel); font-size: 10.5px; letter-spacing: .04em; color: var(--c, var(--paper-dim)); }
+@media (max-width: 480px) { .game-score li { grid-template-columns: 9px 4em minmax(0, 1fr) 2.8em 1.4em; } .g-goal { display: none; } }
 
 /* ---- a cover: a post's generated picture, full width of its card ---- */
 .entries-grid .entry-media.cover { display: block; background: var(--night-deep); border: 1px solid var(--rule); }
