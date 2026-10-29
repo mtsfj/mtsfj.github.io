@@ -407,6 +407,7 @@ a.chip:hover { border-color: var(--rule-2); color: var(--paper); }
 .book[data-kind="book"] { border-radius: 2px 2px 1px 1px;
   background: linear-gradient(to bottom, transparent 10px, rgba(255,214,140,.85) 10px 11px, transparent 11px 14px, rgba(255,214,140,.85) 14px 15px, transparent 15px calc(100% - 16px), rgba(255,214,140,.85) calc(100% - 16px) calc(100% - 15px), transparent calc(100% - 15px)),
     linear-gradient(90deg, var(--c2), var(--c) 22%, var(--c) 78%, var(--c2)); }
+.book[data-kind="book"] span { white-space: normal; text-align: center; line-height: 1.12; font-size: 12px; max-height: calc(var(--h) - 40px); max-width: calc(var(--w) - 6px); }
 .book[data-kind="paper"] { width: calc(var(--w) * .72); border-radius: 1px;
   background: linear-gradient(to bottom, rgba(244,239,233,.92) 0 34px, rgba(14,11,30,.25) 34px 35px, transparent 35px),
     linear-gradient(90deg, var(--c2), var(--c) 40%, var(--c)); }
