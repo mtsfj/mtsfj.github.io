@@ -11,6 +11,12 @@
   const pg = document.querySelector('.page'), ct = pg && pg.querySelector(':scope > .container');
   if (!ct || !window.HTMLCanvasElement) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches, P = 2;
+  // the places of the timeline, as lit signs on the walls, in its order down the page (left, right, left…): their
+  // faces are pixel versions of the official logos (assets/wall_logos.png; its map below)
+  const LOGO_MAP = { airbus: [0, 0, 54, 14], thales: [0, 15, 60, 12], inria: [0, 28, 56, 20], mpg: [0, 49, 30, 29], imt: [0, 79, 42, 16], gatech: [0, 96, 34, 21], ellis: [0, 118, 46, 13] };
+  const LOGOS = [['imt', 0.10, 'left'], ['thales', 0.22, 'right'], ['airbus', 0.35, 'left'], ['gatech', 0.48, 'right'], ['mpg', 0.62, 'left'], ['ellis', 0.73, 'right'], ['inria', 0.86, 'left']];
+  const atlas = { ok: false, d: null, W: 0 };
+  const me = document.currentScript && document.currentScript.src;
   function rnd(seed) { let h = 2166136261; for (const c of String(seed)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return () => { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; }
   const C = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), parseInt(s.slice(5, 7), 16)];
   const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
@@ -62,13 +68,15 @@
       const k = 0.9 + (noise(x, y, s) - 0.5) * 0.16 + (noise(x >> 4, y >> 4, s) - 0.5) * 0.14; return [b[0] * k, b[1] * k, b[2] * k]; } } };
 
   // ---- one side: its plan (segments, still drawings, lights, moving parts), then its still layers
-  function build(W, H, seed, left) {
+  function build(W, H, seed, left, signs) {
     const r = rnd(seed), pick = (a) => a[Math.floor(r() * a.length)], chance = (p) => r() < p;
     const outer = left ? 2 : W - 2, toOuter = (w) => (left ? 3 : W - 3 - w);
     const segs = [], draws = [], lights = [], moving = [];
     const light = (x, y, rad, c, k, down) => lights.push({ x, y, r: rad, c: c.map((v) => v / 255), k, down });
     let y = 0, moon = false, lastShop = '', lastMat = '';
     const sky = (h) => { segs.push({ k: 'sky', y0: y, y1: y + h }); y += h; };
+    const pending = signs.filter((sg) => LOGO_MAP[sg.k][2] <= W - 10).sort((a, b) => a.y - b.y);
+    const due = (yy) => pending.length && pending[0].y <= yy ? pending.shift() : null;
     sky(56 + Math.floor(r() * 30));
     while (y < H - 40) {
       let mat; do mat = pick(['brick', 'concrete', 'wood', 'tile', 'metal', 'stucco', 'glass', 'concrete', 'brick']); while (mat === lastMat); lastMat = mat;
@@ -81,6 +89,8 @@
         const fy = y0 + roof + f * F, ground = f === nF - 1;
         if (f < nF - 1) draws.push((L) => slab(L, fy + F - 3, W, B));
         if (mat === 'glass') { office(fy, F, W, B); continue; }
+        const lg = !ground ? due(fy + F) : null;
+        if (lg) { lightbox(lg.k, fy, F, W, B); continue; }
         if (ground) { let shop; do shop = pick(['konbini', 'izakaya', 'ramen', 'shutter', 'entrance', 'vending', 'bar']); while (shop === lastShop); lastShop = shop; storefront(shop, fy, F, W, B); }
         else if (chance(0.3)) balcony(fy, F, W, B);
         else windows(fy, F, W, B, f);
@@ -90,7 +100,9 @@
       if (y < H - 60 && chance(0.62)) {                                     // between two buildings: sky, or a scene of the street
         const scene = pick(['', '', 'park', 'shrine', 'train']), h = scene ? 84 + Math.floor(r() * 14) : 46 + Math.floor(r() * 44), gy = y;
         segs.push({ k: 'sky', y0: y, y1: y + h, scene }); y += h;
-        if (!scene && chance(0.5)) pole(gy, h, W);
+        const lg = !scene && h >= 60 ? due(y) : null;
+        if (lg) billboard(lg.k, gy, h, W);
+        else if (!scene && chance(0.5)) pole(gy, h, W);
       }
     }
     if (y < H) segs.push({ k: 'sky', y0: y, y1: H, scene: '' });
@@ -226,6 +238,40 @@
         }
       });
       light(W / 2, fy + F / 2, 46, COOL2, 0.18, false);
+    }
+    function face(L, G, k, x0, y0) {                                     // the logo's face from the atlas, lit
+      const [ax, ay, w, h] = LOGO_MAP[k];
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+        const q = ((ay + j) * atlas.W + ax + i) * 4, c = [atlas.d[q], atlas.d[q + 1], atlas.d[q + 2]];
+        L.px(x0 + i, y0 + j, c); G.add(x0 + i, y0 + j, c, (c[0] + c[1] + c[2]) > 600 ? 0.32 : 0.55);
+      }
+      return [w, h];
+    }
+    function avgColour(k) {
+      const [ax, ay, w, h] = LOGO_MAP[k], t = [0, 0, 0]; let n = 0;
+      for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) { const q = ((ay + j) * atlas.W + ax + i) * 4; t[0] += atlas.d[q]; t[1] += atlas.d[q + 1]; t[2] += atlas.d[q + 2]; n++; }
+      return t.map((v) => v / n);
+    }
+    function lightbox(k, fy, F, W, B) {                                   // a lightbox sign on a floor, on two brackets
+      const [, , w, h] = LOGO_MAP[k], x0 = Math.round((W - w) / 2), y0 = fy + Math.round((F - 3 - h) / 2) + 2;
+      draws.push((L, G) => {
+        L.rect(x0 - 2, y0 - 2, w + 4, h + 4, [22, 20, 36]); L.rect(x0 - 2, y0 - 2, w + 4, 1, [92, 88, 120]);   // the case, its lit edge
+        L.rect(x0 + 3, y0 - 5, 2, 3, [60, 56, 84]); L.rect(x0 + w - 5, y0 - 5, 2, 3, [60, 56, 84]);          // the brackets
+        L.rect(x0 - 1, y0 + h + 2, w + 2, 1, [8, 6, 16], 0.6);                                                // its shadow
+        face(L, G, k, x0, y0);
+      });
+      light(W / 2, y0 + h / 2, Math.max(30, w * 0.75), avgColour(k), 0.55, false);
+    }
+    function billboard(k, gy, h, W) {                                     // a sign on the roof below a gap of sky, its legs, its lamps
+      const [, , w, hh] = LOGO_MAP[k], base = gy + h, x0 = Math.round((W - w) / 2), y0 = base - hh - 12;
+      draws.push((L, G) => {
+        for (const lx of [x0 + 4, x0 + w - 6]) { L.rect(lx, y0 + hh + 2, 2, base - y0 - hh - 2, [44, 40, 66]); for (let j = y0 + hh + 4; j < base; j += 4) L.px(lx + (j % 8 ? 0 : 1), j, [70, 66, 96]); }
+        L.rect(x0 - 3, y0 + hh + 2, w + 6, 1, [70, 66, 96]);                                                  // the catwalk
+        L.rect(x0 - 2, y0 - 2, w + 4, hh + 4, [22, 20, 36]); L.rect(x0 - 2, y0 - 2, w + 4, 1, [92, 88, 120]);
+        face(L, G, k, x0, y0);
+        for (const lx of [x0 + 2, x0 + w - 4]) { L.rect(lx, y0 - 5, 3, 2, [60, 56, 84]); L.px(lx + 1, y0 - 3, [255, 236, 190]); G.add(lx + 1, y0 - 3, [255, 236, 190], 0.9); }
+      });
+      light(W / 2, y0 + hh / 2, Math.max(30, w * 0.7), avgColour(k), 0.45, false);
     }
     function storefront(shop, fy, F, W, B) {
       const gy = fy + F - 3;                                              // the ground under the shop
@@ -485,13 +531,19 @@
     const H = Math.ceil(pg.offsetHeight / P);
     sides.forEach((S, k) => {
       S.wrap.style.width = room + 'px'; S.W = Math.floor(room / P); S.H = H;
-      const B = build(S.W, H, 'wall' + k + ':' + S.W, S.side === 'left');
+      const signs = atlas.ok ? LOGOS.filter((l) => l[2] === S.side).map((l) => ({ k: l[0], y: Math.round(l[1] * H) })) : [];
+      const B = build(S.W, H, 'wall' + k + ':' + S.W, S.side === 'left', signs);
       const toCanvas = (Ly) => { const c = document.createElement('canvas'); c.width = S.W; c.height = H; c.getContext('2d').putImageData(new ImageData(Ly.d, S.W, H), 0, 0); return c; };
       S.still = toCanvas(B.L); S.stillG = toCanvas(B.G); S.moving = B.moving;
     });
     frame();
   }
   layout();
+  if (me) {
+    const img = new Image();
+    img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0); atlas.d = g.getImageData(0, 0, img.width, img.height).data; atlas.W = img.width; atlas.ok = true; layout(); } catch (e) { /* the walls without their signs */ } };
+    img.src = new URL('wall_logos.png?v=1', me).href;
+  }
   let lt = 0, lastH = 0; const later = () => { clearTimeout(lt); lt = setTimeout(() => { if (Math.abs(pg.offsetHeight - lastH) > 2 || true) { lastH = pg.offsetHeight; layout(); } }, 200); };
   addEventListener('resize', later); addEventListener('load', later);
   if ('ResizeObserver' in window) new ResizeObserver(later).observe(ct);

@@ -55,6 +55,14 @@ Toutes les pages chargent `assets/fonts/fonts.css`, puis `assets/site.css`, et `
 - **Polices** : Silkscreen (pixel) pour les titres de page et les petites étiquettes, jamais pour du texte courant ; Inter Tight pour tout le reste ; JetBrains Mono pour le code.
 - **Composants** : `.site-bar` (barre du haut), `.masthead` + `.eyebrow` + `.display` + `.lede` (en-tête de page), `.section` + `.section-head` (numéro, titre pixel, filet néon) (sections), `.split` (texte + panneau à droite), `.lead` (premier paragraphe), `.projects` / `.project` (cartes de projet), `.cta` (appel à l'action), `.skyline` (la ligne d'immeubles du bas de page), `.fig` + `.game` (FIG. 01 : quatre agents autotéliques qui se disputent une grille, chacun choisissant ses buts par progrès d'apprentissage), `.wall` (sur grand écran, les marges deviennent la rue : immeubles de matières variées et leurs fenêtres, boutiques en rez-de-chaussée, trouées de ciel et toits, parc au cerisier, sanctuaire, viaduc et son train ; généré par `assets/walls.js`, sans texte), `.metric` + `.bars-mini` (le chiffre d'un projet), `.entry-media.cover` (illustration d'un billet), `.entry` (la carte d'un billet : vignette, méta, titre, phrase, liens) dans `.entries` ou `.entries-grid`, `.badge`, `.chip`, `.btn`, `.links`, `.rows`, `.kv`, `.dated`, `.chrono` (frise), `.tile`, `.panel`, `.prose` (texte long), `.takeaway` (encadré), `.site-footer`. Chacun est décrit en une ligne dans `site.css`.
 
+## Sections de l'accueil
+
+- **Sommaire** : la pilule qui apparaît après la rue (`.toc`), la section lue allumée. Une nouvelle section y prend un lien vers son `id`.
+- **Interventions et enseignement** (`#talks`) : une carte `.entry` par intervention, sa vignette pixel 168 × 112 dans `assets/talk_*.png`.
+- **Bibliothèque** (`#library`) : un `<li><a class="book" …>` par texte, avec `data-title`, `data-authors`, `data-year`, `data-venue`, `data-theme-fr/en`, sa couleur (`--c`, `--c2` : le thème) et sa taille (`--h`, `--w`) ; `class="book star"` pour un essentiel.
+- **Citer** : un bouton `.bib-copy` (`data-target` = l'id du bloc BibTeX) ; **S'abonner** : un bouton `.rss-btn` (un panneau avec l'adresse du flux).
+- **Logos sur les façades** : `assets/wall_logos.png` (versions pixel des logos officiels) et leur ordre dans `LOGOS`, en tête de `assets/walls.js`.
+
 ## Illustrations des articles
 
 Les couvertures `assets/cover_*.webp` sont générées (pas de capture d'écran) dans la palette du site. Pour un nouveau billet, en générer une du même style (1200 × 800) ou laisser la vignette pixel se dessiner seule.

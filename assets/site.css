@@ -328,3 +328,77 @@ a.chip:hover { border-color: var(--rule-2); color: var(--paper); }
 .site-footer { padding: 36px var(--gutter) 44px; box-shadow: inset 0 1px 0 var(--rule); font-size: 14px; color: var(--paper-dim); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .site-footer a { color: var(--paper-dim); } .site-footer a:hover { color: var(--paper); }
 .site-footer .pixel { font-family: var(--pixel); font-size: 11px; }
+
+/* ---- the table of contents (the home): a pill that floats in once the street is passed; the section being read lit ---- */
+.toc { position: fixed; z-index: 60; top: 14px; left: 50%; display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 18px; border-radius: 999px; font-size: 14px;
+  background: rgba(14,11,30,.72); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid var(--rule); box-shadow: var(--glass-edge), 0 14px 34px -14px rgba(0,0,0,.7);
+  opacity: 0; transform: translate(-50%, -14px); pointer-events: none; transition: opacity .35s var(--ease), transform .35s var(--ease); }
+.toc.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.toc a { text-decoration: none; color: var(--paper-dim); white-space: nowrap; transition: color .2s, background .2s; }
+.toc-brand { font-family: var(--pixel); font-size: 11px; color: var(--paper) !important; text-shadow: var(--glow-pink); margin-right: 10px; }
+.toc-links { display: flex; align-items: center; gap: 2px; }
+.toc-links a { position: relative; padding: 7px 11px; border-radius: 999px; }
+.toc-links a:hover { color: var(--paper); }
+.toc-links a.on { color: var(--paper); background: rgba(255,255,255,.07); }
+.toc-links a.on::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 14px; height: 2px; border-radius: 2px; transform: translateX(-50%); background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+.toc-blog { padding: 7px 14px; border-radius: 999px; background: var(--paper); color: var(--ground) !important; font-weight: 500; margin-left: 6px; }
+.toc-blog:hover { background: #fff; }
+.page .section { scroll-margin-top: 72px; }
+@media (max-width: 860px) {
+  .toc { left: 10px; right: 10px; transform: translateY(-14px); padding: 5px; }
+  .toc.on { transform: none; }
+  .toc-brand, .toc-blog { display: none; }
+  .toc-links { overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); }
+  .toc-links::-webkit-scrollbar { display: none; }
+}
+
+/* ---- copy the citation; subscribe (a small panel with the feed's address) ---- */
+.links .bib-copy { font: inherit; color: var(--paper-dim); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule-2); text-underline-offset: 4px; }
+.links .bib-copy:hover { color: var(--paper); text-decoration-color: var(--pink); }
+.links .bib-copy.done { color: var(--green); text-decoration-color: transparent; }
+.more { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+.rss-btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 15px; color: var(--paper-dim); background: none; border: 0; padding: 0; cursor: pointer; }
+.rss-btn::before { content: ""; width: 11px; height: 11px; border-radius: 2px; background:
+  radial-gradient(circle at 2px 9px, var(--ground) 1.6px, transparent 2.2px),
+  radial-gradient(circle at 0 11px, transparent 4px, var(--ground) 4.6px, var(--ground) 5.6px, transparent 6.2px),
+  radial-gradient(circle at 0 11px, transparent 7.6px, var(--ground) 8.2px, var(--ground) 9.2px, transparent 9.8px), var(--sodium); }
+.rss-btn:hover { color: var(--paper); }
+.rss-pop { position: absolute; z-index: 5; top: calc(100% + 10px); left: 0; width: min(440px, 100%); padding: 16px 18px; border-radius: 16px; background: rgba(20,16,40,.96); border: 1px solid var(--rule-2); box-shadow: var(--glass-edge), 0 24px 50px -20px rgba(0,0,0,.8); font-size: 14px; color: var(--text); }
+.rss-pop p { margin: 0 0 10px; }
+.rss-pop .row { display: flex; gap: 8px; }
+.rss-pop input { flex: 1; min-width: 0; font: 13px var(--mono); color: var(--paper); background: rgba(0,0,0,.3); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 10px; }
+.rss-pop button { font: inherit; font-size: 13px; padding: 8px 14px; border-radius: 999px; border: 0; background: var(--paper); color: var(--ground); cursor: pointer; font-weight: 500; }
+.rss-pop a { color: var(--paper-dim); }
+
+/* ---- talks & teaching: three cards, their vignettes at x2 (whole pixels) ---- */
+.talks .vignette { width: min(100%, 336px); }
+
+/* ---- the library: a shelf of spines (a book's colour, its theme), lifted under the pointer; its details beneath ---- */
+.library { position: relative; }
+.shelf-unit { position: relative; width: fit-content; max-width: 100%; margin: 0 auto; }
+.shelf { display: flex; align-items: flex-end; gap: 5px; margin: 0; padding: 28px 22px 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.shelf-cat-li { margin-left: 6px; line-height: 0; }
+.shelf-cat { display: block; width: 42px; height: 36px; image-rendering: pixelated; }
+.shelf::-webkit-scrollbar { display: none; }
+.shelf li { flex: none; }
+.book { position: relative; display: flex; align-items: center; justify-content: center; width: var(--w); height: var(--h); text-decoration: none; border-radius: 3px 3px 1px 1px;
+  background:
+    linear-gradient(to bottom, transparent 12px, rgba(14,11,30,.32) 12px 15px, transparent 15px 19px, rgba(14,11,30,.18) 19px 20px, transparent 20px calc(100% - 22px), rgba(14,11,30,.32) calc(100% - 22px) calc(100% - 18px), transparent calc(100% - 18px)),
+    linear-gradient(90deg, var(--c2), var(--c) 28%, var(--c) 72%, var(--c2));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset -2px 0 0 rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.35);
+  transition: transform .35s var(--ease), filter .35s; }
+.book span { writing-mode: vertical-rl; transform: rotate(180deg); max-height: calc(var(--h) - 52px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 600; letter-spacing: .01em; color: rgba(14,11,30,.86); }
+.book.star::after { content: ""; position: absolute; top: -16px; left: 50%; width: 9px; height: 9px; transform: translateX(-50%); background: var(--sodium);
+  clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 36%); filter: drop-shadow(0 0 4px rgba(255,195,107,.9)); }
+.book:hover, .book:focus-visible, .book.on { transform: translateY(-12px); filter: drop-shadow(0 0 12px var(--c)); }
+.shelf-board { height: 12px; margin: 0; border-radius: 2px; background: linear-gradient(#6a4a3e, #3a2a2a 70%, #2a1e22); box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 20px 46px -14px rgba(255,138,209,.35); }
+.shelf-caption { min-height: 3.4em; margin: 22px 0 0; text-align: center; font-size: 15px; line-height: 1.5; color: var(--paper-dim); }
+.shelf-caption b { color: var(--paper); font-weight: 600; }
+.shelf-caption .yr { color: var(--sodium); }
+.shelf-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 14px 0 0; font-size: 13px; color: var(--paper-dim); }
+.shelf-legend .lg { display: inline-flex; align-items: center; gap: 7px; }
+.shelf-legend .lg::before { content: ""; width: 8px; height: 12px; border-radius: 1px; background: var(--c); }
+.shelf-legend .lg.star::before { width: 9px; height: 9px; background: var(--sodium); clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 36%); }
+@media (max-width: 760px) { .shelf-unit { width: auto; } }
+

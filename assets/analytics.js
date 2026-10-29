@@ -29,6 +29,8 @@
     const el = e.target.closest && e.target.closest('a, button'); if (!el) return;
     if (el.classList.contains('mail-reveal')) return track('email');
     if (el.classList.contains('lang')) return track('lang');
+    if (el.classList.contains('bib-copy')) return track('cite');
+    if (el.classList.contains('rss-btn')) return track('rss');
     const href = el.getAttribute && el.getAttribute('href'); if (!href) return;
     if (/\.pdf(\?|$)/.test(href) && !/^https?:/.test(href)) return track('cv');
     try { const u = new URL(href, location.href); if (u.hostname && u.hostname !== location.hostname) track('out: ' + u.hostname.replace(/^www\./, '')); } catch (err) {}
