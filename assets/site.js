@@ -272,8 +272,8 @@
     const cap = lib.querySelector('.shelf-caption'), books = [...lib.querySelectorAll('.book')];
     const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     const touch = matchMedia('(hover: none)').matches;
-    const hint = () => { cap.innerHTML = touch ? (en() ? 'Tap a book to open it · the star marks the essentials' : 'Touchez un livre pour l’ouvrir · l’étoile marque les essentiels')
-      : (en() ? 'Point at a book to see it · the star marks the essentials' : 'Survolez un livre pour le voir · l’étoile marque les essentiels'); books.forEach((b) => b.classList.remove('on')); };
+    const hint = () => { cap.innerHTML = touch ? (en() ? 'Tap a book to open it · a star: a classic, or most followed' : 'Touchez un livre pour l’ouvrir · une étoile : un classique, ou le plus suivi')
+      : (en() ? 'Point at a book to see it · a star: a classic, or most followed' : 'Survolez un livre pour le voir · une étoile : un classique, ou le plus suivi'); books.forEach((b) => b.classList.remove('on')); };
     const show = (b) => { books.forEach((x) => x.classList.toggle('on', x === b)); const d = b.dataset;
       const bits = [esc(d.authors), d.year ? `<span class="yr">${d.year}</span>` : '', d.venue && d.venue !== 'YouTube' ? esc(d.venue) : '', d.n ? `${d.n} ${en() ? 'videos' : 'vidéos'}` : '', en() ? d.themeEn : d.themeFr].filter(Boolean);
       cap.innerHTML = `<b>${d.title}</b><br>${bits.join(' · ')}`; };
