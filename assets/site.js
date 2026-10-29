@@ -216,4 +216,69 @@
     board(); draw();
   });
 
+
+  const en = () => document.documentElement.lang === 'en';
+  // ---- the table of contents: in once the street is passed, the section being read lit (and kept in view on a phone)
+  const toc = document.querySelector('.toc'), hero = document.querySelector('.hero');
+  if (toc && 'IntersectionObserver' in window) {
+    if (hero) new IntersectionObserver((es) => toc.classList.toggle('on', !es[0].isIntersecting), { rootMargin: '-60px 0px 0px 0px' }).observe(hero);
+    else toc.classList.add('on');
+    const links = [...toc.querySelectorAll('.toc-links a')], byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+    const io2 = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting) return; const a = byId.get(e.target.id); if (!a) return;
+      links.forEach((l) => l.classList.toggle('on', l === a));
+      const box = a.parentElement; if (box.scrollWidth > box.clientWidth) box.scrollTo({ left: a.offsetLeft - box.clientWidth / 2 + a.offsetWidth / 2, behavior: still ? 'auto' : 'smooth' });
+    }), { rootMargin: '-38% 0px -58% 0px' });
+    byId.forEach((a, id) => { const sec = document.getElementById(id); if (sec) io2.observe(sec); });
+  }
+
+  // ---- copy a citation: <button class="bib-copy" data-target="id-of-the-pre" data-done-fr="…" data-done-en="…">
+  function copy(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    return new Promise((ok, ko) => { const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.opacity = '0'; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy') ? ok() : ko(); } catch (e) { ko(e); } t.remove(); });
+  }
+  document.querySelectorAll('.bib-copy').forEach((b) => b.addEventListener('click', () => {
+    const pre = document.getElementById(b.dataset.target); if (!pre) return;
+    const label = b.innerHTML;
+    copy(pre.textContent.trim()).then(() => { b.classList.add('done'); b.textContent = en() ? b.dataset.doneEn : b.dataset.doneFr; setTimeout(() => { b.classList.remove('done'); b.innerHTML = label; }, 1800); }, () => { pre.hidden = false; });
+  }));
+
+  // ---- subscribe: a small panel with the feed's address, to copy into a reader (the raw XML is not for people)
+  const FEED = 'https://mtsfj.github.io/blog/feed.xml';
+  document.querySelectorAll('.rss-btn').forEach((b) => b.addEventListener('click', (ev) => {
+    ev.stopPropagation();
+    const host = b.parentElement, old = host.querySelector('.rss-pop'); if (old) { old.remove(); return; }
+    const pop = document.createElement('div'); pop.className = 'rss-pop'; pop.setAttribute('role', 'dialog');
+    pop.innerHTML = (en() ? '<p>Copy this address into your feed reader (Feedly, NetNewsWire, Inoreader…) to get the new posts.</p>' : '<p>Copiez cette adresse dans votre lecteur de flux (Feedly, NetNewsWire, Inoreader…) pour recevoir les nouveaux billets.</p>')
+      + `<div class="row"><input type="text" readonly value="${FEED}" aria-label="RSS"><button type="button">${en() ? 'Copy' : 'Copier'}</button></div>`;
+    host.appendChild(pop);
+    const inp = pop.querySelector('input'), cb = pop.querySelector('button'); inp.addEventListener('focus', () => inp.select());
+    cb.addEventListener('click', () => copy(FEED).then(() => { cb.textContent = en() ? 'Copied ✓' : 'Copié ✓'; }, () => inp.select()));
+    const close = (e) => { if (e.type === 'keydown' ? e.key === 'Escape' : !pop.contains(e.target)) { pop.remove(); document.removeEventListener('click', close); document.removeEventListener('keydown', close); } };
+    setTimeout(() => { document.addEventListener('click', close); document.addEventListener('keydown', close); });
+  }));
+
+  // ---- the shelf's cat: the street's black cat, sitting at the end of the books, its eyes lit (they blink)
+  document.querySelectorAll('canvas.shelf-cat').forEach((cv) => {
+    const g = cv.getContext('2d'), CAT = ['.#...#........', '.##.##........', '.#####........', '.#o#o#........', '.#####......#.', '..####......#.', '..#####....#..', '..########.#..', '..#########...', '..#########...', '..#########...', '..##.##.##....'];
+    const draw = (open) => { g.clearRect(0, 0, 14, 12); CAT.forEach((row, y) => [...row].forEach((c, x) => { if (c === '.') return; g.fillStyle = c === 'o' ? (open ? '#ffc36b' : '#07060f') : '#07060f'; g.fillRect(x, y, 1, 1); })); };
+    draw(true);
+    if (!still) (function blink() { setTimeout(() => { draw(false); setTimeout(() => { draw(true); blink(); }, 160); }, 2500 + Math.random() * 4000); })();
+  });
+
+  // ---- the library: a book under the pointer (or focus) gives its title, authors, year, venue, theme beneath the shelf
+  document.querySelectorAll('.library').forEach((lib) => {
+    const cap = lib.querySelector('.shelf-caption'), books = [...lib.querySelectorAll('.book')];
+    const esc = (t) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const touch = matchMedia('(hover: none)').matches;
+    const hint = () => { cap.innerHTML = touch ? (en() ? 'Tap a book to open it · the star marks the essentials' : 'Touchez un livre pour l’ouvrir · l’étoile marque les essentiels')
+      : (en() ? 'Point at a book to see it · the star marks the essentials' : 'Survolez un livre pour le voir · l’étoile marque les essentiels'); books.forEach((b) => b.classList.remove('on')); };
+    const show = (b) => { books.forEach((x) => x.classList.toggle('on', x === b)); const d = b.dataset;
+      cap.innerHTML = `<b>${esc(d.title)}</b><br>${esc(d.authors)} · <span class="yr">${d.year}</span> · ${esc(d.venue)} · ${esc(en() ? d.themeEn : d.themeFr)}`; };
+    books.forEach((b) => { b.addEventListener('mouseenter', () => show(b)); b.addEventListener('focus', () => show(b)); });
+    lib.addEventListener('mouseleave', hint); lib.addEventListener('focusout', (e) => { if (!lib.contains(e.relatedTarget)) hint(); });
+    document.querySelectorAll('button.lang').forEach((x) => x.addEventListener('click', () => setTimeout(hint)));
+    hint();
+  });
 })();
