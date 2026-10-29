@@ -275,7 +275,8 @@
     const hint = () => { cap.innerHTML = touch ? (en() ? 'Tap a book to open it · the star marks the essentials' : 'Touchez un livre pour l’ouvrir · l’étoile marque les essentiels')
       : (en() ? 'Point at a book to see it · the star marks the essentials' : 'Survolez un livre pour le voir · l’étoile marque les essentiels'); books.forEach((b) => b.classList.remove('on')); };
     const show = (b) => { books.forEach((x) => x.classList.toggle('on', x === b)); const d = b.dataset;
-      cap.innerHTML = `<b>${esc(d.title)}</b><br>${esc(d.authors)} · <span class="yr">${d.year}</span> · ${esc(d.venue)} · ${esc(en() ? d.themeEn : d.themeFr)}`; };
+      const bits = [esc(d.authors), d.year ? `<span class="yr">${d.year}</span>` : '', d.venue && d.venue !== 'YouTube' ? esc(d.venue) : '', d.n ? `${d.n} ${en() ? 'videos' : 'vidéos'}` : '', en() ? d.themeEn : d.themeFr].filter(Boolean);
+      cap.innerHTML = `<b>${d.title}</b><br>${bits.join(' · ')}`; };
     books.forEach((b) => { b.addEventListener('mouseenter', () => show(b)); b.addEventListener('focus', () => show(b)); });
     lib.addEventListener('mouseleave', hint); lib.addEventListener('focusout', (e) => { if (!lib.contains(e.relatedTarget)) hint(); });
     document.querySelectorAll('button.lang').forEach((x) => x.addEventListener('click', () => setTimeout(hint)));
