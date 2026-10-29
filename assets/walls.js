@@ -520,31 +520,48 @@
         bmp: (rows2, x, y, c, lit) => rows2.forEach((row, yy) => [...row].forEach((ch, xx) => { if (ch === '.') return; g.fillStyle = css(c); g.fillRect(x + xx, y + yy - top, 1, 1); if (lit) { h.fillStyle = css(c, 0.9); h.fillRect(x + xx, y + yy - top, 1, 1); } })),
         glassNow: (f) => { f({ px: (x, y, c, a) => { g.fillStyle = css(c, a); g.fillRect(x, y - top, 1, 1); }, rect: (x, y, w, hh, c, a) => { g.fillStyle = css(c, a); g.fillRect(x, y - top, w, hh); } },
                              { add: (x, y, c, a) => { h.fillStyle = css(c, a); h.fillRect(x, y - top, 1, 1); } }); } };
-      for (const m of S.moving) m.draw(D, t);
+      for (const m of S.moving) if (m.y1 > top && m.y0 < top + rows) m.draw(D, t);   // (only the parts in view)
     }
   }
+  // the rows a moving part can touch, probed at a few times (a margin for what drifts; a part never seen drawn: always drawn)
+  function span(m) {
+    let y0 = Infinity, y1 = -Infinity; const at = (y, h) => { if (y < y0) y0 = y; if (y + h > y1) y1 = y + h; };
+    const D = { R: (x, y, w, h) => at(y, h), E: (x, y, w, h) => at(y, h), bmp: (rows, x, y) => at(y, rows.length),
+      glassNow: (f) => f({ px: (x, y) => at(y, 1), rect: (x, y, w, h) => at(y, h) }, { add: (x, y) => at(y, 1) }) };
+    for (const tt of [0, 0.7, 1.9, 3.1, 4.6, 6.2, 8.3, 11, 13.7, 17.2, 23.9, 31.4]) m.draw(D, tt);
+    if (y0 === Infinity) { m.y0 = -Infinity; m.y1 = Infinity; } else { m.y0 = y0 - 40; m.y1 = y1 + 40; }
+  }
+  let built = '';
   function layout() {
     const pr = pg.getBoundingClientRect(), cr = ct.getBoundingClientRect(), room = Math.min(240, Math.floor((cr.left - pr.left) * 0.55));   // (a little over half the margin: the content leads)
     on = room >= 90;
     sides.forEach((S) => { S.wrap.style.display = on ? '' : 'none'; });
-    if (!on) return;
-    const H = Math.ceil(pg.offsetHeight / P);
+    if (!on) { built = ''; return; }
+    const H = Math.ceil(pg.offsetHeight / P), key = room + ':' + H + ':' + atlas.ok;
+    if (key === built) { frame(); return; }   // (the same walls: nothing to build again)
+    built = key;
     sides.forEach((S, k) => {
       S.wrap.style.width = room + 'px'; S.W = Math.floor(room / P); S.H = H;
       const signs = atlas.ok ? LOGOS.filter((l) => l[2] === S.side).map((l) => ({ k: l[0], y: Math.round(l[1] * H) })) : [];
       const B = build(S.W, H, 'wall' + k + ':' + S.W, S.side === 'left', signs);
       const toCanvas = (Ly) => { const c = document.createElement('canvas'); c.width = S.W; c.height = H; c.getContext('2d').putImageData(new ImageData(Ly.d, S.W, H), 0, 0); return c; };
-      S.still = toCanvas(B.L); S.stillG = toCanvas(B.G); S.moving = B.moving;
+      S.still = toCanvas(B.L); S.stillG = toCanvas(B.G); S.moving = B.moving; S.moving.forEach(span);
     });
     frame();
   }
-  layout();
+  // built once, with its signs (the atlas first, 1.5 s at most), and off the page's first moments: at once if the walls are in
+  // view, else when the browser is idle; again only when the margin or the page's height changes
+  const idle = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 1500 }) : (f) => setTimeout(f, 50);
+  let started = false;
+  const start = () => { if (started) return; started = true; if (pg.getBoundingClientRect().top < innerHeight) layout(); else idle(layout); };
+  let lt = 0; const later = () => { if (!started) return; clearTimeout(lt); lt = setTimeout(() => idle(layout), 200); };
   if (me) {
     const img = new Image();
-    img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0); atlas.d = g.getImageData(0, 0, img.width, img.height).data; atlas.W = img.width; atlas.ok = true; layout(); } catch (e) { /* the walls without their signs */ } };
+    img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0); atlas.d = g.getImageData(0, 0, img.width, img.height).data; atlas.W = img.width; atlas.ok = true; } catch (e) { /* the walls without their signs */ } if (started) later(); else start(); };
+    img.onerror = start;
     img.src = new URL('wall_logos.png?v=2', me).href;
-  }
-  let lt = 0, lastH = 0; const later = () => { clearTimeout(lt); lt = setTimeout(() => { if (Math.abs(pg.offsetHeight - lastH) > 2 || true) { lastH = pg.offsetHeight; layout(); } }, 200); };
+    setTimeout(start, 1500);
+  } else start();
   addEventListener('resize', later); addEventListener('load', later);
   if ('ResizeObserver' in window) new ResizeObserver(later).observe(ct);
   let raf = 0; addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(() => { raf = 0; frame(); }); }, { passive: true });
