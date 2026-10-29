@@ -10,6 +10,7 @@ articles/pinductor.html walkthrough interactif du papier Pinductor (EN)
 articles/sycophancy.html article interactif du projet sycophancie (EN)
 assets/site.css         la charte graphique : couleurs, polices, composants (partagée par toutes les pages)
 assets/site.js          langue FR/EN, e-mail révélé au clic, BibTeX, vignettes pixel, FIG. 01
+assets/street.js        la scène du hero (three.js), chargée en bas de index.html
 assets/walls.js         les marges en pixels (pages avec .page, grand écran seulement)
 assets/analytics.js     la mesure d'audience (éteinte tant qu'elle n'est pas configurée)
 assets/                 couches de l'illustration (WebP) et sprites
@@ -78,4 +79,6 @@ Un article interactif (comme `articles/sycophancy.html`) suit le même chemin ; 
 
 ## Le hero
 
-Tout est dans le `<script>` en bas de `index.html` : couches, événements (avion, étoiles filantes, chat, voiture, corbeau, fenêtre du codeur, arcade, enseigne), fréquences et amplitudes. Les fenêtres qui s'allument sont dans la constante `DOTS` ; les coordonnées sont en pixels de l'illustration (1456 × 816).
+Tout est dans `assets/street.js` (chargé en bas de `index.html`, après `three.min.js` ; changer son `?v=` à chaque modification) : couches, événements (avion, étoiles filantes, chat, voiture, corbeau, fenêtre du codeur, arcade, enseigne), fréquences et amplitudes. Les fenêtres qui s'allument sont dans la constante `DOTS` ; les coordonnées sont en pixels de l'illustration (1456 × 816).
+
+La cadence : 60 images par seconde au plus (un écran 120 Hz dessine une fois sur deux), et un appareil qui ne tient pas 45 images par seconde s'allège seul, une fois pour toutes (le reflet de l'eau recalculé une image sur deux, et sur un écran dense un canevas un peu moins grand où chaque pixel de l'illustration reste un nombre entier de pixels). Les murs des marges (`walls.js`) ne se reconstruisent que si la largeur de la marge ou la hauteur de la page change, et ne redessinent que les parties animées à l'écran.
