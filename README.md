@@ -11,6 +11,7 @@ articles/sycophancy.html article interactif du projet sycophancie (EN)
 assets/site.css         la charte graphique : couleurs, polices, composants (partagée par toutes les pages)
 assets/site.js          langue FR/EN, e-mail révélé au clic, BibTeX, vignettes pixel, FIG. 01
 assets/walls.js         les marges en pixels (pages avec .page, grand écran seulement)
+assets/analytics.js     la mesure d'audience (éteinte tant qu'elle n'est pas configurée)
 assets/                 couches de l'illustration (WebP) et sprites
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
@@ -31,6 +32,16 @@ Importer le repo, framework « Other », aucune commande de build, dossier de so
 ## Domaine perso (optionnel)
 
 Un `.fr`/`.com` à ~10 €/an chez n'importe quel registrar, puis Settings → Pages → Custom domain (GitHub) ou Domains (Vercel). HTTPS automatique.
+
+## Référencement
+
+- Chaque page a son titre, sa description, son URL canonique, ses aperçus de partage (Open Graph et Twitter, image 1200 × 630 : `og.png` pour l'accueil et le blog, `assets/og_*.jpg` pour les articles) et ses données structurées JSON-LD (accueil : site, profil, personne et publication ; blog : `Blog` et ses billets ; articles : `TechArticle`).
+- `sitemap.xml` (avec les images), `robots.txt`, `blog/feed.xml` (flux RSS), `site.webmanifest`.
+- Pour un nouveau billet : le mettre dans `sitemap.xml` et `blog/feed.xml`, avec son image de partage.
+
+## Analytics
+
+`assets/analytics.js`, chargé par toutes les pages, est éteint tant que `PROVIDER` et `ID` sont vides (en tête du fichier). Les services prévus mesurent l'audience sans cookie, donc sans bandeau de consentement : GoatCounter (gratuit pour un site perso), Plausible, Umami ou Cloudflare Web Analytics. En plus des pages vues, il compte quelques clics : l'e-mail affiché, le CV, le changement de langue, les liens sortants. Rien n'est envoyé depuis `localhost`.
 
 ## Langue
 
