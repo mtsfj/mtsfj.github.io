@@ -9,7 +9,8 @@ blog/modele.html        le modèle d'un billet (non référencé) : tous les com
 articles/pinductor.html walkthrough interactif du papier Pinductor (EN)
 articles/sycophancy.html article interactif du projet sycophancie (EN)
 assets/site.css         la charte graphique : couleurs, polices, composants (partagée par toutes les pages)
-assets/site.js          langue FR/EN, e-mail révélé au clic, BibTeX, vignettes pixel générées
+assets/site.js          langue FR/EN, e-mail révélé au clic, BibTeX, vignettes pixel, FIG. 01
+assets/walls.js         les marges en pixels (pages avec .page, grand écran seulement)
 assets/                 couches de l'illustration (WebP) et sprites
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
@@ -41,7 +42,7 @@ Toutes les pages chargent `assets/fonts/fonts.css`, puis `assets/site.css`, et `
 
 - **Couleurs** : la rue la nuit. `--night` (fond), `--night-deep` (barre, haut de page), `--panel` (surfaces), `--paper` / `--paper-dim` (texte), `--pink` (néons : titres, étiquettes), `--sodium` (lampadaire : dates, chiffres, action principale). Cyan, vert et violet : données seulement.
 - **Polices** : Silkscreen (pixel) pour les titres de page et les petites étiquettes, jamais pour du texte courant ; Inter Tight pour tout le reste ; JetBrains Mono pour le code.
-- **Composants** : `.site-bar` (barre du haut), `.masthead` + `.eyebrow` + `.display` + `.lede` (en-tête de page), `.section` + `.section-head` (numéro, titre pixel, filet néon) (sections), `.split` (texte + panneau à droite), `.lead` (premier paragraphe), `.projects` / `.project` (cartes de projet), `.cta` (appel à l'action), `.skyline` (la ligne d'immeubles du bas de page), `.fig` + `.game` (FIG. 01 : quatre agents autotéliques qui se disputent une grille, chacun choisissant ses buts par progrès d'apprentissage), `.wall` (sur grand écran, les marges deviennent les façades de la rue : fenêtres, néons, lanternes, distributeurs, escaliers… générés par `site.js`, sans texte), `.metric` + `.bars-mini` (le chiffre d'un projet), `.entry-media.cover` (illustration d'un billet), `.entry` (la carte d'un billet : vignette, méta, titre, phrase, liens) dans `.entries` ou `.entries-grid`, `.badge`, `.chip`, `.btn`, `.links`, `.rows`, `.kv`, `.dated`, `.chrono` (frise), `.tile`, `.panel`, `.prose` (texte long), `.takeaway` (encadré), `.site-footer`. Chacun est décrit en une ligne dans `site.css`.
+- **Composants** : `.site-bar` (barre du haut), `.masthead` + `.eyebrow` + `.display` + `.lede` (en-tête de page), `.section` + `.section-head` (numéro, titre pixel, filet néon) (sections), `.split` (texte + panneau à droite), `.lead` (premier paragraphe), `.projects` / `.project` (cartes de projet), `.cta` (appel à l'action), `.skyline` (la ligne d'immeubles du bas de page), `.fig` + `.game` (FIG. 01 : quatre agents autotéliques qui se disputent une grille, chacun choisissant ses buts par progrès d'apprentissage), `.wall` (sur grand écran, les marges deviennent la rue : immeubles de matières variées et leurs fenêtres, boutiques en rez-de-chaussée, trouées de ciel et toits, parc au cerisier, sanctuaire, viaduc et son train ; généré par `assets/walls.js`, sans texte), `.metric` + `.bars-mini` (le chiffre d'un projet), `.entry-media.cover` (illustration d'un billet), `.entry` (la carte d'un billet : vignette, méta, titre, phrase, liens) dans `.entries` ou `.entries-grid`, `.badge`, `.chip`, `.btn`, `.links`, `.rows`, `.kv`, `.dated`, `.chrono` (frise), `.tile`, `.panel`, `.prose` (texte long), `.takeaway` (encadré), `.site-footer`. Chacun est décrit en une ligne dans `site.css`.
 
 ## Illustrations des articles
 
