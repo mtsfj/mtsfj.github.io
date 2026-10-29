@@ -7,8 +7,8 @@
    Besides the page views, a few clicks are counted as events: the email shown, the CV, the language switch, every
    link out of the site (GitHub, arXiv, Scholar, LinkedIn…). Nothing is sent from localhost or a file. */
 (function () {
-  const PROVIDER = '';          // 'goatcounter' | 'plausible' | 'umami' | 'cloudflare'
-  const ID = '';
+  const PROVIDER = 'goatcounter';   // 'goatcounter' | 'plausible' | 'umami' | 'cloudflare'
+  const ID = 'mtsfj';               // https://mtsfj.goatcounter.com (private dashboard)
   const SRC = '';               // (umami only: a self-hosted script's URL; empty for Umami Cloud)
   if (!PROVIDER || !ID || /^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname) || location.protocol === 'file:') return;
 
