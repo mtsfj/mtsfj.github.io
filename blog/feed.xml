@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mathis Fajeau · Blog</title>
+    <link>https://mtsfj.github.io/blog/</link>
+    <atom:link href="https://mtsfj.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <description>Interactive articles and notes: autotelic exploration, world models, evaluating large generative models.</description>
+    <language>en</language>
+    <lastBuildDate>Thu, 29 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Pinductor: learning POMDP world models from observations with language-model priors</title>
+      <link>https://mtsfj.github.io/articles/pinductor.html</link>
+      <guid>https://mtsfj.github.io/articles/pinductor.html</guid>
+      <description>An LLM proposes programs as hypotheses about the dynamics of a partially observable environment. A particle filter selects among them from observations alone. An interactive walkthrough of the NeurIPS 2026 paper.</description>
+    </item>
+    <item>
+      <title>Autotelic quality-diversity for discovering LLM sycophancy</title>
+      <link>https://mtsfj.github.io/articles/sycophancy.html</link>
+      <guid>https://mtsfj.github.io/articles/sycophancy.html</guid>
+      <description>A repertoire instead of a score: a loop that invents its own attacks and maps 164 tactics that make a local model give in.</description>
+    </item>
+  </channel>
+</rss>
