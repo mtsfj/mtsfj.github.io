@@ -282,4 +282,7 @@
     document.querySelectorAll('button.lang').forEach((x) => x.addEventListener('click', () => setTimeout(hint)));
     hint();
   });
+
+  // ---- the site's files kept in the browser between visits (sw.js, at the site's root), registered once the page is in
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(() => {}); });
 })();

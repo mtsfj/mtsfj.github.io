@@ -12,7 +12,7 @@
   if (!ct || !window.HTMLCanvasElement) return;
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches, P = 2;
   // the places of the timeline, as lit signs on the walls, in its order down the page (left, right, left…): their
-  // faces are pixel versions of the official logos (assets/wall_logos.png; its map below)
+  // faces are pixel versions of the official logos (assets/wall_logos.webp; its map below)
   const LOGO_MAP = { airbus: [0, 0, 54, 14], thales: [0, 15, 60, 12], inria: [0, 28, 56, 20], mpg: [0, 49, 48, 46], imt: [0, 96, 42, 16], gatech: [0, 113, 34, 21], ellis: [0, 135, 46, 13] };
   const LOGOS = [['imt', 0.10, 'left'], ['thales', 0.22, 'right'], ['airbus', 0.35, 'left'], ['gatech', 0.48, 'right'], ['mpg', 0.62, 'left'], ['ellis', 0.73, 'right'], ['inria', 0.86, 'left']];
   const atlas = { ok: false, d: null, W: 0 };
@@ -559,7 +559,7 @@
     const img = new Image();
     img.onload = () => { try { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; const g = c.getContext('2d'); g.drawImage(img, 0, 0); atlas.d = g.getImageData(0, 0, img.width, img.height).data; atlas.W = img.width; atlas.ok = true; } catch (e) { /* the walls without their signs */ } if (started) later(); else start(); };
     img.onerror = start;
-    img.src = new URL('wall_logos.png?v=2', me).href;
+    img.src = new URL('wall_logos.webp?v=2', me).href;
     setTimeout(start, 1500);
   } else start();
   addEventListener('resize', later); addEventListener('load', later);
