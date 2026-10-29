@@ -90,12 +90,12 @@
     comps.push(p);
   }
   // the right-hand drinks machine's display out (build_zzzanim_z7.py), laid over its comp while its tube stutters
-  const vendOff = plane('assets/z7_vendoff.png?v=4', 305, 577, 18, 73, 1.105, { opacity: 0 }); vendOff.visible = false;
+  const vendOff = plane('assets/z7_vendoff.webp?v=4', 305, 577, 18, 73, 1.105, { opacity: 0 }); vendOff.visible = false;
   // the drinks machines' cold light on the sidewalk before them (lumieres-05), over the water's sheet as the lamp's pool, and the Pokéball's
   // red and white on the Center's facade and the awning's top (lumieres-06): additive layers at their source's level as it is rendered
   // (LGT.post); the red night grades them as the train's windows (once, at their first render)
-  const vendPool = plane('assets/vend_pool.png?v=1', 262, 716, 140, 80, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });
-  const embGlow = plane('assets/z4_emblem_glow.png?v=1', 876, 444, 70, 104, 1.1, { opacity: 0, blending: THREE.AdditiveBlending });
+  const vendPool = plane('assets/vend_pool.webp?v=1', 262, 716, 140, 80, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });
+  const embGlow = plane('assets/z4_emblem_glow.webp?v=1', 876, 444, 70, 104, 1.1, { opacity: 0, blending: THREE.AdditiveBlending });
   const LAY = [[vendPool, comps.find((c) => c.userData.name === 'z7_vending'), () => 1 - 0.3 * vendOff.material.opacity],
     [embGlow, comps.find((c) => c.userData.name === 'z4_emblem'), () => 1]];
 
@@ -424,7 +424,7 @@
   const LC = { x: 883, top: 165, foot: 767, walk: 752 };   // foot: the road under the glass (row 767, the lowest ground: the drops' wrap row, the cone's height); walk: the sidewalk at the pole's foot (752)
   const lcFoot = (x) => x >= 1002 ? LC.walk : x <= 972 ? LC.foot : 615 + (x - 700) / 1.986;   // the ground under column x: the sidewalk right of the curb's top line, the road left of the curb's foot, the curb's face between (zone 10's curb: x = 700 + 1.986 (y - 615))
   const lampComp = comps.find((c) => c.userData.name === 'lamp');
-  const lcPool = plane('assets/lamp_pool.png', 673, 707, 420, 90, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });   // on the road, over the water's sheet: its shape without zone 10's puddles (build_zzzanim_lamppool.py), faint over the light zone 10 paints there
+  const lcPool = plane('assets/lamp_pool.webp', 673, 707, 420, 90, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });   // on the road, over the water's sheet: its shape without zone 10's puddles (build_zzzanim_lamppool.py), faint over the light zone 10 paints there
   // the lit rain: the rain's own drops, lit where they cross the cone. Each is a crisp line, 1 px wide and 4-8 px long, on whole pixels,
   // slanted as the rain falls (its fall and its wind, gust.k), its tail stepping down three alpha steps (no gradient). Every pixel is a
   // 1 x 1 quad of one mesh, so nothing is filtered or smoothed. They fill the cone from the glass (42 px wide) down to the ground,
@@ -1092,7 +1092,7 @@
   // under reduced motion the flyer never falls: there it lies on the wet road, a little askew (its four corners: the hit)
   const OMR = {"box":[604,731,100,20],"corners":[[605.72,744.02],[663.56,748.01],[701.3,736.22],[647.41,732.9]]};
   if (reduced) {
-    const t = loader.load('assets/om_ground.png?v=2'); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    const t = loader.load('assets/om_ground.webp?v=2'); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
     const [bx, by, bw, bh] = OMR.box, m = new THREE.Mesh(new THREE.PlaneGeometry(bw, bh), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }));
     m.position.set(bx + bw / 2, -(by + bh / 2), 1.16); scene.add(m);          // over the water's sheet: no reflection on the paper
   }
@@ -1145,7 +1145,7 @@
   const clbS = { t: -1, i: 0, shown: -1, next: /[?&]climber\b/.test(location.search) ? 4 : 180 + Math.random() * 180 };
   let clb = null, clbTex = null;
   if (!reduced) {
-    clbTex = crisp('assets/fuji_climber.png?v=1'); clbTex.repeat.set(1 / CLB.cols, 1 / CLB.rows);
+    clbTex = crisp('assets/fuji_climber.webp?v=1'); clbTex.repeat.set(1 / CLB.cols, 1 / CLB.rows);
     clb = new THREE.Mesh(new THREE.PlaneGeometry(CLB.W, CLB.H), new THREE.MeshBasicMaterial({ map: clbTex, transparent: true, depthWrite: false }));
     clb.visible = false; clb.position.z = -1.45; scene.add(clb);        // just in front of fuji_night (-1.5), behind the tower and the tree
     let end = 0; for (const e of CLB.seq) { end += e[3] * CLB.dt; e[4] = end; }      // each step's end time
@@ -1182,8 +1182,8 @@
   for (let k = 1; k <= FAR.n; k++) farState.image.data[k * 4] = FAR.def[k - 1] === '1' ? 255 : 0;
   farState.needsUpdate = true;
   const farMat = new THREE.ShaderMaterial({
-    uniforms: { tIds: { value: farTex('assets/far_ids.png?v=6') }, tOn: { value: farTex('assets/far_on.png?v=6') }, tOff: { value: farTex('assets/far_off.png?v=6') },
-      tAux: { value: farTex('assets/far_aux.png?v=14') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
+    uniforms: { tIds: { value: farTex('assets/far_ids.webp?v=6') }, tOn: { value: farTex('assets/far_on.webp?v=6') }, tOff: { value: farTex('assets/far_off.webp?v=6') },
+      tAux: { value: farTex('assets/far_aux.webp?v=14') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
     vertexShader: 'varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: `
       uniform sampler2D tIds, tOn, tOff, tAux, tState;
@@ -1463,7 +1463,7 @@
     m.material.onBeforeCompile = busShade(); m.material.customProgramCacheKey = () => 'bus';   // (one program per kind of layer)
     m.position.z = z; m.visible = false; scene.add(m); BUS.list.push(m); return m;
   }
-  const busSpill = crispLate('assets/bus_spill.png?v=4', 'bus');   // the shell's light maps (R, G) and its openings (B), two rows
+  const busSpill = crispLate('assets/bus_spill.webp?v=4', 'bus');   // the shell's light maps (R, G) and its openings (B), two rows
   const busOpen = { uShell: { value: new THREE.Vector4() }, uRow: { value: 0.5 } };
   function busInside(m) {                          // a saloon layer shows only through the shell's openings, wherever parallax slides it
     m.material.customProgramCacheKey = () => 'bus-inside';
@@ -1475,19 +1475,19 @@
     });
     return m;
   }
-  const busShadow = busPart('assets/bus_shadow.png?v=4', BUS.W, BUS.shH, 0.645, {}, 2);
-  const busFar = busInside(busPart('assets/bus_far.png?v=3', BUS.W, BUS.H, 0.646, {}, 2));
-  const busMid = busInside(busPart('assets/bus_mid.png?v=3', BUS.W, BUS.H, 0.647, { alphaTest: 0.5 }, 2));
+  const busShadow = busPart('assets/bus_shadow.webp?v=4', BUS.W, BUS.shH, 0.645, {}, 2);
+  const busFar = busInside(busPart('assets/bus_far.webp?v=3', BUS.W, BUS.H, 0.646, {}, 2));
+  const busMid = busInside(busPart('assets/bus_mid.webp?v=3', BUS.W, BUS.H, 0.647, { alphaTest: 0.5 }, 2));
   const busEyeGlow = busPart('', 5, 3, 0.6515, { map: plGlowTex, color: 0x5ab8ff, blending: THREE.AdditiveBlending, opacity: 0.3 });   // the conductor's eyes (their 2 px are in the shell): his own light
   BUS.uWarm = { value: new THREE.Vector3() }; BUS.uRed = { value: new THREE.Vector3() };   // the street's spill (the shell's and its riders')
-  const busBody = busPart('assets/bus.png?v=4', BUS.W, BUS.H, BUS.z, { alphaTest: 0.5 }, 2);
+  const busBody = busPart('assets/bus.webp?v=4', BUS.W, BUS.H, BUS.z, { alphaTest: 0.5 }, 2);
   busBody.material.customProgramCacheKey = () => 'bus-body';
   busBody.material.onBeforeCompile = busShade((sh) => {   // the street's light on the shell, by where it is on the street
     sh.uniforms.tSpill = { value: busSpill }; sh.uniforms.uWarm = BUS.uWarm; sh.uniforms.uRed = BUS.uRed;
     sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D tSpill;\nuniform vec3 uWarm, uRed;')
       .replace('#include <map_fragment>', '#include <map_fragment>\nvec2 sp = texture2D(tSpill, vUv).rg;\ndiffuseColor.rgb *= 1.0 + sp.r * uWarm * smoothstep(640.0, 500.0, vWP.x) + sp.g * uRed * smoothstep(760.0, 860.0, vWP.x);');
   });
-  const busGlow = busPart('assets/bus_glow.png?v=4', BUS.W, BUS.H, 0.651, { blending: THREE.AdditiveBlending }, 2);
+  const busGlow = busPart('assets/bus_glow.webp?v=4', BUS.W, BUS.H, 0.651, { blending: THREE.AdditiveBlending }, 2);
   // the destination box (evenements-06): its inside laid over the baked one, one text a pass: LAST STAND for a called
   // bus and the crew's (it turns to it as the bus brakes for them, the headlights flashing twice),
   // OUT OF SERVICE with zombies aboard, else one of TranZit's stops; the baked box's light cut under it
@@ -1505,10 +1505,10 @@
   busGlow.material.customProgramCacheKey = () => 'bus-glow';
   busGlow.material.onBeforeCompile = busShade((sh) => { sh.uniforms.uBoxR = BUS.uBoxR; sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform vec4 uBoxR;')
     .replace('#include <map_fragment>', 'if (vWP.x >= uBoxR.x && vWP.x < uBoxR.z && -vWP.y >= uBoxR.y && -vWP.y < uBoxR.w) discard;\n#include <map_fragment>'); });
-  const busWheels = BUS.wheels.map(() => busPart('assets/bus_wheel.png?v=3', BUS.wd, BUS.wd, 0.652, { alphaTest: 0.5 }, 1, 16));
+  const busWheels = BUS.wheels.map(() => busPart('assets/bus_wheel.webp?v=3', BUS.wd, BUS.wd, 0.652, { alphaTest: 0.5 }, 1, 16));
   busWheels[1].material.map = busWheels[0].material.map;   // the two turn together: one texture
-  const busFace = busPart('assets/bus_end.png?v=3', BUS.cell, BUS.fh, 0.649, { alphaTest: 0.5 }, 1, 28);
-  const busFaceGlow = busPart('assets/bus_endglow.png?v=2', BUS.cell, BUS.fh, 0.6495, { blending: THREE.AdditiveBlending }, 1, 28);
+  const busFace = busPart('assets/bus_end.webp?v=3', BUS.cell, BUS.fh, 0.649, { alphaTest: 0.5 }, 1, 28);
+  const busFaceGlow = busPart('assets/bus_endglow.webp?v=2', BUS.cell, BUS.fh, 0.6495, { blending: THREE.AdditiveBlending }, 1, 28);
   // the lamps' glows (the planes' soft dot) and the headlights' beam into the mist ahead, with its pool on the road
   const busGlowAt = (col, size, op) => { const m = busPart('', size, size, 0.66, { map: plGlowTex, color: col, blending: THREE.AdditiveBlending, opacity: op }); m.userData.op = op; return m; };
   const busHead = busGlowAt(0xffeccc, 7.5, 0.7), busTail = busGlowAt(0xff4a3a, 5, 0.55), busMark = busGlowAt(0xffa040, 4, 0.45), busClear = busGlowAt(0xffb050, 2.5, 0.35);
@@ -1668,21 +1668,21 @@
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) {} };
   const PERKS = {                                  // near to far: x across the machines, price, tag colour, its icon and drink
-    speed: { x0: 281, x1: 304, price: 3000, col: '#7fd06a', ls: 'mtsfj-tz-speed', icon: "url('assets/speed_perk.png?v=1')", drink: 'assets/speed_drink.png?v=1' },
-    tap: { x0: 304, x1: 325, price: 2000, col: '#e8a33a', ls: 'mtsfj-tz-tap', icon: "url('assets/tap_perk.png?v=1')", drink: 'assets/tap_drink.png?v=1' },
-    jugg: { x0: 325, x1: 347, price: 2500, col: '#d9493c', ls: 'mtsfj-tz-perk', icon: "url('assets/jugg_perk.png?v=1')", drink: 'assets/jugg_drink.png?v=1' } };
+    speed: { x0: 281, x1: 304, price: 3000, col: '#7fd06a', ls: 'mtsfj-tz-speed', icon: "url('assets/speed_perk.webp?v=1')", drink: 'assets/speed_drink.png?v=1' },
+    tap: { x0: 304, x1: 325, price: 2000, col: '#e8a33a', ls: 'mtsfj-tz-tap', icon: "url('assets/tap_perk.webp?v=1')", drink: 'assets/tap_drink.png?v=1' },
+    jugg: { x0: 325, x1: 347, price: 2500, col: '#d9493c', ls: 'mtsfj-tz-perk', icon: "url('assets/jugg_perk.webp?v=1')", drink: 'assets/jugg_drink.png?v=1' } };
   const PERK_ORDER = ['jugg', 'speed', 'tap'];     // (the icons' order on the HUD)
   const ZG = { pts: Math.max(0, +lsGet('mtsfj-tz-points') || 0), round: Math.max(1, +lsGet('mtsfj-tz-round') || 1),
     has: { jugg: lsGet('mtsfj-tz-perk') === '1', speed: lsGet('mtsfj-tz-speed') === '1', tap: lsGet('mtsfj-tz-tap') === '1' }, dk: 'jugg', imgs: {},
     seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, due: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
     puller: null, alpha: null, hud: null, drink: -1, cv: null, img: null, lit: 1 };
-  const zTex = crispLate('assets/bus_zombies.png?v=2', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
+  const zTex = crispLate('assets/bus_zombies.webp?v=2', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
       const c = document.createElement('canvas'); c.width = BZ.W; c.height = BZ.H; const g = c.getContext('2d'); g.drawImage(zTex.image, 0, 0);
       const d = g.getImageData(0, 0, BZ.W, BZ.H).data, a = new Uint8Array(BZ.W * BZ.H); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3]; ZG.alpha = a;
     } catch (e) {}
   });
-  const zTexG = crispLate('assets/bus_zombies_glow.png?v=2', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.png?v=2', 'bus');
+  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=2', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=2', 'bus');
   function zMesh(tex, glow) {                      // a zombie's layer: its own cell of the sheets (uCell), hidden behind the near buildings
     const u = { value: new THREE.Vector4(0, 0, 1, 1) };
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial(glow ? { map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }
@@ -1704,7 +1704,7 @@
     eye.material.onBeforeCompile = busShade(); eye.material.customProgramCacheKey = () => 'bus'; eye.visible = false; scene.add(eye);
     ZP.push({ base: zMesh(zTex, false), glow: zMesh(zTexG, true), eye, on: false, dying: false });
   }
-  const zPlank = busPart('assets/bus_plank.png?v=1', 21, 21, 0.6528, { alphaTest: 0.02 }, 1, 17);
+  const zPlank = busPart('assets/bus_plank.webp?v=1', 21, 21, 0.6528, { alphaTest: 0.02 }, 1, 17);
   BUS.list.splice(BUS.list.indexOf(zPlank), 1);    // (the plank outlives the bus: it lies on the road)
   const ZS = { pl: { st: 'none', x: 0, y: 0, vx: 0, vy: 0, a: 0, w: 0, life: 0, hits: 0 } };
   function zStart(z, kind, v, col, t) {
@@ -2020,11 +2020,11 @@
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
     // (every asset a literal URL: sync_assets.py finds them by that pattern)
-    const SRC = { dempsey: ['assets/crew_dempsey.png?v=2', 'assets/crew_dempsey_flash.png?v=2'], nikolai: ['assets/crew_nikolai.png?v=2', 'assets/crew_nikolai_flash.png?v=2'],
-      takeo: ['assets/crew_takeo.png?v=2', 'assets/crew_takeo_flash.png?v=2'], richtofen: ['assets/crew_richtofen.png?v=2', 'assets/crew_richtofen_flash.png?v=2'] };
+    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=2', 'assets/crew_dempsey_flash.webp?v=2'], nikolai: ['assets/crew_nikolai.webp?v=2', 'assets/crew_nikolai_flash.webp?v=2'],
+      takeo: ['assets/crew_takeo.webp?v=2', 'assets/crew_takeo_flash.webp?v=2'], richtofen: ['assets/crew_richtofen.webp?v=2', 'assets/crew_richtofen_flash.webp?v=2'] };
     for (const h of Object.keys(CRW.heroes)) { T.crew[h] = crisp(SRC[h][0], on); T.flash[h] = crisp(SRC[h][1], on); CREW.need += 2; }
     for (const src of ['assets/horde_L0.webp?v=1', 'assets/horde_L1.webp?v=2', 'assets/horde_L2.webp?v=2', 'assets/horde_L3.webp?v=2', 'assets/horde_L4.webp?v=1']) { T.L.push(crisp(src, on)); CREW.need++; }
-    T.door = crisp('assets/bus_door.png?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.png?v=1', on); CREW.need += 2;
+    T.door = crisp('assets/bus_door.webp?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.webp?v=1', on); CREW.need += 2;
   }
   function crewTextCovers() {                              // the page's title over the spots? (then no event: never under the text)
     const el = document.querySelector('.hero-text'); if (!el) return false;
@@ -2288,7 +2288,7 @@
     if (!B.st) {
       if (!stopped || S.wait < 1.6) return;
       if (!B.door) {                                   // (made at the first stop: the sprites' grading hook exists by then)
-        const t1 = crisp('assets/bus_door.png?v=1'), t2 = crisp('assets/bus_door_glow.png?v=1'); t1.repeat.set(1 / 4, 1 / 2); t2.repeat.set(1 / 4, 1 / 2);
+        const t1 = crisp('assets/bus_door.webp?v=1'), t2 = crisp('assets/bus_door_glow.webp?v=1'); t1.repeat.set(1 / 4, 1 / 2); t2.repeat.set(1 / 4, 1 / 2);
         B.door = new THREE.Mesh(new THREE.PlaneGeometry(DOOR.w, DOOR.h), crewMat(t1, null, 'door', { alphaTest: 0.5 }));
         B.glow = new THREE.Mesh(new THREE.PlaneGeometry(DOOR.w, DOOR.h), crewMat(t2, null, 'doorg', { blending: THREE.AdditiveBlending }));
         B.pool = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), crewMat(fogTex, null, 'doorp', { color: 0x8fd6ff, blending: THREE.AdditiveBlending, opacity: 0 }));
@@ -2572,7 +2572,7 @@
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.6); scene.add(winMesh);   // (behind the bus on lane A, as the house)
   const RIMG = { n: 0 }, imgOk = (im) => im.complete && im.naturalWidth > 0;
-  for (const [k, src] of [['lit', 'assets/win_z5_room.webp?v=3'], ['lamp', 'assets/z5_lamp.png?v=3'], ['scr', 'assets/z5_screen.webp'], ['glass', 'assets/z5_glass.png'], ['dark', 'assets/z5_dark.png?v=2']]) {
+  for (const [k, src] of [['lit', 'assets/win_z5_room.webp?v=3'], ['lamp', 'assets/z5_lamp.webp?v=3'], ['scr', 'assets/z5_screen.webp'], ['glass', 'assets/z5_glass.webp'], ['dark', 'assets/z5_dark.webp?v=2']]) {
     const im = new Image(); im.onload = () => { ws.dirty = true; if (++RIMG.n === 5 && reduced) frame(); }; im.src = src; RIMG[k] = im;
   }
   // ---- the screen's colour tells his night (lumieres-10): the screen's own light (the room lit by it alone, 'scr'; its part of 'lit',
@@ -2924,7 +2924,7 @@
   // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
   // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
   // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
-  const spill = plane('assets/arcade_spill.png?v=8', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
+  const spill = plane('assets/arcade_spill.webp?v=8', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
@@ -5337,7 +5337,7 @@
   // en }, icon, available(): is it there yet, render(el): its content drawn into el }. A const of this script (also
   // window.PKPC); read it at run time (a click), not while the page is being set up ----
   const PKPC = { apps: [
-    { id: 'pokedex', label: { fr: 'Pokédex', en: 'Pokédex' }, icon: 'assets/catch_dex.png?v=2', available: () => found.includes('catch'), render: (el) => dexRender(el) },
+    { id: 'pokedex', label: { fr: 'Pokédex', en: 'Pokédex' }, icon: 'assets/catch_dex.webp?v=2', available: () => found.includes('catch'), render: (el) => dexRender(el) },
     { id: 'trophies', label: { fr: 'trophées', en: 'trophies' }, icon: 'assets/app_trophies.webp?v=1', available: () => !!eleven, render: (el) => trophRender(el) }] };
   window.PKPC = PKPC;
   setTimeout(() => {                         // (once the whole street is set up, the night system included)
@@ -5366,7 +5366,7 @@
   const wlMesh = new THREE.Mesh(new THREE.PlaneGeometry(WL.w, WL.h), new THREE.MeshBasicMaterial({ map: wlTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
   wlMesh.position.set(WL.x + WL.w / 2, -(WL.y + WL.h / 2), 0.45); scene.add(wlMesh);
   const wlPane = [];                            // per pane: its warm light, already cut to its glass
-  // the glass is window_panes.png (red = pane number x 50, alpha = glass); the light on it is window_lit.png (build_lit.py): a lamp's pool
+  // the glass is window_panes.webp (red = pane number x 50, alpha = glass); the light on it is window_lit.webp (build_lit.py): a lamp's pool
   // brightest at the third pane in four value steps, the eave's and the frames' shadows, faint frosted streaks and a clustered grain at
   // scene-pixel scale like the painted windows'. The panes' flicker (WIN2.I), the power cut and the red night scale and grade it as before
   const wlMask = new Image(), wlLit = new Image();
@@ -5384,7 +5384,7 @@
     }
   };
   wlMask.onload = wlLit.onload = wlBuild;
-  wlMask.src = 'assets/window_panes.png?v=1'; wlLit.src = 'assets/window_lit_ukki.webp?v=2';   // (droite-09: Ukki-kun, his potted plant, on the first pane's sill: its shadow cut out of the light)
+  wlMask.src = 'assets/window_panes.webp?v=1'; wlLit.src = 'assets/window_lit_ukki.webp?v=2';   // (droite-09: Ukki-kun, his potted plant, on the first pane's sill: its shadow cut out of the light)
   // ---- Naruto in the room behind that window (build_zzzchar_naruto.py): silhouettes of a jointed body posed joint by
   // joint (rig_naruto.py; the walk and the run from normative joint-angle curves, his soles rolling on the floor without
   // slipping; the stop, the start, a stepping turn and his gestures by IK; the headband's tails and his hair on springs),
@@ -5634,7 +5634,7 @@
   const luffyScr = new THREE.Mesh(lbGeo, new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
   luffyScr.position.z = 0.5; scene.add(luffyScr);
   // the screen's light on its own frame and 2-3 px of wall, two stippled steps (droite-04: no ellipse), at 0.9 of the screen's level
-  const lbGlow = plane('assets/luffy_glow.png?v=1', 1113, 566, 52, 92, 0.48, { opacity: 0, blending: THREE.AdditiveBlending });
+  const lbGlow = plane('assets/luffy_glow.webp?v=1', 1113, 566, 52, 92, 0.48, { opacity: 0, blending: THREE.AdditiveBlending });
 
   // ---- life in the ramen shop: steam from the kitchen vent, and behind the lit glass under the noren the light
   // breathes, the cook moves about, a customer leans over his bowl, the bowls steam ----
@@ -5661,14 +5661,14 @@
   }
   const RL = { x: 1150, y: 520, w: 80, h: 170, K: 2 };                         // (from the doors' upper panes, seen once the noren is in, to the counter's foot)
   const rlC = document.createElement('canvas'); rlC.width = RL.w * RL.K; rlC.height = RL.h * RL.K; const rlg = rlC.getContext('2d');
-  const rlMask = new Image(); rlMask.src = 'assets/ramen_glass.png?v=3';
-  const TR = new Image(); TR.src = 'assets/teuchi_reach.png?v=1';             // Teuchi reaching up to the noren's pole (2 cells, 23 x 44; build_ichiraku_life.py)
+  const rlMask = new Image(); rlMask.src = 'assets/ramen_glass.webp?v=3';
+  const TR = new Image(); TR.src = 'assets/teuchi_reach.webp?v=1';             // Teuchi reaching up to the noren's pole (2 cells, 23 x 44; build_ichiraku_life.py)
   const rlTex = new THREE.CanvasTexture(rlC); rlTex.magFilter = rlTex.minFilter = THREE.LinearFilter; rlTex.generateMipmaps = false;
   const rlMesh = new THREE.Mesh(new THREE.PlaneGeometry(RL.w, RL.h), new THREE.MeshBasicMaterial({ map: rlTex, transparent: true, depthWrite: false }));
   rlMesh.position.set(RL.x + RL.w / 2, -(RL.y + RL.h / 2), 0.47); scene.add(rlMesh);
   // Ichiraku's people, every frame the sheet has for them (Path of the Ninja: overworld walks, three frames a view; build_sprites):
   // Teuchi front 0-2 (stand, step, step), side 3-5, back 6-8; the customers from behind, cut at the hips, Tazuna 9-11, Mizuki 12-14
-  const RP = { img: new Image(), cw: 23, ch: 37, h: [36, 34, 34, 36, 35, 35, 36, 34, 34, 22, 22, 22, 22, 22, 22] }; RP.img.src = 'assets/ramen_people.png?v=2';
+  const RP = { img: new Image(), cw: 23, ch: 37, h: [36, 34, 34, 36, 35, 35, 36, 34, 34, 22, 22, 22, 22, 22, 22] }; RP.img.src = 'assets/ramen_people.webp?v=2';
   // behind the lit glass only their shadows show: drawn at scene res (in scene coordinates), one dark colour, then enlarged with smoothing
   const shC = document.createElement('canvas'); shC.width = RL.w; shC.height = RL.h; const shg = shC.getContext('2d'); shg.translate(-RL.x, -RL.y);
   // seen through the glass and the steam they blur, and the painting's grain shows in them: a blurred copy at the
@@ -5718,10 +5718,10 @@
   // the regular, seated on the corner stool with his back to the doors (Tazuna in his straw hat): his back frames, his arms at the
   // bowl in bursts, a breath. He is there whenever the shop is open; as the closing begins (before the neon, long before the
   // noren) he gets up (seated to standing on his stool, a short cross-fade: no sitting frames to invent) and walks out along the
-  // glass on his side frames (ramen_regular.png, build_ramen_regular.py), his steps from the distance walked, behind the doors'
+  // glass on his side frames (ramen_regular.webp, build_ramen_regular.py), his steps from the distance walked, behind the doors'
   // frame; in the morning he is in his place again. A driven hour, the first frame or reduced motion: there or gone at once
   const REG = { st: 'seat', t: 0, a: 1, x: 1163, dist: 0, f: 0, bt: 0, burst: 0, br: 0, hk0: -1, img: new Image() };
-  REG.img.src = 'assets/ramen_regular.png?v=1';                               // (3 cells of 27 x 41: stand, step, step; facing left)
+  REG.img.src = 'assets/ramen_regular.webp?v=1';                               // (3 cells of 27 x 41: stand, step, step; facing left)
   function stepGuests(dt, t) {
     const R = REG, hk = openK('ramen'), live = R.hk0 >= 0 && Math.abs(hk - R.hk0) < 0.05 && !reduced; R.hk0 = hk;
     const want = hk > 0.97;
@@ -5842,7 +5842,7 @@
   const addTex = (src, x, y, w, h, z, additive) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending }));
     m.position.set(x + w / 2, -(y + h / 2), z); scene.add(m); return m; };
-  const neonMesh = addTex('assets/ichiraku_neon_glow.png?v=1', 1118, 326, 156, 126, 0.97, true);   // (lumieres-06: its tubes' light on its board)
+  const neonMesh = addTex('assets/ichiraku_neon_glow.webp?v=1', 1118, 326, 156, 126, 0.97, true);   // (lumieres-06: its tubes' light on its board)
   neonMesh.material.map.magFilter = neonMesh.material.map.minFilter = THREE.NearestFilter;      // (one texel per scene pixel: crisp at 2x, 4x)
   // IRneon(k): the neon's own factor, k 0..1 on its opacity, for Ichiraku's closing (package 5: the neon out first); IRneon(): back to 1.
   // Applied around each render (the lights' hooks), so stepShop's level and the fuses' and the red night's scaling are untouched
@@ -5850,12 +5850,12 @@
   function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
   LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
-  const shopOff = addTex('assets/shop_off.png?v=3', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
+  const shopOff = addTex('assets/shop_off.webp?v=3', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, hk0: -1, graded: false };
   const IRA = { W: 1104, H: 504, cw: 48, ch: 84 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
-  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.png?v=1');
+  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
   function irUV(m, x, y, w, h, AW, AH) {         // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = x / AW, u1 = (x + w) / AW, v0 = 1 - y / AH, v1 = 1 - (y + h) / AH;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
@@ -5874,11 +5874,11 @@
   // droite-08: when Naruto leaves his window (its panes go out), now and then he goes down to Ichiraku (he lives above it): some
   // 20-40 s later his shadow sits at the counter, seen from behind (the spiky crown, the headband's tails), slurps his noodles,
   // a minute or two, then leaves; his window stays dark meanwhile (NAR.away, read by stepWindow; never in the finale, which
-  // holds him at his window: NFIN). Its frames: naruto_ramen.png
+  // holds him at his window: NFIN). Its frames: naruto_ramen.webp
   // (build_extras.py: a small rig, 6 cells): sit, lean, slurp a, slurp b, head up (tails left), tails right ----
   const NRM = { st: 'idle', t: 0, wait: 0, f: 0, ft: 0, seq: [], w2: 'off', br: 0, img: new Image() };
   const IRNEAR = [];                                                           // (the people near the glass, this frame)
-  NRM.img.src = 'assets/naruto_ramen.png?v=1';
+  NRM.img.src = 'assets/naruto_ramen.webp?v=1';
   function stepNaruRamen(dt, hk) {
     const s2 = WIN2.state, left = NRM.w2 === 'off-going' && s2 === 'off'; NRM.w2 = s2;
     if (NRM.st === 'idle') {
@@ -5953,7 +5953,7 @@
       blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor }));   // (the colour only: the canvas's alpha is left whole, else the box reads white in any un-premultiplied capture)
     m.position.set(x + w / 2, -(y + h / 2), 0.03); m.visible = false; scene.add(m); return m;
   }
-  const odenDn = odenDiff('assets/oden_sign_dn.png?v=4', THREE.ReverseSubtractEquation), odenUp = odenDiff('assets/oden_sign_up.png?v=2', THREE.AddEquation);
+  const odenDn = odenDiff('assets/oden_sign_dn.webp?v=4', THREE.ReverseSubtractEquation), odenUp = odenDiff('assets/oden_sign_up.webp?v=2', THREE.AddEquation);
   // one of its two tubes struggles once in a while: for a second or less the box drops to about half its light and
   // back, a few times; the other tube keeps it lit (never out)
   const OBOX = { lvl: 1, cur: 1, next: 45 + Math.random() * 75, ev: 0, dip: 0, burst: 0, force: null };
@@ -5975,14 +5975,14 @@
   // right): a gust leans it toward the wall, eddies rock it; one pre-rendered frame per half degree (the rest frame is
   // empty: the street holds the lantern at rest)
   const LAN = ODEN.lantern, LAN_N = LAN.angles.length, LAN_0 = LAN.angles.indexOf(0);
-  const lanTex = odenTex('assets/oden_lantern.png?v=4'); lanTex.repeat.set(1 / LAN_N, 1);
+  const lanTex = odenTex('assets/oden_lantern.webp?v=4'); lanTex.repeat.set(1 / LAN_N, 1);
   const lanMesh = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanTex, transparent: true, depthWrite: false }));
   lanMesh.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.03); lanMesh.visible = false; scene.add(lanMesh);
   // the lantern without its light (the power cut, the oden shut by its hours, or lanDark(k)): the same swing, unlit
-  // (oden_lantern_off.png: its paper a dark crimson, its ribs and rings, the dusk on it, and the wall where it hangs at
+  // (oden_lantern_off.webp: its paper a dark crimson, its ribs and rings, the dusk on it, and the wall where it hangs at
   // rest; every frame, the rest one too, as the oden unlit has them), over the lit one as much as that one has no light;
   // lit by the street, so the street's grade. lanDark(k): k 0..1 toward unlit, on top of its power and the oden's hours
-  const lanOffTex = odenTex('assets/oden_lantern_off.png?v=1'); lanOffTex.repeat.set(1 / LAN_N, 1);
+  const lanOffTex = odenTex('assets/oden_lantern_off.webp?v=1'); lanOffTex.repeat.set(1 / LAN_N, 1);
   const lanOff = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanOffTex, transparent: true, depthWrite: false, opacity: 0 }));
   lanOff.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.031); lanOff.visible = false; scene.add(lanOff);
   let lanPw = null, lanDk = 0;                 // the lit lantern's entry in the power cut's list (its power then); lanDark's k
@@ -6023,7 +6023,7 @@
   }
   // the pot (the dark one on the counter, right sash) simmers: a column of steam rises from it, one wisp after another,
   // each swelling, taller than wide, the column swaying more as it rises; it thins out before the top of the window
-  const OWIN = odenGlass(ODEN.window, 'assets/oden_window.png?v=1'), OST = { acc: 0, w: [] };
+  const OWIN = odenGlass(ODEN.window, 'assets/oden_window.webp?v=1'), OST = { acc: 0, w: [] };
   for (let i = 0; i < 9; i++) OST.w.push({ t: i * 0.4 + Math.random() * 0.15, x: 488.5 + Math.random() * 4, ph: Math.random() * 6.3, a: 0.6 + Math.random() * 0.4, h: 32 + Math.random() * 10 });
   function stepOdenSteam(dt, t) {
     for (const w of OST.w) { w.t += dt; if (w.t > 3.6) { w.t -= 3.6; w.x = 488.5 + Math.random() * 4; w.ph = Math.random() * 6.3; w.a = 0.6 + Math.random() * 0.4; w.h = 32 + Math.random() * 10; } }
@@ -6044,7 +6044,7 @@
   // the grain cut out, like the ramen shop's: its core darkens the glass to about half, as measured on the ramen's), his
   // head and shoulders over the doors' wooden lower half. He walks along the shop a metre inside: feet and head follow
   // lines to the vanishing point (700, 615), he grows as he comes nearer (left), sometimes stops a moment behind the doors
-  const ODOOR = odenGlass(ODEN.door, 'assets/oden_door.png?v=1'), OIN = { acc: 0, who: null, next: 30 + Math.random() * 60 };
+  const ODOOR = odenGlass(ODEN.door, 'assets/oden_door.webp?v=1'), OIN = { acc: 0, who: null, next: 30 + Math.random() * 60 };
   ODOOR.mesh.visible = false;
   const odShC = document.createElement('canvas'); odShC.width = ODEN.door[2]; odShC.height = ODEN.door[3]; const odSh = odShC.getContext('2d');
   function stepOdenDoor(dt, t) {
@@ -6092,7 +6092,7 @@
   const Z1 = { warm: comps.find((c) => c.userData.name === 'win_z1_warm'), top: comps.find((c) => c.userData.name === 'win_z1_top') };
   const z1Glass = (box, mask) => { const G = odenGlass(box, mask); G.mesh.position.z = 1.12; G.mesh.visible = false;
     G.sh = document.createElement('canvas'); G.sh.width = box[2]; G.sh.height = box[3]; G.shg = G.sh.getContext('2d'); return G; };
-  const z1Cur = z1Glass([1081, 288, 30, 136], 'assets/z1_warm_mask.png?v=1'), z1Door = z1Glass([963, 226, 43, 137], 'assets/z1_top_glaze.png?v=2'); z1Door.gk = 0.5;   // (Red: half the grain)
+  const z1Cur = z1Glass([1081, 288, 30, 136], 'assets/z1_warm_mask.webp?v=1'), z1Door = z1Glass([963, 226, 43, 137], 'assets/z1_top_glaze.webp?v=2'); z1Door.gk = 0.5;   // (Red: half the grain)
   // a person in metres (the top of the head at 0, the body's axis at 0), at (cx, top) with s px per metre, squeezed
   // across by fs and sheared along the facade's lines (slope sl); sw swings the arms
   function z1Person(g, cx, top, s, fs, sl, sw, head) {
@@ -6327,16 +6327,16 @@
   // rim a moment after (his head's own cells, frame for frame): his hint ----
   const LT = { next: 60 + Math.random() * 90, t: -1, pulses: [], end: 0, k: 0, kil: 0 };
   const ltGlow = (() => {                        // the flash's light in the sky behind the summit: nothing over the filled mountain and tree
-    const t = loader.load('assets/fuji_flash_glow.png?v=4'); t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false;   // (1:1, full resolution)
+    const t = loader.load('assets/fuji_flash_glow.webp?v=4'); t.minFilter = t.magFilter = THREE.NearestFilter; t.generateMipmaps = false;   // (1:1, full resolution)
     const m = new THREE.Mesh(new THREE.PlaneGeometry(760, 380), new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
     m.position.set(611, -250, -2.0); m.visible = false; scene.add(m); return m;
   })();
-  const ltRidge = plane('assets/fuji_flash_ridge.png?v=5', 376, 66, 640, 640, -1.49, { opacity: 0, blending: THREE.AdditiveBlending });
-  const ltTree = plane('assets/fuji_flash_tree.png?v=5', 376, 66, 640, 640, 0.51, { opacity: 0, blending: THREE.AdditiveBlending });
+  const ltRidge = plane('assets/fuji_flash_ridge.webp?v=5', 376, 66, 640, 640, -1.49, { opacity: 0, blending: THREE.AdditiveBlending });
+  const ltTree = plane('assets/fuji_flash_tree.webp?v=5', 376, 66, 640, 640, 0.51, { opacity: 0, blending: THREE.AdditiveBlending });
   ltRidge.visible = ltTree.visible = false;   // (their tints are in their images)
   // the first stage: the whole sky, cold, for an instant (over the sky plane, under all that stands before it; it rides the sky's parallax)
   const ltSky = pxq(IW + 2 * PAD, IH + 2 * PAD, 0xc0d2ff, 0, -2.9); ltSky.material.blending = THREE.AdditiveBlending; ltSky.visible = false;
-  const kilRim = plane('assets/killua_head_rim.png', KM.head.x, KM.head.y, KM.head.w, KM.head.h, 0.021, { opacity: 0, blending: THREE.AdditiveBlending });
+  const kilRim = plane('assets/killua_head_rim.webp', KM.head.x, KM.head.y, KM.head.w, KM.head.h, 0.021, { opacity: 0, blending: THREE.AdditiveBlending });
   kilRim.material.map.repeat.set(1 / KM.head.cols, 1 / KM.head.rows); kilRim.material.color.setRGB(0.42, 0.76, 1); kilRim.visible = false; kilMesh.add(kilRim);
   function stepLightning(dt) {
     if (reduced) return;
@@ -6977,7 +6977,7 @@
     document.body.appendChild(el);
     X.el = el; X.cv = el.querySelector('canvas'); X.g = X.cv.getContext('2d'); X.fl = el.querySelector('.cb-flash'); X.sr = el.querySelector('.cb-sr');
     const ld = (src, k) => { const im = new Image(); im.onload = () => { X[k] = im; }; im.src = src; };
-    ld('assets/catch_battle.png?v=2', 'A'); ld('assets/catch_scene.png?v=1', 'S'); ld('assets/catch_font.png?v=1', 'F');
+    ld('assets/catch_battle.webp?v=2', 'A'); ld('assets/catch_scene.webp?v=1', 'S'); ld('assets/catch_font.webp?v=1', 'F');
     X.cv.addEventListener('click', (ev) => { ev.stopPropagation(); cbPress(cbPt(ev)); });
     X.cv.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') cbHover(cbPt(ev)); });
     el.addEventListener('click', (ev) => { ev.stopPropagation(); });
@@ -7315,7 +7315,7 @@
     const en = cbLang(), box = document.createElement('div'); box.className = 'cb-dex';
     box.innerHTML = '<canvas width="80" height="80"></canvas><div class="cb-dex-id"></div><p class="cb-dex-txt"></p>';   // (DP's: its card beside it, its words under)
     const g = box.firstChild.getContext('2d'); g.imageSmoothingEnabled = false;
-    const im = new Image(); im.onload = () => { const r = CBM.atlas.foe; g.drawImage(im, r[0], r[1], r[2], r[3], 0, 0, 80, 80); }; im.src = 'assets/catch_battle.png?v=2';
+    const im = new Image(); im.onload = () => { const r = CBM.atlas.foe; g.drawImage(im, r[0], r[1], r[2], r[3], 0, 0, 80, 80); }; im.src = 'assets/catch_battle.webp?v=2';
     const T = en ? ['No. 390 · CHIMCHAR ★', 'Type: FIRE · shiny', 'Height 0.5 m · Weight 6.2 kg', 'Caught in the rain, out of the cherry tree. The flame on its tail does not go out in a downpour.']
       : ['N°390 · OUISTICRAM ★', 'Type : FEU · chromatique', 'Taille 0,5 m · Poids 6,2 kg', 'Attrapé sous la pluie, dans le cerisier. La flamme de sa queue ne s\'éteint pas sous l\'averse.'];
     // all in DP's font (secrets-06): its number in pink, its type and size, its words in their box under it
@@ -7329,8 +7329,8 @@
   // sputters, a window going dark, the ramen shop closing, the bus). Each frame the scene, minus
   // what must not be mirrored (rain, drop rings, road mists, steam, the flyer), is rendered small into a texture; a
   // sheet over the wet ground shows it mirrored about the line where the ground meets the wall above it
-  // (assets/wet_mirror.png), rippled by the rain, streaked on the rough asphalt, nearly still in the puddles
-  // (assets/wet.png: R wetness, G the painted reflection's share, B still water; both made by make_wet.py). Inside the
+  // (assets/wet_mirror.webp), rippled by the rain, streaked on the rough asphalt, nearly still in the puddles
+  // (assets/wet.webp: R wetness, G the painted reflection's share, B still water; both made by make_wet.py). Inside the
   // painted puddles their painted light is taken down, so the live reflection carries it. WET_ON = false: the painted
   // reflections alone, as before ----
   const WET_ON = true;
@@ -7410,7 +7410,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.png?v=28') }, tMirror: { value: tex('assets/wet_mirror.png?v=22') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=28') }, tMirror: { value: tex('assets/wet_mirror.webp?v=22') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -7455,18 +7455,18 @@
   // street lamp's pool is one of them: at its glass's centre (881) at the pole's depth, the painted pool and the live one in one
   // place (the old faint lamp_pool plane retired); in the red night it keeps half its light, as its glass ----
   const GL = { list: [
-    { src: 'lamp', url: 'assets/gl_lamp.png?v=5', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
-    { src: 'oden', url: 'assets/gl_oden.png?v=4', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
-    { src: 'z7_vending', url: 'assets/gl_z7_vending.png?v=1', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
-    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.png?v=1', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
-    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.png?v=1', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
-    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.png?v=1', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
-    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.png?v=1', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
-    { src: 'win_z1_violet', url: 'assets/gl_win_z1_violet.png?v=1', box: [204, 688, 815, 85], comp: 'win_z1_violet' },   // 1.1 % of the ground's light, +9 at most
-    { src: 'ramen', url: 'assets/gl_ramen.png?v=5', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
-    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.png?v=1', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
-    { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.png?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
-    { src: 'dojo', url: 'assets/gl_dojo.png?v=1', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
+    { src: 'lamp', url: 'assets/gl_lamp.webp?v=5', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
+    { src: 'oden', url: 'assets/gl_oden.webp?v=4', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
+    { src: 'z7_vending', url: 'assets/gl_z7_vending.webp?v=1', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
+    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=1', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
+    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=1', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
+    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=1', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
+    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=1', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
+    { src: 'win_z1_violet', url: 'assets/gl_win_z1_violet.webp?v=1', box: [204, 688, 815, 85], comp: 'win_z1_violet' },   // 1.1 % of the ground's light, +9 at most
+    { src: 'ramen', url: 'assets/gl_ramen.webp?v=5', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
+    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=1', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
+    { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
+    { src: 'dojo', url: 'assets/gl_dojo.webp?v=1', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
   ], m: [] };
   (function () {
     const byName = {}; for (const c of comps) byName[c.userData.name] = c;
@@ -7721,7 +7721,7 @@
   // comes down. Its own colours (lit by the rising sun behind us). Once per session; none under reduced motion
   const HOOH = { W: 64, H: 52, AX: 34, AY: 26, cols: 12, rows: 3, period: 0.72, mesh: null, tex: null, done: false };
   if (!reduced) {
-    HOOH.tex = crispLate('assets/hooh.png?v=1', 'hooh', () => { HOOH.ready = true; }); HOOH.tex.repeat.set(1 / HOOH.cols, 1 / HOOH.rows);
+    HOOH.tex = crispLate('assets/hooh.webp?v=1', 'hooh', () => { HOOH.ready = true; }); HOOH.tex.repeat.set(1 / HOOH.cols, 1 / HOOH.rows);
     HOOH.mesh = new THREE.Mesh(new THREE.PlaneGeometry(HOOH.W, HOOH.H), new THREE.MeshBasicMaterial({ map: HOOH.tex, transparent: true, depthWrite: false }));
     HOOH.mesh.visible = false; HOOH.mesh.position.z = -1.32; scene.add(HOOH.mesh);   // (just behind the tower: it rises from behind its top; in front of Fuji, behind the tree)
   }
@@ -7853,7 +7853,7 @@
     fuji: { ramp: [[0.02, 0.008, 0.03], [0.13, 0.022, 0.045], [0.5, 0.08, 0.1], [0.96, 0.45, 0.44]], at: [0.02, 0.22, 0.5, 0.9], keep: 0.25,
       snow: [585, 300, 140, 70], lift: 0.16 },   // the lit snow: lifted by up to .16 in lightness (the brighter, the more), in the snowcap's ellipse
     tower: { ramp: [[0.08, 0.018, 0.04], [0.2, 0.035, 0.056], [0.4, 0.055, 0.075], [0.6, 0.12, 0.12]], at: [0.02, 0.2, 0.45, 0.8], keep: 0.12, sp: [0.25, 0.25, 0.3] },
-    city: { amb: [[0.92, 0.66, 0.68], [0.03, 0.0, 0.006]], far: [0, 0, 1456, 816] } };   // far: night_far.png's box (the far city; what is the colour of what shows behind it)
+    city: { amb: [[0.92, 0.66, 0.68], [0.03, 0.0, 0.006]], far: [0, 0, 1456, 816] } };   // far: night_far.webp's box (the far city; what is the colour of what shows behind it)
   const NRU = (() => {                           // the uniforms every graded layer shares (its mode is its own)
     const v = (a) => new THREE.Vector3(a[0], a[1], a[2]), v4 = (a) => new THREE.Vector4(a[0], a[1], a[2], a[3]), S = NRG.sky, F = NRG.fuji, T = NRG.tower, C = NRG.city;
     return { uNR: NRED.k, uNRmoon: NRED.moon,
@@ -7861,14 +7861,14 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.png?v=9') },
+      tNRfar: { value: crisp('assets/night_far.webp?v=9') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) },   // the red night's lights: their hue (max channel 1)
       uNT: { value: 0 }, uDW: { value: 0 }, uDP: { value: 0 }, uSun: { value: new THREE.Vector4(256, 6, 0, 0) },   // the hours on the far planes (package 1: skyHours)
       uRSky: { value: new THREE.Color(1, 1, 1) }, uRFar: { value: new THREE.Color(1, 1, 1) }, uSkyO: { value: new THREE.Vector2(0, 0) },
       uGlw: { value: new THREE.Vector4(0, 0, 0, 0) }, uGlwC: { value: new THREE.Vector3(0.17, 0.115, 0.15) },   // the valley's lit haze: its strength now; its light (the far city's, warm mauve)
       tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
-      tSunL: { value: crisp('assets/street_sun.png?v=2') } };   // (the street's faces lit by the low sun: build_zzzsunlit.py)
+      tSunL: { value: crisp('assets/street_sun.webp?v=2') } };   // (the street's faces lit by the low sun: build_zzzsunlit.py)
   })();
   const NR_HEAD = `
     uniform float uNR, uNRmoon, uNRmode;
@@ -7909,7 +7909,7 @@
       float sat = (mx - min(c.r, min(c.g, c.b))) / max(mx, 1e-3);
       return mix(c * uCm + uCa * (1.0 - L), nrFar(c, q), smoothstep(0.18, 0.32, sat) * smoothstep(0.28, 0.42, L) * step(c.b, c.r) * smoothstep(0.08, 0.16, c.r - c.g));
     }
-    vec3 nrStreet(vec3 c, vec2 q) {                        // the street: nrAmb; night_far.png: the far city (nrFarCity); what is the colour of what shows
+    vec3 nrStreet(vec3 c, vec2 q) {                        // the street: nrAmb; night_far.webp: the far city (nrFarCity); what is the colour of what shows
       vec3 p = nrAmb(c, q);                                 // behind it (the mountain or the tree, the tower, the sky) as that
       vec2 fu = (q - uNRfarR.xy) / uNRfarR.zw;
       if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) {
@@ -7958,7 +7958,7 @@
       float g = clamp(vx * up * dn * (0.7 + 0.6 * n3), 0.0, 1.0) * 5.0, lo = floor(g);
       return min(1.0, (lo + step(skDabG(p), g - lo)) / 5.0);
     }
-    float skSunA(vec2 q) {                                          // the street's faces lit by the low sun (street_sun.png): how much of the pixel's colour is
+    float skSunA(vec2 q) {                                          // the street's faces lit by the low sun (street_sun.webp): how much of the pixel's colour is
       vec2 u = q / vec2(1456.0, 816.0);                              // its warm key light
       return (u.x > 0.0 && u.y > 0.0 && u.x < 1.0 && u.y < 1.0) ? texture2D(tSunL, vec2(u.x, 1.0 - u.y)).r : 0.0;
     }
@@ -8122,7 +8122,7 @@
   // through the upper door glass above the Gyarados showcase, the door's mullions in front of it: it crosses no line of the
   // street (against B's shutter it cut the slats). c3/pkpc/build_pkpc3.py drew it in zone 4's model (f 959.5, eye 1.26 m):
   // the far side wall at Z 27.9 (the Center's far corner), its face at 27.78, D 5.08-5.53, h 1.35-1.72 m: x 875-890,
-  // y 599-611, frontal; its screen x 877-888, y 601-609. One atlas, assets/pkpc.png: its casing in the dark shop (always
+  // y 599-611, frontal; its screen x 877-888, y 601-609. One atlas, assets/pkpc.webp: its casing in the dark shop (always
   // drawn, through the glass: a little of the glass's sheen kept), lit by the shop (the shop's level, so its opening hours;
   // the red night's red, as the shop's light), its screen (its own light: on all night, as a PC is; a slow drift, now and
   // then a dip; steady under reduced motion; out in a blackout, the Center's zone's power) and that light on the wall round
@@ -8168,13 +8168,13 @@
   // ---- droite-07: a Gengar in the Pokémon Center at night. The Center never shuts (lumieres-11); in its night mode (1 h-6 h), once in a
   // long while (the street director's 'gengar'), Gengar floats in behind the door glass in front of its PC and reads as himself:
   // his silhouette (the round body, the two tall pointed ears, the spiky fringe down his back, the stubby arms; 26 px, 0.75 m;
-  // gengar_shadow.png v2, antialiased), dark against the dim room of the night mode, his ears rising beside the screen and his
+  // gengar_shadow.webp v2, antialiased), dark against the dim room of the night mode, his ears rising beside the screen and his
   // head cutting into its light; that light wraps round his edges near the screen, soft and broken (fixed clumps that move with
   // him: never a lit frame, never a line); two red eyes once, a blink; then he sinks away, fading, and the screen stutters twice
   // (a ghost and electronics). Seen only through the glass: the door's frames and mullions stay in front of him (the shop's
   // comp's own glass, read at run time). Nothing to hover, no cursor. Reduced motion: he never comes; nor in a power cut ----
   const GG = { on: false, t: 0, next: 150 + Math.random() * 450, img: new Image(), c: document.createElement('canvas'), acc: 0, sil: null, edge: null, nz: null, mask: null };
-  lateImg(GG.img, 'assets/gengar_shadow.png?v=2'); GG.c.width = 88; GG.c.height = 96;   // (the canvas: x 860-904, y 580-628, 2 px per scene px)
+  lateImg(GG.img, 'assets/gengar_shadow.webp?v=2'); GG.c.width = 88; GG.c.height = 96;   // (the canvas: x 860-904, y 580-628, 2 px per scene px)
   const ggg = GG.c.getContext('2d', { willReadFrequently: true }), ggD = ggg.createImageData(88, 96);
   const ggTex = new THREE.CanvasTexture(GG.c); ggTex.magFilter = ggTex.minFilter = THREE.NearestFilter; ggTex.generateMipmaps = false;
   const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(44, 48), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
@@ -8271,7 +8271,7 @@
     document.body.appendChild(el);
     Object.assign(PK, { el, cv: el.querySelector('.pk-scr'), bar: el.querySelector('.pk-bar'), body: el.querySelector('.pk-body'), sr: el.querySelector('.pk-sr') });
     PK.g = PK.cv.getContext('2d'); PK.bg = PK.bar.getContext('2d');
-    const im = new Image(); im.onload = () => { PK.F = im; PK.tc = {}; if (PK.on && PK.ph === 'app') pkDrawBar(); }; im.src = 'assets/catch_font.png?v=1';
+    const im = new Image(); im.onload = () => { PK.F = im; PK.tc = {}; if (PK.on && PK.ph === 'app') pkDrawBar(); }; im.src = 'assets/catch_font.webp?v=1';
     PK.cv.addEventListener('click', (ev) => { ev.stopPropagation(); pkPress(pkPt(PK.cv, ev)); });
     PK.cv.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') pkHover(pkPt(PK.cv, ev)); });
     PK.bar.addEventListener('click', (ev) => { ev.stopPropagation(); if (pkPt(PK.bar, ev).x >= PK.bar.width - PK.backW - 14) pkBack(); });
