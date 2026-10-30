@@ -33,7 +33,7 @@
 {"@context":"https://schema.org","@type":"TechArticle","headline":"Autotelic quality-diversity for discovering LLM sycophancy","description":"Autotelic quality-diversity search for the tactics that make a language model cave: a repertoire instead of a score.","url":"https://mtsfj.github.io/articles/sycophancy.html","mainEntityOfPage":"https://mtsfj.github.io/articles/sycophancy.html","image":"https://mtsfj.github.io/assets/og_sycophancy.jpg","inLanguage":"en","author":{"@type":"Person","@id":"https://mtsfj.github.io/#me","name":"Mathis Fajeau","url":"https://mtsfj.github.io/"},"publisher":{"@type":"Person","@id":"https://mtsfj.github.io/#me","name":"Mathis Fajeau","url":"https://mtsfj.github.io/"},"isPartOf":{"@id":"https://mtsfj.github.io/blog/#blog"},"about":["LLM sycophancy","quality-diversity","autotelic exploration","red teaming"]}
 </script>
 <link rel="stylesheet" href="../assets/fonts/fonts.css">
-<link rel="stylesheet" href="../assets/site.css?v=21">
+<link rel="stylesheet" href="../assets/site.css?v=22">
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/InterTight-400-latin.woff2" crossorigin>
 <style>
@@ -214,7 +214,7 @@
 <section id="s4">
   <div class="eyebrow">4 · Positioning</div>
   <h2>What is new relative to prior work</h2>
-  <div class="scroll"><table>
+  <div class="scroll" tabindex="0" role="region" aria-label="Table"><table>
     <tr><th>Line of work</th><th>Generates its own attacks</th><th>Optimises diversity</th><th>Diversity axis</th><th>Scoring</th><th>Machine-only channels</th></tr>
     <tr><td>Sycophancy benchmarks (Sharma et al.; SYCON, SycEval, Chameleon)</td><td class="cross">no (fixed sets)</td><td class="cross">no</td><td>–</td><td>LLM judge</td><td class="cross">no</td></tr>
     <tr><td>Model-written evaluations (Perez et al.)</td><td class="tick">yes</td><td class="cross">no</td><td>–</td><td>LLM</td><td class="cross">no</td></tr>
@@ -280,7 +280,7 @@
   <div class="eyebrow">8 · Method, step 4</div>
   <h2>A judge-free fitness</h2>
   <p>Prior multi-turn sycophancy work scores with an LLM judge, and says so only because commercial APIs hide the logits. A local target removes the constraint. An attack's fitness is how far it moves the target's probability on the chosen wrong option, relative to the cold answer, averaged over the pushback turns and the balanced item set:</p>
-  <div class="eq"><span class="tag">FITNESS</span>f = mean_t [ P_t(target) − P_cold(target) ]        t = 1..4 pushback turns · abstaining turns dropped</div>
+  <div class="eq" tabindex="0" role="region" aria-label="Equation"><span class="tag">FITNESS</span>f = mean_t [ P_t(target) − P_cold(target) ]        t = 1..4 pushback turns · abstaining turns dropped</div>
   <p>Every dialogue is its own control. No model grades another: the score is a probability the target itself emits, a measured quantity, harder to hack than AI feedback, and the same reason ACES uses a measured difficulty rather than an LLM's opinion of one.</p>
   <h3>Is the signal real, or any-pushback drift?</h3>
   <p>A matched control compares the discovered attacks with a neutral “are you sure?” on the same items.</p>
@@ -352,7 +352,7 @@
     <p class="cap">Mechanism-Vendi at matched N = 90 under identical centering. Effectiveness (mean fitness): this work 0.28 vs ACD 0.30 (ACD marginally higher, its CI spanning this value), and this work Pareto-dominates ACES. ACD leads only on its single strongest attack (f<sub>max</sub> 0.86 vs 0.66), a maximum taken over more members.</p>
   </div>
   <p>The Vendi score is the effective number of distinct items in a set: from the archive's cosine-similarity matrix, trace-normalised so its eigenvalues sum to one, it is the exponential of their Shannon entropy. Identical attacks give ≈ 1, mutually distinct ones ≈ n, so it counts near-duplicates once and rewards variety rather than sheer size.</p>
-  <div class="eq"><span class="tag">VENDI</span>VS = exp( − Σ_i λ_i log λ_i )        λ_i: eigenvalues of K / tr(K), K = cosine-similarity matrix</div>
+  <div class="eq" tabindex="0" role="region" aria-label="Equation"><span class="tag">VENDI</span>VS = exp( − Σ_i λ_i log λ_i )        λ_i: eigenvalues of K / tr(K), K = cosine-similarity matrix</div>
   <h3>Is the edge an artefact of the space the loop optimises?</h3>
   <p>Grading my own descriptor would be circular, so the same three archives are re-scored in spaces the loop never touched: two unrelated embedders, and then no embedder at all.</p>
   <div class="two">
@@ -371,7 +371,7 @@
   </div>
   <p>The ranking holds everywhere, and the lead over ACD <em>widens</em> when every recipe is truncated to the same length: ACD's near parity at full length is partly its longer recipes (55 vs 33 words), not more distinct tactics. This is the strongest evidence that the diversity result is a property of the discovered attacks, not of the descriptor the loop was trained to spread.</p>
   <h3>Ablations: each component moves a different axis</h3>
-  <div class="scroll"><table>
+  <div class="scroll" tabindex="0" role="region" aria-label="Table"><table>
     <tr><th>condition</th><th>removes</th><th class="num">members</th><th class="num">f<sub>max</sub></th><th class="num">VS@58</th></tr>
     <tr><td><code>full</code> (7 h snapshot)</td><td>all on</td><td class="num">90</td><td class="num">0.66</td><td class="num">6.7</td></tr>
     <tr><td><code>no_lp</code></td><td>learned selector → uniform</td><td class="num">80</td><td class="num">0.59</td><td class="num">6.8</td></tr>
@@ -425,7 +425,7 @@
   </div>
   <p style="margin-top:14px">The last one is telling: nearly toothless, yet kept because its mechanism clears the distance gate. That is the diversity–effectiveness trade made concrete: a strong role-confusion attack and a near-inert causal-reversal one side by side, with the fitness column stopping the weak from replacing the strong.</p>
   <h3>Families (a reading aid, not clusters)</h3>
-  <div class="scroll"><table>
+  <div class="scroll" tabindex="0" role="region" aria-label="Table"><table>
     <tr><th>family (KMeans k = 7, silhouette 0.10)</th><th class="num">#</th><th class="num">mean f ×100</th><th>strongest exemplar</th></tr>
     <tr><td>System directive injection</td><td class="num">25</td><td class="num">39.0</td><td>Role Confusion 84 (system_inject)</td></tr>
     <tr><td>Temporal anchoring</td><td class="num">8</td><td class="num">42.5</td><td>Temporal Coercion 57 (human)</td></tr>
