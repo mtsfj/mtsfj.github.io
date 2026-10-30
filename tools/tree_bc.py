@@ -48,7 +48,7 @@ VPG = (646.0, 634.0)                               # the ground's vanishing poin
 STEP = FRONT_FOOT                                  # the dojo's step, its upper edge (the front's foot)
 STEP_BOT = lambda x: VPG[1] + 118 * (VPG[0] - x) / 550   # and its lower edge, on the pavement
 FASCIA = lambda x: 455 + 0.23 * x                   # the dojo's top board, its upper edge (lit, under the crown)
-VP = (669.0, 568.0)                                # the street's vanishing point (the side wall's planks run to it)
+VP = (725.0, 625.0)                                # the side wall's planks' vanishing point (measured on them: they fan out)
 OLD_CROWN = [(0, 70), (60, 72), (92, 98), (132, 108), (172, 148), (208, 198), (236, 248), (238, 312), (220, 362),
              (208, 410), (178, 440), (132, 462), (60, 472), (0, 472)]
 OLD_BUSH = [(0, 586), (30, 590), (56, 614), (72, 660), (84, 704), (112, 738), (124, 800), (124, 816), (0, 816)]
@@ -273,17 +273,30 @@ def main():
     out = [L.copy() for L in cur]
     def copy(dst, sy, sx):
         for L, O in zip(out, cur): L[dst] = O[sy, sx]
-    # the lit side wall: along its planks, toward the vanishing point, from the nearest pixel of it with no leaf
-    need = crown_old & wall & on_wall & ~cm & ~dm
-    clean = wall & lit & ~crown_old & (Lc0 >= 24)
-    ys, xs = np.where(need)
-    for y, x in zip(ys, xs):
+    # the lit side wall: the old leaves on it and their shadows (darker than the wall along the same plank, near them) out;
+    # each pixel from the nearest clean pixel along its own plank (to the planks' vanishing point), either way
+    near_old = ndi.binary_dilation(crown_old & wall, iterations=14) & wall & lit & ~window & ~cm & ~dm
+    vy_, vx_ = np.where(near_old)
+    dvx, dvy = VP[0] - vx_, VP[1] - vy_; nn = np.hypot(dvx, dvy); dvx, dvy = dvx / nn, dvy / nn
+    okw = wall & lit & ~crown_old & ~window
+    samples = []
+    for t in list(range(-24, -2)) + list(range(3, 25)):
+        sx = np.clip(np.round(vx_ + dvx * t).astype(int), 0, W - 1); sy = np.clip(np.round(vy_ + dvy * t).astype(int), 0, H - 1)
+        samples.append(np.where(okw[sy, sx], Lc0[sy, sx], np.nan))
+    expect = np.nanmedian(np.stack(samples), 0)
+    shadow = np.zeros((H, W), bool); shadow[vy_, vx_] = np.nan_to_num(Lc0[vy_, vx_] < expect - 10, nan=False)
+    shadow = ndi.binary_dilation(shadow) & near_old                          # (with its soft edge)
+    need = ((crown_old & wall & on_wall) | shadow) & ~cm & ~dm & ~window
+    clean = okw & ~shadow & (Lc0 >= 24)
+    for y, x in zip(*np.where(need)):
         dx, dy = VP[0] - x, VP[1] - y; n_ = np.hypot(dx, dy); dx, dy = dx / n_, dy / n_
         for t in range(1, 200):
-            sx, sy = int(round(x + dx * t)), int(round(y + dy * t))
-            if sx >= X_MAX or sy >= H: break
-            if clean[sy, sx]:
-                for L, O in zip(out, cur): L[y, x] = O[sy, sx]
+            hit = None
+            for tt in (t, -t):
+                sx, sy = int(round(x + dx * tt)), int(round(y + dy * tt))
+                if 0 <= sx < X_MAX and 0 <= sy < H and clean[sy, sx]: hit = (sy, sx); break
+            if hit:
+                for L, O in zip(out, cur): L[y, x] = O[hit]
                 break
     # the old bush: its leaves go. The dojo's front under them, as the two doors were drawn (tools/src: two shoji doors, their
     # paper over a low wooden panel of upright boards between two rails, on a lit stone step, the light of the door on the wet
