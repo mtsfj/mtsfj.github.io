@@ -3822,7 +3822,7 @@
   function finClear(wave) {
     if (FIN.dawn >= 0) {
       FIN.dawn = -1; FIN.woke = false; CLOCK.wake = 0; stars.material.opacity = 1; marsDot.material.opacity = 1; marsDot.visible = true;
-      if (nightSys()) setTimeOverride(null, wave && !reduced ? 3 : 0);
+      if (nightSys()) setTimeOverride(eleven ? userHour() : null, wave && !reduced ? 3 : 0);   // (the hour chosen at the switch, else the clock)
     }
     if (PW.on && PW.ext === finDieStep) {
       PW.ext = null; FIN.die = null;
@@ -5310,11 +5310,22 @@
     if (!SWB.panel) {
       const st = document.createElement('style');
       st.textContent = '.sw-panel{position:absolute;z-index:3;display:grid;gap:6px;width:224px;padding:8px;background:rgba(15,12,34,.94);border:1px solid rgba(255,138,209,.45);box-shadow:0 6px 18px rgba(5,3,14,.45)}'
-        + '.sw-panel .pc-tog{padding:8px 10px}';
+        + '.sw-panel .pc-tog{padding:8px 10px}'
+        + '.sw-hour{display:grid;gap:6px;padding:8px 10px;background:#0d0a1d;box-shadow:inset 0 0 0 2px #2c2350;color:var(--paper);font:11px/1 var(--pixel);letter-spacing:.08em}'
+        + '.sw-hour label{display:flex;justify-content:space-between}.sw-hour output{color:#ffc36b}'
+        + '.sw-hour input{width:100%;margin:0;accent-color:#ff8ad1}';
       document.head.appendChild(st);
       const P = SWB.panel = document.createElement('div'); P.className = 'sw-panel'; P.setAttribute('role', 'dialog'); P.hidden = true;
       const tog = () => { const b = document.createElement('button'); b.type = 'button'; b.className = 'pc-tog'; b.innerHTML = '<span></span><b></b>'; P.appendChild(b); return b; };
       SWB.night = tog(); SWB.moon = tog();
+      // the hour: a slider (by the quarter), the street going there; 'heure réelle' back to the visitor's own clock. Kept
+      // from one visit to the next, as the red night
+      const hb = document.createElement('div'); hb.className = 'sw-hour';
+      hb.innerHTML = '<label><span></span><output></output></label><input type="range" min="0" max="23.75" step="0.25">';
+      P.appendChild(hb); SWB.hLab = hb.querySelector('span'); SWB.hOut = hb.querySelector('output'); SWB.hIn = hb.querySelector('input');
+      SWB.live = tog();
+      SWB.hIn.addEventListener('input', () => { setUserHour(+SWB.hIn.value); swPaint(); });
+      SWB.live.addEventListener('click', () => { if (userHour() !== null) { setUserHour(null); swPaint(); } });
       SWB.night.addEventListener('click', () => { nightRed(!REDN.on, { fade: 3, persist: true }); swPaint(); });
       SWB.moon.addEventListener('click', () => { if (REDN.gone) { moonGone(false); swPaint(); } });
       P.addEventListener('click', (e) => e.stopPropagation());
@@ -5322,7 +5333,7 @@
       document.addEventListener('click', () => { P.hidden = true; });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') P.hidden = true; });
     }
-    const P = SWB.panel; P.setAttribute('aria-label', ELX('nuit rouge et lune', 'red night and moon')); swPaint(); P.hidden = false;
+    const P = SWB.panel; P.setAttribute('aria-label', ELX('nuit rouge, lune et heure', 'red night, moon and hour')); swPaint(); P.hidden = false;
     const r = canvas.getBoundingClientRect(), hr = hero.getBoundingClientRect(), k = r.width / (camera.right - camera.left);
     const sx = r.left - hr.left + (SWB.x + SWB.w / 2 - camera.left) * k, sy = r.top - hr.top + (SWB.y + camera.top) * k;
     const w = P.offsetWidth, h = P.offsetHeight;
@@ -5336,6 +5347,23 @@
     SWB.night.querySelector('span').textContent = ELX('nuit rouge', 'red night'); SWB.night.setAttribute('aria-pressed', String(REDN.on));
     SWB.moon.setAttribute('aria-pressed', String(!REDN.gone)); SWB.moon.disabled = !REDN.gone;
     SWB.moon.querySelector('span').textContent = REDN.gone ? ELX('remettre la lune', 'put the moon back') : ELX('la lune est là', 'the moon is there');
+    const uh = userHour(), h = uh !== null ? uh : CLOCK.over && CLOCK.over.to !== null ? ((CLOCK.over.to % 24) + 24) % 24 : CLOCK.base;
+    const hh = Math.floor(h), mm = Math.round((h - hh) * 60) % 60, txt = String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+    SWB.hLab.textContent = ELX('heure', 'hour'); SWB.hOut.textContent = txt;
+    if (document.activeElement !== SWB.hIn) SWB.hIn.value = String(Math.round(h * 4) / 4 % 24);
+    SWB.hIn.setAttribute('aria-label', ELX('heure de la rue', 'the street\'s hour')); SWB.hIn.setAttribute('aria-valuetext', txt);
+    SWB.live.querySelector('span').textContent = ELX('heure réelle', 'real time'); SWB.live.setAttribute('aria-pressed', String(uh === null));
+  }
+  // the hour the visitor chose (the switch's slider), or null: the visitor's own clock. Kept in localStorage as the red night;
+  // a ?hour= in the address wins over it
+  function userHour() {
+    const v = lsGet('mtsfj-hour'); return v !== null && v !== '' && isFinite(+v) ? ((+v % 24) + 24) % 24 : null;
+  }
+  function setUserHour(h) {
+    if (h === null) { try { localStorage.removeItem('mtsfj-hour'); } catch (e) {} } else lsSet('mtsfj-hour', h);
+    if (!nightSys()) return;
+    if (FIN.dawn >= 0) { finClear(true); return; }   // (after the finale: its morning goes, the chosen hour comes with the power)
+    setTimeOverride(h, h === null ? 2 : 1.2);
   }
   function stepSwitch() {
     if (!SWB.graded) { SWB.graded = true; gradeSprite(swMesh.material, 'street'); for (const m of [swRim, ...swLed]) gradeSprite(m.material, 'self'); }
@@ -5354,6 +5382,7 @@
   window.PKPC = PKPC;
   setTimeout(() => {                         // (once the whole street is set up, the night system included)
     if (new URLSearchParams(location.search).get('night') === 'red' || (eleven && lsGet('mtsfj-night') === 'red')) nightRed(true, { fade: 1.5 });
+    if (eleven && CLOCK.fixed === null && userHour() !== null && nightSys()) setTimeOverride(userHour(), 0);   // (the hour chosen last time)
   }, 0);
   const pcClose = pc.querySelector('.pc-x');
   function openPC() { pc.querySelector('.pc-clock').textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }); pc.classList.add('on'); showSlab(null, false); pcClose.focus(); }

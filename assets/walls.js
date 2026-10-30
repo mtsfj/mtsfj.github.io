@@ -80,7 +80,9 @@
     sky(56 + Math.floor(r() * 30));
     while (y < H - 40) {
       let mat; do mat = pick(['brick', 'concrete', 'wood', 'tile', 'metal', 'stucco', 'glass', 'concrete', 'brick']); while (mat === lastMat); lastMat = mat;
-      const F = 62 + Math.floor(r() * 14), nF = 2 + Math.floor(r() * 3), roof = 6, y0 = y, y1 = Math.min(H, y + roof + nF * F);
+      const F = 62 + Math.floor(r() * 14), roof = 6, fits = Math.floor((H - y - roof) / F);
+      if (fits < 1) break;                                                  // (no whole floor left before the page's end: its sky)
+      const nF = Math.min(2 + Math.floor(r() * 3), fits), y0 = y, y1 = y + roof + nF * F;   // (the last one: only whole floors, its shop in view)
       const B = { k: 'bld', mat, y0, y1, base: mat === 'glass' ? C('#141a34') : pick(MATS[mat].base), s: r() * 100, frame: pick(FRAME), wst: pick(['sash', 'slider', 'grid', 'tall']) };
       segs.push(B);
       roofline(B, W);
@@ -507,12 +509,13 @@
   let on = false, seen = false, t = 0;
   function frame() {
     if (!on) return;
-    const pr = pg.getBoundingClientRect(), topCss = Math.max(0, -pr.top), top = Math.floor(topCss / P), rows = Math.ceil(innerHeight / P) + 2;
+    const pr = pg.getBoundingClientRect(), ir = sides[0].wrap.firstChild.getBoundingClientRect();   // (where the sticky frame really is:
+    const topCss = Math.max(0, ir.top - pr.top), top = Math.floor(topCss / P), rows = Math.ceil(innerHeight / P) + 2;   // held up at the page's end)
     for (const S of sides) {
       for (const c of [S.base, S.glow]) { if (c.width !== S.W || c.height !== rows) { c.width = S.W; c.height = rows; c.style.width = S.W * P + 'px'; c.style.height = rows * P + 'px'; } c.style.transform = `translateY(${-(topCss - top * P)}px)`; }
       const g = S.g, h = S.h, W = S.W, n = Math.max(0, Math.min(rows, S.H - top));
       g.imageSmoothingEnabled = false; h.imageSmoothingEnabled = false;
-      g.clearRect(0, 0, W, rows); h.fillStyle = '#000'; h.fillRect(0, 0, W, rows);
+      g.clearRect(0, 0, W, rows); h.clearRect(0, 0, W, rows); h.fillStyle = '#000'; h.fillRect(0, 0, W, Math.max(0, n));   // (the glow's black only over the wall)
       if (n > 0) { g.drawImage(S.still, 0, top, W, n, 0, 0, W, n); h.drawImage(S.stillG, 0, top, W, n, 0, 0, W, n); }
       const D = {
         R: (x, y, w, hh, c, a) => { g.fillStyle = css(c, a); g.fillRect(x, y - top, w, hh); },
