@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=59", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=60", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -128,7 +128,7 @@
   // dusk .. 1 a real night), dw: the dawn's (the blue hour's), dp: the dawn's progress (0 before the sun, 1 the sun on
   // Fuji, 2 the morning), star / mars: their light at the blue hour, rim: the sunset rims' weight, mx / my / up: the
   // moon's place and light by the hour, dawnT: the finale's dawn's clock (-1: none this session)
-  const SKYF = { nt: 0, dw: 0, dp: 0, star: 1, mars: 1, rim: 1, mx: 0, my: 0, up: 1, dawnT: -1, dayL: 1 };   // (dayL: the lights' pools on the ground against the daylight)
+  const SKYF = { nt: 0, dw: 0, dp: 0, star: 1, mars: 1, rim: 1, mx: 0, my: 0, up: 1, dawnT: -1, dayL: 1, air: 1 };   // (dayL: the lights' pools on the ground against the daylight; air: the skyline's haze by day)
   const skSm = (a, b, x) => { const u = Math.max(0, Math.min(1, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
   // ---- the stars: sixteen exactly, the first of three secrets hiding a date (16 the stars, 03 Mars, 2003 the fuses).
   // Placed by hand, the same on every load, all in the band of upper sky every screen keeps (x 552-902: an upright phone
@@ -3286,7 +3286,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=35', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=36', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7623,6 +7623,7 @@
     U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw); U.uFarPow.value = fz === undefined ? 1 : fz;   // the valley's lit haze: the night's, the far city's light, gone at dawn
     farMat.uniforms.uLitK.value = U.uFarLit.value = 1 - F.dw * Math.min(1, Math.max(0, dp - 1));   // (the far city's lights by day, its windows and its signs: gone in the morning's air)
     F.dayL = 1 - 0.55 * F.dw * Math.min(1, Math.max(0, dp - 1));   // (the shops' light on the ground: half drowned by the daylight)
+    F.air = 1 - 0.5 * F.dw * Math.min(1, Math.max(0, dp - 1));     // (the haze over the far city: thinner in the morning's clear air)
     marsDot.material.color.setScalar(F.mars);
     let mu, up;                                                            // the moon: mu 0 at its place .. 1 set; up its light
     if (h >= 19.5) { mu = Math.min(1, (h - 19.5) / 2.75); up = 1 - skSm(0.9, 1, mu); }
@@ -7886,14 +7887,14 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.webp?v=12') },
+      tNRfar: { value: crisp('assets/night_far.webp?v=13') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) },   // the red night's lights: their hue (max channel 1)
       uNT: { value: 0 }, uDW: { value: 0 }, uDP: { value: 0 }, uSun: { value: new THREE.Vector4(256, 6, 0, 0) },   // the hours on the far planes (package 1: skyHours)
       uRSky: { value: new THREE.Color(1, 1, 1) }, uRFar: { value: new THREE.Color(1, 1, 1) }, uSkyO: { value: new THREE.Vector2(0, 0) },
       uGlw: { value: new THREE.Vector4(0, 0, 0, 0) }, uGlwC: { value: new THREE.Vector3(0.17, 0.115, 0.15) },   // the valley's lit haze: its strength now; its light (the far city's, warm mauve)
       tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
-      tSunL: { value: crisp('assets/street_sun.webp?v=4') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
+      tSunL: { value: crisp('assets/street_sun.webp?v=5') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
       tFjAux: { value: crisp('assets/fuji_aux.webp?v=8') }, uFjAuxR: { value: new THREE.Vector4(320, 66, 696, 640) },   // (the far layers' box, pixel for pixel: the cherry's, the slope's rim; tools/fuji_aux.py)
       uFarPow: { value: 1 }, uFarLit: { value: 1 } };   // (the far city's power, and its lights against the daylight (1 by night): its own lights keep their colour only while both are there)
   })();
@@ -8018,7 +8019,7 @@
       vec3 lit = uSun.z < 0.5 ? mix(alp, gold, uSun.z * 2.0) : mix(gold, day, uSun.z * 2.0 - 1.0);
       lit = min(lit * (0.6 + 0.4 * clamp(uDP, 0.0, 1.0)), vec3(1.0));
       if (soft > 0.5) lit = min(c * mix(vec3(1.16, 1.0, 0.88), vec3(1.14, 1.1, 1.04), uSun.z), vec3(1.0));   // (the far city: lit in its own colours, warm, then by day)
-      lit = mix(lit, vec3(0.66, 0.68, 0.76) * (0.8 + 0.4 * Lt), clamp(uDP - 1.0, 0.0, 1.0) * (soft > 0.5 ? 0.45 : 0.55 * smoothstep(380.0, 505.0, q.y)));   // (by day the valley's air: the far city and the mountain's foot in the same morning haze)
+      lit = mix(lit, vec3(0.66, 0.68, 0.76) * (0.8 + 0.4 * Lt), clamp(uDP - 1.0, 0.0, 1.0) * (soft > 0.5 ? 0.25 : 0.55 * smoothstep(380.0, 505.0, q.y)));   // (by day the valley's air: the far city and the mountain's foot in the morning haze, the city in less)
       float yl = uSun.x + 14.0 * (skV(q * vec2(0.012, 0.05)) - 0.5) + 6.0 * (skV(q * vec2(0.05, 0.18)) - 0.5) + 2.0 * (skV(q * vec2(0.2, 0.5)) - 0.5);   // (the line broken by the slopes)
       float k = uSun.w * (1.0 - smoothstep(yl - uSun.y, yl + uSun.y, q.y));   // (the far city, low in its valley, takes the sun when the line comes down to it)
       return mix(sh, lit, k);
@@ -8967,7 +8968,7 @@
     for (const o of OBST) { const k = reduced ? 0.8 : obstK(((t + o.ph) % 2) / 2); for (const m of o.m) { m.material.opacity = 0.95 * k; m.visible = k > 0.005; } }   // (2 s: on for about 1)
     stepGust(dt);                                 // the wind: its gusts, their shapes and kinds (gust.k; the opening's plateau)
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
-    for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)); }
+    for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)) * (f === fogs[0] ? SKYF.air : 1); }
     // OM flyer drop: pendulum fall through the frame, ~2.6 s
     if (!flyS.active) { flyS.next = STAGE.due('flyer', flyS.next); flyS.next -= dt; if (flyS.next < 0 && !STAGE.ask('flyer', 8)) flyS.next = 3 + Math.random() * 4;   // (the director: not now, asked again in a few seconds)
       if (flyS.next < 0) { flyS.active = true; flyS.t = 0; flyS.x = 460 + Math.random() * 620; flyS.dx = 0; flyS.ph = Math.random() * 6; flyer.visible = true; } }
