@@ -24,8 +24,9 @@ A = lambda p: os.path.join(ROOT, 'assets', p)
 X0, X1 = 1025, 1063                  # the pole's columns (its lit left edge .. its rim)
 TOP = 58                             # its new top (the transformer's foot)
 CAP = 4                              # the cap's rows
-SRC = 100                            # the pole's clean rows, copied up from here
-JOIN = 92                            # the first row of the pole left as it is
+SRC = 96                             # the pole's clean rows, copied up from here (just under the band at JOIN)
+JOIN = 92                            # the first row of the pole left as it is: a band round it (rows 92-94)
+RIM, RIM_TOP = (1060, 1063), 0.6     # its rim's columns; how much of its red is left at the top
 TRANSFO = (988, 0, 1064, 66)         # the transformer, its brackets, the hardware above the house's roof (x0, y0, x1, y1)
 
 
@@ -44,12 +45,19 @@ def main():
     x0, y0, x1, y1 = TRANSFO
     for l in L:
         l[y0:y1, x0:x1 + 1] = 0; l[:JOIN, X0 - 1:X1 + 1] = 0                       # (not the house's lit edge, x 1064)
-    # the cylinder, from the cap down to where the pole is left as it is: its own clean rows copied up
+    # the cylinder, from the cap down to the band round the pole at JOIN (left as it is): its own clean rows from just under
+    # that band copied up, so the band reads as a band, the same pole on both sides of it; the rim (the shops' red, which
+    # grows toward the street) fading upward as it does down the pole, never darker than the pole's body
     for y in range(TOP + CAP, JOIN):
         for l, s in zip(L, src): l[y, X0:X1 + 1] = s[SRC + y - (TOP + CAP), X0:X1 + 1]
+    for l, s in zip(L[:2], src[:2]):
+        floor = s[SRC:SRC + JOIN - TOP - CAP, RIM[0]:RIM[1] + 1, :3].min(0)
+        for y in range(TOP + CAP, JOIN):
+            k = RIM_TOP + (1 - RIM_TOP) * (y - (TOP + CAP)) / (JOIN - 1 - (TOP + CAP))
+            v = l[y, RIM[0]:RIM[1] + 1, :3]; l[y, RIM[0]:RIM[1] + 1, :3] = floor + (v - floor) * k
     # the cap: the cylinder's profile a shade flatter, one pixel wider each side, its upper corners rounded
     for l, s in zip(L[:2], src[:2]):
-        prof = s[SRC, X0:X1 + 1, :3]
+        prof = l[TOP + CAP, X0:X1 + 1, :3].copy()                                     # (the cylinder's top row, as carried on)
         flat = prof * 0.8 + prof.mean(0) * 0.2
         flat = np.vstack([flat[:1] * 0.85, flat, flat[-1:] * 0.85])                  # (its lip, each side)
         for k in range(CAP):
