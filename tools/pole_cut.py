@@ -28,6 +28,7 @@ X0, X1 = 1025, 1063                  # the pole's columns (its lit left edge .. 
 APEX, DOME, LIP = 50, 7, 4           # the cap: its top, its dome's rows, its sleeve's rows (it ends at y 61)
 SRC = 96                             # the pole's clean rows, copied up from here (just under the band at JOIN)
 JOIN = 92                            # the first row of the pole left as it is: a band round it (rows 92-94)
+TREND = 40                           # (the rows under the band that give each column its slow change: above the lamp's arm)
 RIM, RIM_TOP = (1060, 1063), 0.55    # its rim's columns; how much of its red is left at the top
 SKY = np.array([27., 36., 69.])      # (what faces the sky here: the house's coping, y 66-68)
 LIT = np.array([64., 61., 105.])     # (the pole's lit left edge)
@@ -48,10 +49,17 @@ def main():
     x0, y0, x1, y1 = TRANSFO
     for l in L:
         l[y0:y1, x0:x1 + 1] = 0; l[:JOIN, X0 - 1:X1 + 1] = 0                       # (not the house's lit edge, x 1064)
-    # the cylinder, from the cap down to the band
+    # the cylinder, from the cap down to the band: its rows from under the band, their fine grain kept, their slow change
+    # down the pole (in the street and in the power cut alike: the red night reads the two) levelled at what it is just
+    # under the band, so it is the same pole on both sides of the band in every light
     top = APEX + DOME + LIP
     for y in range(top, JOIN):
         for l, s in zip(L, src): l[y, X0:X1 + 1] = s[SRC + y - top, X0:X1 + 1]
+    for l, s in zip(L[:2], src[:2]):
+        col = s[:, X0:X1 + 1, :3]; level = col[SRC:SRC + 8].mean(0)
+        for y in range(top, JOIN):
+            sy = SRC + y - top; a, b = max(SRC, sy - 4), min(SRC + TREND, sy + 5)
+            l[y, X0:X1 + 1, :3] = np.clip(col[sy] - col[a:b].mean(0) + level, 0, 255)
     for l, s in zip(L[:2], src[:2]):
         floor = s[SRC:SRC + JOIN - top, RIM[0]:RIM[1] + 1, :3].min(0)
         for y in range(top, JOIN):
