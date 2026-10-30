@@ -7871,7 +7871,7 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.webp?v=10') },
+      tNRfar: { value: crisp('assets/night_far.webp?v=11') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) },   // the red night's lights: their hue (max channel 1)
       uNT: { value: 0 }, uDW: { value: 0 }, uDP: { value: 0 }, uSun: { value: new THREE.Vector4(256, 6, 0, 0) },   // the hours on the far planes (package 1: skyHours)
