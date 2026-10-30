@@ -32,13 +32,15 @@ CROWN_ROWS = 700                                   # (the source's rows above th
 DEEP = (0, 50, 0.62)                                # its leaves further in: the crown again, moved (x, y), in shade
 BUSH_ROWS = 860                                    # (the source's rows below this: the bush at the trunk's foot, its wood left out)
 BUSHES = []                                        # (no bush: the pavement as clean as everywhere else)
-SHOJI_STEP, SILL = 42, 6                           # the shoji's rails, one under the other; their sill's height
-STILE = (35, 548)                                  # (the shoji's middle stile, dark wood: its left column, a clean row)
-BASE = lambda x: 733 + 0.29 * (126 - x)            # the front's foot on the pavement (to the vanishing point, as the pavement's lines)
+SHOJI_X1 = 78                                      # the shoji's right side; their rails (they close in toward the street), the
+RAILS = (lambda x: 554.6 + 0.085 * x, lambda x: 599.4 + 0.017 * x,         # last line their paper's foot
+         lambda x: 644.3 - 0.047 * x, lambda x: 681.5 + 0.03 * x)
+KERB_Y = lambda x: 816 - 0.38 * (x - 230)          # the pavement's kerb, its upper edge (below it the kerb stone)
+VPG = (646.0, 634.0)                               # the ground's vanishing point (the pavement's long joints run to it; its
+                                                   # cross joints are level)
+STEP = lambda x: VPG[1] + 100 * (VPG[0] - x) / 550  # the dojo's lit step, its upper edge (to the vanishing point)
+STEP_BOT = lambda x: VPG[1] + 118 * (VPG[0] - x) / 550   # and its lower edge, on the pavement
 FASCIA = lambda x: 455 + 0.23 * x                   # the dojo's top board, its upper edge (lit, under the crown)
-PAVE_X1, PAVE_SPLIT = 330, 778
-KERB = lambda y: 352 - (y - 770) * 2.75            # the pavement's kerb, its x along the bottom rows
-FOOT_SHADE, FOOT_W = 0.28, 10                    # the pavement's shade along a front's foot: how much, how wide
 VP = (669.0, 568.0)                                # the street's vanishing point (the side wall's planks run to it)
 OLD_CROWN = [(0, 70), (60, 72), (92, 98), (132, 108), (172, 148), (208, 198), (236, 248), (238, 312), (220, 362),
              (208, 410), (178, 440), (132, 462), (60, 472), (0, 472)]
@@ -103,6 +105,97 @@ def recolour(rgb, al, ref):
     cent, cols = np.array(cent), np.array(cols)
     out[al] = np.stack([np.interp(L2, cent, cols[:, ch]) for ch in range(3)], -1)
     return out
+
+
+def inpaint(layers, hole, allowed, guide, P=3, R=32):
+    """Fills hole in every layer, patch by patch (exemplar-based, Criminisi et al.): the fill front's pixel whose patch is
+    the most known and lies across the strongest structure first, from the patch of the painting (within R px, inside
+    allowed, wholly known at the start) that best matches its known pixels in guide; each filled pixel takes its source's
+    value in every layer."""
+    H, W = hole.shape; k = 2 * P + 1
+    E = P + 4 * R
+    pad = lambda a, v: np.pad(a, ((E, E), (E, E)) + ((0, 0),) * (a.ndim - 2), constant_values=v)
+    G = pad(guide.astype(float), 0); M = pad(hole.copy(), False); inside = pad(np.ones((H, W), bool), False)
+    ok = pad(allowed & ~hole, False)
+    srcc = ndi.uniform_filter((~ok).astype(float), size=k, mode='constant', cval=1) < 1e-6      # (sources: whole patches)
+    C = (~M).astype(float); src_y = np.full(M.shape, -1); src_x = np.full(M.shape, -1)
+    Lg = G[..., :3] @ [0.299, 0.587, 0.114]
+    while M.any():
+        front = M & ndi.binary_dilation(~M & inside)
+        if not front.any(): break
+        ys, xs = np.where(front)
+        conf = ndi.uniform_filter(C, size=k)[ys, xs]
+        Lf = np.where(M, ndi.uniform_filter(np.where(M, 0, Lg), 5) / np.maximum(ndi.uniform_filter((~M).astype(float), 5), 1e-3), Lg)
+        gx, gy = ndi.sobel(Lf, 1), ndi.sobel(Lf, 0); nx, ny = ndi.sobel(M.astype(float), 1), ndi.sobel(M.astype(float), 0)
+        nn = np.hypot(nx, ny) + 1e-6
+        data = np.abs(-gy[ys, xs] * nx[ys, xs] / nn[ys, xs] + gx[ys, xs] * ny[ys, xs] / nn[ys, xs]) / 255
+        i = int(np.argmax(conf * (data + 0.05))); py, px = ys[i], xs[i]
+        T = G[py - P:py + P + 1, px - P:px + P + 1]; Tk = ~M[py - P:py + P + 1, px - P:px + P + 1] & inside[py - P:py + P + 1, px - P:px + P + 1]
+        for Rr in (R, 2 * R, 4 * R):                                          # (no source near: look further)
+            win = G[py - Rr - P:py + Rr + P + 1, px - Rr - P:px + Rr + P + 1]
+            if win.shape[0] < 2 * Rr + k or win.shape[1] < 2 * Rr + k: break
+            sw = np.lib.stride_tricks.sliding_window_view(win, (k, k), axis=(0, 1))          # (2R+1, 2R+1, ch, k, k)
+            d = ((sw - T.transpose(2, 0, 1)[None, None]) ** 2 * Tk[None, None, None]).sum((2, 3, 4)) / max(Tk.sum(), 1)
+            dyy, dxx = np.mgrid[-Rr:Rr + 1, -Rr:Rr + 1]; d = d + 6.0 * np.hypot(dyy, dxx)
+            d[~srcc[py - Rr:py + Rr + 1, px - Rr:px + Rr + 1]] = np.inf
+            if np.isfinite(d).any(): break
+        if not np.isfinite(d).any(): M[py, px] = False; continue
+        j = int(np.argmin(d)); qy, qx = py - Rr + j // (2 * Rr + 1), px - Rr + j % (2 * Rr + 1)
+        fill = M[py - P:py + P + 1, px - P:px + P + 1] & inside[py - P:py + P + 1, px - P:px + P + 1]
+        oy, ox = np.where(fill)
+        G[py - P + oy, px - P + ox] = G[qy - P + oy, qx - P + ox]
+        sy0, sx0 = src_y[qy - P + oy, qx - P + ox], src_x[qy - P + oy, qx - P + ox]
+        src_y[py - P + oy, px - P + ox] = np.where(sy0 >= 0, sy0, qy - P + oy)
+        src_x[py - P + oy, px - P + ox] = np.where(sx0 >= 0, sx0, qx - P + ox)
+        C[py - P + oy, px - P + ox] = conf[i] if conf[i] > 0 else 0.01
+        M[py - P + oy, px - P + ox] = False
+    o = E; fy, fx = np.where(hole & (src_y[o:o + H, o:o + W] >= 0))
+    sy, sx = src_y[o + fy, o + fx] - o, src_x[o + fy, o + fx] - o
+    for L in layers: L[fy, fx] = L[sy, sx]
+
+
+def street_copy(out, cur, hole, ok, ring, steps, fit='local'):
+    """Fills hole from the same ground further along the street: p -> the vanishing point + (p - it) k, k = 1 / (1 + a (y -
+    its y)) (a step along the street, a in steps): its long joints stay on their lines, its cross joints level. The moves
+    whose copy best matches the fine detail (the joints) of ring first, each filling what it can from ok pixels. Then the
+    copy's light (in the street's two lit layers) matched to ring: 'local', to the painting right round each pixel;
+    'plane', by a gain varying linearly across it (the painting's own gradient), fitted on ring."""
+    H, W = hole.shape; vx, vy = VPG
+    hy, hx = np.where(hole); ry, rx = np.where(ring)
+    hp = cur[0][:, :, :3] - ndi.uniform_filter(cur[0][:, :, :3], size=(7, 7, 1))
+    def src(y, x, a):
+        k = 1 / (1 + a * (y - vy)); return np.round(vy + (y - vy) * k).astype(int), np.round(vx + (x - vx) * k).astype(int)
+    def valid(sy, sx):
+        v = (sy >= 0) & (sy < H) & (sx >= 0) & (sx < W); v[v] &= ok[sy[v], sx[v]]; return v
+    costs = []
+    for a in steps:
+        sy, sx = src(ry, rx, a); v = valid(sy, sx)
+        if v.sum() < 30: continue
+        costs.append((float(np.abs(hp[ry[v], rx[v]] - hp[sy[v], sx[v]]).mean()), a))
+    costs.sort()
+    left = np.ones(len(hy), bool); filled = np.zeros((H, W), bool)
+    for _, a in costs:
+        sy, sx = src(hy, hx, a); v = left & valid(sy, sx)
+        for L, O in zip(out, cur): L[hy[v], hx[v]] = O[sy[v], sx[v]]
+        filled[hy[v], hx[v]] = True; left &= ~v
+        if not left.any(): break
+    hole &= ~filled
+    fy, fx = np.where(filled)
+    for li, L in enumerate(out[:2]):
+        for ch in range(3):
+            if fit == 'plane':                                                # (the copy at ring's places, by the best move)
+                sy, sx = src(ry, rx, costs[0][1]); v = valid(sy, sx)
+                lo_o = ndi.uniform_filter(cur[li][:, :, ch], 5)[ry[v], rx[v]]; lo_c = ndi.uniform_filter(cur[li][:, :, ch], 5)[sy[v], sx[v]]
+                A_ = np.stack([np.ones(v.sum()), rx[v], ry[v]], 1)
+                cf = np.linalg.lstsq(A_ * lo_c[:, None], lo_o, rcond=None)[0]
+                g = cf[0] + cf[1] * fx + cf[2] * fy
+            else:
+                seen = ring
+                w0 = ndi.gaussian_filter(seen.astype(float), 5); w1 = ndi.gaussian_filter(filled.astype(float), 5)
+                m0 = ndi.gaussian_filter(np.where(seen, L[:, :, ch], 0), 5) / np.maximum(w0, 1e-6)
+                m1 = ndi.gaussian_filter(np.where(filled, L[:, :, ch], 0), 5) / np.maximum(w1, 1e-6)
+                g = np.where(w0 > 0.02, (m0 + 2) / (m1 + 2), 1)[fy, fx]
+            L[fy, fx, ch] = np.clip(L[fy, fx, ch] * np.clip(g, 0.6, 1.6), 0, 255)
 
 
 def main():
@@ -183,38 +276,71 @@ def main():
             if clean[sy, sx]:
                 for L, O in zip(out, cur): L[y, x] = O[sy, sx]
                 break
-    # the shoji, down to their sill, from their cell above (the same column, one, two or three rails up); their sill, the
-    # same wood as their head rail; the stone pillar, the dark gap and the door's frame right of them, from their own
-    # column above; the pavement under the front's foot, along its own lines (to the vanishing point) from its clean part
-    base = np.round(BASE(xx)).astype(int)
-    need_b = bush_old & (yy < base - SILL) & (xx < 80)
-    for y, x in zip(*np.where(need_b)):
-        for k in range(1, 6):
-            sy = y - SHOJI_STEP * k
-            if sy < 540: break
-            if not bush_old[sy, x]:
-                for L, O in zip(out, cur): L[y, x] = O[sy, x]
-                break
-    sill = bush_old & (yy >= base - SILL) & (yy < base) & (xx < 80)
-    for y, x in zip(*np.where(sill)):                                         # (their sill: the wood of their middle stile, laid
-        r = y - (base[y, x] - SILL)                                           # down: its grain along the sill)
-        for L, O in zip(out, cur): L[y, x] = O[STILE[1] + (x * 3) % 38, STILE[0] + r]
-    side = bush_old & (yy < base) & (xx >= 80)
-    for y, x in zip(*np.where(side)):                                         # (the pillar, the gap, the door's frame: their own
-        for k in range(1, 8):                                                 # column a cell or two above, its grain with it)
-            sy = y - SHOJI_STEP * k
-            if sy < 540: break
-            if not bush_old[sy, x]:
-                for L, O in zip(out, cur): L[y, x] = O[sy, x]
-                break
-    # (in the shade low down as the painting has it beside them: each row as light as its painted pixels there)
-    for y in np.unique(np.where(side)[0]):
-        row = side[y] ; kept = ~bush_old[y] & (xx[y] >= 80) & (xx[y] < 112)
-        if kept.sum() >= 3 and row.sum():
-            g = np.median(cur[0][y, kept, :3] @ [0.299, 0.587, 0.114]) / max(np.median(out[0][y, row, :3] @ [0.299, 0.587, 0.114]), 1)
-            g = min(g, 1.0)
-            for L in out[:2]: L[y, row, :3] *= g
-    need_b |= sill | side
+    # the old bush: only its leaves go, the dojo's front, its step and the pavement under them stay as painted. Under the
+    # shoji (their foot at y 690), the front's stone foot, then the lit stone step (a light band ~17 px, toward the vanishing
+    # point), then the pavement. Its leaves: on the front, dark and green (no blue as the stone's specks, no orange as the
+    # paper, no red as the wood), in blobs of 5 px or more; on the step, anything dark; on the pavement, darker than any of
+    # its own pixels; with their soft edges; not the dark gap by the door nor its frame. The red thing half hidden at the
+    # front's foot goes with them (half of it made no sense)
+    r_, g_, b_ = city[:, :, 0], city[:, :, 1], city[:, :, 2]
+    reg = (yy >= 592) & (xx < 126) & ~((xx >= 100) & (yy < 752))              # (the door's dark gap and its warm foot: as painted)
+    top, bot = STEP(xx), STEP_BOT(xx)
+    foot = RAILS[3](xx)
+    kick = (yy >= foot) & (yy < top) & (xx < 100)
+    band = (yy >= top) & (yy < bot) & (xx < 100)                              # (right of it, the door's dark gap: as painted)
+    pave = (yy >= bot) & ~((xx >= 100) & (yy < 752))
+    seed = reg & ~band & ~pave & (g_ >= b_ - 3) & (((g_ >= r_ - 6) & (Lc < 22)) | ((g_ >= r_ + 4) & (Lc < 45)))
+    lab, n = ndi.label(seed, structure=np.ones((3, 3)))
+    seed &= np.isin(lab, 1 + np.where(ndi.sum(seed, lab, range(1, n + 1)) >= 5)[0])
+    seed |= reg & band & (Lc < 25)
+    seed |= reg & pave & ((Lc < 11) | ((Lc < 16) & (b_ - g_ < 5)) | ((r_ > g_ + 6) & (xx < 100)))   # (and the red thing's reflection)
+    seed |= reg & kick & (xx < 60) & (r_ > 80) & (r_ > g_ + 40)
+    around = ndi.uniform_filter(np.where(seed, 0, Lc), 7) / np.maximum(ndi.uniform_filter((~seed).astype(float), 7), 1e-3)
+    leaves = seed | (ndi.binary_dilation(seed, structure=np.ones((3, 3))) & reg & ~band & (Lc < around - 6))
+    # the shoji: each pixel's place in its cell (between two rails), the same place in the other cells, the nearest first
+    R_ = [np.asarray(f(xx), float) for f in RAILS]
+    shoji_z = (yy >= R_[0]) & (yy < R_[3]) & (xx < SHOJI_X1)
+    cell = np.where(yy < R_[1], 0, np.where(yy < R_[2], 1, 2))
+    pick = lambda Rk, i: np.take_along_axis(np.stack(Rk), i[None], 0)[0]
+    lo, hi = pick(R_, cell), pick(R_, cell + 1); f = (yy - lo) / (hi - lo)
+    cands = []
+    for d in (-1, 1, -2, 2):
+        j = cell + d; okj = (j >= 0) & (j <= 2); jj = np.clip(j, 0, 2)
+        sy = np.clip(np.round(pick(R_, jj) + f * (pick(R_, jj + 1) - pick(R_, jj))).astype(int), 0, H - 1)
+        cands.append((okj & shoji_z, sy))
+    def first_clean(mask):
+        src = np.full((H, W), -1)
+        for okj, sy in cands[::-1]:
+            good = okj & ~mask[sy, xx]; src = np.where(good, sy, src)
+        return src
+    src0 = first_clean(leaves)
+    refL = np.where(src0 >= 0, Lc[np.maximum(src0, 0), xx], np.nan)        # (on the paper: what is darker than the same place
+    near = ndi.binary_dilation(leaves, iterations=3)                         # in a clean cell, near the leaves or much darker)
+    leaves |= shoji_z & reg & (((Lc < np.nan_to_num(refL, nan=0) - 20) & near) | (Lc < np.nan_to_num(refL, nan=0) - 30))
+    need_b = leaves.copy(); hole = leaves.copy()
+    if os.environ.get('LEAVES'): np.save(os.environ['LEAVES'], leaves)
+    src = first_clean(leaves)
+    for y, x in zip(*np.where(leaves & shoji_z & (src >= 0))):
+        for L, O in zip(out, cur): L[y, x] = O[src[y, x], x]
+        hole[y, x] = False
+    # the stone foot, the step and the pavement: each patch by patch from its own painting round it (exemplar inpainting),
+    # the same source in every layer
+    gd = lambda: np.concatenate([out[0][:, :, :3], out[1][:, :, :3]], -1)
+    inpaint(out, hole & kick, kick, guide=gd())
+    # the step and the pavement: the same step, the same pavement further down the street (each pixel along its line to the
+    # vanishing point, scaled as the depth: the long joints stay on their lines, the cross joints level), the moves that
+    # best line up with what shows between the leaves first; then their light matched to the painting round them
+    street_copy(out, cur, hole & band, band & ~leaves, band & ~leaves, np.r_[np.linspace(-0.004, -0.0002, 40), np.linspace(0.0002, 0.012, 120)])
+    if (hole & band).any(): inpaint(out, hole & band, band, guide=gd())
+    # (the pavement where the bush stood, all of it: what showed of it was in the bush's shade)
+    pv = (poly(OLD_BUSH, H, W) & pave) | (leaves & pave)
+    pv_ok = pave & ~pv & (yy < KERB_Y(xx)) & ~((xx >= 124) & (xx <= 133))
+    ring = ndi.binary_dilation(pv, iterations=8) & pv_ok
+    hole |= pv; need_b |= pv
+    street_copy(out, cur, hole & pv, pv_ok, ring, np.linspace(0.0005, 0.012, 240), fit='plane')
+    if (hole & pv).any(): inpaint(out, hole & pv, pave & (xx < 300), guide=gd())
+    rest = hole & ~kick & ~pave & ~band
+    if rest.any(): inpaint(out, rest, reg, guide=gd())
     # the dojo's top board under the crown (its lit edges between the old leaves): along its own lines, from its visible bits
     band = crown_old & (xx < 130) & (yy > FASCIA(xx) - 6) & (yy < 476) & ~cm & ~dm & ~fill
     seen = band & (Lc >= 20)
@@ -229,37 +355,6 @@ def main():
             else: continue
             break
 
-    # the pavement: one piece of the clean pavement beside it, moved as a whole (its grain and its lines as they are), the
-    # move chosen so that it meets the pavement round it with the least difference; darker at the front's foot, as the
-    # pavement is along the shop's front next to it
-    need_g = bush_old & (yy >= base)
-    paved = ((yy >= 748) | ((yy >= 736) & (xx >= 140))) & ~bush_old & (xx >= 133) & (xx < KERB(yy) - 5)   # (not the door's white
-                                                                              # stile, x 125..132, nor the kerb)
-    ring = ndi.binary_dilation(need_g, iterations=5) & ~need_g & ~bush_old & (yy >= np.maximum(base + 2, 748))   # (the pavement round it)
-    moves = []
-    for band, dys in (((0, PAVE_SPLIT), range(-5, 1)), ((PAVE_SPLIT, H), range(-34, -9))):   # (two pieces: the pavement narrows
-        part_ = need_g & (yy >= band[0]) & (yy < band[1])                                # toward the kerb low down)
-        ty, tx = np.where(part_)
-        rg = ring & (yy >= band[0] - 2) & (yy < band[1]); ry, rx = np.where(rg)
-        over = (yy >= band[0] - 3) & (yy < band[0]) & need_g if band[0] else np.zeros((H, W), bool); oy, ox = np.where(over)
-        best = None
-        for dy in dys:
-            for dx in range(16, 300):
-                sy, sx = ty + dy, tx + dx
-                if sx.max() >= PAVE_X1 or not paved[sy, sx].all(): continue
-                ssy, ssx = ry + dy, rx + dx
-                if len(ssy) and (ssx.max() >= PAVE_X1 or not paved[ssy, ssx].all()): continue
-                cost = float(np.abs(cur[0][ssy, ssx, :3] - cur[0][ry, rx, :3]).sum())
-                if len(oy):                                                   # (and where it meets the piece above)
-                    if not paved[oy + dy, np.minimum(ox + dx, W - 1)].all(): continue
-                    cost += float(np.abs(cur[0][oy + dy, ox + dx, :3] - out[0][oy, ox, :3]).sum())
-                if best is None or cost < best[0]: best = (cost, dy, dx)
-        _, dy, dx = best; moves.append((dx, dy))
-        for L, O in zip(out, cur): L[ty, tx] = O[ty + dy, tx + dx]
-    ty, tx = np.where(need_g)
-    foot = (1 - FOOT_SHADE * np.clip(1 - (yy - base) / FOOT_W, 0, 1))[..., None]
-    for L in out[:2]: L[ty, tx, :3] = L[ty, tx, :3] * foot[ty, tx]           # (the shade: in the street's colours, lit or not)
-    print('pavement moved by', moves)
     city, unlit, nf, sun = out
 
     # the power cut: the old tree's own change there, by place
@@ -278,12 +373,12 @@ def main():
             if cm[y, sx] or dm[y, sx]:
                 for L in out: L[y, x] = L[y, sx]
                 break
-    left = old_all & ~cm & ~dm & ~bm & ~fm & ~(need | need_b | need_g | need_f | seen) & ~(xx < 4) & ~(wall & lit)
+    left = crown_old & ~cm & ~dm & ~bm & ~fm & ~(need | need_f | seen) & ~(xx < 4) & ~(wall & lit)
     if os.environ.get('LEFT'): np.save(os.environ['LEFT'], left)
     save(city, 'layer_city_off.webp', 'RGBA'); save(unlit, 'street_unlit.webp', 'RGBA')
     save(nf, 'night_far.webp', 'RGB'); save(sun, 'street_sun.webp', 'RGB')
     print('crown', int(cm.sum()), '| behind it', int(dm.sum()), '| bush', int(bm.sum()), '| wall rebuilt', int(need.sum()),
-          '| shoji rebuilt', int(need_b.sum()), '| pavement', int(need_g.sum()), '| old pixels left as they were', int(left.sum()))
+          '| the bush\'s leaves out', int(need_b.sum()), '| old pixels left as they were', int(left.sum()))
 
 
 if __name__ == '__main__':
