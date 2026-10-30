@@ -33,6 +33,7 @@ CUT_BELOW = 860                                   # (the source's rows under thi
 KEEP_Y = 556                                      # the old tree's dark leaves kept low in the alley, round the lantern, below this
 DEEP_DX, DEEP_DY, DEEP_SHADE = -26, 40, 0.62      # its leaves further in: the drawing again, lower, in shade (its right edge over the
                                                   # oden's roof end, leafy, as the old tree's was)
+BOUGH = 2.3                                       # (its wood's lightness over the right cherry's lighter half)
 SHADOW = (470, 545, 0.45)                         # the buildings' shade on its lower part: from y, to y, how much darker at the foot
 M0 = 378                                          # (left of this the mountain is carried on in the street's layer, down to the roof)
 ROOF = lambda x: 454 + 1.22 * (x - 326)           # the drinks shop's roof, in front: its upper edge
@@ -145,10 +146,12 @@ def main():
         ft = load('fuji_tree.webp').astype(float); fr, fg_, fb_, fa = ft[..., 0], ft[..., 1], ft[..., 2], ft[..., 3]
         ref = ft[(fa > 200) & (fr < 1.4 * fg_) & (fr > fb_) & (fr + fg_ + fb_ < 330)][:, :3]
         qs = np.linspace(0, 100, 101); RL = ref @ [0.299, 0.587, 0.114]
-        L2 = np.interp(Ls[trunk], np.percentile(Ls[trunk], qs), np.percentile(RL, np.linspace(35, 100, 101)))
-        out[trunk] = by_lightness(ref, L2)[0]                                 # (its lighter half: the bough reads on the shade)
+        L2 = np.interp(Ls[trunk], np.percentile(Ls[trunk], qs), np.percentile(RL, np.linspace(55, 100, 101)) * BOUGH)
+        out[trunk] = np.clip(by_lightness(ref, L2)[0] * (L2 / np.maximum(by_lightness(ref, L2)[0] @ [0.299, 0.587, 0.114], 1))[:, None]
+                             * np.array([1.08, 1.0, 0.94]), 0, 255)          # (the lighter wood, warm: the bough reads on the shade)
     cm = np.zeros((H, W), bool); cc = np.zeros((H, W, 3))
     cm[TREE_Y:TREE_Y + h, TREE_X:TREE_X + w] = al; cc[TREE_Y:TREE_Y + h, TREE_X:TREE_X + w] = out
+    tm = np.zeros((H, W), bool); tm[TREE_Y:TREE_Y + h, TREE_X:TREE_X + w] = trunk
     cm &= ~front                                                              # (in front of the oden's roof end, as the old tree was)
 
     # the power cut: the old tree's own change, by place (each channel's ratio, smoothed over its pixels)
@@ -204,7 +207,7 @@ def main():
     dark = np.percentile(cc[cm].reshape(-1, 3) @ [0.299, 0.587, 0.114], 5); dark_rgb = cc[cm][np.argmin(np.abs(cc[cm] @ [0.299, 0.587, 0.114] - dark))]
     dc[hole] = dark_rgb
     shade = (1 - SHADOW[2] * np.clip((yy - SHADOW[0]) / (SHADOW[1] - SHADOW[0]), 0, 1))[..., None]
-    dc *= shade; cc *= shade
+    dc *= shade; cc *= np.where(tm[..., None], np.sqrt(shade), shade)       # (the bough, lit from the street: less in the shade)
     for m in (deep, hole):
         city[m, :3] = dc[m]; city[m, 3] = 255
         unlit[m, :3] = dc[m] * ratio[m]; unlit[m, 3] = 255
