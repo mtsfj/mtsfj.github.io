@@ -18,7 +18,7 @@ sw.js                   le cache du navigateur : les fichiers versionnés (?v=) 
 tools/png2webp.py       PNG → WebP sans perte, pixel pour pixel vérifié, références mises à jour
 tools/fuji_aux.py        le masque exact du cerisier dans les calques du Fuji et le bord de sa pente (assets/fuji_aux.webp, boîte x 320..1016), pour l'aube
 tools/tree_a.py          remplace l'arbre entre le magasin de boissons et l'oden (dessin : tools/src/tree_a.jpg)
-tools/tree_bc.py         remplace le grand arbre devant la maison et le dojo, et son buisson (dessin : tools/src/tree_bc.jpg)
+tools/tree_bc.py         remplace le grand arbre devant la maison (dessin : tools/src/tree_bc.jpg), retire son buisson et redessine le pied du dojo
 tools/left_tree_trim.py  abaisse l'arbre de gauche sous le toit de l'oden (sa propre cime peinte redescendue, par touffes entières) et prolonge le flanc du Fuji derrière lui
 tools/cherry_gaps.py     voile les petits trous du cerisier (fuji_tree.webp) : le soir identique, plus de pois bleus le matin ni de taches la nuit
 tools/night_far_clean.py nettoie night_far.webp (pixels de la rue mis à tort dans un plan lointain : lampadaire, bord du feuillage, barrière)

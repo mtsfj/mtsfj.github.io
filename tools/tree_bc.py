@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
-"""The big tree on the left, in front of the house and the dojo (B+C), replaced.
+"""The big tree on the left, in front of the house and the dojo (B+C), replaced; its bush gone, the dojo's foot drawn.
 
     python3 tools/tree_bc.py      (after tools/tree_a.py; it takes its zone, x < 326, back from commit aa383bc each time)
 
 The old tree's crown hung over the house's front and its lit side wall, its bush over the dojo's shoji. The new one
-(tools/src/tree_bc.jpg, a pixel-art tree drawn on white) stands just off the frame on the left: its trunk is out of
-the picture, its crown comes in over the house as the old one did, a second copy of the drawing behind it in shade fills
-under it (its own leaves, no sky, no old leaves); its bush is in the bottom left corner, two copies of the drawing's bush,
-the lower one cut by the frame's bottom (its foot out of the picture), the upper one behind it.
-What showed through the old leaves and is now in the open is rebuilt from the painting itself: the lit side wall along
-its planks' lines (they run to the street's vanishing point, about (669, 568)), the shoji and the stone pillar from their
-own cells above (the shoji's rails 42 px apart), the pavement from its own row further right. In layer_city_off,
-street_unlit, street_sun and night_far, each from the same source pixel. Colours: the old tree's own, by lightness (so
-every hour grades it as it graded the old one), its power-cut change by place. Needs git, Pillow, numpy and scipy.
+(tools/src/tree_bc.jpg, a pixel-art tree drawn on white) stands just off the frame on the left: its trunk out of the
+picture, its crown comes in over the house as the old one did, a second copy of the drawing behind it in shade fills
+under it (its own leaves, no sky, no old leaves). What showed through the old leaves is rebuilt from the painting itself:
+the lit side wall along its planks' lines (to the street's vanishing point). The bush goes: under it the dojo's front is
+drawn as such doors are (two shoji over a low panel of upright boards between two rails, on a lit stone step, their light
+on the wet ground), every level line on the front to its vanishing point VPF (the shoji's own rails meet there), on the
+ground to VPG (the pavement's own joints): the paper from the same place in another cell, its light set to the paper's own
+gradient; the low panels in the post's wood and grain; the step in its painted profile; the pavement the same pavement
+further down the street. In layer_city_off, street_unlit, street_sun and night_far, each from the same source pixel; the
+wet ground's map (wet.webp) there the plain wet asphalt further down the street, the step and the doors dry, and the
+water's mirror line (wet_mirror.webp) at the front's foot. Colours: the old tree's own, by lightness (so every hour grades
+it as it graded the old one), its power-cut change by place. Needs git, Pillow, numpy and scipy.
 """
 import io
 import os
