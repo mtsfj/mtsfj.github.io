@@ -16,6 +16,8 @@ assets/analytics.js     la mesure d'audience (éteinte tant qu'elle n'est pas co
 assets/                 couches de l'illustration et sprites (WebP sans perte ; un PNG neuf : python3 tools/png2webp.py assets/x.png)
 sw.js                   le cache du navigateur : les fichiers versionnés (?v=) gardés d'une visite à l'autre
 tools/png2webp.py       PNG → WebP sans perte, pixel pour pixel vérifié, références mises à jour
+tools/fuji_aux.py        le masque exact du cerisier dans les calques du Fuji et le bord de sa pente (assets/fuji_aux.webp), pour l'aube
+tools/night_far_clean.py nettoie night_far.webp (pixels de la rue mis à tort dans un plan lointain : lampadaire, bord du feuillage, barrière)
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
 ```

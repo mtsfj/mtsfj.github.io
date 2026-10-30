@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=57", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=58", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=2", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=2", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_z1_warm": {"src": "assets/win_z1_warm.webp", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=5", "x": 105, "y": 505, "w": 122, "h": 265}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=5", "x": 227, "y": 575, "w": 53, "h": 185}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=2", "x": 244, "y": 240, "w": 36, "h": 120}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=6", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -3286,7 +3286,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=33', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=34', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -5904,7 +5904,7 @@
     neonMesh.material.opacity = SHOP.open ? lightLife(t, 11.3, 0.035) : 0;
     SHOP.neon = neonMesh.material.opacity * IRN.k;
     SHOP.k = Math.max(0, Math.min(1, SHOP.k + (kW ? dt / 0.8 : -dt / 0.5)));   // the kitchen, last
-    shopOff.material.opacity = (1 - SHOP.k) * 0.88;
+    shopOff.material.opacity = (1 - SHOP.k) * 0.88 * pz;                       // (its panes lit by the street: none with the zone's power out, the unlit street's own front then)
     rlMesh.material.opacity = SHOP.k;
     for (const m of vent) m.material.opacity *= 0.25 + 0.75 * SHOP.k;           // the kitchen rests too
     IRL.forEach((L, i) => {                                                      // the lanterns: their light, their swing
@@ -7598,7 +7598,7 @@
     const c = city.material.color, sk = sky.material.color, fj = fujiNight.material.color;
     U.uRSky.value.setRGB(sk.r / c.r, sk.g / c.g, sk.b / c.b); U.uRFar.value.setRGB(fj.r / c.r, fj.g / c.g, fj.b / c.b);   // (the street's far pixels: their plane's multiply)
     const fz = PW.on ? pwShade.material.uniforms.uPow.value[PW_ZONES.findIndex((z) => z[4] === -1)] : 1;   // (the far city's power: the fuses' cut puts its light out)
-    U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw);                                  // the valley's lit haze: the night's, the far city's light, gone at dawn
+    U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw); U.uFarPow.value = fz === undefined ? 1 : fz;                                  // the valley's lit haze: the night's, the far city's light, gone at dawn
     marsDot.material.color.setScalar(F.mars);
     let mu, up;                                                            // the moon: mu 0 at its place .. 1 set; up its light
     if (h >= 19.5) { mu = Math.min(1, (h - 19.5) / 2.75); up = 1 - skSm(0.9, 1, mu); }
@@ -7861,14 +7861,16 @@
       uF: { value: F.ramp.map(v) }, uFe: { value: v4(F.at) }, uFkeep: { value: F.keep }, uFsnow: { value: v4(F.snow) }, uFlift: { value: F.lift },
       uT: { value: T.ramp.map(v) }, uTe: { value: v4(T.at) }, uTkeep: { value: T.keep }, uTsp: { value: v(T.sp) },
       uCm: { value: v(C.amb[0]) }, uCa: { value: v(C.amb[1]) }, uNRfarR: { value: v4(C.far) },
-      tNRfar: { value: crisp('assets/night_far.webp?v=9') },
+      tNRfar: { value: crisp('assets/night_far.webp?v=10') },
       uNRcity: { value: new THREE.Color(1, 1, 1) }, uNRskyC: { value: new THREE.Color(1, 1, 1) }, uNRfujiC: { value: new THREE.Color(1, 1, 1) },   // the layers' night multiplies (the sprites')
       uNRhue: { value: new THREE.Vector3(1, 0.12, 0.08) },   // the red night's lights: their hue (max channel 1)
       uNT: { value: 0 }, uDW: { value: 0 }, uDP: { value: 0 }, uSun: { value: new THREE.Vector4(256, 6, 0, 0) },   // the hours on the far planes (package 1: skyHours)
       uRSky: { value: new THREE.Color(1, 1, 1) }, uRFar: { value: new THREE.Color(1, 1, 1) }, uSkyO: { value: new THREE.Vector2(0, 0) },
       uGlw: { value: new THREE.Vector4(0, 0, 0, 0) }, uGlwC: { value: new THREE.Vector3(0.17, 0.115, 0.15) },   // the valley's lit haze: its strength now; its light (the far city's, warm mauve)
       tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
-      tSunL: { value: crisp('assets/street_sun.webp?v=2') } };   // (the street's faces lit by the low sun: build_zzzsunlit.py)
+      tSunL: { value: crisp('assets/street_sun.webp?v=3') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
+      tFjAux: { value: crisp('assets/fuji_aux.webp?v=2') }, uFjAuxR: { value: new THREE.Vector4(376, 66, 640, 640) },   // (the far layers' box, pixel for pixel: the cherry's, the slope's rim; tools/fuji_aux.py)
+      uFarPow: { value: 1 } };   // (the far city's power: its own lights keep their colour only while they have it)
   })();
   const NR_HEAD = `
     uniform float uNR, uNRmoon, uNRmode;
@@ -7925,7 +7927,7 @@
     // pixel's own dusk lightness (its grain, its order kept), as the red night is; the street's far pixels as their own
     // plane; the sky's painted grain. uNT: the night's depth, uDW: the dawn's, uDP: its progress (0 before the sun, 1 the
     // sun on Fuji, 2 the morning), uSun: the first sun's line on the mountain (its y, its softness, its warmth, its strength)
-    uniform float uNT, uDW, uDP, uNRtree; uniform vec4 uSun, uNRauxR, uGlw; uniform vec3 uGlwC; uniform vec3 uRSky, uRFar; uniform vec2 uSkyO; uniform sampler2D tUnder, tNRaux, tSunL;
+    uniform float uNT, uDW, uDP, uNRtree, uFarPow; uniform vec4 uSun, uNRauxR, uGlw, uFjAuxR; uniform vec3 uGlwC; uniform vec3 uRSky, uRFar; uniform vec2 uSkyO; uniform sampler2D tUnder, tNRaux, tSunL, tFjAux;
     float skH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float skV(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
       return mix(mix(skH(i), skH(i + vec2(1.0, 0.0)), f.x), mix(skH(i + vec2(0.0, 1.0)), skH(i + vec2(1.0, 1.0)), f.x), f.y); }
@@ -7974,11 +7976,14 @@
       if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) far = texture2D(tNRfar, vec2(fu.x, 1.0 - fu.y)).r;   // so its red is mapped from the same
       return far > 0.55 ? c * uRFar : (far > 0.2 && far < 0.39) ? c * uRSky : skSunN(c, skSunA(q));   // lightness as the mountain's beside it (no light line round the skyline); the street's sunlit faces unlit
     }
-    bool skCherry(vec2 q, vec3 t) {                                  // a pixel of the far layers that is the cherry's: right of x 760, above the mountain's right
-      float f = 357.0 + (q.x - 776.0) * 0.58;                        // flank, as light as blossom (no snow down there), or pink under the flank (its lower half,
-      return q.x > 760.0 && (q.y < f - 0.5 || dot(t, NRW) > 0.42 || (q.y > f + 2.5 && t.r > t.b + 0.047 && t.r > t.g + 0.086));   // in the mountain's layer since the split)
+    vec4 fjAux(vec2 q) {                                             // the far layers' box, pixel for pixel (fuji_aux.webp, tools/fuji_aux.py): R the cherry's,
+      vec2 u = (q - uFjAuxR.xy) / uFjAuxR.zw;                        // G the slope's rim (the lightness of the rock under it)
+      return (u.x > 0.0 && u.y > 0.0 && u.x < 1.0 && u.y < 1.0) ? texture2D(tFjAux, vec2(u.x, 1.0 - u.y)) : vec4(0.0);
     }
+    bool skCherry(vec2 q, vec3 t) { return fjAux(q).r > 0.5; }       // a pixel of the far layers that is the cherry's (its lower canopy in the mountain's layer too)
     vec3 dwFar(vec3 c, float Lt, float soft, vec2 q) {               // the dawn on Fuji: in the Earth's shadow its cool light; above the first sun's line, the
+      float lo = soft < 0.5 ? fjAux(q).g : 0.0;                       // (the slope's rim: the dusk sky's light on its edge; at dawn the rock's own, not snow)
+      if (lo > 0.0) { c *= lo / max(Lt, 1e-3); Lt = lo; }
       float Lc = dot(c, NRW), snow = smoothstep(0.3, 0.46, Lt);      // alpenglow (Aka-Fuji: rose-gold snow over red-brown rock), then gold, then daylight
       vec3 sh = mix(c, (vec3(Lc) + (c - vec3(Lc)) * 0.5) * vec3(0.92, 0.98, 1.14), 0.5);   // (white snow, grey rock); each keeps its own values' order
       float rk = pow(max(Lt, 0.02) / 0.27, 0.85), sn = 1.0 + 1.2 * (Lt - 0.45);
@@ -8002,7 +8007,7 @@
       if (mode > 2.5) {
         vec2 fu = (q - uNRfarR.xy) / uNRfarR.zw;
         if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) { float far = texture2D(tNRfar, vec2(fu.x, 1.0 - fu.y)).r; fc = far > 0.9 ? 3.0 : far > 0.55 ? 2.0 : (far > 0.2 && far < 0.39) ? 1.0 : 0.0; }
-        if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) keep = step(0.5, texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).g * 255.0); }   // (its own lights: the signs and lanterns, aux G; aux R is the air's shimmer, the haze's too)
+        if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) keep = step(0.5, texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).g * 255.0) * uFarPow; }   // (its own lights: the signs and lanterns, aux G; aux R is the air's shimmer, the haze's too)
         b = fc > 0.5 ? mix(c * (fc < 1.5 ? uRSky : uRFar), c, keep) : c;   // its plane's grade, not the street's; the far city's lights keep theirs
         bool ch = fc > 1.5 && fc < 2.5 && skCherry(q, t);            // (the mountain's colour: the mountain's hours; the cherry's: hands off)
         on = (fc > 0.5 && fc < 1.5) || fc > 2.5 || (fc > 1.5 && !ch) ? 1.0 : 0.0;   // (the sky's, the far city's and the mountain-coloured pixels: their plane's hours)
