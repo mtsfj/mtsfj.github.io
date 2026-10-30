@@ -2024,7 +2024,7 @@
     door: [['richtofen', 24, 650.2], ['nikolai', 9, 651.0], ['takeo', -9, 650.6], ['dempsey', -24, 651.2]] };   // (x from the door: a step off it)
   const CGUN = { garand: [1, 0, 8, 0.42], ppsh: [7, 0.066, 71, 1.0], type100: [5, 0.075, 30, 0.85], mp40: [5, 0.11, 32, 0.95] };   // burst, gap, magazine, pause
   const CWHO = { dempsey: 'garand', nikolai: 'ppsh', takeo: 'type100', richtofen: 'mp40' };
-  const COCC = {"pole":{"d":9.95,"runs":[[58,65,1025,1063],[66,90,1025,1064],[91,93,1024,1064],[94,454,1023,1064],[455,529,1023,1068],[530,665,1022,1068],[666,719,1023,1068],[720,742,1023,1065],[743,749,1024,1065],[750,751,1036,1065]]}};   // the pole: traced from the painting (bus/occ_trace.py), spans [y0, y1, x0, x1] and their depths (m)
+  const COCC = {"pole":{"d":9.95,"runs":[[50,52,1026,1063],[53,53,1024,1063],[54,57,1023,1063],[58,65,1025,1063],[66,90,1025,1064],[91,93,1024,1064],[94,454,1023,1064],[455,529,1023,1068],[530,665,1022,1068],[666,719,1023,1068],[720,742,1023,1065],[743,749,1024,1065],[750,751,1036,1065]]}};   // the pole: traced from the painting (bus/occ_trace.py), spans [y0, y1, x0, x1] and their depths (m)
   function crewLoad() {                                    // the sheets, once: the event waits for them
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
