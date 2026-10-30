@@ -6,7 +6,7 @@
 The roof's edge ran on 31 px past the house's corner (x 326) into the sky, a thin stick ending in a point. It now stops
 just past Kirua's feet (END_X), cut square as an eave board is, its gutter closed by a round end cap. From the cap a
 downpipe drops, turns back to the wall (a swan neck, as on the houses of the references) and runs down the house's
-corner to the dagashi's awning, held by a clamp every 40 px. Its metal is the gutter's own (its colours taken from the
+corner to the lower roof, held by a clamp every 50 px. 5 px across, its bends round. Its metal is the gutter's own (its colours taken from the
 eave's dark body and its lit rim): dark, its side toward the sky lit as the gutter's top edge is. What the cut leaves is
 the sky (transparent in the street's layers). In layer_city_off, street_unlit (the eave's own change there), night_far
 (0, the street's) and street_sun (0). Needs Pillow, numpy.
@@ -18,8 +18,9 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
 END_X = 351                          # the eave's new end (Kirua's feet reach x ~350)
-PIPE = [(348.0, 240.0), (348.0, 244.0), (325.0, 262.0), (325.0, 409.0)]   # the downpipe's axis: down, back to the wall, down
-CLAMPS = (300, 340, 380)             # its clamps on the wall (y)
+PIPE = [(347.0, 236.0), (347.0, 247.0), (326.0, 266.0), (325.0, 271.0), (325.0, 452.0)]   # the downpipe's axis: out of the
+                                     # gutter's end, back to the wall (a swan neck), down the corner to the lower roof
+CLAMPS = (310, 360, 410)             # its clamps on the wall (y)
 
 
 def load(p, mode='RGBA'):
@@ -53,29 +54,32 @@ def main():
         for dy, dx, c in ((-1, 1, rim), (0, 1, body * 1.4), (1, 1, body), (0, 2, body)):
             if 0 <= cy + dy < H: city[cy + dy, END_X + dx, :3] = c; city[cy + dy, END_X + dx, 3] = 255
 
-    # the downpipe: 3 px across its axis; its side toward the sky (right, then up) lit, the other in shade
-    pipe = np.zeros((H, W), int)                                             # (0 none, 1 shade, 2 body, 3 lit)
-    for (x0, y0), (x1, y1) in zip(PIPE, PIPE[1:]):
-        n = int(max(abs(x1 - x0), abs(y1 - y0)) * 2) + 1
-        dx, dy = x1 - x0, y1 - y0; L_ = np.hypot(dx, dy); nx, ny = dy / L_, -dx / L_      # (its normal, toward the right / up)
-        if nx < 0 or (abs(nx) < 1e-6 and ny > 0): nx, ny = -nx, -ny
-        for t in np.linspace(0, 1, n):
-            px, py = x0 + dx * t, y0 + dy * t
-            for o, k in ((-1, 1), (0, 2), (1, 3)):
-                X, Y = int(round(px + nx * o)), int(round(py + ny * o))
-                if 0 <= X < W and 0 <= Y < H: pipe[Y, X] = max(pipe[Y, X], k) if pipe[Y, X] != 2 or k == 2 else 2
-    for cy_ in CLAMPS:                                                       # (its clamps: a short band round it, onto the wall)
-        for x in range(321, 328): pipe[cy_, x] = max(pipe[cy_, x], 2)
-        for x in range(322, 327): pipe[cy_ + 1, x] = max(pipe[cy_ + 1, x], 1)
-    col = {1: body, 2: body + (rim - body) * 0.35, 3: rim}                 # (its shade side, its body, its side lit by the sky)
-    for k, c in col.items():
-        m = pipe == k
+    # the downpipe, one stroke 5 px across with round bends (each pixel by its distance to the axis): its side toward the
+    # sky (right, up) lit, the other in shade; its outlet under the gutter's end a little wider (a funnel), its clamps
+    pts = np.array(PIPE)
+    best_d = np.full((H, W), 1e9); off = np.zeros((H, W))
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        dx, dy = x1 - x0, y1 - y0; L_ = np.hypot(dx, dy); ux, uy = dx / L_, dy / L_
+        nx, ny = uy, -ux
+        if nx < 0 or (abs(nx) < 1e-6 and ny > 0): nx, ny = -nx, -ny             # (the normal toward the right / up)
+        t = np.clip(((xx - x0) * ux + (yy - y0) * uy) / L_, 0, 1)
+        px, py = x0 + dx * t, y0 + dy * t; d = np.hypot(xx - px, yy - py)
+        o = (xx - px) * nx + (yy - py) * ny
+        better = d < best_d; best_d = np.where(better, d, best_d); off = np.where(better, o, off)
+    rad = np.full((H, W), 2.45)
+    rad[(yy >= PIPE[0][1]) & (yy <= PIPE[0][1] + 5)] = 3.45                  # (the outlet)
+    for cy_ in CLAMPS: rad[(yy >= cy_) & (yy <= cy_ + 1)] = 3.45             # (the clamps)
+    pipe = best_d <= rad
+    k = np.where(off < -1.2, 1, np.where(off < 0.5, 2, np.where(off < 1.6, 3, 4)))
+    col = {1: body, 2: body + (rim - body) * 0.3, 3: body + (rim - body) * 0.65, 4: rim}
+    for kk, c in col.items():
+        m = pipe & (k == kk)
         city[m, :3] = c; city[m, 3] = 255
         unlit[m, :3] = c * ratio; unlit[m, 3] = 255
         nf[m] = 0; sun[m] = 0
     save(city, 'layer_city_off.webp', 'RGBA'); save(unlit, 'street_unlit.webp', 'RGBA')
     save(nf, 'night_far.webp', 'RGB'); save(sun, 'street_sun.webp', 'RGB')
-    print('eave cut', int(cut.sum()), 'px | downpipe', int((pipe > 0).sum()), 'px')
+    print('eave cut', int(cut.sum()), 'px | downpipe', int(pipe.sum()), 'px')
 
 
 if __name__ == '__main__':
