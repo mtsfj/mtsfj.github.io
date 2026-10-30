@@ -9,11 +9,13 @@ R: the cherry's (255) or not (0): what shows there of the far layers is the tree
    along the flank (a light streak through it at dawn), greyed its less pink blossoms and left a strip of the flank unlit.
    In fuji_night the canopy is told from the rock by its grain: the painted rock is smooth, the blossoms and branches are
    not; it starts from the pink blossoms and keeps what touches them, above the mountain's foot and its pines, off the
-   slope's rim and the snow streaks under it; the rock's painted violet by the canopy and the canopy's blended edge go
-   back to the rock (kept in the dusk's colours by a lit mountain, they read as blue foliage that is not there).
+   slope's rim and the snow streaks under it; the rock's painted violet by the canopy and the canopy's soft violet edge
+   (up to 5 px) go back to the rock (kept in the dusk's colours by a lit mountain, they read as blue foliage, a dark rim).
 G: the slope's rim (in the 4 rows under the sky, the pixels lighter than the rock 4..8 px further in): the lightness of
    that rock (1..255), else 0. At dusk those rows are the sky's light on the edge; read as their own lightness at dawn
    they turned to snow, a white line down both flanks.
+B: what shows there is the rock though the tree's own layer is on top (its pixels painted as the rock): graded as the
+   mountain all the same (255), else 0.
 Needs Pillow, numpy and scipy.
 """
 import os
@@ -66,15 +68,46 @@ def main():
     lab, n = ndi.label(far, structure=np.ones((3, 3)))
     reach = np.unique(lab[ndi.binary_dilation(op & ~tree) & far]); reach = reach[reach > 0]
     tree &= ~np.isin(lab, reach)
-    for _ in range(2):
-        rock = op & ~tree
-        tree &= ~(~pinkish & ~branch & ndi.binary_dilation(rock, structure=ndi.generate_binary_structure(2, 1)))
+    # the canopy's edge on the rock: its soft pixels (neither pink nor a branch: the dusk's violet shade on it, 1 to 5 px wide
+    # by places) reached from the rock through soft pixels only, up to 5 px in, go back to the rock, and the soft crumbs they
+    # leave alone with them: the edge is the blossoms' all along (kept violet by a lit mountain, they read as a dark rim)
+    cross = ndi.generate_binary_structure(2, 1)
+    soft = tree & ~pinkish & ~branch & ~(ft[:, :, 3] > 128)
+    front = op & ~tree; peel = np.zeros_like(soft)
+    for _ in range(5):
+        front = ndi.binary_dilation(front, structure=cross) & soft & ~peel; peel |= front
+    left = soft & ~peel; lab, n = ndi.label(left, structure=cross); sz = ndi.sum(left, lab, range(1, n + 1))
+    peel |= np.isin(lab, 1 + np.where(sz <= 3)[0]) & ndi.binary_dilation(peel)
+    tree &= ~peel
+    # what shows there as the rock does (the dusk's colour of the rock round it, within 16 a channel, and joined to it): the
+    # rock's, whatever its layer (its dusk purple passes the pink test). Under the tree's own layers (fuji_tree, fuji_front)
+    # it is told to the shader by B: graded as the mountain all the same
+    ff = np.asarray(Image.open(os.path.join(ROOT, 'assets/fuji_front.webp')).convert('RGBA')).astype(float)
+    top = rgb.copy(); ta = a / 255
+    for Ly in (ft, ff):
+        al = Ly[:, :, 3:4] / 255; top = top * (1 - al) + Ly[:, :, :3] * al; ta = np.maximum(ta, Ly[:, :, 3] / 255)
+    rock = op & ~tree & smooth & ~(ft[:, :, 3] > 128)
+    wgt = ndi.gaussian_filter(rock.astype(float), 5)
+    field = np.stack([ndi.gaussian_filter(rgb[:, :, c] * rock, 5) for c in range(3)], -1) / np.maximum(wgt, 1e-6)[..., None]
+    cher = tree | (ft[:, :, 3] > 128)
+    like = cher & ndi.binary_dilation(rock, iterations=10) & (wgt > 0.02) & (np.abs(top - field).max(-1) < 16) & (ta > 0.5)
+    lab, n = ndi.label(like | rock, structure=cross); keep = np.unique(lab[rock]); like &= np.isin(lab, keep[keep > 0])
+    tree &= ~like
+    under = like & ((ft[:, :, 3] > 128) | (ff[:, :, 3] > 128))
+    # the rock's pockets inside the canopy (its gaps onto the mountain's foot, dark at dusk like its shade): the tree's, as
+    # the night shows them, not light grey spots in the blossoms at dawn; the rock along the canopy's outer edge stays rock
+    canopy = tree | (ft[:, :, 3] > 128)
+    disk = ndi.generate_binary_structure(2, 1); disk = ndi.iterate_structure(disk, 3)
+    closed = ndi.binary_fill_holes(ndi.binary_closing(canopy, structure=disk))
+    pockets = op & ~canopy & ~like & closed & ~ndi.binary_dilation(~closed, iterations=2)
+    tree |= pockets
 
     out = np.zeros((H, W, 4), np.uint8); out[:, :, 3] = 255
-    out[:, :, 0] = np.where(tree | (ft[:, :, 3] > 128), 255, 0)
+    out[:, :, 0] = np.where((tree | (ft[:, :, 3] > 128)) & ~like, 255, 0)
+    out[:, :, 2] = np.where(under, 255, 0)
     out[:, :, 1] = np.where(rim & ~tree, np.clip(np.round(inner[None, :] * 255), 1, 255), 0)
     Image.fromarray(out).save(os.path.join(ROOT, 'assets/fuji_aux.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
-    print('cherry px', int((out[:, :, 0] > 0).sum()), '| rim px', int((out[:, :, 1] > 0).sum()))
+    print('cherry px', int((out[:, :, 0] > 0).sum()), '| rim px', int((out[:, :, 1] > 0).sum()), '| rock-like', int(like.sum()), 'of which under the tree layers', int(under.sum()), '| pockets', int(pockets.sum()))
 
 
 if __name__ == '__main__':

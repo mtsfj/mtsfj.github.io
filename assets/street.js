@@ -6792,7 +6792,7 @@
       }
       const Wd = B.W, N = Wd * Wd, rc = document.createElement('canvas'); rc.width = rc.height = Wd; const rq = rc.getContext('2d', { willReadFrequently: true }); rq.imageSmoothingEnabled = false;
       B.rd = (k, x0, y0) => {                                                      // a layer's pixels in the window at (x0, y0), as the page's own plane shows them
-        const f = L[k]; rq.clearRect(0, 0, Wd, Wd);
+        const f = typeof k === 'string' ? L[k] : k; rq.clearRect(0, 0, Wd, Wd);
         rq.drawImage(f.im, Math.round(f.p.x - f.gp.width / 2) - x0, Math.round(-f.p.y - f.gp.height / 2) - y0, f.gp.width, f.gp.height); return rq.getImageData(0, 0, Wd, Wd).data;
       };
       const f32 = () => new Float32Array(N);
@@ -6808,6 +6808,10 @@
       const tex = new THREE.CanvasTexture(cv); tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
       const m = new THREE.Mesh(new THREE.PlaneGeometry(Wd, Wd), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
       m.visible = false; scene.add(m); B.mesh = m; B.tex = tex; B.g2 = g2; B.id = g2.createImageData(Wd, Wd);
+      // what each of its pixels shows (0 the sky, 1 the mountain, 2 the tree, 3 the street, 4 the glimpse's own light), for its grade:
+      // the hour and the red night of that plane (rows bottom up, as the picture's texture reads them)
+      B.kd = new Uint8Array(N * 4); B.ktex = new THREE.DataTexture(B.kd, Wd, Wd, THREE.RGBAFormat); B.ktex.magFilter = B.ktex.minFilter = THREE.NearestFilter; B.ktex.generateMipmaps = false; B.ktex.needsUpdate = true;
+      B.aux = null; try { const im = NRU.tFjAux.value.image; if (im && im.complete && im.naturalWidth) B.aux = { im, gp: { width: 640, height: 640 }, p: { x: 376 + 320, y: -(66 + 320) } }; } catch (e) {}
       // petals (5-7) and a leaf or two: each tumbles through three pixel shapes
       const PS = [[[1, 0, 0], [2, 0, 0], [0, 1, 0], [1, 1, 1], [2, 1, 0], [3, 1, 0], [1, 2, 0], [2, 2, 2]], [[2, 0, 0], [1, 1, 1], [2, 1, 0], [0, 2, 0], [1, 2, 0], [1, 3, 2]], [[1, 0, 0], [1, 1, 1], [2, 1, 0], [1, 2, 0], [2, 2, 2], [2, 3, 0]],
         [[0, 1, 2], [1, 1, 0], [2, 1, 1], [3, 1, 0], [1, 2, 2], [2, 2, 0]], [[1, 0, 0], [2, 1, 1], [1, 1, 0], [2, 2, 0], [0, 0, 2], [3, 3, 2]], [[1, 0, 2], [1, 1, 0], [1, 2, 1], [2, 1, 0], [2, 2, 0], [2, 3, 2]]];
@@ -6827,7 +6831,9 @@
   function treeSetup(si) {                     // the window around a spot: the picture there, and the field of this rustle (new noise each time)
     const B = TREE, A = B.A, Wd = B.W, N = Wd * Wd, c0 = Wd / 2, sp = B.spots[si], sx = sp[0], sy = sp[1], tx = sp[2], ty = sp[3], x0 = sx - c0, y0 = sy - c0;
     B.cur = si; B.x0 = x0; B.y0 = y0; B.box = [sx - 22, sy - 22, sx + 22, sy + 22]; B.mesh.position.set(x0 + c0, -(y0 + c0), 0.51);
-    const S = B.rd('sky', x0, y0), Nn = B.rd('night', x0, y0), T = B.rd('tree', x0, y0); A.C = B.rd('city', x0, y0); A.Dm = B.rd('dim', x0, y0); A.F = B.rd('front', x0, y0); A.T = T;
+    const S = B.rd('sky', x0, y0), Nn = B.rd('night', x0, y0), T = B.rd('tree', x0, y0); A.C = B.rd('city', x0, y0); A.Dm = B.rd('dim', x0, y0); A.F = B.rd('front', x0, y0); A.T = T; A.N = Nn;
+    if (!B.aux) try { const im = NRU.tFjAux.value.image; if (im && im.complete && im.naturalWidth) B.aux = { im, gp: { width: 640, height: 640 }, p: { x: 376 + 320, y: -(66 + 320) } }; } catch (e) {}
+    A.K = B.aux ? B.rd(B.aux, x0, y0) : null;                                    // (the cherry's pixels of the far layers: fuji_aux R)
     const P = A.P, V = A.V, fol = A.fol;
     for (let i = 0; i < N; i++) {                                                  // the picture behind the street: the sky, the night layer (the mountain, the far blossoms), the tree
       let a = Nn[i * 4 + 3] / 255, r = S[i * 4] + (Nn[i * 4] - S[i * 4]) * a, g = S[i * 4 + 1] + (Nn[i * 4 + 1] - S[i * 4 + 1]) * a, b = S[i * 4 + 2] + (Nn[i * 4 + 2] - S[i * 4 + 2]) * a;
@@ -6854,6 +6860,9 @@
     const B = TREE, A = B.A, Wd = B.W, N = Wd * Wd, tb = B.tab, n0 = tb[0].length - 1, DX = A.DX, DY = A.DY, od = B.id.data, V = A.V, P = A.P, fol = A.fol, T = A.T, tmp = A.tmp;
     const at = (a, s) => { if (s <= 0) return 0; const f = s * 240, k = f | 0; if (k >= n0) return 0; return a[k] + (a[k + 1] - a[k]) * (f - k); };
     od.fill(0);
+    const kd = B.kd, NN = A.N, KK = A.K, C = A.C, F = A.F;
+    const kindOf = (i, q, fi) => C[i * 4 + 3] >= 128 ? 3 : KK && KK[q * 4 + 2] >= 128 ? 1 : ((fi >= 0 && F[fi * 4 + 3] >= 128) || T[q * 4 + 3] >= 128) ? 2 : NN[q * 4 + 3] >= 128 ? (KK && KK[q * 4] >= 128 ? 2 : 1) : 0;
+    const kput = (i, k) => { const x = i % Wd, y = (i / Wd) | 0; kd[((Wd - 1 - y) * Wd + x) * 4] = k * 40; };
     for (let i = 0; i < N; i++) {                                                  // the field: three springs, each its own lag, outward from the limb
       if (A.m0[i] + A.m1[i] + A.m2[i] < 0.001) { DX[i] = 0; DY[i] = 0; continue; }
       const e0 = A.m0[i] * at(tb[0], t - A.l0[i]), e1 = A.m1[i] * at(tb[1], t - A.l1[i]), e2 = A.m2[i] * at(tb[2], t - A.l2[i]);
@@ -6868,14 +6877,15 @@
         if (dv > 0.04) { const k = Math.min(0.6, dv * 2.0); r += (r * 0.64 - r) * k; g += (g * 0.52 - g) * k; b += (b * 0.62 - b) * k; }
         else if (dv < -0.04) { const k = Math.min(0.22, -dv * 0.9) * 0.4; r += (255 - r) * k; g += (226 - g) * k; b += (236 - b) * k; }
       }
-      A.stack(i, r, g, b, T[q * 4 + 3] > 0 ? q : (T[i * 4 + 3] > 0 ? -1 : i), tmp, 0);     // (the front pixels follow the tree wherever it is; the mountain's own stay put)
-      if (tmp[0] !== V[i * 3] || tmp[1] !== V[i * 3 + 1] || tmp[2] !== V[i * 3 + 2]) { od[i * 4] = tmp[0]; od[i * 4 + 1] = tmp[1]; od[i * 4 + 2] = tmp[2]; od[i * 4 + 3] = 255; }
+      const fi = T[q * 4 + 3] > 0 ? q : (T[i * 4 + 3] > 0 ? -1 : i);
+      A.stack(i, r, g, b, fi, tmp, 0);     // (the front pixels follow the tree wherever it is; the mountain's own stay put)
+      if (tmp[0] !== V[i * 3] || tmp[1] !== V[i * 3 + 1] || tmp[2] !== V[i * 3 + 2]) { od[i * 4] = tmp[0]; od[i * 4 + 1] = tmp[1]; od[i * 4 + 2] = tmp[2]; od[i * 4 + 3] = 255; kput(i, kindOf(i, q, fi)); }
     }
     const ht = t - B.hintT, H = B.hint;                                            // the glimpse: a gap opens at the limb, two glints and a flame's tip, partly hidden by the blossoms
     if (ht > -0.04 && ht < 0.62) {
       const al = Math.max(0, Math.min(1, (ht + 0.04) / 0.1, (0.62 - ht) / 0.14)), hq = H.cy * Wd + H.cx, ox = Math.round(DX[hq]), oy = Math.round(DY[hq]);
       const cur = (x, y, k) => { const i = y * Wd + x; return od[i * 4 + 3] ? od[i * 4 + k] : V[i * 3 + k]; };
-      const put = (x, y, r, g, b) => { if (x < 0 || y < 0 || x >= Wd || y >= Wd) return; const i = y * Wd + x; od[i * 4] = r; od[i * 4 + 1] = g; od[i * 4 + 2] = b; od[i * 4 + 3] = 255; };
+      const put = (x, y, r, g, b, own) => { if (x < 0 || y < 0 || x >= Wd || y >= Wd) return; const i = y * Wd + x; if (own) kput(i, 4); else if (!od[i * 4 + 3]) kput(i, kindOf(i, i, i)); od[i * 4] = r; od[i * 4 + 1] = g; od[i * 4 + 2] = b; od[i * 4 + 3] = 255; };
       const lum = (x, y) => 0.3 * cur(x, y, 0) + 0.5 * cur(x, y, 1) + 0.2 * cur(x, y, 2);
       const flame = ht > 0.02 && ht < 0.5 && al > 0.6, eyes = ht < 0.3 && !(ht > 0.12 && ht < 0.17) && al > 0.6, fs = Math.floor((ht - 0.02) * 13) % 3, bright = [];
       const FL = [['.y.', 'omo', 'omo', '.o.'], ['y..', 'omo', '.mo', '.o.'], ['..y', 'omo', 'om.', '.o.']], FC = { o: [255, 118, 34], m: [255, 176, 52], y: [255, 228, 120] };
@@ -6887,10 +6897,10 @@
         const f = 1 - (1 - (e < 0.34 ? 0.34 : e < 0.7 ? 0.52 : 0.76)) * al;
         put(px, py, Math.round(cur(px, py, 0) * f), Math.round(cur(px, py, 1) * f * 0.95), Math.round(cur(px, py, 2) * f));
       }
-      for (const [px, py, k] of bright) put(px, py, k[0], k[1], k[2]);
-      if (eyes) { put(H.e1x + ox, H.e1y + oy, 255, 246, 214); put(H.e2x + ox, H.e2y + oy, 255, 246, 214); }
+      for (const [px, py, k] of bright) put(px, py, k[0], k[1], k[2], true);
+      if (eyes) { put(H.e1x + ox, H.e1y + oy, 255, 246, 214, true); put(H.e2x + ox, H.e2y + oy, 255, 246, 214, true); }
     }
-    B.g2.putImageData(B.id, 0, 0); B.tex.needsUpdate = true;
+    B.g2.putImageData(B.id, 0, 0); B.tex.needsUpdate = true; B.ktex.needsUpdate = true;
   }
   function treeSpawn() {                       // 5-7 petals and a leaf or two come loose around the spot, one after the other
     const B = TREE, n = 5 + Math.floor(Math.random() * 3), nl = 1 + Math.floor(Math.random() * 2), cx = B.x0 + B.W / 2, cy = B.y0 + B.W / 2;
@@ -7869,7 +7879,7 @@
       uGlw: { value: new THREE.Vector4(0, 0, 0, 0) }, uGlwC: { value: new THREE.Vector3(0.17, 0.115, 0.15) },   // the valley's lit haze: its strength now; its light (the far city's, warm mauve)
       tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
       tSunL: { value: crisp('assets/street_sun.webp?v=3') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
-      tFjAux: { value: crisp('assets/fuji_aux.webp?v=2') }, uFjAuxR: { value: new THREE.Vector4(376, 66, 640, 640) },   // (the far layers' box, pixel for pixel: the cherry's, the slope's rim; tools/fuji_aux.py)
+      tFjAux: { value: crisp('assets/fuji_aux.webp?v=5') }, uFjAuxR: { value: new THREE.Vector4(376, 66, 640, 640) },   // (the far layers' box, pixel for pixel: the cherry's, the slope's rim; tools/fuji_aux.py)
       uFarPow: { value: 1 } };   // (the far city's power: its own lights keep their colour only while they have it)
   })();
   const NR_HEAD = `
@@ -8049,7 +8059,8 @@
       vec3 c = diffuseColor.rgb, b = c; vec2 q = vec2(vNRw.x, -vNRw.y);
       float tree = uNRtree;
       if (tree > 1.5) { vec4 u = texture2D(tUnder, vUv); vec3 dd = abs(texelColor.rgb - u.rgb); tree = (u.a > 0.5 && max(dd.r, max(dd.g, dd.b)) < 0.016) ? 0.0 : 1.0; }   // (fuji_front: its copies of the mountain are the mountain)
-      if (uNRmode > 0.5 && uNRmode < 1.5 && skCherry(q, texelColor.rgb)) tree = 1.0;   // (by the tree: what is above the mountain's right flank, as bright as blossom (no snow down there), or pink under the flank (its lower half, in the mountain's layer since the split) is the tree's: hands off, at every hour)
+      if (uNRmode > 0.5 && uNRmode < 1.5 && skCherry(q, texelColor.rgb)) tree = 1.0;
+      if (uNRmode > 0.5 && uNRmode < 1.5 && fjAux(q).b > 0.5) tree = 0.0;   // (the tree's layers painted as the rock there: the mountain's grade, fuji_aux B)   // (by the tree: what is above the mountain's right flank, as bright as blossom (no snow down there), or pink under the flank (its lower half, in the mountain's layer since the split) is the tree's: hands off, at every hour)
       if (uNT > 0.0 || uDW > 0.0) b = skHours(c, texelColor.rgb, texelColor.a, q, uNRmode, tree);
       if (uNR > 0.0) {                            // the red night (off: skipped)
         vec3 p;
@@ -8073,6 +8084,20 @@
       sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>' + NR_HEAD + '\n    varying vec2 vNRw;').replace('#include <map_fragment>', '#include <map_fragment>' + NR_FRAG);
     };
     mat.customProgramCacheKey = () => 'nr-' + grp; mat.userData.nr = grp; mat.needsUpdate = true;
+  }
+  function nrShadeKinds(mat, kTex) {             // the tree's shake overlay: each pixel graded as the plane it shows (its kind, B.ktex), its own multiply
+    mat.onBeforeCompile = (sh) => {
+      Object.assign(sh.uniforms, NRU, { uNRmode: { value: 1 }, uNRtree: { value: 1 }, tKind: { value: kTex } });
+      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\n    varying vec2 vNRw;')
+        .replace('#include <project_vertex>', '#include <project_vertex>\n    vNRw = (modelMatrix * vec4(transformed, 1.0)).xy;');
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>' + NR_HEAD + '\n    varying vec2 vNRw;\n    uniform sampler2D tKind;')
+        .replace('#include <map_fragment>', '#include <map_fragment>\n'
+          + '    float nrK = floor(texture2D(tKind, vUv).r * 255.0 / 40.0 + 0.5);\n'
+          + '    float nrMd = nrK < 0.5 ? 0.0 : nrK < 2.5 ? 1.0 : 3.0, nrTr = abs(nrK - 2.0) < 0.5 ? 1.0 : 0.0;\n'
+          + '    if (nrK < 3.5) {\n      diffuseColor.rgb *= nrK < 0.5 ? uNRskyC : nrK < 2.5 ? uNRfujiC : uNRcity;\n'
+          + NR_FRAG.replace(/uNRmode/g, 'nrMd').replace(/uNRtree/g, 'nrTr') + '\n    }');
+    };
+    mat.customProgramCacheKey = () => 'nr-kinds'; mat.userData.nr = 'kinds'; mat.needsUpdate = true;
   }
   nrShade(sky.material, 'sky'); nrShade(fujiNight.material, 'fuji'); nrShade(fujiTree.material, 'tree'); nrShade(fujiFront.material, 'front');
   nrShade(towerMesh.material, 'tower'); nrShade(city.material, 'city');
@@ -8671,7 +8696,8 @@
     sky.material.color.copy(nGrade('sky', S, 0, nCol));
     nGrade('fuji', S, 0, nCol); fujiNight.material.color.copy(nCol); fujiTree.material.color.copy(nCol); fujiFront.material.color.copy(nCol);
     const tm = TREE.mesh && TREE.mesh.material;    // (the tree's shake overlay, made when it first shakes)
-    if (tm && tm.color) { tm.color.copy(nCol); if (tm.isMeshBasicMaterial && !tm.userData.nr) nrShade(tm, 'tree'); }
+    if (tm && tm.color) { tm.color.setRGB(1, 1, 1); if (tm.isMeshBasicMaterial && !tm.userData.nr && TREE.ktex) nrShadeKinds(tm, TREE.ktex); }   // (its multiply: each pixel its plane's, in its shader)
+    for (const l of TREE.petals) { const pm = l.m.material; pm.color.copy(nCol); if (!pm.userData.nr) nrShade(pm, 'tree'); }   // (the petals and leaves it lets go: the tree's grade)
     towerMesh.material.color.copy(nGrade('tower', S, 0, nCol));
     fogs[0].material.color.copy(nGrade('haze', S, r, nCol));
     nGrade('mist', S, r, nCol); fogs[1].material.color.copy(nCol); fogs[2].material.color.copy(nCol);
