@@ -1183,11 +1183,11 @@
   farState.needsUpdate = true;
   const farMat = new THREE.ShaderMaterial({
     uniforms: { tIds: { value: farTex('assets/far_ids.webp?v=6') }, tOn: { value: farTex('assets/far_on.webp?v=6') }, tOff: { value: farTex('assets/far_off.webp?v=6') },
-      tAux: { value: farTex('assets/far_aux.webp?v=14') }, tState: { value: farState }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
+      tAux: { value: farTex('assets/far_aux.webp?v=14') }, tState: { value: farState }, uLitK: { value: 1 }, uTime: { value: 0 }, uShim: { value: 1 }, uFl: { value: [1, 1, 1, 1] }, uNRh: { value: new THREE.Vector3(1, 0.12, 0.08) }, uNRk: { value: 0 } },
     vertexShader: 'varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: `
       uniform sampler2D tIds, tOn, tOff, tAux, tState;
-      uniform float uTime, uShim, uFl[4];
+      uniform float uTime, uShim, uFl[4], uLitK;    // (uLitK: the windows' light against the daylight, 1 by night)
       uniform vec3 uNRh;                         // the red night: its hue, how much (0: none)
       uniform float uNRk;
       vec3 nrRed(float L) {                      // red light of luminance L; past what red holds, toward pink-white
@@ -1212,7 +1212,7 @@
         fl = mix(1.0, fl, x.a);
         if (win > 0.5) {                               // a window: its state (its light shimmering), laid over
           float k = st * (1.0 - (0.025 + 0.055 * depth) * n);
-          vec3 wc = mix(texture2D(tOff, vUv).rgb, texture2D(tOn, vUv).rgb, k) * fl, oc = texture2D(tOff, vUv).rgb;
+          vec3 oc = texture2D(tOff, vUv).rgb, wc = max(oc + (texture2D(tOn, vUv).xyz - texture2D(tOff, vUv).xyz) * k * uLitK, vec3(0.0)) * fl;   // (its light added to the window as the hour shows it: the frame round it, the same lit or not, takes the hour too)
           float dl = dot(wc, vec3(0.299, 0.587, 0.114)) - dot(oc, vec3(0.299, 0.587, 0.114));   // its light, red in the red night
           // the red night: the power on red emergency: the windows dark in the haze (its red-violet at their own
           // luminance: no grey-blue), one lit window in three keeping a dim warm ember (a stable draw by its id), never full red
@@ -2581,7 +2581,7 @@
   const STINT = { code: [110, 235, 170], paper: [236, 240, 255], game: [255, 86, 96] }, STINT_M = {};
   function scrTint() {                           // the hour's work on the screen (null: its own blue)
     if (!ws.screen) return null;
-    const h = CLOCK.h; return h >= 0.5 && h < 3 ? 'game' : h >= 22.5 || h < 0.5 ? 'paper' : 'code';
+    const h = (CLOCK.h + CLOCK.wake) % 24; return h >= 0.5 && h < 3 ? 'game' : h >= 22.5 || h < 0.5 ? 'paper' : 'code';
   }
   function tintPx(r, g, b, T, a) {               // a light's colour moved toward T at its own luminance (a: how far)
     const L = 0.299 * r + 0.587 * g + 0.114 * b, s = L / (0.299 * T[0] + 0.587 * T[1] + 0.114 * T[2]);
@@ -2608,7 +2608,7 @@
     if (STUDY.list !== PW.list) { STUDY.list = PW.list; STUDY.pw = PW.list.find((e) => e.o === winMesh) || null; }
     return STUDY.pw ? STUDY.pw.p : 1;
   }
-  const studyLate = () => CLOCK.h < 3 && nightOpen('study');   // from midnight to 3 h: the last light is his (direction-09)
+  const studyLate = () => (CLOCK.h + CLOCK.wake) % 24 < 3 && nightOpen('study');   // from midnight to 3 h: the last light is his (direction-09)
   // the joints (degrees). Spine s1 s2, neck nk, head hd: from up, + toward the face; pv: the pelvis's tilt, the same way.
   // Shoulders sh: from the torso's line down, + forward; elbows el: bend; wrists wr: + up. Hips hp: from the pelvis's
   // line down, + forward; knees kn: bend. yaw: the head turned from profile (0) to the street (1). px, py: the pelvis
@@ -3801,6 +3801,18 @@
     const t = (FIN.dawn += dt), k = Math.min(1, t / 3), kr = Math.min(1, t / 8);
     stars.material.opacity = Math.min(stars.material.opacity, 1 - k); marsDot.material.opacity = 1 - k; marsDot.visible = k < 1;
     void kr;                                     // (the curtains' count: rainAmount(), in stepRain: 650 -> 120 over these 8 s, with the lull's share)
+    // the street wakes: the finale over and the morning in (20 s into the dawn), the power comes back as the fuses' wave brings
+    // it (from the arcade down the street; at once under reduced motion); then over three minutes the places' clock runs on to
+    // nine (CLOCK.wake: the sky keeps its morning): the tobacco kiosk, the balcony, the dagashi-ya, the far signs, the arcade,
+    // Luffy's board, Ichiraku, the lantern, the oden, the dojo open one after another; Mathis back at his desk
+    if (!FIN.woke && FINS.t < 0 && t >= 20) {
+      FIN.woke = true; FIN.wakeT = 0;
+      if (PW.on && PW.ext === finDieStep) {
+        PW.ext = null; FIN.die = null;
+        if (!reduced) Object.assign(PW, { u: 0.12, zon: 0, shot: true }); else { PW.on = false; pwShade.visible = false; }
+      }
+    }
+    if (FIN.woke) { FIN.wakeT += dt; const u = reduced ? 1 : Math.min(1, Math.max(0, (FIN.wakeT - 4) / 180)); CLOCK.wake = 3 * u * u * (3 - 2 * u); }
   }
   function stepFIN(dt) { stepFinale(dt); if (FIN.blast) stepBlast(dt); if (FIN.dawn >= 0) stepDawn(dt); }
   // the finale's after-state (its street without power, its dawn's sky without stars or Mars, its thinned rain, its
@@ -3809,7 +3821,7 @@
   // motion), the stars, Mars and the rain back (rainAmount: no dawn, no thinning), the visitor's own hour back
   function finClear(wave) {
     if (FIN.dawn >= 0) {
-      FIN.dawn = -1; stars.material.opacity = 1; marsDot.material.opacity = 1; marsDot.visible = true;
+      FIN.dawn = -1; FIN.woke = false; CLOCK.wake = 0; stars.material.opacity = 1; marsDot.material.opacity = 1; marsDot.visible = true;
       if (nightSys()) setTimeOverride(null, wave && !reduced ? 3 : 0);
     }
     if (PW.on && PW.ext === finDieStep) {
@@ -7608,7 +7620,8 @@
     const c = city.material.color, sk = sky.material.color, fj = fujiNight.material.color;
     U.uRSky.value.setRGB(sk.r / c.r, sk.g / c.g, sk.b / c.b); U.uRFar.value.setRGB(fj.r / c.r, fj.g / c.g, fj.b / c.b);   // (the street's far pixels: their plane's multiply)
     const fz = PW.on ? pwShade.material.uniforms.uPow.value[PW_ZONES.findIndex((z) => z[4] === -1)] : 1;   // (the far city's power: the fuses' cut puts its light out)
-    U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw); U.uFarPow.value = fz === undefined ? 1 : fz;                                  // the valley's lit haze: the night's, the far city's light, gone at dawn
+    U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw); U.uFarPow.value = fz === undefined ? 1 : fz;
+    farMat.uniforms.uLitK.value = 1 - 0.75 * F.dw * Math.min(1, Math.max(0, dp - 1));   // (the far windows' light by day, through the morning's air: faint)                                  // the valley's lit haze: the night's, the far city's light, gone at dawn
     marsDot.material.color.setScalar(F.mars);
     let mu, up;                                                            // the moon: mu 0 at its place .. 1 set; up its light
     if (h >= 19.5) { mu = Math.min(1, (h - 19.5) / 2.75); up = 1 - skSm(0.9, 1, mu); }
@@ -7844,7 +7857,8 @@
   // street's grade here; every light through the power system, PW.tint) ----
   const CLOCK = { live: true, h: 19.5, base: 19.5, next: 0, over: null, push: 0, pushFrom: 0, pushTo: 0,
     fixed: (() => { try { const q = new URLSearchParams(location.search).get('hour'); return q !== null && q !== '' && isFinite(+q) ? (+q % 24 + 24) % 24 : null; } catch (e) { return null; } })(),   // ?hour=H: held there
-    mode: null, rouge: 0, rFrom: 0, rTo: 0, rT: 0, rDur: 0, red: [1, 0.12, 0.08], S: { n: 0, b: 0 } };
+    mode: null, rouge: 0, rFrom: 0, rTo: 0, rT: 0, rDur: 0, red: [1, 0.12, 0.08], S: { n: 0, b: 0 },
+    wake: 0 };   // (the finale's morning: hours added to the places' clock only, as the street wakes; the sky keeps its morning)
   const NGRADE = {                               // [the night's depth, the blue hour, the red night by colour (the haze, the mists)] per layer group
     sky: [[0.64, 0.6, 0.82], [0.78, 0.92, 1.25], [1, 1, 1]],      // (the late night deeper and cooler: the coral horizon dims to a dull violet glow)
     fuji: [[0.76, 0.74, 0.88], [0.86, 0.94, 1.12], [1, 1, 1]],
@@ -8513,8 +8527,11 @@
   const NHOME = [[0, 1], [10, 1], [11, 0.9], [12, 0.75], [13, 0.52], [14, 0.32], [15, 0.2], [16, 0.13], [17, 0.15], [18, 0.3], [19, 0.55], [20.5, 1], [24, 1]];   // [hours since noon, the share of homes that may be lit]
   const NCARS = [[0, 1], [10, 1], [12, 0.6], [14, 0.3], [16, 0.25], [18, 0.6], [20.5, 1], [24, 1]];                                             // the far road's cars
   const NIGHT = { home: 1, busy: 0, farX: 0, cars: 1, signs: 1, rain: 1, snap: false, init: false };
-  const nOpenAt = (h, k) => { const [a, b] = NHOURS[k]; return (h >= a && h < b) || (h + 24 >= a && h + 24 < b); };
-  const nightOpen = (k) => nOpenAt(CLOCK.h, k);
+  // the finale's morning: the places open one after another as the street wakes (their opening hour a little later each)
+  const WAKE_JIT = { tabako: 0, balcony: 0.06, dagashi: 0.1, farSigns: 0.14, arcade: 0.18, luffy: 0.22, ramen: 0.26, lantern9: 0.3, oden: 0.34, dojo: 0.4 };
+  const nOpen0 = (k) => NHOURS[k][0] + (CLOCK.wake > 0 ? WAKE_JIT[k] || 0 : 0);
+  const nOpenAt = (h, k) => { const a = nOpen0(k), b = NHOURS[k][1]; return (h >= a && h < b) || (h + 24 >= a && h + 24 < b); };
+  const nightOpen = (k) => nOpenAt(CLOCK.h + CLOCK.wake, k);
   // ---- openK(name): how open a place is at the visitor's hour (CLOCK.h), 0 (shut) .. 1 (open), eased: a 6-minute smoothstep at
   // its opening and at its closing time (NHOURS), so a driven hour (setTimeOverride, the finale's dawn) shuts the places one by one,
   // and the live clock over those minutes. The hour only: the power cut (pw) and the red night are not in it. Names: 'dojo', 'oden',
@@ -8524,13 +8541,14 @@
   const OPEN_EASE = 0.1;                         // hours (6 min)
   const nRamp = (h, a, b) => Math.min(nSmooth(a, a + OPEN_EASE, h), 1 - nSmooth(b - OPEN_EASE, b, h));
   const CNIGHT = [1, 6];                         // the Pokémon Center's night mode (lumieres-11): its sign a night light, its shop dimmed
-  const centerNight = () => Math.max(nRamp(CLOCK.h, CNIGHT[0], CNIGHT[1]), nRamp(CLOCK.h + 24, CNIGHT[0], CNIGHT[1]));
+  const centerNight = () => { const h = CLOCK.h + CLOCK.wake; return Math.max(nRamp(h, CNIGHT[0], CNIGHT[1]), nRamp(h + 24, CNIGHT[0], CNIGHT[1])); };
   function openK(name) {
     if (name === 'center') return 1;
     if (name === 'centerNight') return centerNight();
     if (name === 'emblem') return 1 - 0.6 * centerNight();     // the sign's level: a night light from 1 h to 6 h
     const H = NHOURS[name]; if (!H) return 1;
-    return Math.max(nRamp(CLOCK.h, H[0], H[1]), nRamp(CLOCK.h + 24, H[0], H[1]));   // (hours past midnight as 24+)
+    const h = CLOCK.h + CLOCK.wake, a = nOpen0(name);
+    return Math.max(nRamp(h, a, H[1]), nRamp(h + 24, a, H[1]));   // (hours past midnight as 24+)
   }
   const nLerp = (T, e) => { for (let i = 1; i < T.length; i++) if (e <= T[i][0]) { const [a, va] = T[i - 1], [b, vb] = T[i]; return va + (vb - va) * (e - a) / (b - a); } return T[T.length - 1][1]; };
   function nightLife(h) {                        // the hour's shares
@@ -8678,7 +8696,7 @@
       else h = o.from + (o.to - o.from) * k;
     }
     C.h = (h % 24 + 24) % 24;
-    nightState(C.h, C.S); nightLife(C.h);
+    nightState(C.h, C.S); nightLife(C.h + C.wake);
     if (dt > 0) {                                  // the first frame: every light set to the hour at once (no fading as the page opens)
       if (!NIGHT.init) {
         NIGHT.init = NIGHT.snap = true;
