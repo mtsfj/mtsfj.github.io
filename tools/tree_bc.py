@@ -33,8 +33,12 @@ DEEP = (0, 50, 0.62)                                # its leaves further in: the
 BUSH_ROWS = 860                                    # (the source's rows below this: the bush at the trunk's foot, its wood left out)
 BUSHES = []                                        # (no bush: the pavement as clean as everywhere else)
 SHOJI_STEP, SILL = 42, 6                           # the shoji's rails, one under the other; their sill's height
+STILE = (35, 548)                                  # (the shoji's middle stile, dark wood: its left column, a clean row)
 BASE = lambda x: 733 + 0.29 * (126 - x)            # the front's foot on the pavement (to the vanishing point, as the pavement's lines)
 FASCIA = lambda x: 455 + 0.23 * x                   # the dojo's top board, its upper edge (lit, under the crown)
+PAVE_X1, PAVE_SPLIT = 330, 778
+KERB = lambda y: 352 - (y - 770) * 2.75            # the pavement's kerb, its x along the bottom rows
+FOOT_SHADE, FOOT_W = 0.28, 10                    # the pavement's shade along a front's foot: how much, how wide
 VP = (669.0, 568.0)                                # the street's vanishing point (the side wall's planks run to it)
 OLD_CROWN = [(0, 70), (60, 72), (92, 98), (132, 108), (172, 148), (208, 198), (236, 248), (238, 312), (220, 362),
              (208, 410), (178, 440), (132, 462), (60, 472), (0, 472)]
@@ -192,17 +196,24 @@ def main():
                 for L, O in zip(out, cur): L[y, x] = O[sy, x]
                 break
     sill = bush_old & (yy >= base - SILL) & (yy < base) & (xx < 80)
-    rail = (yy >= 599) & (yy <= 601) & (xx >= 4) & (xx < 74) & ~bush_old       # (the shoji's own rail: their wood)
-    wood = [np.median(O[rail], 0) for O in cur]
-    rng = np.random.default_rng(3); tone = rng.normal(1, 0.06, (H, W))
-    for y, x in zip(*np.where(sill)):
-        k = tone[y, x] * (1.12 if y == base[y, x] - SILL else 1.0)          # (its top edge a little lighter)
-        for L, wv in zip(out, wood): L[y, x] = wv * (k if wv.shape[0] < 4 else np.r_[[k] * 3, [1]][:wv.shape[0]])
+    for y, x in zip(*np.where(sill)):                                         # (their sill: the wood of their middle stile, laid
+        r = y - (base[y, x] - SILL)                                           # down: its grain along the sill)
+        for L, O in zip(out, cur): L[y, x] = O[STILE[1] + (x * 3) % 38, STILE[0] + r]
     side = bush_old & (yy < base) & (xx >= 80)
-    for y, x in zip(*np.where(side)):
-        col = np.where(~bush_old[:y, x])[0]
-        if len(col):
-            for L, O in zip(out, cur): L[y, x] = O[col[-1], x]
+    for y, x in zip(*np.where(side)):                                         # (the pillar, the gap, the door's frame: their own
+        for k in range(1, 8):                                                 # column a cell or two above, its grain with it)
+            sy = y - SHOJI_STEP * k
+            if sy < 540: break
+            if not bush_old[sy, x]:
+                for L, O in zip(out, cur): L[y, x] = O[sy, x]
+                break
+    # (in the shade low down as the painting has it beside them: each row as light as its painted pixels there)
+    for y in np.unique(np.where(side)[0]):
+        row = side[y] ; kept = ~bush_old[y] & (xx[y] >= 80) & (xx[y] < 112)
+        if kept.sum() >= 3 and row.sum():
+            g = np.median(cur[0][y, kept, :3] @ [0.299, 0.587, 0.114]) / max(np.median(out[0][y, row, :3] @ [0.299, 0.587, 0.114]), 1)
+            g = min(g, 1.0)
+            for L in out[:2]: L[y, row, :3] *= g
     need_b |= sill | side
     # the dojo's top board under the crown (its lit edges between the old leaves): along its own lines, from its visible bits
     band = crown_old & (xx < 130) & (yy > FASCIA(xx) - 6) & (yy < 476) & ~cm & ~dm & ~fill
@@ -218,27 +229,37 @@ def main():
             else: continue
             break
 
+    # the pavement: one piece of the clean pavement beside it, moved as a whole (its grain and its lines as they are), the
+    # move chosen so that it meets the pavement round it with the least difference; darker at the front's foot, as the
+    # pavement is along the shop's front next to it
     need_g = bush_old & (yy >= base)
-    paved = ((yy >= 748) | ((yy >= 736) & (xx >= 140))) & ~bush_old & (xx >= 133) & (xx < X_MAX)   # (not the door's white stile, x 125..132)
-    for y, x in zip(*np.where(need_g)):
-        dx, dy = VP[0] - x, VP[1] - y; n_ = np.hypot(dx, dy); dx, dy = dx / n_, dy / n_
-        hit = None
-        for t in range(1, 400):                                               # (along its line: the clean pavement as far beyond
-            sx, sy = int(round(x + dx * t)), int(round(y + dy * t))           # its edge as the pixel is before it, mirrored: its
-            if sx >= X_MAX or sy < 736: break                                 # texture, and no seam)
-            if paved[sy, sx]:
-                hit = (sy, sx)
-                sx2, sy2 = int(round(x + dx * 2 * t)), int(round(y + dy * 2 * t))
-                if sx2 < X_MAX and paved[sy2, sx2]: hit = (sy2, sx2)
-                break
-        if hit is None:                                                       # (near the front's foot: its own row, mirrored)
-            sx = 2 * 133 - x
-            if sx < X_MAX and paved[y, sx]: hit = (y, sx)
-            else:
-                sx = np.argmax(paved[y, x:]) + x
-                if paved[y, sx]: hit = (y, sx)
-        if hit:
-            for L, O in zip(out, cur): L[y, x] = O[hit]
+    paved = ((yy >= 748) | ((yy >= 736) & (xx >= 140))) & ~bush_old & (xx >= 133) & (xx < KERB(yy) - 5)   # (not the door's white
+                                                                              # stile, x 125..132, nor the kerb)
+    ring = ndi.binary_dilation(need_g, iterations=5) & ~need_g & ~bush_old & (yy >= np.maximum(base + 2, 748))   # (the pavement round it)
+    moves = []
+    for band, dys in (((0, PAVE_SPLIT), range(-5, 1)), ((PAVE_SPLIT, H), range(-34, -9))):   # (two pieces: the pavement narrows
+        part_ = need_g & (yy >= band[0]) & (yy < band[1])                                # toward the kerb low down)
+        ty, tx = np.where(part_)
+        rg = ring & (yy >= band[0] - 2) & (yy < band[1]); ry, rx = np.where(rg)
+        over = (yy >= band[0] - 3) & (yy < band[0]) & need_g if band[0] else np.zeros((H, W), bool); oy, ox = np.where(over)
+        best = None
+        for dy in dys:
+            for dx in range(16, 300):
+                sy, sx = ty + dy, tx + dx
+                if sx.max() >= PAVE_X1 or not paved[sy, sx].all(): continue
+                ssy, ssx = ry + dy, rx + dx
+                if len(ssy) and (ssx.max() >= PAVE_X1 or not paved[ssy, ssx].all()): continue
+                cost = float(np.abs(cur[0][ssy, ssx, :3] - cur[0][ry, rx, :3]).sum())
+                if len(oy):                                                   # (and where it meets the piece above)
+                    if not paved[oy + dy, np.minimum(ox + dx, W - 1)].all(): continue
+                    cost += float(np.abs(cur[0][oy + dy, ox + dx, :3] - out[0][oy, ox, :3]).sum())
+                if best is None or cost < best[0]: best = (cost, dy, dx)
+        _, dy, dx = best; moves.append((dx, dy))
+        for L, O in zip(out, cur): L[ty, tx] = O[ty + dy, tx + dx]
+    ty, tx = np.where(need_g)
+    foot = (1 - FOOT_SHADE * np.clip(1 - (yy - base) / FOOT_W, 0, 1))[..., None]
+    for L in out[:2]: L[ty, tx, :3] = L[ty, tx, :3] * foot[ty, tx]           # (the shade: in the street's colours, lit or not)
+    print('pavement moved by', moves)
     city, unlit, nf, sun = out
 
     # the power cut: the old tree's own change there, by place
