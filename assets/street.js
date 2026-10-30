@@ -1233,6 +1233,7 @@
   for (const W of FWIN) { (FGRP.get(W.grp) || FGRP.set(W.grp, []).get(W.grp)).push(W); (FBLD.get(W.bld) || FBLD.set(W.bld, []).get(W.bld)).push(W); }
   const FGRPS = [...FGRP.values()].filter((g) => g.length > 1), FBLDS = [...FBLD.values()].filter((g) => g.length <= 8);
   const FEV = { next: 2 + Math.random() * 4 };
+  const FARON = [1, 1, 1], FAR_OFF = 0.42;      // (each light's on-level, 0 out .. 1 lit; the hours' grade reads it too)
   const FFL = FAR.flickers.map((f) => ({ k: f.k, sign: f.kind === 'sign', ev: 0, next: 6 + Math.random() * 20, w: 1.1 + Math.random() * 0.9, ph: Math.random() * 6.3 }));
   // cars on the far street, the road going down into the valley along its two streetlamps (near -> far): a red tail
   // light going away and fading into the haze; now and then a headlight coming up, which turns off before the crest.
@@ -1261,14 +1262,18 @@
       const v = Math.round(W.k * 255); if (d[W.id * 4] !== v) { d[W.id * 4] = v; dirty = true; }
     }
     if (dirty) farState.needsUpdate = true;
-    const fl = farMat.uniforms.uFl.value;
+    const fl = farMat.uniforms.uFl.value, ko = openK('farSigns');
     for (const F of FFL) {
       let g = 1;
       if (F.sign) {                                     // steady, and now and then a short stutter, like the street's neons
         F.next -= dt; if (F.next < 0 && F.ev <= 0) { F.ev = 0.2 + Math.random() * 0.5; F.next = 9 + Math.random() * 28; }
         if (F.ev > 0) { F.ev -= dt; g = stutOn(t, F.k + F.ph, 0.08, 0.45) ? 0.35 : 1; }
       } else g = 0.955 + 0.045 * Math.sin(t * F.w + F.ph) * (0.7 + 0.3 * Math.sin(t * 0.37 + F.ph * 2));   // a lantern breathes
-      fl[F.k - 1] = F.sign && (F.r === undefined ? (F.r = Math.random()) : F.r) > NIGHT.signs ? 0 : g;   // (after 1 h, most signs out)
+      // lit with the far signs' hours (a shop's lanterns as its sign; after 1 h, most signs out), a short fade: unlit, the
+      // light is the far city's own colour at the hour, dimmed (FAR_OFF), never a black hole nor the dusk's painted light
+      const on = F.sign && (F.r === undefined ? (F.r = Math.random()) : F.r) > NIGHT.signs ? 0 : F.sign ? 1 : ko;
+      F.on = F.on === undefined || NIGHT.snap ? on : F.on + (on - F.on) * Math.min(1, dt * 1.5);
+      FARON[F.k - 1] = F.on; fl[F.k - 1] = FAR_OFF + (g - FAR_OFF) * F.on;
     }
     farMat.uniforms.uTime.value = t % (20 * Math.PI);
     FCAR.next -= dt;
@@ -7650,6 +7655,7 @@
     U.uRSky.value.setRGB(sk.r / c.r, sk.g / c.g, sk.b / c.b); U.uRFar.value.setRGB(fj.r / c.r, fj.g / c.g, fj.b / c.b);   // (the street's far pixels: their plane's multiply)
     const fz = PW.on ? pwShade.material.uniforms.uPow.value[PW_ZONES.findIndex((z) => z[4] === -1)] : 1;   // (the far city's power: the fuses' cut puts its light out)
     U.uGlw.value.x = F.nt * (fz === undefined ? 1 : fz) * (1 - F.dw); U.uFarPow.value = fz === undefined ? 1 : fz;   // the valley's lit haze: the night's, the far city's light, gone at dawn
+    U.uFarOn.value.set(FARON[0], FARON[1], FARON[2]);   // (the far lights' hours: the signs', the lanterns')
     farMat.uniforms.uLitK.value = U.uFarLit.value = 1 - F.dw * Math.min(1, Math.max(0, dp - 1));   // (the far city's lights by day, its windows and its signs: gone in the morning's air)
     F.dayL = 1 - 0.55 * F.dw * Math.min(1, Math.max(0, dp - 1));   // (the shops' light on the ground: half drowned by the daylight)
     F.air = 1 - 0.5 * F.dw * Math.min(1, Math.max(0, dp - 1));     // (the haze over the far city: thinner in the morning's clear air)
@@ -7925,7 +7931,7 @@
       tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
       tSunL: { value: crisp('assets/street_sun.webp?v=7') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
       tFjAux: { value: crisp('assets/fuji_aux.webp?v=9') }, uFjAuxR: { value: new THREE.Vector4(320, 66, 696, 640) },   // (the far layers' box, pixel for pixel: the cherry's, the slope's rim; tools/fuji_aux.py)
-      uFarPow: { value: 1 }, uFarLit: { value: 1 } };   // (the far city's power, and its lights against the daylight (1 by night): its own lights keep their colour only while both are there)
+      uFarPow: { value: 1 }, uFarLit: { value: 1 }, uFarOn: { value: new THREE.Vector3(1, 1, 1) } };   // (the far city's power, and its lights against the daylight (1 by night): its own lights keep their colour only while both are there)
   })();
   const NR_HEAD = `
     uniform float uNR, uNRmoon, uNRmode;
@@ -7982,7 +7988,7 @@
     // pixel's own dusk lightness (its grain, its order kept), as the red night is; the street's far pixels as their own
     // plane; the sky's painted grain. uNT: the night's depth, uDW: the dawn's, uDP: its progress (0 before the sun, 1 the
     // sun on Fuji, 2 the morning), uSun: the first sun's line on the mountain (its y, its softness, its warmth, its strength)
-    uniform float uNT, uDW, uDP, uNRtree, uFarPow, uFarLit; uniform vec4 uSun, uNRauxR, uGlw, uFjAuxR; uniform vec3 uGlwC; uniform vec3 uRSky, uRFar; uniform vec2 uSkyO; uniform sampler2D tUnder, tNRaux, tSunL, tFjAux;
+    uniform float uNT, uDW, uDP, uNRtree, uFarPow, uFarLit; uniform vec3 uFarOn; uniform vec4 uSun, uNRauxR, uGlw, uFjAuxR; uniform vec3 uGlwC; uniform vec3 uRSky, uRFar; uniform vec2 uSkyO; uniform sampler2D tUnder, tNRaux, tSunL, tFjAux;
     float skH(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
     float skV(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
       return mix(mix(skH(i), skH(i + vec2(1.0, 0.0)), f.x), mix(skH(i + vec2(0.0, 1.0)), skH(i + vec2(1.0, 1.0)), f.x), f.y); }
@@ -8062,7 +8068,7 @@
       if (mode > 2.5) {
         vec2 fu = (q - uNRfarR.xy) / uNRfarR.zw;
         if (fu.x > 0.0 && fu.y > 0.0 && fu.x < 1.0 && fu.y < 1.0) { float far = texture2D(tNRfar, vec2(fu.x, 1.0 - fu.y)).r; fc = far > 0.9 ? 3.0 : far > 0.55 ? 2.0 : (far > 0.2 && far < 0.39) ? 1.0 : 0.0; }
-        if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) keep = step(0.5, texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).g * 255.0) * uFarPow * uFarLit; }   // (its own lights: the signs and lanterns, aux G; aux R is the air's shimmer, the haze's too)
+        if (fc > 2.5) { vec2 au = (q - uNRauxR.xy) / uNRauxR.zw; if (au.x > 0.0 && au.y > 0.0 && au.x < 1.0 && au.y < 1.0) { float lg = floor(texture2D(tNRaux, vec2(au.x, 1.0 - au.y)).g * 255.0 + 0.5); keep = step(0.5, lg) * uFarPow * uFarLit * (lg < 1.5 ? uFarOn.x : lg < 2.5 ? uFarOn.y : uFarOn.z); } }   // (its own lights: the signs and lanterns, aux G; aux R is the air's shimmer, the haze's too)
         b = fc > 0.5 ? mix(c * (fc < 1.5 ? uRSky : uRFar), c, keep) : c;   // its plane's grade, not the street's; the far city's lights keep theirs
         bool ch = fc > 1.5 && fc < 2.5 && skCherry(q, t);            // (the mountain's colour: the mountain's hours; the cherry's: hands off)
         on = (fc > 0.5 && fc < 1.5) || fc > 2.5 || (fc > 1.5 && !ch) ? 1.0 : 0.0;   // (the sky's, the far city's and the mountain-coloured pixels: their plane's hours)
