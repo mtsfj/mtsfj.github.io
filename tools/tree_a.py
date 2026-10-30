@@ -31,7 +31,9 @@ MIRROR = False                                    # (its trunk on the left: in t
 TREE_X, TREE_Y = 284, 400                         # its tree's top left in the scene, one source pixel to one
 CUT_BELOW = 860                                   # (the source's rows under this, the trunk's foot and its rock: hidden anyway)
 KEEP_Y = 556                                      # the old tree's dark leaves kept low in the alley, round the lantern, below this
-DEEP_DX, DEEP_DY, DEEP_SHADE, DEEP_X1 = 6, 40, 0.62, 440   # its leaves further in: the drawing again, lower, in shade, up to x
+DEEP_DX, DEEP_DY, DEEP_SHADE = -26, 40, 0.62      # its leaves further in: the drawing again, lower, in shade (its right edge over the
+                                                  # oden's roof end, leafy, as the old tree's was)
+SHADOW = (470, 545, 0.45)                         # the buildings' shade on its lower part: from y, to y, how much darker at the foot
 M0 = 378                                          # (left of this the mountain is carried on in the street's layer, down to the roof)
 ROOF = lambda x: 454 + 1.22 * (x - 326)           # the drinks shop's roof, in front: its upper edge
 EDGE = lambda x: 465 + 0.62 * (x - 437)           # the oden's blue roof, its upper edge (as painted from x 437 to 474)
@@ -147,7 +149,7 @@ def main():
         out[trunk] = by_lightness(ref, L2)[0]                                 # (its lighter half: the bough reads on the shade)
     cm = np.zeros((H, W), bool); cc = np.zeros((H, W, 3))
     cm[TREE_Y:TREE_Y + h, TREE_X:TREE_X + w] = al; cc[TREE_Y:TREE_Y + h, TREE_X:TREE_X + w] = out
-    cm &= ~front & ~roof
+    cm &= ~front                                                              # (in front of the oden's roof end, as the old tree was)
 
     # the power cut: the old tree's own change, by place (each channel's ratio, smoothed over its pixels)
     wt = ndi.gaussian_filter(old.astype(float), 6)
@@ -193,14 +195,16 @@ def main():
     # under its crown, down to the shop's roof, the lantern and the oden: its own leaves further in, in the crown's shade (the
     # same drawing, lower and darker, behind it), over the blue roof's left end with their leafy edge; no sky, no old leaves
     top = np.where(cm.any(0), np.argmax(cm, 0), H)
-    under = (xx >= 326) & (xx <= DEEP_X1) & (yy > top[None, :]) & (yy < 560) & ~cm & ~front & ~roof
+    under = (xx >= 326) & (yy > top[None, :]) & (yy < 560) & ~cm & ~front
     dm = np.zeros((H, W), bool); dc = np.zeros((H, W, 3))
     y0, x0 = TREE_Y + DEEP_DY, TREE_X + DEEP_DX
-    dm[y0:y0 + h, x0:x0 + w] = al; dc[y0:y0 + h, x0:x0 + w] = out * DEEP_SHADE
+    dm[y0:y0 + h, max(x0, 0):x0 + w] = al[:, max(0, -x0):]; dc[y0:y0 + h, max(x0, 0):x0 + w] = out[:, max(0, -x0):] * DEEP_SHADE
     deep = under & dm
-    hole = under & ~dm & ~roof                                                # (what its drawing leaves open there: its darkest leaves)
+    hole = under & ~dm & ~roof & (xx < 425)                                   # (what its drawing leaves open there: its darkest leaves)
     dark = np.percentile(cc[cm].reshape(-1, 3) @ [0.299, 0.587, 0.114], 5); dark_rgb = cc[cm][np.argmin(np.abs(cc[cm] @ [0.299, 0.587, 0.114] - dark))]
     dc[hole] = dark_rgb
+    shade = (1 - SHADOW[2] * np.clip((yy - SHADOW[0]) / (SHADOW[1] - SHADOW[0]), 0, 1))[..., None]
+    dc *= shade; cc *= shade
     for m in (deep, hole):
         city[m, :3] = dc[m]; city[m, 3] = 255
         unlit[m, :3] = dc[m] * ratio[m]; unlit[m, 3] = 255
