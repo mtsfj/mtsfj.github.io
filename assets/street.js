@@ -46,6 +46,10 @@
     return t;
   }
   function lateImg(img, src) { LATE.q.push(() => { img.src = src; }); }
+  // ---- the features' hooks: each feature (its own marked block near the end) adds its step to FEAT (called every frame
+  // with dt and the scene's clock, after the street's own systems, before the render) and its click test to CLICKS (asked
+  // first on a click on the street: true when it took the click) ----
+  const FEAT = [], CLICKS = [];
   function lateStart() { if (LATE.started) return; LATE.started = true; const q = LATE.q; LATE.q = []; for (const f of q) f(); }
   setTimeout(lateStart, 20000);
   function plane(src, x, y, w, h, z, opts) {
@@ -7621,7 +7625,7 @@
     }
     hanaDraw();
   }
-  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
+  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the sky by the hour (package 1: ciel-01..12, meteo-13). skyHours, from stepNight each frame: the far planes' night
   // and dawn (NRU's uNT, uDW, uDP, uSun: the layers' shaders paint them from their own lightness), the street's far pixels'
@@ -9050,10 +9054,24 @@
       fadeQuad.material.opacity = 1 - k; rain.renderOrder = rain2.renderOrder = 999;
       if (u >= 1) { FADE.done = true; scene.remove(fadeQuad); fadeQuad.geometry.dispose(); fadeQuad.material.dispose(); rain.renderOrder = rain2.renderOrder = 0; }
     }
+    for (const f of FEAT) f(dt, t);               // (the features' steps)
     if (WET.on) wetPass(t);
     renderer.render(scene, camera);
     if (visible && !reduced) raf = requestAnimationFrame(tick);
   }
+
+  // ==== feature: Rainbow Six Siege (R6) — its own block (FEAT, CLICKS) ====
+  // ==== end of R6 ====
+  //
+  //
+  //
+  // ==== feature: Clair Obscur: Expedition 33 (E33) — its own block (FEAT, CLICKS) ====
+  // ==== end of E33 ====
+  //
+  //
+  //
+  // ==== feature: rooftop garden above Naruto (ROOF) — its own block, if it needs code ====
+  // ==== end of ROOF ====
 
   new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(hero);
   if (reduced) window.addEventListener('resize', () => frame());   // (no loop then: the title and the window follow a resize at once)
