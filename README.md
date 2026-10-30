@@ -40,6 +40,7 @@ Un `.fr`/`.com` à ~10 €/an chez n'importe quel registrar, puis Settings → P
 
 ## Référencement
 
+- IndexNow (Bing, Yandex, Seznam, Naver, et ce qui s'en nourrit : DuckDuckGo, Ecosia, Qwant) : la clé est le fichier `fc54a386d65d46f44c4b106c94b337c7.txt` à la racine ; après une mise en ligne, signaler les pages changées : `curl -s -X POST https://api.indexnow.org/indexnow -H 'Content-Type: application/json' -d '{"host":"mtsfj.github.io","key":"fc54a386d65d46f44c4b106c94b337c7","urlList":["https://mtsfj.github.io/"]}'`.
 - Chaque page a son titre, sa description, son URL canonique, ses aperçus de partage (Open Graph et Twitter, image 1200 × 630 : `og.png` pour l'accueil et le blog, `assets/og_*.jpg` pour les articles) et ses données structurées JSON-LD (accueil : site, profil, personne et publication ; blog : `Blog` et ses billets ; articles : `TechArticle`).
 - `sitemap.xml` (avec les images), `robots.txt`, `blog/feed.xml` (flux RSS), `site.webmanifest`.
 - Pour un nouveau billet : le mettre dans `sitemap.xml` et `blog/feed.xml`, avec son image de partage.
