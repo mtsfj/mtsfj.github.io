@@ -322,6 +322,7 @@ def main():
     leaves |= shoji_z & reg & (((Lc < np.nan_to_num(refL, nan=0) - 20) & near) | (Lc < np.nan_to_num(refL, nan=0) - 30))
     redo = leaves & shoji_z
     redo |= shoji_z & (yy >= R_[3] - 8) & (xx < SHOJI_X1) & ~np.isin(xx, WOOD_COLS)   # (the paper's last rows: down to its foot's line)
+    redo |= shoji_z & (np.abs(yy - R_[2]) <= 3) & ~np.isin(xx, WOOD_COLS)               # (and its middle rail, on its line on both doors)
     need_b = leaves | low | band; hole = leaves.copy()
     if os.environ.get('LEAVES'): np.save(os.environ['LEAVES'], leaves)
     src = first_clean(redo)
@@ -347,25 +348,28 @@ def main():
     # the foot), a rail at the foot
     wood = (slice(570, 676), slice(33, 43))
     wc, wu = np.median(cur[0][wood][:, :, :3].reshape(-1, 3), 0), np.median(cur[1][wood][:, :, :3].reshape(-1, 3), 0)
-    grain = (cur[0][wood][:, :, :3] - ndi.uniform_filter(cur[0][wood][:, :, :3], size=(1, 5, 1)))   # (its grain: along the wood)
+    gw = cur[1][570:676, 35:41, :3]                                           # (its grain, along the wood: the post's middle, unlit,
+    grain = np.clip((gw - ndi.uniform_filter(gw, size=(1, 5, 1))) * 1.4, -10, 10)   # no paper's glow on it)
     rng = np.random.default_rng(11)
     for y, x in zip(*np.where(low)):
         if x in WOOD_COLS:
-            sy = 610 + int((y - 610) % 66)
-            for L in out: L[y, x] = L[sy, x]                                  # (from the shoji as cleaned)
+            sy = 610 + int((y - 610) % 66)                                    # (from the shoji as cleaned; without the paper's
+            for L in out: L[y, x] = L[sy, x]                                  # glow on its edges: the unlit wood, at the lit level)
+            out[0][y, x, :3] = np.minimum(out[0][y, x, :3], out[1][y, x, :3] * (wc + 1) / (wu + 1))   # (never lighter)
             continue
         d0, d1 = y - R_[3][y, x], top[y, x] - y                              # (from the paper's foot, to the front's foot)
         door = 0 if x < 40 else 1; x0, x1, joints = DOORS[door]
         gy = grain[int((y * 7 + x * 3) % grain.shape[0]), int((x - x0) % grain.shape[1])]
-        if d0 < 4:                                                            # (the rail under the paper)
-            k, rim = 1.25, max(0.0, 1 - d0 / 2)
-        elif d1 <= 5:                                                         # (the rail at the foot)
-            k, rim = 1.1, 0.0
+        if d0 < 4:                                                            # (the rail under the paper, lit by it)
+            k, rim = 1.6, max(0.0, 1 - d0 / 2.5)
+        elif d1 <= 5:                                                         # (the rail at the foot, its top edge catching light)
+            k, rim = (1.7 if d1 > 4.5 else 1.35), 0.0
         else:
             depth = (d0 - 4) / max(d1 + d0 - 9, 1)
-            k = 0.95 - 0.35 * depth                                           # (darker toward the foot)
-            if x in joints or x == x0 or x == x1: k *= 0.45                   # (the joints, the panel's sides)
-            elif d0 < 5: k *= 0.6                                             # (the shade under the rail)
+            k = 1.35 - 0.4 * depth                                            # (darker toward the foot)
+            if x in joints or x == x0 or x == x1: k *= 0.35                   # (the joints, the panel's sides)
+            elif x - 1 in joints or x - 1 == x0: k *= 1.3                     # (each board's edge by its joint, lit)
+            if d0 < 5: k *= 0.55                                              # (the shade under the rail)
             rim = 0.0
         paper_c = out[0][int(R_[3][y, x]) - 3, x, :3]
         c_city = np.clip(wc * k + gy * 0.8 + rim * 0.35 * (paper_c - wc * k), 0, 255)
@@ -388,7 +392,7 @@ def main():
         i = bins[y, x]; cand = np.where(bins[vy_, vx_] == i)[0]; j = cand[(y * 31 + x * 17) % len(cand)]
         glow = sum(np.exp(-((x - (a + b) / 2) ** 2) / (2 * 6.0 ** 2)) for a, b, _ in DOORS) * (0.25 + 0.75 * (fb[y, x] > 0.2) * (1 - fb[y, x]))
         for li in (0, 1):
-            c_ = prof[li][i] + 0.7 * res[li][vy_[j], vx_[j]]
+            c_ = prof[li][i] + 0.5 * res[li][vy_[j], vx_[j]]
             if li == 0: c_ = c_ + glow * np.array([70.0, 34.0, 8.0])
             out[li][y, x, :3] = np.clip(c_, 0, 255); out[li][y, x, 3] = 255
         out[2][y, x] = 0; out[3][y, x] = 0
