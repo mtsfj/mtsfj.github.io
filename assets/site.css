@@ -426,3 +426,8 @@ a.chip:hover { border-color: var(--rule-2); color: var(--paper); }
 .shelf-plate { display: inline-block; margin: 0 0 0 18px; padding: 3px 8px; font: 10px var(--pixel); letter-spacing: .04em; color: var(--paper-dim); background: rgba(255,255,255,.05); border: 1px solid var(--rule); border-radius: 4px; transform: translateY(6px); }
 .library .shelf-unit + .shelf-unit { margin-top: 26px; }
 
+/* ---- touch screens: the small links and sliders get a finger-sized target (24 px and more), the same look: the extra padding is taken back by a negative margin ---- */
+@media (pointer: coarse) {
+  .site-bar nav a, .site-bar .brand { padding: 3px 4px; margin: -3px -4px; }
+  input[type=range] { padding-block: 6px; margin-block: -6px; }
+}

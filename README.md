@@ -17,6 +17,7 @@ assets/                 couches de l'illustration et sprites (WebP sans perte ; 
 sw.js                   le cache du navigateur : les fichiers versionnés (?v=) gardés d'une visite à l'autre
 tools/png2webp.py       PNG → WebP sans perte, pixel pour pixel vérifié, références mises à jour
 tools/fuji_aux.py        le masque exact du cerisier dans les calques du Fuji et le bord de sa pente (assets/fuji_aux.webp), pour l'aube
+tools/cherry_gaps.py     voile les petits trous du cerisier (fuji_tree.webp) : le soir identique, plus de pois bleus le matin ni de taches la nuit
 tools/night_far_clean.py nettoie night_far.webp (pixels de la rue mis à tort dans un plan lointain : lampadaire, bord du feuillage, barrière)
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage

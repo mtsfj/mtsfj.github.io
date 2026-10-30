@@ -33,7 +33,7 @@
 {"@context":"https://schema.org","@type":"TechArticle","headline":"Pinductor: POMDP world models from language-model priors, an interactive walkthrough","description":"Pinductor: learning POMDP world models from observations with language-model priors. An interactive walkthrough of the NeurIPS 2026 paper.","url":"https://mtsfj.github.io/articles/pinductor.html","mainEntityOfPage":"https://mtsfj.github.io/articles/pinductor.html","image":"https://mtsfj.github.io/assets/og_pinductor.jpg","inLanguage":"en","author":{"@type":"Person","@id":"https://mtsfj.github.io/#me","name":"Mathis Fajeau","url":"https://mtsfj.github.io/"},"publisher":{"@type":"Person","@id":"https://mtsfj.github.io/#me","name":"Mathis Fajeau","url":"https://mtsfj.github.io/"},"isPartOf":{"@id":"https://mtsfj.github.io/blog/#blog"},"isBasedOn":{"@id":"https://arxiv.org/abs/2605.13740","@type":"ScholarlyArticle","name":"Pinductor: Learning POMDP World Models from Observations with Language-Model Priors","url":"https://arxiv.org/abs/2605.13740"},"about":["world models","POMDP","program induction","large language models"]}
 </script>
 <link rel="stylesheet" href="../assets/fonts/fonts.css">
-<link rel="stylesheet" href="../assets/site.css?v=21">
+<link rel="stylesheet" href="../assets/site.css?v=22">
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/Newsreader-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/IBMPlexSans-400-latin.woff2" crossorigin>
 <style>
@@ -431,7 +431,7 @@ L(Pᵐ; D) = Σ_τ Σ_t E_{s ~ Q_{t+1}ᵐ} [ log Oᵐ(o_{t+1} | s, a_t) ]</div>
     <div class="eyebrow">7 · Method, step 3</div>
     <h2>Execution becomes debugging feedback</h2>
     <p>The next prompt does not carry only a scalar score. It summarises where the candidate failed: execution errors, trajectory segments with large observation distance, reward and termination mismatches, and the particle filter's health. The block below is assembled live from the filter lab's current state, in the format of the refinement prompt reproduced in Appendix I.</p>
-    <div class="fb" id="fb-text"></div>
+    <div class="fb" id="fb-text" tabindex="0" role="region" aria-label="Feedback"></div>
     <p style="margin-top:14px">The prompt also carries a <b>query-by-committee</b> signal. The true transition is unavailable, so the transition programs proposed so far act as a committee: for a belief particle s and an action a, each votes for a next state, and disagreement is the normalised vote entropy</p>
     <div class="eq"><span class="tag">eq. 9</span>VE(s, a) = −(1 / log|C|) · Σ_y (V_{s,a}(y) / |C|) · log(V_{s,a}(y) / |C|)</div>
     <p>computed on belief particles visited during filtering, for realised and counterfactual actions. Contexts with high entropy are shown to the model together with the observation and the action, so it sees where the current family of programs is unsure. The signal is diagnostic only; it never enters the selection objective.</p>

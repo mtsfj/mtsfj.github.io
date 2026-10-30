@@ -28,10 +28,10 @@
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <meta name="twitter:image:alt" content="A pixel-art street at dusk, in the rain, Mount Fuji at its end. The home page of Mathis Fajeau, PhD student at Inria Bordeaux.">
 <link rel="stylesheet" href="assets/fonts/fonts.css">
-<link rel="stylesheet" href="assets/site.css?v=21">
+<link rel="stylesheet" href="assets/site.css?v=22">
 <link rel="preload" as="image" href="assets/layer_city_off.webp?v=58" crossorigin="anonymous" fetchpriority="high">
 <link rel="preload" as="script" href="assets/three.min.js">
-<link rel="preload" as="script" href="assets/street.js?v=5">
+<link rel="preload" as="script" href="assets/street.js?v=6">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
 <meta name="theme-color" content="#0f0c22">
@@ -224,6 +224,7 @@
   .hero-nav { position: absolute; z-index: 1; top: 22px; right: clamp(20px, 6vw, 96px); display: flex; gap: 26px; font-size: 15px; }
   .hero-nav a { text-decoration: none; color: var(--paper); text-shadow: 0 1px 8px rgba(15,12,34,.9); }
   .hero-nav a:hover { color: var(--pink); }
+  @media (pointer: coarse) { .hero-nav a { padding: 4px; margin: -4px; } }   /* (a finger-sized target, the same look) */
   .scroll-hint { position: absolute; z-index: 1; right: clamp(20px, 6vw, 96px); bottom: 34px; font-family: var(--pixel); font-size: 11px; color: var(--paper-dim); }
 
   .drives { margin: 30px 0 0; } .drives p { margin: 0; max-width: var(--measure); }
@@ -620,7 +621,7 @@
 <script src="assets/walls.js?v=5"></script>
 
 <script src="assets/three.min.js"></script>
-<script src="assets/street.js?v=5"></script>
+<script src="assets/street.js?v=6"></script>
 <script src="assets/analytics.js?v=3" defer></script>
 </body>
 </html>
