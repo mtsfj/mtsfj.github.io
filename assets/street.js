@@ -7432,7 +7432,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=28') }, tMirror: { value: tex('assets/wet_mirror.webp?v=22') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=29') }, tMirror: { value: tex('assets/wet_mirror.webp?v=23') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },

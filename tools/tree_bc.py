@@ -265,6 +265,8 @@ def main():
     fc[fill & ~tex_m] = dark_rgb * DEEP[2] / 0.62; fm = fill
 
     # what shows again: rebuilt from the painting
+    wet = np.zeros((H, W, 3)); wet[600:] = load('wet.webp', 'RGB', at=BEFORE)  # (the wet ground's map, at its place: copied with the rest)
+    cur = cur + [wet]
     out = [L.copy() for L in cur]
     def copy(dst, sy, sx):
         for L, O in zip(out, cur): L[dst] = O[sy, sx]
@@ -375,7 +377,7 @@ def main():
         c_city = np.clip(wc * k + gy * 0.8 + rim * 0.35 * (paper_c - wc * k), 0, 255)
         c_unl = np.clip(wu * k + gy * 0.5, 0, 255)
         out[0][y, x, :3] = c_city; out[0][y, x, 3] = 255; out[1][y, x, :3] = c_unl; out[1][y, x, 3] = 255
-        out[2][y, x] = 0; out[3][y, x] = 0
+        out[2][y, x] = 0; out[3][y, x] = 0; out[4][y, x] = 0
     hole &= ~low
     # the stone pillar's foot: from its own stone round it
     gd = lambda: np.concatenate([out[0][:, :, :3], out[1][:, :, :3]], -1)
@@ -409,6 +411,22 @@ def main():
     for y, x in zip(*np.where(pv & (yy < bot + 16))):
         g = sum(np.exp(-((x - (a + b) / 2) ** 2) / (2 * 5.0 ** 2)) for a, b, _ in DOORS) * np.exp(-(y - bot[y, x]) / 6.0)
         out[0][y, x, :3] = np.clip(out[0][y, x, :3] + g * np.array([42.0, 20.0, 4.0]), 0, 255)
+    # the wet ground there: the plain wet asphalt of the same pavement further down the street (not the puddle painted at the
+    # shop's door next to it: its still water), the step and the doors dry
+    plain = pave & ~pv & (cur[4][:, :, 0] > 0) & (cur[4][:, :, 2] < 10) & (xx >= 165) & (yy < KERB_Y(xx))   # (past the shop's puddle)
+    py_, px_ = np.where(pv); left_ = np.ones(len(py_), bool)
+    for a in np.linspace(0.0005, 0.03, 300):
+        k = 1 / (1 + a * (py_ - VPG[1])); sy = np.round(VPG[1] + (py_ - VPG[1]) * k).astype(int); sx = np.round(VPG[0] + (px_ - VPG[0]) * k).astype(int)
+        v = left_ & (sy >= 0) & (sx >= 0) & (sx < W); v[v] &= plain[sy[v], sx[v]]
+        out[4][py_[v], px_[v]] = cur[4][sy[v], sx[v]]; left_ &= ~v
+        if not left_.any(): break
+    if left_.any(): out[4][py_[left_], px_[left_]] = np.median(cur[4][plain], 0)
+    out[4][band | shoji_z | low] = 0
+    # (the shop's puddle next to it: the bush's leaves' holes in it filled with its own water, from the nearest of it)
+    pud = (out[4][:, :, 2] >= 10) & (xx >= 100) & (xx < 170) & (yy >= 740)
+    gaps = ndi.binary_fill_holes(ndi.binary_closing(pud, structure=np.ones((3, 3)), iterations=3)) & ~pud & ~pv & (xx >= 100) & (xx < 170) & (yy >= 740)
+    _, (iy, ix) = ndi.distance_transform_edt(~pud, return_indices=True)
+    out[4][gaps] = out[4][iy[gaps], ix[gaps]]
     rest = hole & ~pave
     if rest.any(): inpaint(out, rest, reg, guide=gd())
     # the dojo's top board under the crown (its lit edges between the old leaves): along its own lines, from its visible bits
@@ -425,7 +443,7 @@ def main():
             else: continue
             break
 
-    city, unlit, nf, sun = out
+    city, unlit, nf, sun = out[:4]
 
     # the power cut: the old tree's own change there, by place
     old_all = crown_old | bush_old
@@ -445,6 +463,12 @@ def main():
                 break
     left = crown_old & ~cm & ~dm & ~bm & ~fm & ~(need | need_f | seen) & ~(xx < 4) & ~(wall & lit)
     if os.environ.get('LEFT'): np.save(os.environ['LEFT'], left)
+    save(out[4][600:], 'wet.webp', 'RGB')
+    # the water's mirror line by the dojo: where its front meets the ground (its foot), the reflections of the doors about it
+    mir = np.asarray(Image.open(io.BytesIO(subprocess.run(['git', 'show', f'{BEFORE}:assets/wet_mirror.webp'], cwd=ROOT, capture_output=True, check=True).stdout)).convert('RGB')).copy()
+    for x in range(0, 110):
+        ym = FRONT_FOOT(x) - 560; mir[0, x, 0] = int(ym); mir[0, x, 1] = int((ym - int(ym)) * 256)
+    save(mir.astype(float), 'wet_mirror.webp', 'RGB')
     save(city, 'layer_city_off.webp', 'RGBA'); save(unlit, 'street_unlit.webp', 'RGBA')
     save(nf, 'night_far.webp', 'RGB'); save(sun, 'street_sun.webp', 'RGB')
     print('crown', int(cm.sum()), '| behind it', int(dm.sum()), '| bush', int(bm.sum()), '| wall rebuilt', int(need.sum()),
