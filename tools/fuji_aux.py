@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""assets/fuji_aux.webp: what the hours' shader must know of the far layers' box (376, 66, 640 x 640), pixel for pixel.
+"""assets/fuji_aux.webp: what the hours' shader must know of the far layers' box (320, 66, 696 x 640), pixel for pixel.
 
     python3 tools/fuji_aux.py        (again after any change to fuji_night.webp or fuji_tree.webp)
 
@@ -25,6 +25,8 @@ from scipy import ndimage as ndi
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BOX = (376, 66)
+LEFT = 320                             # (the image starts here: 56 px of the street's own mountain left of the layer, carried on
+                                       # behind the left tree by tools/left_tree_trim.py; its box in street.js: uFjAuxR)
 
 
 def main():
@@ -102,10 +104,22 @@ def main():
     pockets = op & ~canopy & ~like & closed & ~ndi.binary_dilation(~closed, iterations=2)
     tree |= pockets
 
-    out = np.zeros((H, W, 4), np.uint8); out[:, :, 3] = 255
-    out[:, :, 0] = np.where((tree | (ft[:, :, 3] > 128)) & ~like, 255, 0)
-    out[:, :, 2] = np.where(under, 255, 0)
-    out[:, :, 1] = np.where(rim & ~tree, np.clip(np.round(inner[None, :] * 255), 1, 255), 0)
+    PAD = BOX[0] - LEFT                                                  # (the street's own mountain left of the layer: its rim too)
+    out = np.zeros((H, W + PAD, 4), np.uint8); out[:, :, 3] = 255
+    city = np.asarray(Image.open(os.path.join(ROOT, 'assets/layer_city_off.webp')).convert('RGBA')).astype(float)
+    nfar = np.asarray(Image.open(os.path.join(ROOT, 'assets/night_far.webp')).convert('L'))
+    o = out[:, PAD:]
+    o[:, :, 0] = np.where((tree | (ft[:, :, 3] > 128)) & ~like, 255, 0)
+    o[:, :, 2] = np.where(under, 255, 0)
+    o[:, :, 1] = np.where(rim & ~tree, np.clip(np.round(inner[None, :] * 255), 1, 255), 0)
+    # the street's own mountain (night_far 160) left of the layer and over its first two columns (its seam): its rim, the same rule
+    for x in range(LEFT, BOX[0] + 2):
+        col = (nfar[BOX[1]:BOX[1] + H, x] == 160) & (city[BOX[1]:BOX[1] + H, x, 3] > 30)
+        if not col.any(): continue
+        y0 = int(np.argmax(col)); Lc = city[BOX[1]:BOX[1] + H, x, :3] @ [0.299, 0.587, 0.114] / 255
+        inn = float(np.median(Lc[y0 + 4:y0 + 9]))
+        for y in range(y0, y0 + 4):
+            if Lc[y] > inn + 0.05: out[y, x - LEFT, 1] = max(int(out[y, x - LEFT, 1]), int(np.clip(round(inn * 255), 1, 255)))
     Image.fromarray(out).save(os.path.join(ROOT, 'assets/fuji_aux.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
     print('cherry px', int((out[:, :, 0] > 0).sum()), '| rim px', int((out[:, :, 1] > 0).sum()), '| rock-like', int(like.sum()), 'of which under the tree layers', int(under.sum()), '| pockets', int(pockets.sum()))
 
