@@ -35,6 +35,7 @@ A = lambda p: os.path.join(ROOT, 'assets', p)
 BEFORE = '6c8530a'                   # (the layers as they were, the pole whole)
 ZONE = (985, 0, 1071, 100)           # x0, y0, x1, y1: taken back from BEFORE first
 X0, X1 = 1025, 1063                  # the pole's columns (its lit left edge .. its rim)
+OUTLINE = 2                          # (its dark outline left of its lit edge, against the sky and the roof on its left)
 APEX, DOME, LIP = 50, 7, 4           # the cap: its top, its dome's rows, its sleeve's rows
 SRC = 106                            # the pole's clean rows, copied up from here (under the old hardware's two bands, 92-93 and 102-104)
 JOIN = 96                            # the first row of the pole left as it is
@@ -68,8 +69,8 @@ def main():
         l[y0:y1, x0:x1 + 1] = 0; l[:JOIN, X0 - 1:X1 + 1] = 0                       # (not the house's lit edge, x 1064)
     # the cylinder, from the cap down to JOIN
     top = APEX + DOME + LIP
-    for y in range(top, JOIN):
-        for l, s in zip(L, src): l[y, X0:X1 + 1] = s[SRC + y - top, X0:X1 + 1]
+    for y in range(top, JOIN):                                                   # (its dark outline on the left too, OUTLINE columns,
+        for l, s in zip(L, src): l[y, X0 - OUTLINE:X1 + 1] = s[SRC + y - top, X0 - OUTLINE:X1 + 1]   # as below: it meets the roof)
     res = []
     for l, s in zip(L[:2], src[:2]):
         col = s[:, X0:X1 + 1, :3]; level = col[SRC:SRC + 8].mean(0); r = np.zeros_like(col)
