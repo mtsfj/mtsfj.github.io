@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
-"""The window at the top left, above the dojo: its glass clean again, its frame whole.
+"""The window at the top left, above the dojo: the painter's own window again.
 
     python3 tools/dojo_window.py      (after tools/tree_bc.py; it takes its zone back from commit BEFORE each time, so it
                                        can be run again)
 
-Over the tree in front of the dojo the house's upper window shows (x 0..40, y 0..37): its glass carried diagonal red
-planks from x 19 on (the wall's boards running into it), and the wall's planks, redrawn toward their vanishing point
-when the old foliage's shadows were taken off, ran over its frame (x 40..52). Its glass is now the painter's own clean
-glass of its left part (x 0..18) carried on to its frame, column for column, row for row (two panes, the painter's
-mullion between them); its frame (the dark mullion,
-its lit strip) the painter's again, from FRAME_AT, where the boards stop at it. Over the tree only (each row down to the
-tree's top there). In layer_city_off, street_unlit, night_far and street_sun. Needs git, Pillow, numpy.
+Over the tree in front of the dojo the house's upper window shows: the painter's sliding window, half open (a pane of
+glass at its left, the warm room seen through its opening, the second pane, its dark casing; x 0..65). When the wall's
+boards were redrawn toward their vanishing point (the old foliage's shadows taken off) they ran over its casing and its
+second pane, and its opening lost its room. It is the painter's again, pixel for pixel, as it was before the tree was
+changed (ORIG), in each column down to the new tree's top there (its first leaf: a dark pixel the tree's change put
+there, joined to the crown's mass below); the tree stays in front of it. Its casing's right edge (x 65) is where the
+redrawn boards begin. In layer_city_off, street_unlit, night_far and
+street_sun. Needs git, Pillow, numpy.
 """
 import io
 import os
@@ -20,12 +21,10 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
-BEFORE = '45c5cb5'                   # (the layers as they were: the glass striped, the frame overrun)
-FRAME_AT = '8d4ca3c'                 # (the frame whole: before the wall's boards were redrawn)
-ZONE = (0, 0, 53, 38)                # x0, y0, x1, y1: the window over the tree
-GLASS = (0, 19, 40)                  # the clean glass's columns (x0 .. x1 - 1), the striped glass's (x1 .. x2 - 1)
-FRAME = (40, 53)                     # the frame's columns (the mullion, its lit strip, the boards' end)
-TOP = 37                             # the last row over the tree (the tree's top at these columns: y 38..42)
+BEFORE = '45c5cb5'                   # (the layers as they were: the boards over the window)
+ORIG, TREE = '8d4ca3c^', '8d4ca3c'   # (the painter's window, before the tree was changed; the tree's change)
+ZONE = (0, 0, 66, 60)                # x0, y0, x1, y1: the window and its casing, down into the tree's top
+LEAF = 45                            # (a leaf: darker than this, where the tree's change put a pixel)
 
 
 def load(p, mode='RGBA', at=None):
@@ -39,15 +38,21 @@ def save(arr, p, mode):
 
 def main():
     names = (('layer_city_off.webp', 'RGBA'), ('street_unlit.webp', 'RGBA'), ('night_far.webp', 'RGB'), ('street_sun.webp', 'RGB'))
+    x0, y0, x1, y1 = ZONE
+    o, t = load('layer_city_off.webp', 'RGBA', ORIG)[y0:y1, x0:x1], load('layer_city_off.webp', 'RGBA', TREE)[y0:y1, x0:x1]
+    dark = (np.abs(o - t).sum(2) > 0) & (t[..., :3] @ [0.299, 0.587, 0.114] < LEAF)
+    leaf = np.zeros_like(dark); todo = [(y1 - y0 - 1, x) for x in range(x1 - x0) if dark[-1, x]]   # (the crown: from the zone's foot up)
+    while todo:
+        y, x = todo.pop()
+        if 0 <= y < y1 - y0 and 0 <= x < x1 - x0 and dark[y, x] and not leaf[y, x]:
+            leaf[y, x] = True; todo += [(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)]
+    top = [int(np.argmax(leaf[:, x])) if leaf[:, x].any() else y1 - y0 for x in range(x1 - x0)]   # (the tree's top, each column)
     for n, m in names:
-        l, b, f = load(n, m), load(n, m, BEFORE), load(n, m, FRAME_AT)
-        x0, y0, x1, y1 = ZONE
+        l, b, w = load(n, m), load(n, m, BEFORE), load(n, m, ORIG)
         l[y0:y1, x0:x1] = b[y0:y1, x0:x1]
-        g0, g1, g2 = GLASS
-        for x in range(g1, g2): l[:TOP + 1, x] = b[:TOP + 1, g0 + (x - g1) % (g1 - g0)]   # (the clean glass carried on)
-        l[:TOP + 1, FRAME[0]:FRAME[1]] = f[:TOP + 1, FRAME[0]:FRAME[1]]                    # (the frame as the painter left it)
+        for x in range(x1 - x0): l[y0:y0 + top[x], x0 + x] = w[y0:y0 + top[x], x0 + x]
         save(l, n, m)
-    print('window: glass x', GLASS[1], '..', GLASS[2] - 1, 'from x', GLASS[0], '..', GLASS[1] - 1, '| frame x', FRAME, 'from', FRAME_AT)
+    print('window: the painter\'s, down to the tree (rows', min(top), '..', max(top), ')')
 
 
 if __name__ == '__main__':
