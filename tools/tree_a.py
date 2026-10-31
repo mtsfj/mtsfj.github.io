@@ -24,7 +24,7 @@ from scipy import ndimage as ndi
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
-BEFORE = 'aa383bc'
+BEFORE = 'c8de52b'
 SRC = os.path.join(ROOT, 'tools', 'src', 'tree_a.jpg')
 GRID, PHASE = 5.12, (4.25, 4.25)                  # the source's pixel grid (200 pixels across) and its offset
 MIRROR = False                                    # (its trunk on the left: in the little alley behind the drinks shop, out of sight)

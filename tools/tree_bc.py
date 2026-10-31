@@ -26,7 +26,7 @@ from scipy import ndimage as ndi
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
-BEFORE = 'aa383bc'
+BEFORE = 'c8de52b'
 SRC = os.path.join(ROOT, 'tools', 'src', 'tree_bc.jpg')
 X_MAX = 326                                        # its zone: left of the drinks shop's tree (tools/tree_a.py)
 GRID = 2.37                                        # the source's pixel (in its pixels)
