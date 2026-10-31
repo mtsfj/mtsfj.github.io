@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
-"""The eave under Kirua (the left house's roof edge, right end): its gutter's downpipe.
+"""The eave under Kirua (the left house's roof edge, right end): shortened, and its gutter's downpipe.
 
     python3 tools/kirua_gutter.py      (after tools/tree_a.py and tools/tree_bc.py; it takes its zone back from
                                         commit BEFORE each time, so it can be run again)
 
-The eave runs on past the house's corner (x 325) into the sky, its gutter closed by the painter's own end cap at x 357.
-Kirua sits on that eave, his feet swinging over it: his two legs, in every frame, cover x 326..353 down to y 226, so a
-downpipe from anywhere along it would stand under a boot and read as a third shin. The gutter drains near its very end,
-just inboard of its cap and past where his boots reach at rest: a short outlet with a lit collar, a drop, a swan neck
-back toward the house along the street's line (45 degrees here, a clean one-for-one stair, lit from the sky above on its
-upper side), and the pipe down the house's end wall against its corner (the corner's lit arris kept), held by three
-clamps; at the low roof in front of it a shoe kicks it toward the street and pours on that roof (a wet mark there). Its
-metal is the gutter's own: each pixel takes the colour of a pixel of the gutter, in each layer the same pixel and its
-mark in street_sun too (so the power cut, the red night and the hours read it as they read the gutter: a sunset rim
+The eave ran on past the house's corner (x 325) into the sky as far as x 357. It now stops a short overhang past the
+corner (EAVE_END), closed by the painter's own end (its last columns, the gutter's cap: END, carried back along the eave's
+line, each column on the eave's rows there); what it covered is sky again (transparent; 0 in night_far and street_sun,
+as round it). The gutter drains at that end, straight down: a collecting box under its last stretch, wider than the
+pipe, and the pipe down the house's end wall against its corner (the corner's lit arris kept), held by two clamps about
+a metre apart; at the low roof in front of it a shoe kicks it toward the street and pours on that roof (a splash plate
+and a wet mark down its corrugations). Kirua sits on that corner, his boots over the end, in front of the pipe's top.
+Its metal is the gutter's own: each pixel takes the colour of a pixel of the gutter, in each layer the same pixel and
+its mark in street_sun too (so the power cut, the red night and the hours read it as they read the gutter: a sunset rim
 stays a sunset rim and fades with the evening like the gutter's own), chosen by where it lies across the pipe (the side
 toward the house dark, toward the open sky lit, the gutter's rim on that edge), in steady runs, with a few of the
-gutter's specular dashes; a collar at each bend. Where the street's lights reach the wall beside it (the red night's
+gutter's specular dashes; a collar at each joint. Where the street's lights reach the wall beside it (the red night's
 patch, x 299..324, y 340..422), its side toward the wall takes most of that light. In layer_city_off, street_unlit,
 night_far (0, the street's) and street_sun. Needs git, Pillow, numpy.
 """
@@ -29,11 +29,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
 BEFORE = '6c8530a'                   # (the layers as they were, the eave untouched)
 ZONE = (296, 196, 372, 492)          # x0, y0, x1, y1: taken back from BEFORE before anything is drawn
-GUTTER = (330, 356)                  # the gutter's columns past the corner, where its colours are taken
-BOX = (348, 355, 6)                  # the collecting box (shuusuiki): its columns, its rows under the gutter's underside
-DROP = (352, 252)                    # the drop's foot, where the swan neck starts (its axis)
+GUTTER = (330, 356)                  # the gutter's columns past the corner (as painted), where its colours are taken
+EAVE_END = 336                       # the eave's last column now (it ran on to x 357): a short overhang past the corner
+END = (352, 357)                     # the painter's own end of the eave (its last columns, the gutter's cap), moved back to it
+BOX = (324, 332, 6)                  # the collecting box (shuusuiki): its columns, its rows under the gutter's underside
 RUN_X = 328                          # the pipe's axis down the wall (its columns 326..330, against the corner; its arris x 322..325)
-NECK = (275, 329)                    # where the swan neck meets it: its last row, its axis there
 FOOT = 455                           # the run's last row, at the low roof's corner; then a shoe turns in over that roof and pours on it
 CLAMPS = (318, 393)                  # the clamps (first of their two rows), about a metre apart
 EDGE = lambda x: 452 + 1.46 * (x - 326)   # the low roof's far edge right of the corner (the cherry behind it, above)
@@ -60,38 +60,42 @@ def main():
     H, W = city.shape[:2]
     rng = np.random.default_rng(SEED)
 
-    # the gutter's own pixels, past the corner: binned by their light (dark body, mid, lit, specular)
-    gy, gx = np.where(city[:, GUTTER[0]:GUTTER[1] + 1, 3] == 255); gx = gx + GUTTER[0]
+    # the gutter's own pixels, past the corner (as painted): binned by their light (dark body, mid, lit, specular)
+    gy, gx = np.where(B[0][:, GUTTER[0]:GUTTER[1] + 1, 3] == 255); gx = gx + GUTTER[0]
     keep = (gy >= 200) & (gy <= 250); gy, gx = gy[keep], gx[keep]
-    lum = city[gy, gx, :3] @ [0.299, 0.587, 0.114]
+    lum = B[0][gy, gx, :3] @ [0.299, 0.587, 0.114]
     q = np.quantile(lum, [0.4, 0.75, 0.93])
     BIN = {'dark': lum < q[0], 'mid': (lum >= q[0]) & (lum < q[1]), 'lit': (lum >= q[1]) & (lum < q[2]), 'spec': lum >= q[2]}
     PICK = {k: np.flatnonzero(v) for k, v in BIN.items()}
-    under = {x: int(np.where(city[200:260, x, 3] == 255)[0].max()) + 200 for x in range(BOX[0], BOX[1] + 1)}   # (the gutter's underside)
+
+    # the eave, shortened: past EAVE_END sky again; its last columns the painter's end, each moved back along the eave's line
+    # (its rows there: the eave's top edge falls a pixel a column, its band 13 rows deep)
+    top = {x: int(np.where(B[0][190:260, x, 3] > 0)[0].min()) + 190 for x in range(326, END[1] + 1)}
+    for l in L: l[top[EAVE_END] - 4:top[END[1]] + 16, EAVE_END + 1:END[1] + 2] = 0
+    for x in range(EAVE_END - (END[1] - END[0]), EAVE_END + 1):
+        xs, d = x + END[1] - EAVE_END, top[x + END[1] - EAVE_END] - top[x]
+        for l, b in zip(L, B): l[top[x] - 3:top[x] + 16, x] = b[top[x] - 3 + d:top[x] + 16 + d, xs]
+    under = {x: (top[x] + 12 if x >= 326 else round(top[326] + 12 - 1.03 * (326 - x))) for x in range(BOX[0], BOX[1] + 1)}   # (its underside)
 
     # the pipe, row by row: (y, x, role, lane); roles across the pipe from the house side; a lane is what keeps its tone
-    # (a column of the upright parts, a strip along the swan neck)
+    # (a column of the pipe, a row of the box)
     px = []
-    VERT, DIAG = ('dark', 'dark', 'mid', 'lit', 'rim'), ('rim', 'lit', 'mid', 'dark', 'dark', 'dark', 'mid')   # (lit from the sky above)
+    VERT = ('dark', 'dark', 'mid', 'lit', 'rim')
     ybox = {}
     for x in range(BOX[0], BOX[1] + 1):                                         # the box under the gutter: its lit lip, its face, its
         for k in range(BOX[2]):                                                  # dark sides and underside, wider than the pipe
             role = 'rim' if k == 0 else 'dark' if k == BOX[2] - 1 or x in (BOX[0], BOX[1]) else 'lit' if k == 1 else 'mid'
             px.append((under[x] + 1 + k, x, role, ('b', x, k)))
         ybox[x] = under[x] + BOX[2]
-    for i, x in enumerate(range(DROP[0] - 2, DROP[0] + 3)):                     # the drop, from the box's underside
-        for y in range(ybox[x] + 1, DROP[1]): px.append((y, x, VERT[i], ('v', x)))
-    for y in range(DROP[1], NECK[0] + 1):                                        # the swan neck, one for one
-        a = DROP[0] - (y - DROP[1])
-        for i, x in enumerate(range(a - 3, a + 4)): px.append((y, x, DIAG[i], ('d', i)))
-    for y in range(NECK[0] + 1, FOOT + 1):                                       # down the wall: its rim only against the sky
-        for i, x in enumerate(range(RUN_X - 2, RUN_X + 3)):
+    y0p = ybox[RUN_X] + 1                                                        # (the pipe's first row, under the box's middle)
+    for i, x in enumerate(range(RUN_X - 2, RUN_X + 3)):                          # down the wall from the box: its rim only against the sky
+        for y in range(ybox[x] + 1, FOOT + 1):
             role = VERT[i] if VERT[i] != 'rim' else ('sun' if B[0][y, RUN_X + 3, 3] == 0 else 'mid')
             px.append((y, x, role, ('v', x)))
     for y in range(FOOT + 1, FOOT + 4):                                          # the shoe, turned in over the low roof
         a = RUN_X - (y - FOOT)
         for i, x in enumerate(range(a - 2, a + 3)): px.append((y, x, 'mid' if VERT[i] == 'rim' else VERT[i], ('s', i)))
-    collars = (DROP[1], NECK[0] + 1, FOOT + 1)                                    # (a lit ring at each bend)
+    collars = (y0p + 1, FOOT + 1)                                                # (a lit ring at each joint)
 
     # each pixel a gutter pixel, its lane in steady runs; a rare specular dash on the rim where it is against the sky
     run = {}
@@ -99,7 +103,7 @@ def main():
         r = run.get(lane)
         if r is None or r[1] <= 0 or r[2] != y - 1 or r[3] != role:
             if role == 'sun':                                                    # (the sunset's rim against the sky, warmer up high)
-                b = 'spec' if rng.random() < 0.85 - 0.6 * (y - NECK[0]) / (FOOT - NECK[0]) else 'lit'
+                b = 'spec' if rng.random() < 0.85 - 0.6 * (y - y0p) / (FOOT - y0p) else 'lit'
             else: b = ('spec' if rng.random() < 0.1 else 'lit') if role == 'rim' else role
             r = [PICK[b][rng.integers(len(PICK[b]))], int(rng.integers(8, 21) if role == 'rim' else rng.integers(3, 9)), y, role]
         s = PICK['lit'][rng.integers(len(PICK['lit']))] if y in collars and role != 'dark' else r[0]
@@ -121,7 +125,7 @@ def main():
     e = np.maximum(0, B[0][:, 318:325, :3] - B[1][:, 318:325, :3]).mean(1)       # (its share: lit minus unlit beside the corner)
     lit = B[3][:, 321:325, 0].max(1) > 0
     for y, x, role, lane in px:
-        if x <= RUN_X - 1 and NECK[0] < y <= FOOT and lit[y]:
+        if x <= RUN_X - 1 and y0p < y <= FOOT and lit[y]:
             city[y, x, :3] = np.minimum(255, city[y, x, :3] + (1.0 if x == RUN_X - 2 else 0.6) * e[y]); sun[y, x] = 255
 
     # under the shoe's mouth, on the low roof: a small splash plate (the roof's lit edge's colours), and a wet streak
