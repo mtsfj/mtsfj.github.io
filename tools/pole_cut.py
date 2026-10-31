@@ -11,13 +11,13 @@ the pole running off it as it did; on a 16:9 window the cap shows under the menu
 the house on its right beginning at its own lit edge (x 1064), nothing to invent behind it. Its top is
 the cap the concrete poles wear: a short sleeve one pixel wider than the pole each side (LIP rows), a low dome over it
 (DOME rows), a line of shadow under the sleeve. Each pixel of the cap is shaded from its normal: round its axis as the
-pole is (its lit left edge, its dark body, its rim from the shops' red), from above by the sky (blue, lighter on the left
+pole is (its lit left edge, its dark body, its rim from the shops' red, which does not reach so high), from above by the sky (blue, lighter on the left
 where the pole's light comes from), in a few stepped bands with the pole's own grain on them, its outline on the sky by
 coverage. Under it, the pole's own cylinder: its clean rows from under the old hardware (SRC) copied up, their fine grain
 kept and their slow change down the pole levelled at what it is there (in the street and in the power cut alike: the
-red night reads the two), so it is one pole from the cap down; the rim's red, which grows toward the street, fading a
-little upward as it does down the pole. A band round it under the cap, the two thin conduits on its face running under
-it to the cap. In
+red night reads the two), so it is one pole from the cap down; the rim's red (the shops' light from below), dying out
+over a few rows above where the old hardware began. A band round it some way under the cap holds the two thin conduits on its face,
+which end there. In
 layer_city_off, street_unlit (each from its own pixels), night_far (0, the street's) and street_sun (the sun on the rim,
 carried up; not on the dome's top); what goes is the sky in all four (transparent, 0). The pole's occlusion for what
 moves behind it (COCC in assets/street.js) starts at its top. Needs git, Pillow, numpy.
@@ -39,11 +39,12 @@ APEX, DOME, LIP = 50, 7, 4           # the cap: its top, its dome's rows, its sl
 SRC = 106                            # the pole's clean rows, copied up from here (under the old hardware's two bands, 92-93 and 102-104)
 JOIN = 96                            # the first row of the pole left as it is
 TREND = 40                           # (the rows under it that give each column its slow change: above the lamp's arm)
-RIM, RIM_TOP = (1060, 1063), 0.75    # its rim's columns; how much of its red is left at the top
-BAND = 4                             # a band round the pole, this many rows under the cap
+RIM, RIM_FADE = (1060, 1063), (84, 92)   # its rim's columns; the rows over which the shops' red on it dies out going up (none above)
+BAND = 20                            # a band round the pole, this many rows under the cap (clear of the house's roof line, y 66)
 SKY = np.array([27., 36., 69.])      # (what faces the sky here: the house's coping, y 66-68)
 LIT = np.array([64., 61., 105.])     # (the pole's lit left edge)
 CREST = np.array([35., 44., 82.])    # (the sky's light on a crest: the house's coping's top)
+CONDUITS = ((1038, 1040), (1051, 1054))   # the two thin conduits up its face (their columns)
 TRANSFO = (988, 0, 1064, 66)         # the transformer, its brackets, the hardware above the house's roof (x0, y0, x1, y1)
 
 
@@ -76,12 +77,15 @@ def main():
             a, b = max(SRC, y - 4), min(SRC + TREND, y + 5); r[y] = col[y] - col[a:b].mean(0)
         res.append(r)
         for y in range(top, JOIN): l[y, X0:X1 + 1, :3] = np.clip(level + r[SRC + y - top], 0, 255)
-        floor = col[SRC:SRC + JOIN - top, RIM[0] - X0:RIM[1] - X0 + 1].min(0)
+        floor = col[SRC:SRC + JOIN - top, RIM[0] - X0 - 2:RIM[0] - X0].mean((0, 1))   # (the pole's dark body beside the rim)
         for y in range(top, JOIN):
-            k = RIM_TOP + (1 - RIM_TOP) * (y - top) / (JOIN - 1 - top)
+            k = float(np.clip((y - RIM_FADE[0]) / (RIM_FADE[1] - RIM_FADE[0]), 0, 1))
             v = l[y, RIM[0]:RIM[1] + 1, :3]; l[y, RIM[0]:RIM[1] + 1, :3] = floor + (v - floor) * k
-    # a band round the pole under the cap (its lit top, its shadow): the two conduits up its face run under it to the cap
+    # a band round the pole under the cap (its lit top, its shadow): the two conduits up its face end at it (the pole's body
+    # above it, plain up to the cap)
     for l in L[:2]:
+        for a, b in CONDUITS:
+            for y in range(top, top + BAND): l[y, a:b + 1, :3] = l[y, 1045, :3]
         l[top + BAND, X0:X1 + 1, :3] = np.minimum(255, l[top + BAND, X0:X1 + 1, :3] * 1.25 + 5)
         l[top + BAND + 1, X0:X1 + 1, :3] *= 0.55
         for x, e in ((X0 - 1, X0), (X1 + 1, X1)):                                # (it stands a pixel proud of the pole each side)
