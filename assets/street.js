@@ -4204,9 +4204,14 @@
     return [700 + (Math.random() * 2 - 1) * hw, y, 0];
   }
 
-  // ---- cover the hero with the image (like object-fit: cover), centred on the street ----
+  // ---- cover the hero with the image (like object-fit: cover), centred on the street. On a computer's window (landscape,
+  // 900 px wide or more) the whole scene shows: the hero takes the full width at the scene's own ratio, nothing cut (on a
+  // window wider than 16:9 the road's foot goes under the fold, a little scroll away); phones keep the cover and the pan ----
   const view = { cx: IW * 0.5, cy: IH * 0.5, w: IW, h: IH };
   function resize() {
+    const whole = innerWidth >= 900 && innerWidth > innerHeight * 1.2;
+    hero.classList.toggle('whole', whole);
+    if (whole) hero.style.height = Math.round(hero.clientWidth * IH / IW) + 'px'; else hero.style.removeProperty('height');
     const w = hero.clientWidth, h = hero.clientHeight;
     renderer.setSize(w, h, false);
     const s = Math.max(w / IW, h / IH);

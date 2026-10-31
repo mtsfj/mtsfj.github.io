@@ -49,6 +49,9 @@
 
   .hero { position: relative; height: 100svh; min-height: 540px; overflow: hidden; background: var(--night-deep) url(data:image/webp;base64,UklGRmoBAABXRUJQVlA4IF4BAADwBwCdASowABsAPrVInksnJCKhqrgN+OAWiWIAtPYi8j07fIin6I6CFjbOuV1/HelPXn1CNPU4/Wi67AL1zb0qwxSCz5JInwAA/vbwddqFDj70M1LvCREuuDCTH2qq2IBzxyRJ78d9W05g4YINol1y3dh498RL4FQ9Sj1rew+BuHgVV1wP60SVFrjw3+q0h9yU0SNv2dGXwSG2WyOQa6hwRXqc9sYRr/0UdL+hkHaujeO2DLMH5O3JhYfoLgtOFSbUE5lR4Cq44zO9kVNKN6exjtxOEm9l1hZm9sjCOyo2b9+fuU2qpTmEtowPabeM76P6PXfF+kEQZnB7rrRDz77efRB6/DAe6UIZG80820RVpXycWa9+oGhh/Scod2e1Xfa0v456TRKWiRp5U+hE7ve8+zZOPFyeuczup1vB9XAXehMUMYraofHtie2wWNz/L8hkbGvLL8mqJvyRxp8AAA==) center 55% / cover no-repeat; }
   .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+  @media (min-width: 900px) and (min-aspect-ratio: 6/5) { .hero { height: calc(100vw * 816 / 1456); min-height: 0; } }   /* a computer: the whole scene (the script sets it to the pixel) */
+  .hero.whole { min-height: 0; }
+  .hero.whole::after { height: 7%; }   /* (the foot's fade kept short: the road shows whole) */
   .hero { touch-action: pan-y; }   /* a horizontal drag pans the street (script), a vertical one scrolls the page */
   .hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 26%; background: linear-gradient(to top, var(--night-deep) 0, rgba(15,12,34,.55) 14%, rgba(15,12,34,.18) 50%, rgba(15,12,34,0)); pointer-events: none; }
   .pc { position: fixed; inset: 0; z-index: 1000; display: none; align-items: center; justify-content: center; background: rgba(8,6,20,.55); backdrop-filter: blur(2px); }
