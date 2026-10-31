@@ -23,7 +23,6 @@ tools/left_tree_trim.py  abaisse l'arbre de gauche sous le toit de l'oden (sa pr
 tools/cherry_gaps.py     voile les petits trous du cerisier (fuji_tree.webp) : le soir identique, plus de pois bleus le matin ni de taches la nuit
 tools/night_far_clean.py nettoie night_far.webp (pixels de la rue mis à tort dans un plan lointain : lampadaire, bord du feuillage, barrière)
 tools/kirua_gutter.py    la descente de la gouttière sous Kirua : boîte de collecte, col de cygne, tuyau contre l'angle, colliers, dauphin sur le toit bas, au métal de la gouttière dans chaque calque
-tools/kirua_board.py     la planche de Kirua appuyée sur son dos, la queue calée dans la gouttière (elle tenait presque debout sur la pente)
 tools/pole_cut.py        raccourcit le poteau de droite sous son transformateur (retiré) : chapeau de béton, collier, fût recopié du sien ; son occultation (COCC) depuis son sommet
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
