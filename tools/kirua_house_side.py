@@ -8,9 +8,9 @@ The painter had, where the two houses meet, the dojo's house's corner in shadow 
 drain into (x 137..140, from under the upper eave); boards redrawn over the wall had covered them (they ran out into the
 sky between the two roofs). They are his again (JUNCTION, from OLD), in each layer, the new tree's leaves still in front.
 
-Kirua's front runs to its own vanishing point (FVP: where its eave and the painter's own boards right of the small window
-meet, a little under the street's). Left of that window its boards had been redrawn toward the street's (VP), across
-his: they are his again, each pixel the painter's board on its own ray to FVP (a different pixel of that board for each
+Kirua's front runs to the painter's vanishing point for these houses (FVP: his boards right of the small window, his
+small window's head and sill run to it, his eave within 2 degrees; a little left of and above the street's). Left of that
+window its boards had been redrawn toward the street's (VP), across his: they are his again, each pixel the painter's board on its own ray to FVP (a different pixel of that board for each
 column, back and forth, so that his grain and contrast stay), taken from his boards right of the window
 (SRC_X, his stains of old foliage taken off first: a pixel much darker or lighter than the median along its ray nearby
 takes that median), the board a whole number of boards over (FRONT_DTHETA) where its ray finds none. The front goes up
@@ -40,16 +40,17 @@ JUNCTION = (129, 30, 141, 330)       # x0, y0, x1, y1: the painter's corner shad
 SIDE = (141, 158)                    # Kirua's house's end wall: its columns; its front corner at the second
 SIDE_TOP, SIDE_FOOT = 84, 430        # (from under its roof's end, as far down as it goes behind the tree)
 SIDE_F = 0.66                        # its shade: one tone all over (a flat wall, as deep as the front)
-FVP = (718.0, 669.0)                 # Kirua's front's vanishing point (its eave's and the painter's boards')
+FVP = (700.0, 615.0)                 # Kirua's front's vanishing point: the painter's for these houses (his boards, his small
+                                     # window's head and sill run to it; his eave within 2 degrees)
 FRONT_TOP = (162, 86)                # its front's top, under the eave: the ray to FVP through this point (the owner's line)
 FRONT_X = (158, 325)                 # (its columns, the downpipe past them)
 SRC_X = (278, 325)                   # the painter's own boards, right of the small window
+SAMPLE_W = 47                        # (taken from these first columns of them)
 FRONT_FOOT = 430                     # (as far down as its front is rebuilt, behind the tree)
-FRONT_DTHETA = 0.0171                # its boards' spacing seen from FVP (rad)
+FRONT_DTHETA = 0.0199                # its boards' spacing seen from FVP (rad)
 EAVE_SHADE = (0.72, 3)               # (the eave's shadow on its top: this dark against the eave, gone over that many rows)
 WINDOW = (246, 250, 278, 360)        # (the small window's box: its frame and glass in it left as they are)
 REACH, OFF, PASSES = 14, 0.16, 2     # (a stain: darker or lighter by this than the median along its ray, this many columns either way)
-UP = 'win_z7_up'                     # (the small window's light, a sprite)
 TUFT, CLEAR = 800, 135               # (a tuft of leaves alone in the air: fewer pixels than this, over this row)
 STAIN_Y, STAIN_X = 400, 300          # (black stains on the front taken off above this row and left of this column: the
                                      # awning's roof below, the downpipe's clamps right)
@@ -108,29 +109,7 @@ def main():
     out = flood(box & ~win, [(y, x) for y in range(wy0, wy1) for x in (wx0, wx1 - 1)] + [(y, x) for x in range(wx0, wx1) for y in (wy0, wy1 - 1)])
     win = box & ~out                                                        # light in the glass is the window's)
 
-    # the small window to the corner's vanishing point too: each column's head and sill on the rays to FVP through its
-    # middle column's (the painter had them run to the street's), its column moved row for row, in every layer and in its
-    # light (assets/win_z7_up.webp, the same rows)
-    import json
-    s_ = open(A('street.js'), encoding='utf-8').read(); i0 = s_.index('const ASSETS = ') + len('const ASSETS = ')
-    cu = json.JSONDecoder().raw_decode(s_[i0:])[0]['comps'][UP]
-    up = load('win_z7_up.webp', 'RGBA', BEFORE); upn = up.copy()
-    cols = [x for x in range(wx0, wx1) if win[:, x].any()]
-    hs = {x: int(np.where(win[:, x])[0].min()) for x in cols}; ss = {x: int(np.where(win[:, x])[0].max()) for x in cols}
-    xc = cols[len(cols) // 2]
-    nh = {x: int(round(fray(hs[xc], xc, x))) for x in cols}; ns = {x: int(round(fray(ss[xc], xc, x))) for x in cols}
-    src = [l.copy() for l in L]; neww = np.zeros((H, W), bool)
-    for x in cols:
-        sx = x - cu['x']
-        if 0 <= sx < up.shape[1]: upn[:, sx] = 0
-        for y in range(nh[x], ns[x] + 1):
-            yo = int(round(hs[x] + (y - nh[x]) * (ss[x] - hs[x]) / max(1, ns[x] - nh[x])))
-            for k, l in enumerate(L): l[y, x] = src[k][yo, x]
-            neww[y, x] = True
-            if 0 <= sx < up.shape[1] and 0 <= y - cu['y'] < up.shape[0] and 0 <= yo - cu['y'] < up.shape[0]: upn[y - cu['y'], sx] = up[yo - cu['y'], sx]
-    force = win & ~neww                                                     # (where it was and is no more: boards)
-    win = neww
-    save(upn, 'win_z7_up.webp', 'RGBA')
+    force = np.zeros((H, W), bool)
 
     # the junction: the painter's corner shadow and shared downpipe
     jx0, jy0, jx1, jy1 = JUNCTION
@@ -209,7 +188,7 @@ def main():
             got = None
             for k in [0] + [s * j for j in range(1, 12) for s in (1, -1)]:
                 a = th(x, y) - k * FRONT_DTHETA
-                pts = [(int(round(FVP[1] + np.tan(a) * (xs - FVP[0]))), xs) for xs in range(*SRC_X)]
+                pts = [(int(round(FVP[1] + np.tan(a) * (xs - FVP[0]))), xs) for xs in range(SRC_X[0], SRC_X[0] + SAMPLE_W)]
                 pts = [p for p in pts if 0 <= p[0] < H and good[p]]
                 if pts:                                                      # (its grain kept: along the board, a different pixel
                     n = len(pts); i = (SRC_X[0] - 1 - x) % (2 * n)          # of his for each column, mirrored from his edge, back and forth)
