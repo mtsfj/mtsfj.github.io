@@ -41,9 +41,9 @@ ZONE = (0, 0, 140, 200)              # x0, y0, x1, y1: taken back from BEFORE; w
 WALL_X1 = 131                        # the wall's last column (its corner post past it)
 REFILL = (0, 0, 82, 80)              # the old window's part of the wall and its smudged edge, all boards again
 LEAF = 45                            # (a leaf: darker than this, where the tree's change put a pixel)
-VP = (718.0, 669.0)                  # the corner's vanishing point: the painter's own for these two houses (their boards,
-                                     # their eaves; a little under the street's), the boards, the window's head and sill run to it
-CLEAN, DTHETA = (82, 108, 2, 66), 0.0113    # the wall's clean boards (x0, x1, y0, y1); the boards' spacing seen from VP (rad)
+VP = (700.0, 615.0)                  # the painter's vanishing point for the houses on the left (his boards, his small window's
+                                     # head and sill, the far house's ledges all run to it): the boards, the window's head and sill
+CLEAN, DTHETA = (82, 108, 2, 66), 0.0123    # the wall's clean boards (x0, x1, y0, y1); the boards' spacing seen from VP (rad)
 XL, XR, Y0, H = 8, 122, 0, 100       # the whole window: its first and last columns, its top's row at XL, its height there
 UNIT = ((10, 0, 522, 12), (0, 12, 531, 99), (70, 97, 471, 371), (42, 242, 496, 426))   # in the reference (x0, y0, x1, y1): its
                                      # hood's ridge, its hood (tiles, eaves, the shadow under them), its frame and panes, its balcony
