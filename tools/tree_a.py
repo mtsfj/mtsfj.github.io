@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The tree between the drinks shop and the oden (A), replaced: a new tree behind the shop, in front of the oden's roof.
 
-    python3 tools/tree_a.py      (reads the layers as they were before any change to that tree, at commit aa383bc;
+    python3 tools/tree_a.py      (reads the layers as they were before any change to that tree, at commit c8de52b;
                                   then tools/fuji_aux.py)
 
 The old tree rose 170 px over the roofs. The new one (tools/src/tree_a.jpg, a pixel-art tree drawn on white) stands where
