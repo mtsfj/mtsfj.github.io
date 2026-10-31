@@ -31,27 +31,43 @@ sous la baie, plus large qu'elle : son arête claire, sa face, son dessous sombr
 deux marches (SILL_SH). Toutes ses lignes sur des rayons vers FVP ou d'aplomb, au pixel près, sans flou. Le bois prend
 le couchant et les heures comme les planches ; le verre et le dormant, non.
 
-La pièce, sans grain mais avec ses détails (les tranches des livres, le Fuji de l'affiche, les feuilles de la plante,
-la lampe, le pot à crayons, l'enceinte, le dossier de la chaise, les plis du voilage, la lumière des spots, la ville de
-l'écran) : son image adoucie d'abord à sa pleine taille, selon ses bords (SMOOTH : un petit filtre médian là où elle a
-des bords, un médian plus large puis une moyenne là où elle est lisse, ses murs et la lumière des spots en dégradés
-doux), puis chaque pixel de vitre pris sur son morceau du plan de la vitre (SUB x SUB points, ses colonnes de plus en
-plus serrées vers FVP, le meneau et la traverse à part) : la couleur de la moitié de ses points s'il y en a une, sinon
-la plus proche de leur moyenne (NPAL tons de l'image, et ses touches, ACCENTS : les violets de l'écran, le blanc de la
-neige, le vert de la plante, le bleu et le rouge des livres), sans tramage ; un point seul de moins de MIN_REG pixels
-prend le ton qui l'entoure, ses fines lignes gardées (en diagonale aussi). Par-dessus, redessinés nets d'après la
-géométrie de l'image et de sa couleur (LINES) : la corniche, le cadre de l'affiche, le bord de l'écran, le dessus du
-bureau, les planches et les montants de l'étagère, deux plis du voilage (des lignes d'un pixel au moins, le long des
-rayons vers FVP ou d'aplomb), le Fuji, sa neige et la pagode de l'affiche (des formes). Le voilage tombe derrière le
-meneau. Éteinte, comme elle est dans les calques : le verre sombre du peintre (celui de sa petite fenêtre), les grandes
-formes de la pièce à peine lisibles dedans (leur clarté seule, les taches de moins de MIN_OFF pixels fondues, l'écran
-éteint). Allumée, le sprite de la fenêtre d'habitation (le comp win_z7_up de assets/street.js, celui de la petite
-fenêtre : allumée longtemps, éteinte un moment, éteinte dans la coupure de courant, rouge la nuit rouge, la télé
-certains soirs) : la pièce ramenée à mi-chemin de la fenêtre éclairée de la rue (la moyenne et l'écart de chaque canal
-de la lumière de la petite fenêtre, au commit BEFORE ; à mi-chemin : ses couleurs encore à elle), l'écran (SCREEN) et
-les touches gardant leur teinte, l'arête de l'appui sous la vitre prise dans la lumière de la pièce (SILL_LIT). L'arbre
-reste devant tout : ses feuilles (trouvées comme dans tools/kirua_house_side.py) ne sont pas touchées, et la lumière
-n'est que là où elles s'ouvrent sur GLOW_MIN pixels ensemble.
+La pièce, une petite boîte derrière l'ouverture, vue par l'œil de la rue (une perspective à un point, FVP au centre :
+ce qui longe la rue court vers FVP, ce qui entre dans la maison est horizontal, ce qui est vertical d'aplomb ; la baie,
+haute de WIN_M[0] et large de WIN_M[1], en donne l'échelle). Son mur du fond, au droit du tableau du fond, est de face :
+l'image du propriétaire y est posée sans biais (ses horizontales horizontales, ses verticales d'aplomb), assez grande
+pour couvrir toute la baie jusqu'à l'appui, jusque dans l'angle de l'appui et du tableau du fond (PPM pixels de l'image
+par mètre) ; son angle avec la façade caché par le tableau (CORNER : l'étagère de l'image reste derrière lui), l'affiche
+et l'écran au milieu, le bureau et ses tiroirs dans l'angle de l'appui, la lampe derrière le voilage (LAMP) ; sa
+corniche contre le plafond, CEIL au-dessus du haut de la baie. Le plafond, vu d'en dessous, entre le haut de la baie
+(un rayon) et celui du mur (horizontal), plus large vers le montant proche : le ton de l'image, plus sombre vers la
+fenêtre (CEIL_TONES), son spot net au-dessus du cône de lumière de l'image sur le mur, sa lueur en quelques marches
+(SPOTS). Pas de sol : l'appui le cache. Le voilage reste sur le plan de la vitre, dans la partie près du meneau (INNER :
+le côté gauche de l'image, le long des rayons vers FVP), devant la pièce et derrière le meneau. Sa profondeur : une
+ligne sombre douce au plafond contre le mur (JUNCTION), le mur plus sombre dans l'angle de la fenêtre (CORNER_AO) ;
+allumée, le mur plus sombre loin de la lampe (FALL) et toute la pièce un peu plus sombre que les arêtes claires
+(ROOM_DIM) ; l'ombre du linteau et du chambranle sur elle.
+
+Sans grain mais avec ses détails (le Fuji et la pagode de l'affiche, l'écran et sa ville, l'enceinte et la pile de
+livres sur le bureau, ses tiroirs, les plis du voilage, la lumière des spots) : son image adoucie d'abord à sa pleine
+taille, selon ses bords (SMOOTH : un petit filtre médian là où elle a des bords, un médian plus large puis une moyenne
+là où elle est lisse, ses murs et la lumière des spots en dégradés doux), puis chaque pixel de vitre pris sur ce qu'il
+voit (SUB x SUB points sur le voilage, le mur ou le plafond) : la couleur de la moitié de ses points s'il y en a une,
+sinon la plus proche de leur moyenne (NPAL tons de l'image, et ses touches, ACCENTS : les violets de l'écran, le blanc
+de la neige, le vert de la plante, le bleu et le rouge des livres), sans tramage ; un point seul de moins de MIN_REG
+pixels prend le ton qui l'entoure, ses fines lignes gardées (en diagonale aussi). Par-dessus, redessinés nets d'après
+la géométrie de l'image et de sa couleur (LINES) : la corniche, le cadre de l'affiche, le bord de l'écran, le dessus du
+bureau, son dessous et son caisson, les planches et les montants de l'étagère (sur le mur : horizontaux ou d'aplomb),
+deux plis du voilage (le long des rayons vers FVP), le Fuji, sa neige et la pagode de l'affiche, la poignée du tiroir
+(des formes) ; le spot au plafond. Éteinte, comme elle est dans les calques : le verre sombre du peintre (celui de sa
+petite fenêtre), les grandes formes de la pièce à peine lisibles dedans (leur clarté seule, les taches de moins de
+MIN_OFF pixels fondues, l'écran éteint). Allumée, le sprite de la fenêtre d'habitation (le comp win_z7_up de
+assets/street.js, celui de la petite fenêtre : allumée longtemps, éteinte un moment, éteinte dans la coupure de
+courant, rouge la nuit rouge, la télé certains soirs) : la pièce ramenée à mi-chemin de la fenêtre éclairée de la rue
+(la moyenne et l'écart de chaque canal de la lumière de la petite fenêtre, au commit BEFORE ; à mi-chemin : ses
+couleurs encore à elle), l'écran (SCREEN) et les touches gardant leur teinte, l'arête de l'appui sous la vitre prise
+dans la lumière de la pièce (SILL_LIT). L'arbre reste devant tout : ses feuilles (trouvées comme dans
+tools/kirua_house_side.py) ne sont pas touchées, et la lumière n'est que là où elles s'ouvrent sur GLOW_MIN pixels
+ensemble.
 
 Là où la petite fenêtre était et que la baie ne couvre pas (sous l'appui), les planches du peintre, refaites comme
 tools/kirua_house_side.py les refait : chaque pixel sa planche sur son rayon vers FVP, prise dans ses planches à droite
@@ -82,7 +98,25 @@ XL, XR = 215, 311                    # la baie : les colonnes des bords de son o
 KH, KS = 36.59, 27.78                # son linteau et son appui : leurs rayons vers FVP, en planches (sur des joints du peintre)
 J = 6                                # la profondeur de l'ébrasement, en colonnes à XR
 HORN = 3                             # (l'appui dépasse de l'ouverture de tant de colonnes de chaque côté)
-INNER = (0, 0, 1774, 887)            # la pièce (x0, y0, x1, y1, dans son image) : toute, son rideau à gauche
+INNER = (0, 0, 1774, 887)            # son image (x0, y0, x1, y1) posée sur le plan de la vitre, pour le voilage : son côté
+                                     # gauche (le voilage) tombe dans la partie près du meneau
+WIN_M = (1.6, 2.4)                   # la baie en mètres (haute, large) : l'échelle de la pièce derrière elle
+CEIL = 0.15                          # le plafond de la pièce, au-dessus du haut de la baie (m)
+PPM = 435                            # (pixels de son image par mètre sur le mur du fond : elle couvre la baie jusqu'à
+                                     # l'appui, jusque dans l'angle du tableau du fond ; l'écran y fait 0,74 m)
+CORNER = (1320, 150)                 # (x, y dans son image) : l'angle du mur du fond, de la façade et du plafond (sous la
+                                     # corniche) ; l'image de face, son côté gauche au fond de la pièce : l'affiche, l'écran,
+                                     # les tiroirs du bureau dans l'angle de l'appui, l'étagère derrière le tableau du fond
+LAMP = 590                           # (le x de la lampe dans l'image : derrière le voilage)
+SPOTS = ((1146, 0.15),)              # les spots du plafond : le x de leur cône dans l'image, leur distance au mur du fond (m)
+SPOT_R, GLOW_R = 0.05, 0.38          # (le rayon d'un spot, de sa lueur au plafond, m)
+CEIL_TONES = ((700, 100, 1050, 140), (700, 0, 1050, 6),     # le plafond, des boîtes de l'image : son ton contre le
+              (1131, 84, 1163, 92), (1110, 93, 1180, 100))  # mur, loin de lui (vers la fenêtre, à CEIL_FADE m), le
+CEIL_FADE = 1.0                                             # spot, sa lueur
+JUNCTION = (0.92, 0.85, 0.92)        # la ligne sombre du plafond contre le mur (ses trois rangées)
+CORNER_AO, AO_W = 0.12, 0.15         # le mur plus sombre dans l'angle de la fenêtre (sa part, sur tant de mètres)
+FALL, FALL_D = 0.1, 1.3              # allumée : le mur plus sombre loin de la lampe (sa part perdue à tant de mètres)
+ROOM_DIM = 0.9                       # allumée : la pièce un peu plus sombre que les arêtes claires, derrière la vitre
 MULLIONS = ((118 / 716, 144 / 716),)  # (u0, u1, en travers de la vitre) : son meneau, entre le rideau et la pièce
 TRANSOMS = ((234 / 344, 245 / 344, 0.0, 118 / 716),)   # (v0, v1, u0, u1) : sa traverse, devant le rideau
 SMOOTH = (3, 9, 10, 7, 10, 5)        # la pièce adoucie d'abord, à sa pleine taille, selon ses bords : là où elle en a, un
@@ -96,9 +130,11 @@ ACCENTS = (('ecran', (735, 548, 1045, 712), 'violet'), ('ecran_clair', (735, 548
            ('plante', (280, 345, 560, 700), 'vert'), ('livres_bleus', (1290, 170, 1680, 880), 'bleu'),
            ('livres_rouges', (1290, 170, 1680, 880), 'rouge'))
 SCREEN = (735, 548, 1045, 712)       # (x0, y0, x1, y1) : l'écran, sa lumière à lui
-LINES = [('h', (320, 146, 1285, 154)),                                                # la corniche
+LINES = [('h', (320, 146, 1285, 154)),                                                # la corniche, contre le plafond
          ('cadre', (862, 228, 1177, 512, 14)), ('cadre', (727, 545, 1047, 717, 10)),  # le cadre de l'affiche, le bord de l'écran
-         ('h', (448, 745, 1287, 757)),                                              # le dessus du bureau
+         ('h', (448, 745, 669, 757)), ('h', (932, 745, 1287, 757)),                 # le dessus du bureau (la chaise devant)
+         ('h', (932, 770, 1277, 777)), ('v', (1122, 772, 1134, 887)), ('v', (1240, 772, 1250, 887)),   # son dessous, son
+         ('forme', ([(1187, 822), (1213, 822), (1213, 831), (1187, 831)], (1187, 822, 1213, 831, 50))),  # caisson, sa poignée
          ('h', (1300, 148, 1690, 160)), ('h', (1300, 287, 1690, 297)), ('h', (1300, 427, 1690, 437)),
          ('h', (1300, 577, 1690, 587)), ('h', (1300, 737, 1690, 747)),             # les planches de l'étagère
          ('v', (1276, 145, 1300, 887)), ('v', (1665, 145, 1690, 887)),             # ses montants
@@ -107,8 +143,9 @@ LINES = [('h', (320, 146, 1285, 154)),                                          
          ('forme', ([(1018, 352), (1042, 327), (1068, 352)], (1033, 333, 1052, 347, 97))),   # sa neige
          ('forme', ([(1104, 445), (1104, 350), (1118, 334), (1132, 350), (1132, 445)], (1112, 380, 1125, 440, 50)))]   # la pagode
                                      # (dans l'image de la pièce) : redessinés nets par-dessus, chacun de la couleur de
-                                     # l'image sous lui, une ligne d'un pixel au moins (le long des rayons vers FVP, ou
-                                     # d'aplomb), un cadre en quatre lignes
+                                     # l'image sous lui, une ligne d'un pixel au moins (sur le mur du fond, horizontale ou
+                                     # d'aplomb ; sur le voilage, le long des rayons vers FVP ou d'aplomb), un cadre en quatre
+                                     # lignes
 SUB, MIN_REG, MIN_OFF = 4, 3, 30     # (points par pixel, de chaque côté ; un point de moins de tant de pixels, seul, prend le
                                      # ton qui l'entoure (ses fines lignes gardées) ; éteinte, une tache de moins de tant :
                                      # il n'en reste que les grandes formes)
@@ -278,10 +315,7 @@ def main():
         L[0][y, x] = src[0][ys, xs]; L[1][y, x] = [*(src[0][ys, xs, :3] * cut[y, x]), 255]
         L[2][y, x] = 0; L[3][y, x] = src[3][ys, xs]; n_b += 1
 
-    # la pièce : son image adoucie selon ses bords (SMOOTH), puis chaque pixel de vitre la couleur de la moitié de ses
-    # points sur le plan de la vitre s'il y en a une, sinon la plus proche de leur moyenne (le meneau et la traverse à part ;
-    # ses couleurs : NPAL, et ses touches), sans tramage ; un point seul de moins de MIN_REG pixels prend le ton qui
-    # l'entoure (ses fines lignes, d'un pixel de large mais longues, gardées)
+    # la pièce : son image adoucie selon ses bords (SMOOTH), ses couleurs (NPAL, et ses touches), sans tramage
     im0 = Image.open(REF).convert('RGB')
     fine = np.asarray(im0.filter(ImageFilter.MedianFilter(SMOOTH[0]))).astype(float)
     soft = np.asarray(im0.filter(ImageFilter.MedianFilter(SMOOTH[1])).filter(ImageFilter.BoxBlur(SMOOTH[2]))).astype(float)
@@ -302,18 +336,58 @@ def main():
     du, dv = 1 / (rx1 - rx0), 1 / (ry1 - ry0)
     bar = lambda u, v: any(m0 - du <= u < m1 + du for m0, m1 in MULLIONS) or \
         any(t0 - dv <= v < t1 + dv and u0 <= u < u1 for t0, t1, u0, u1 in TRANSOMS)
+    IH = R_.shape[0]
+
+    # derrière la vitre, une boîte vue par l'œil de la rue (FVP au centre : ce qui longe la rue y court, ce qui entre dans
+    # la maison est horizontal, ce qui est vertical d'aplomb), la façade à XF mètres de lui (la baie haute de WIN_M[0]) ;
+    # le mur du fond, au droit du tableau, de face (SW pixels par mètre, ZW mètres plus loin le long de la rue : la baie
+    # large de WIN_M[1]), son haut CEIL plus haut que celui de la baie : le plafond entre les deux, vu d'en dessous
+    XF = WIN_M[0] / (np.tan(KH * D) - np.tan(KS * D))
+    SW, SN = (FVP[0] - (XR + 0.5)) / XF, (FVP[0] - (XL - 0.5)) / XF
+    ZW = WIN_M[1] / (1 / SW - 1 / SN) / SW
+    WT = int(round(ray(KH, XR + 0.5) - CEIL * SW))                          # (la première rangée du mur, sous le plafond)
+    kz = lambda ys: (FVP[1] - (WT - 0.5)) / (FVP[1] - ys)                    # (au plafond : la distance à l'œil, en part
+    dc = lambda xs, ys: ((FVP[0] - xs) * kz(ys) - (FVP[0] - XR - 0.5)) / SW  # de celle du mur ; l'enfoncement dans la
+    dm = lambda xs: (XR + 0.5 - xs) / SW                                     # maison, m ; au mur, de même)
+    wall_xy = lambda xs, ys: (CORNER[0] - dm(xs) * PPM, CORNER[1] + (ys - (WT - 0.5)) / SW * PPM)   # (dans son image)
+    near_sec = lambda x: U(x) < MULLIONS[0][0]                                # (la partie près du meneau : le voilage)
+    glass_xy = lambda xs, ys: (rx0 + U(xs) * (rx1 - rx0), ry0 + V(xs, ys) * (ry1 - ry0))
+    tone = lambda bx: np.median(np.asarray(im0)[bx[1]:bx[3], bx[0]:bx[2]].reshape(-1, 3).astype(float), 0)
+    c_wall, c_far, c_spot, c_glow = (tone(b_) for b_ in CEIL_TONES)
+    spots = [((CORNER[0] - sx_) / PPM, sz_) for sx_, sz_ in SPOTS]
+    def ceiling(xs, ys):                                                     # (le plafond : plus sombre vers la fenêtre, la
+        d, z = dc(xs, ys), ZW * (1 - kz(ys))                                 # lueur des spots autour d'eux)
+        c = c_wall + (c_far - c_wall) * min(1.0, z / CEIL_FADE)
+        for sd, sz in spots:
+            c = c + (c_glow - c) * max(0.0, 1 - max(0.0, np.hypot(d - sd, z - sz) - SPOT_R) / (GLOW_R - SPOT_R)) ** 2
+        return c
+    def wall(ix, iy):                                                        # (le mur : son image, qui couvre toute la baie)
+        assert 0 <= ix < R_.shape[1] and 0 <= iy < IH, 'la pièce ne couvre pas la baie (PPM, CORNER)'
+        return R_[int(iy), int(ix)]
+
+    # chaque pixel de vitre : SUB x SUB points sur ce qu'il voit (le voilage sur le plan de la vitre, le mur du fond, le
+    # plafond) ; la couleur de la moitié de ces points s'il y en a une, sinon la plus proche de leur moyenne
+    q, scr, surf = {}, set(), {}
     sx0, sy0, sx1, sy1 = SCREEN
-    q, scr = {}, set()
     for (y, x) in zip(*np.where(cls == 7)):
-        pts = []
+        cols, pts = [], []
+        kind = 'rideau' if near_sec(x) else ('mur' if y >= WT else 'plafond')
         for a in range(SUB):
-            xs = x - 0.5 + (a + 0.5) / SUB; u = U(xs)
+            xs = x - 0.5 + (a + 0.5) / SUB
             for b in range(SUB):
-                v = V(xs, y - 0.5 + (b + 0.5) / SUB)
-                if 0 <= u < 1 and 0 <= v < 1 and not bar(u, v): pts.append((rx0 + u * (rx1 - rx0), ry0 + v * (ry1 - ry0)))
-        cs = np.array([R_[int(yr), int(xr)] for xr, yr in pts]) if pts else ip.mean(0)[None]
+                ys = y - 0.5 + (b + 0.5) / SUB
+                if kind == 'rideau':
+                    u, v = U(xs), V(xs, ys)
+                    if 0 <= u < 1 and 0 <= v < 1 and not bar(u, v):
+                        xr, yr = glass_xy(xs, ys); cols.append(R_[int(yr), int(xr)])
+                elif kind == 'mur':
+                    xr, yr = wall_xy(xs, ys); cols.append(wall(xr, yr)); pts.append((xr, yr))
+                else:
+                    cols.append(ceiling(xs, ys))
+        cs = np.array(cols) if cols else ip.mean(0)[None]
         ks = np.bincount(np.argmin(((cs[:, None, :] - pal[None]) ** 2).sum(2), 1))
         q[y, x] = int(ks.argmax()) if ks.max() >= len(cs) / 2 else int(np.argmin(((pal - cs.mean(0)) ** 2).sum(1)))
+        surf[y, x] = kind
         if pts and np.mean([sx0 <= xr < sx1 and sy0 <= yr < sy1 for xr, yr in pts]) >= 0.5: scr.add((y, x))
 
     def regions(q, least, keep=frozenset()):                                 # (les taches de moins de least pixels : le ton
@@ -340,21 +414,24 @@ def main():
         return q
     q = regions(q, MIN_REG)
 
-    # par-dessus, nettes, les grandes lignes de la pièce (LINES), chacune de la couleur de l'image sous elle
+    # par-dessus, nettes, les grandes lignes de la pièce (LINES), chacune de la couleur de l'image sous elle, sur ce qui
+    # la porte (le voilage, le mur) ; les spots, nets, au plafond
     near = lambda c: int(np.argmin(((pal - c) ** 2).sum(1)))
     med = lambda bx: np.median(R_[bx[1]:bx[3], bx[0]:bx[2]].reshape(-1, 3), 0)
-    gl = sorted(q); fu = lambda x_: (U(x_) * (rx1 - rx0) + rx0)
-    fv = lambda x_, y_: (V(x_, y_) * (ry1 - ry0) + ry0)
+    gl = [k for k in sorted(q) if surf[k] != 'plafond']
+    img = lambda k, xs, ys: glass_xy(xs, ys) if surf[k] == 'rideau' else wall_xy(xs, ys)
     lines = set()
     def paint(kind, bx, t):
         x0_, y0_, x1_, y1_ = bx
         for (y, x) in gl:
-            a_, b_ = fu(x - 0.5), fu(x + 0.5); c_, d_ = fv(x, y - 0.5), fv(x, y + 0.5)
-            if kind == 'h':                                                  # (le long d'un rayon : une rangée au moins)
-                if x0_ <= fu(x) < x1_ and (max(0, min(d_, y1_) - max(c_, y0_)) >= (d_ - c_) / 2 or c_ <= (y0_ + y1_) / 2 < d_):
+            cx, cy = img((y, x), x, y)
+            if kind == 'h':                                                  # (de travers : une rangée au moins)
+                c_, d_ = sorted((img((y, x), x, y - 0.5)[1], img((y, x), x, y + 0.5)[1]))
+                if x0_ <= cx < x1_ and (max(0, min(d_, y1_) - max(c_, y0_)) >= (d_ - c_) / 2 or c_ <= (y0_ + y1_) / 2 < d_):
                     q[y, x] = t; lines.add((y, x))
             elif kind == 'v':                                                # (d'aplomb : une colonne au moins)
-                if y0_ <= fv(x, y) < y1_ and (max(0, min(b_, x1_) - max(a_, x0_)) >= (b_ - a_) / 2 or a_ <= (x0_ + x1_) / 2 < b_):
+                a_, b_ = sorted((img((y, x), x - 0.5, y)[0], img((y, x), x + 0.5, y)[0]))
+                if y0_ <= cy < y1_ and (max(0, min(b_, x1_) - max(a_, x0_)) >= (b_ - a_) / 2 or a_ <= (x0_ + x1_) / 2 < b_):
                     q[y, x] = t; lines.add((y, x))
     def inside(poly, px, py):
         c_, j_ = False, len(poly) - 1
@@ -368,7 +445,7 @@ def main():
             poly, (sx0_, sy0_, sx1_, sy1_, pc) = bx
             t = near(np.percentile(np.asarray(im0)[sy0_:sy1_, sx0_:sx1_].reshape(-1, 3).astype(float), pc, axis=0))   # (l'image même)
             for (y, x) in gl:
-                if inside(poly, fu(x), fv(x, y)): q[y, x] = t; lines.add((y, x))
+                if inside(poly, *img((y, x), x, y)): q[y, x] = t; lines.add((y, x))
             continue
         if kind == 'cadre':                                                  # (un cadre : quatre lignes de sa couleur)
             x0_, y0_, x1_, y1_, e_ = bx
@@ -378,8 +455,24 @@ def main():
                 paint(k_, b2, t)
             continue
         paint(kind, bx, near(med(bx)))
+    for (y, x), k in surf.items():                                           # (un spot : les pixels dont le centre y tombe)
+        if k == 'plafond' and any(np.hypot(dc(x, y) - sd, ZW * (1 - kz(y)) - sz) < SPOT_R for sd, sz in spots):
+            q[y, x] = near(c_spot); lines.add((y, x))
     q = regions(q, MIN_REG, frozenset(lines))
     scr = {k for k in scr if k not in lines}
+
+    # sa profondeur : la ligne sombre du plafond contre le mur, le mur plus sombre dans l'angle de la fenêtre (éteinte
+    # et allumée) ; allumée, le mur plus sombre loin de la lampe, et toute la pièce un peu plus sombre que les arêtes
+    # claires
+    DEP = np.ones((H, W, 2))
+    d0 = dm(XR - J - 0.5)
+    for (y, x), k in surf.items():
+        if k == 'rideau': continue
+        if 0 <= y - (WT - 1) < 3: DEP[y, x] *= JUNCTION[y - (WT - 1)]
+        if k == 'mur':
+            DEP[y, x] *= 1 - CORNER_AO * max(0.0, 1 - (dm(x) - d0) / AO_W)
+            DEP[y, x, 1] *= 1 - FALL * min(1.0, abs(dm(x) - (CORNER[0] - LAMP) / PPM) / FALL_D)
+        DEP[y, x, 1] *= ROOM_DIM
 
     # ce qu'on en voit : la vitre que les feuilles ne cachent pas ; sa lumière où elles s'ouvrent sur GLOW_MIN pixels
     vis = (cls == 7) & ~front
@@ -436,13 +529,13 @@ def main():
             continue
         if c in (1, 8): col, sun = np.array(EDGE, float), 255
         elif c == 6: col, sun = np.array(FRAME, float), 0
-        elif c == 7: col, sun = OFF[y, x] * MUL[y, x, 0], 0
+        elif c == 7: col, sun = OFF[y, x] * MUL[y, x, 0] * DEP[y, x, 0], 0
         else: col, sun = face(c, x, y) * MUL[y, x, 0], 255
         L[0][y, x, :3] = col; L[1][y, x, :3] = col * cut[y, x]; L[0][y, x, 3] = L[1][y, x, 3] = 255
         L[2][y, x] = 0; L[3][y, x] = sun
         n_w += 1
     spr = np.zeros((H, W, 4))
-    for (y, x) in lit: spr[y, x] = [*(ON[y, x] * MUL[y, x, 1]), 255]
+    for (y, x) in lit: spr[y, x] = [*(ON[y, x] * MUL[y, x, 1] * DEP[y, x, 1]), 255]
     for (y, x) in edge: spr[y, x] = [*sill, 255]
 
     for (n, m), l in zip(names, L): save(l, n, m)
