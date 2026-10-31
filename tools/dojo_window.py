@@ -37,10 +37,10 @@ REF = os.path.join(ROOT, 'tools', 'src', 'dojo_window_ref.png')
 REF_GLASS = (245, 40, 457, 220)      # (in the reference: its panes' box, x0, y0, x1, y1, inside its frame)
 ZONE = (0, 0, 66, 60)                # x0, y0, x1, y1: the wall over the tree (the sprite's box too)
 LEAF = 45                            # (a leaf: darker than this, where the tree's change put a pixel)
-BOARD, WALL = (62, 46), 56          # (the boards come from BOARD columns along, whole numbers of boards: the first while it
+BOARD, WALL = (62, 46), 62          # (the boards come from BOARD columns along, whole numbers of boards: the first while it
 CLEAN = 108                          # stays on the clean boards, to column CLEAN, else the second; to column WALL, where the
                                      # redrawn boards begin clean)
-AT, SIZE, SLOPE = (14, 2), (24, 34), 0.9   # the window: its top left corner, its width and height (px), the wall's slope
+AT, SIZE, SLOPE = (10, 3), (30, 50), 0.9   # the window: its top left corner, its width and height (px), the wall's slope
 FRAME = 2                            # its outline's width (px); its mullion and its transoms one pixel
 MULL_U, BARS_V = 0.5, (0.33, 0.66)   # its mullion across (share of its width), its transoms down (share of its height)
 PAINTED = (246, 252, 284, 352)       # the window the painter drew on the left house (its frame's tones)
