@@ -15,7 +15,8 @@ where the pole's light comes from), in a few stepped bands with the pole's own g
 coverage. Under it, the pole's own cylinder: its clean rows from under the old hardware (SRC) copied up, their fine grain
 kept and their slow change down the pole levelled at what it is there (in the street and in the power cut alike: the
 red night reads the two), so it is one pole from the cap down; the rim's red, which grows toward the street, fading a
-little upward as it does down the pole. The two thin conduits on its face end under the cap, each in a small hood. In
+little upward as it does down the pole. A band round it under the cap, the two thin conduits on its face running under
+it to the cap. In
 layer_city_off, street_unlit (each from its own pixels), night_far (0, the street's) and street_sun (the sun on the rim,
 carried up; not on the dome's top); what goes is the sky in all four (transparent, 0). The pole's occlusion for what
 moves behind it (COCC in assets/street.js) starts at its top. Needs git, Pillow, numpy.
@@ -34,13 +35,14 @@ BEFORE = '6c8530a'                   # (the layers as they were, the pole whole)
 ZONE = (985, 0, 1071, 100)           # x0, y0, x1, y1: taken back from BEFORE first
 X0, X1 = 1025, 1063                  # the pole's columns (its lit left edge .. its rim)
 APEX, DOME, LIP = 74, 7, 4           # the cap: its top, its dome's rows, its sleeve's rows
-SRC = 96                             # the pole's clean rows, copied up from here (under the old hardware's last band)
+SRC = 106                            # the pole's clean rows, copied up from here (under the old hardware's two bands, 92-93 and 102-104)
 JOIN = 96                            # the first row of the pole left as it is
 TREND = 40                           # (the rows under it that give each column its slow change: above the lamp's arm)
 RIM, RIM_TOP = (1060, 1063), 0.75    # its rim's columns; how much of its red is left at the top
-CONDUITS = ((1038, 1040), (1051, 1054))   # the two thin conduits up its face (their columns)
+BAND = 4                             # a band round the pole, this many rows under the cap
 SKY = np.array([27., 36., 69.])      # (what faces the sky here: the house's coping, y 66-68)
 LIT = np.array([64., 61., 105.])     # (the pole's lit left edge)
+CREST = np.array([35., 44., 82.])    # (the sky's light on a crest: the house's coping's top)
 TRANSFO = (988, 0, 1064, 66)         # the transformer, its brackets, the hardware above the house's roof (x0, y0, x1, y1)
 
 
@@ -77,12 +79,14 @@ def main():
         for y in range(top, JOIN):
             k = RIM_TOP + (1 - RIM_TOP) * (y - top) / (JOIN - 1 - top)
             v = l[y, RIM[0]:RIM[1] + 1, :3]; l[y, RIM[0]:RIM[1] + 1, :3] = floor + (v - floor) * k
-    # the conduits end under the cap: the pole's body over their last rows, a small hood on each
+    # a band round the pole under the cap (its lit top, its shadow): the two conduits up its face run under it to the cap
     for l in L[:2]:
-        for a, b in CONDUITS:
-            for y in range(top, top + 3): l[y, a:b + 1, :3] = l[y, 1045, :3]
-            l[top + 3, a:b + 1, :3] = np.minimum(255, l[top + 5, a:b + 1, :3] * 1.6 + 4)
-            l[top + 4, a:b + 1, :3] = l[top + 4, a:b + 1, :3] * 0.6
+        l[top + BAND, X0:X1 + 1, :3] = np.minimum(255, l[top + BAND, X0:X1 + 1, :3] * 1.25 + 5)
+        l[top + BAND + 1, X0:X1 + 1, :3] *= 0.55
+        for x, e in ((X0 - 1, X0), (X1 + 1, X1)):                                # (it stands a pixel proud of the pole each side)
+            l[top + BAND:top + BAND + 2, x, :3] = l[top + BAND:top + BAND + 2, e, :3] * 0.8; l[top + BAND:top + BAND + 2, x, 3] = 255
+    for x, e in ((X0 - 1, X0), (X1 + 1, X1)):
+        for l in L[2:]: l[top + BAND:top + BAND + 2, x] = l[top + BAND:top + BAND + 2, e]
     # the cap
     prof = [l[top, X0:X1 + 1, :3].copy() for l in L[:2]]; sunp = L[3][top, X0:X1 + 1].copy()
     cx, r = (X0 + X1 + 1) / 2.0, (X1 - X0 + 1) / 2.0 + 1                         # (its axis; its radius, the sleeve's)
@@ -96,9 +100,8 @@ def main():
     def at(az):                                                                  # (the pole's column at azimuth az, -1 .. 1)
         return np.clip((az + 1) / 2 * (X1 - X0), 0, X1 - X0)
 
-    def round_it(i, az):
-        t = at(az); a = int(t); b = min(a + 1, X1 - X0); f = t - a
-        return prof[i][a] * (1 - f) + prof[i][b] * f
+    def round_it(i, az):                                                         # (the pole's own column there, its bands as they are)
+        return prof[i][int(round(at(az)))]
 
     for y in range(APEX - 1, top):
         for x in range(int(cx - r) - 1, int(cx + r) + 2):
@@ -112,12 +115,14 @@ def main():
                 nx, ny, nz, k = nx / n, ny / n, nz / n, 1.0
             h = np.sqrt(nx * nx + nz * nz); az = nx / h if h > 1e-6 else 0.0
             up = round(max(0.0, ny) * 3) / 3                                     # (stepped bands, as the painter shades)
+            up *= 1 - 0.5 * max(0.0, -az)                                        # (its shoulder toward the lamp lit by the lamp, as the pole under it)
             g = int(round(at(az)))
             for i in range(2):
                 c = round_it(i, az) * (1 - up) * k + (SKY + (LIT - SKY) * max(0.0, -az) * 0.6) * up
                 c = c + res[i][SRC + (y * 7 + x * 3) % 30, g] * (1 - 0.5 * up)   # (the pole's own grain)
+                if y < ylip and not inside(x + .5, y - .5): c = np.maximum(c, CREST)   # (its crest against the sky: the coping's light)
                 L[i][y, x, :3] = np.clip(c, 0, 255); L[i][y, x, 3] = round(255 * min(1.0, cov))
-            L[2][y, x] = 0; L[3][y, x] = sunp[g] if up < 0.6 else 0
+            L[2][y, x] = 0; L[3][y, x] = sunp[g] if az > 0.7 and up < 0.7 else 0   # (the rim's sunset light, where the rim's colour is)
     for l in L[:2]: l[top, X0:X1 + 1, :3] *= 0.5                                 # (the shadow under the sleeve)
     for (n, m), l in zip(names, L): save(l, n, m)
     # the pole's occlusion: from its top only (from the runs as they were)
