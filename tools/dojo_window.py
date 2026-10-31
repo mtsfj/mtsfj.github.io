@@ -25,7 +25,6 @@ the leaves part, the window shows. In layer_city_off, street_unlit, night_far (0
 takes the wall's sunset, the glass none) and its sprite. Needs git, Pillow, numpy.
 """
 import io
-import json
 import os
 import re
 import subprocess
@@ -55,6 +54,8 @@ SHADE = (0.5, 0.22, 3)               # its shadow on the wall: darkest under it,
 GLOW_MIN = 4                         # (its light where the leaves part over this many pixels together, at least)
 HIS_GLASS, HIS_FRAME = (257, 271, 280, 336), (248, 251, 280, 336)   # the painter's window (x0, x1, y0, y1): its glass, its frame
 UP = 'win_z7_up'                     # the street's lit home window (its sprite)
+HIS_AT = '119e468'                   # (the painter's small window and its light read as they were there: since then
+                                     # tools/kirua_bay_window.py has put a bay window in their place)
 LUM = np.array([0.299, 0.587, 0.114])
 
 
@@ -164,16 +165,15 @@ def main():
         for y in range(Y0, int(round(Y0 + HOOD_V * H))):
             pic[y, x] = endc; warm[y, x] = False; inglass[y, x] = False
     keys = list(pic); px = np.array([pic[k] for k in keys]); W_ = np.array([warm[k] for k in keys]); G_ = np.array([inglass[k] for k in keys])
-    city = L_[0]
-    glass, frame = (city[b:c, a:d, :3].reshape(-1, 3) for a, d, b, c in (HIS_GLASS, HIS_FRAME))
+    his = load('layer_city_off.webp', 'RGBA', HIS_AT)
+    glass, frame = (his[b:c, a:d, :3].reshape(-1, 3) for a, d, b, c in (HIS_GLASS, HIS_FRAME))
     off = px.copy()
     off[W_ & G_] = regrade(px[W_ & G_], glass.mean(0), glass.std(0))          # (off: its panes his dark glass, the folds kept; what
     wood = ~W_                                                                # its frame and rail his navy; what their light lit
     off[wood] = regrade(px[wood], frame.mean(0), np.minimum(px[wood].std(0), 3 * frame.std(0)))   # outside them, that wood unlit)
     off[W_ & ~G_] = off[wood].mean(0) * 1.1
-    s_ = open(A('street.js'), encoding='utf-8').read(); i0 = s_.index('const ASSETS = ') + len('const ASSETS = ')
-    up = json.JSONDecoder().raw_decode(s_[i0:])[0]['comps'][UP]
-    upi = np.asarray(Image.open(os.path.join(ROOT, up['src'].split('?')[0])).convert('RGBA')).astype(float)
+    s_ = open(A('street.js'), encoding='utf-8').read()
+    upi = load(UP + '.webp', 'RGBA', HIS_AT)
     upl = upi[upi[..., 3] == 255][:, :3]
     on = regrade(px[W_], upl.mean(0), upl.std(0))                             # (its light: the street's lit home window)
     OFF = dict(zip(keys, off)); LITP = dict(zip([k for k, w in zip(keys, W_) if w], on))
@@ -191,7 +191,7 @@ def main():
         if lab[y, x]: continue
         n_lab += 1; comp = flood(glow & (lab == 0), [(y, x)]); lab[comp] = n_lab
     size = np.bincount(lab.ravel())
-    spr = np.zeros(city.shape[:2] + (4,))
+    spr = np.zeros(L_[0].shape[:2] + (4,))
     for (y, x) in seen:
         for l, g in zip(L_[:2], gain): l[y, x, :3] = OFF[y, x] * g; l[y, x, 3] = 255
         L_[2][y, x] = 0
