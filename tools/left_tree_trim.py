@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The left tree (by Killua's house) brought down below the roofs beside it, the mountain carried on behind it.
 
-    python3 tools/left_tree_trim.py      (reads the layers as they were before it, at commit aa383bc; then tools/fuji_aux.py)
+    python3 tools/left_tree_trim.py      (reads the layers as they were before it, at commit c8de52b; then tools/fuji_aux.py)
 
 Its crown rose 170 px over the oden's roof next to it (y 450): it now stays under it (447 at the highest). Not cut
 across: its own painted top (the leafy edge from x 334 to 426, its clumps, its sprigs and gaps, 8 to 22 px deep) is

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The big tree on the left, in front of the house and the dojo (B+C), replaced; its bush gone, the dojo's foot drawn.
 
-    python3 tools/tree_bc.py      (after tools/tree_a.py; it takes its zone, x < 326, back from commit aa383bc each time)
+    python3 tools/tree_bc.py      (after tools/tree_a.py; it takes its zone, x < 326, back from commit c8de52b each time)
 
 The old tree's crown hung over the house's front and its lit side wall, its bush over the dojo's shoji. The new one
 (tools/src/tree_bc.jpg, a pixel-art tree drawn on white) stands just off the frame on the left: its trunk out of the
