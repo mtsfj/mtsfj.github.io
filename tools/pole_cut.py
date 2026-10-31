@@ -4,8 +4,10 @@
     python3 tools/pole_cut.py      (it takes its zone back from commit BEFORE each time, so it can be run again)
 
 The pole ran out of the frame at the top, its transformer hung on its left (x 988-1027, y 0-57, its brackets to 64),
-its top a dark block of hardware down to y 95. It now ends under where the transformer hung: only sky above it and on
-its left there, the house on its right beginning at its own lit edge (x 1064), nothing to invent behind it. Its top is
+its top a dark block of hardware down to y 95. It now ends well under where the transformer hung, a little under the
+roof line of the house on its right (y 66) and well clear of the page's menu over the sky (it sat right under "Blog"
+higher up): only sky above it and on its left, the house on its right beginning at its own lit edge (x 1064), nothing
+to invent behind it. Its top is
 the cap the concrete poles wear: a short sleeve one pixel wider than the pole each side (LIP rows), a low dome over it
 (DOME rows), a line of shadow under the sleeve. Each pixel of the cap is shaded from its normal: round its axis as the
 pole is (its lit left edge, its dark body, its rim from the shops' red), from above by the sky (blue, lighter on the left
@@ -31,7 +33,7 @@ A = lambda p: os.path.join(ROOT, 'assets', p)
 BEFORE = '6c8530a'                   # (the layers as they were, the pole whole)
 ZONE = (985, 0, 1071, 100)           # x0, y0, x1, y1: taken back from BEFORE first
 X0, X1 = 1025, 1063                  # the pole's columns (its lit left edge .. its rim)
-APEX, DOME, LIP = 50, 7, 4           # the cap: its top, its dome's rows, its sleeve's rows
+APEX, DOME, LIP = 74, 7, 4           # the cap: its top, its dome's rows, its sleeve's rows
 SRC = 96                             # the pole's clean rows, copied up from here (under the old hardware's last band)
 JOIN = 96                            # the first row of the pole left as it is
 TREND = 40                           # (the rows under it that give each column its slow change: above the lamp's arm)
