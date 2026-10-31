@@ -14,8 +14,8 @@ and a wet mark down its corrugations). Kirua sits on that corner, his boots over
 Its metal is the gutter's own: each pixel takes the colour of a pixel of the gutter, in each layer the same pixel and
 its mark in street_sun too (so the power cut, the red night and the hours read it as they read the gutter: a sunset rim
 stays a sunset rim and fades with the evening like the gutter's own), chosen by where it lies across the pipe (the side
-toward the house dark, toward the open sky lit, the gutter's rim on that edge), in steady runs, with a few of the
-gutter's specular dashes; a collar at each joint. Where the street's lights reach the wall beside it (the red night's
+toward the house dark, toward the open sky lit, the gutter's sunset rim on that edge), each band of it one colour all
+down (the gutter's pixel nearest its band's mean: no mottle); a collar at each joint, the clamps dark rings. Where the street's lights reach the wall beside it (the red night's
 patch, x 299..324, y 340..422), its side toward the wall takes most of that light. In layer_city_off, street_unlit,
 night_far (0, the street's) and street_sun. Needs git, Pillow, numpy.
 """
@@ -38,7 +38,6 @@ FOOT = 455                           # the run's last row, at the low roof's cor
 CLAMPS = (318, 393)                  # the clamps (first of their two rows), about a metre apart
 EDGE = lambda x: 452 + 1.46 * (x - 326)   # the low roof's far edge right of the corner (the cherry behind it, above)
 PLATE = ((300, 446), (306, 448), (312, 450))   # the low roof's lit top edge: where the splash plate's colours are taken
-SEED = 33
 
 
 def load(p, mode='RGBA', at=None):
@@ -58,7 +57,6 @@ def main():
     for l, b in zip(L, B): l[y0:y1, x0:x1] = b[y0:y1, x0:x1]
     city, unlit, nf, sun = L
     H, W = city.shape[:2]
-    rng = np.random.default_rng(SEED)
 
     # the gutter's own pixels, past the corner (as painted): binned by their light (dark body, mid, lit, specular)
     gy, gx = np.where(B[0][:, GUTTER[0]:GUTTER[1] + 1, 3] == 255); gx = gx + GUTTER[0]
@@ -66,7 +64,9 @@ def main():
     lum = B[0][gy, gx, :3] @ [0.299, 0.587, 0.114]
     q = np.quantile(lum, [0.4, 0.75, 0.93])
     BIN = {'dark': lum < q[0], 'mid': (lum >= q[0]) & (lum < q[1]), 'lit': (lum >= q[1]) & (lum < q[2]), 'spec': lum >= q[2]}
-    PICK = {k: np.flatnonzero(v) for k, v in BIN.items()}
+    REP = {}                                                                     # (each band's one colour: the pixel nearest its mean)
+    for k, v in BIN.items():
+        i = np.flatnonzero(v); c = B[0][gy[i], gx[i], :3]; REP[k] = int(i[np.argmin(((c - c.mean(0)) ** 2).sum(1))])
 
     # the eave, shortened: past EAVE_END sky again; its last columns the painter's end, each moved back along the eave's line
     # (its rows there: the eave's top edge falls a pixel a column, its band 13 rows deep)
@@ -97,26 +97,19 @@ def main():
         for i, x in enumerate(range(a - 2, a + 3)): px.append((y, x, 'mid' if VERT[i] == 'rim' else VERT[i], ('s', i)))
     collars = (y0p + 1, FOOT + 1)                                                # (a lit ring at each joint)
 
-    # each pixel a gutter pixel, its lane in steady runs; a rare specular dash on the rim where it is against the sky
-    run = {}
-    for y, x, role, lane in sorted(px, key=lambda p: p[0]):
-        r = run.get(lane)
-        if r is None or r[1] <= 0 or r[2] != y - 1 or r[3] != role:
-            if role == 'sun':                                                    # (the sunset's rim against the sky, warmer up high)
-                b = 'spec' if rng.random() < 0.85 - 0.6 * (y - y0p) / (FOOT - y0p) else 'lit'
-            else: b = ('spec' if rng.random() < 0.1 else 'lit') if role == 'rim' else role
-            r = [PICK[b][rng.integers(len(PICK[b]))], int(rng.integers(8, 21) if role == 'rim' else rng.integers(3, 9)), y, role]
-        s = PICK['lit'][rng.integers(len(PICK['lit']))] if y in collars and role != 'dark' else r[0]
-        run[lane] = [r[0], r[1] - 1, y, role]
+    # each pixel its band's one gutter pixel (the rim against the sky the gutter's sunset rim, its specular band)
+    BAND = {'dark': 'dark', 'mid': 'mid', 'lit': 'lit', 'rim': 'lit', 'sun': 'spec'}
+    for y, x, role, lane in px:
+        s = REP['lit'] if y in collars and role != 'dark' else REP[BAND[role]]
         for l, b in ((city, B[0]), (unlit, B[1])): l[y, x, :3] = b[gy[s], gx[s], :3]; l[y, x, 3] = 255
         nf[y, x] = 0
         sun[y, x] = B[3][gy[s], gx[s]]                                          # (its source's: a sunset rim stays a sunset rim at every hour)
 
-    # the clamps: a ring across the pipe a pixel wider each side (lit over dark), its arm into the wall's corner
+    # the clamps: a dark ring across the pipe a pixel wider each side (its top a shade lighter), its arm into the wall's corner
     for c in CLAMPS:
-        for y, b in ((c, 'lit'), (c + 1, 'dark')):
+        for y, b in ((c, 'mid'), (c + 1, 'dark')):
             for x in list(range(RUN_X - 3, RUN_X + 4)) + ([RUN_X - 4, RUN_X - 5] if b == 'dark' else []):
-                s = PICK[b][rng.integers(len(PICK[b]))]
+                s = REP[b]
                 for l, bb in ((city, B[0]), (unlit, B[1])): l[y, x, :3] = bb[gy[s], gx[s], :3]; l[y, x, 3] = 255
                 nf[y, x] = 0; sun[y, x] = B[3][gy[s], gx[s]]
 
@@ -143,7 +136,7 @@ def main():
         for l in (city, unlit): l[y, x, :3] *= 0.72
 
     for (n, m), l in zip(names, L): save(l, n, m)
-    print('downpipe', len(px), 'px | gutter bins', {k: len(v) for k, v in PICK.items()})
+    print('downpipe', len(px), 'px | gutter bins', {k: int(v.sum()) for k, v in BIN.items()})
 
 
 if __name__ == '__main__':
