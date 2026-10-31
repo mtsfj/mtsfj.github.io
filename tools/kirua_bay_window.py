@@ -6,9 +6,10 @@
                                             fois, on peut donc le relancer)
 
 La façade de la maison de Kirua (x 158..325, de son angle à la descente) n'avait qu'une petite fenêtre (x 248..273) dans
-un grand mur de planches vide. À sa place, la baie d'une maison de référence du propriétaire (tools/src/kirua_bay_ref.png,
-ref_facade_4 : un bureau éclairé, son rideau derrière un meneau, la chaise, l'écran, l'étagère, le plafond et ses spots ;
-pas la ref_facade_2, dont la pièce est déjà celle de la maison du fond), posée dans le mur dans la perspective de la
+un grand mur de planches vide. À sa place, une grande baie, et derrière elle la pièce que le propriétaire a faite pour
+elle (tools/src/kirua_bay_room.webp : un bureau éclairé, un voilage à gauche, deux spots au plafond, une plante et une
+lampe, l'écran et sa ville violette, le dos de la chaise, une affiche du Fuji encadrée, une étagère à livres avec une
+figurine et une plante), posée dans le mur dans la perspective de la
 façade : son linteau et son appui sur des rayons vers le point de fuite de la façade FVP (sur des joints de planches :
 KH et KS comptés en planches, D étant l'écart des planches vu de FVP), ses montants d'aplomb, ses colonnes de plus en
 plus serrées vers FVP (comme un mur qui s'éloigne). Elle va de x XL, derrière l'arbre (son coin haut au-dessus du
@@ -24,21 +25,27 @@ le ton du pignon) ; le tableau proche est caché. Chaque face a son ton, tiré d
 le corps d'une de ses planches, entre ses joints, le long de son rayon pour ce qui suit la façade, en travers pour ce
 qui est d'aplomb), et l'occlusion dans les angles rentrants (AO : la sous-face contre le dormant, le tableau contre le
 dormant et sous la sous-face). Le dormant en retrait (FRAME, le bleu nuit du peintre : sa traverse haute, son montant
-droit, le meneau et la traverse de la référence refaits nets à leur place, MULLIONS, TRANSOMS). L'ombre du linteau en
+droit, son meneau et sa traverse devant le voilage, MULLIONS, TRANSOMS, en fractions de la vitre). L'ombre du linteau en
 haut de la vitre, rangée par rangée (HEAD_SH ; allumée, la pièce en garde une part : HEAD_LIT). Un appui en saillie
 sous la baie, plus large qu'elle : son arête claire, sa face, son dessous sombre, son ombre portée sur les planches en
 deux marches (SILL_SH). Toutes ses lignes sur des rayons vers FVP ou d'aplomb, au pixel près, sans flou. Le bois prend
 le couchant et les heures comme les planches ; le verre et le dormant, non.
 
-La pièce : chaque pixel de vitre est la moyenne de la référence sur son morceau du plan de la vitre (SUB x SUB points,
-le meneau et la traverse à part), ramenée à la plus proche des couleurs de la référence (NPAL couleurs, plus ACCENT
-couleurs vives que la coupe médiane perd, celles de l'écran), sans tramage ; un pixel seul parmi des voisins d'accord
-prend leur couleur (CLEAN passes). Éteinte, comme elle est dans les calques : le verre sombre du peintre (celui de sa
-petite fenêtre), la pièce à peine lisible dedans (sa clarté seule, ses lumières éteintes). Allumée, le sprite de la
+La pièce, sans grain, comme les fenêtres éclairées du peintre (des aplats, des bords nets) : son image adoucie d'abord à
+sa pleine taille (un filtre médian, SMOOTH, qui garde ses bords), puis chaque pixel de vitre la moyenne de son morceau du
+plan de la vitre (SUB x SUB points, ses colonnes de plus en plus serrées vers FVP, le meneau et la traverse à part),
+ramenée à la plus proche de ses couleurs (NPAL tons de l'image, et ses touches, ACCENTS : le violet de l'écran, le vert
+de la plante, le bleu et le rouge des livres), sans tramage ; une tache de moins de MIN_REG pixels prend le ton qui
+l'entoure. Par-dessus, redessinés nets d'après la géométrie de l'image et de sa couleur (LINES) : la corniche, le cadre
+de l'affiche, le bord de l'écran, le dessus du bureau, les planches et les montants de l'étagère, deux plis du voilage
+(des lignes d'un pixel au moins, le long des rayons vers FVP ou d'aplomb), l'affiche, l'écran et les livres en aplats.
+Le voilage tombe derrière le meneau. Éteinte, comme elle est dans les calques : le verre sombre du peintre (celui de sa
+petite fenêtre), les grandes formes de la pièce à peine lisibles dedans (leur clarté seule, les taches de moins de
+MIN_OFF pixels fondues, l'écran éteint). Allumée, le sprite de la
 fenêtre d'habitation (le comp win_z7_up de assets/street.js, celui de la petite fenêtre : allumée longtemps, éteinte un
 moment, éteinte dans la coupure de courant, rouge la nuit rouge, la télé certains soirs) : la pièce ramenée à la fenêtre
 éclairée de la rue (la moyenne et l'écart de chaque canal de la lumière de la petite fenêtre, au commit BEFORE), l'écran
-(SCREEN, sa boîte dans la référence) gardant sa propre lumière froide, l'arête de l'appui sous la vitre prise dans la
+(SCREEN) et les touches gardant leur teinte, l'arête de l'appui sous la vitre prise dans la
 lumière de la pièce (SILL_LIT). L'arbre reste devant tout : ses feuilles (trouvées comme dans tools/kirua_house_side.py)
 ne sont pas touchées, et la lumière n'est que là où elles s'ouvrent sur GLOW_MIN pixels ensemble.
 
@@ -54,13 +61,13 @@ import os
 import re
 import subprocess
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
 BEFORE = '119e468'                   # (les calques avant cet outil : sa zone reprise de là à chaque fois)
 OLD, TREE = '8d4ca3c^', '8d4ca3c'    # (avant le changement de l'arbre devant le dojo ; ce changement : ses feuilles)
-REF = os.path.join(ROOT, 'tools', 'src', 'kirua_bay_ref.png')
+REF = os.path.join(ROOT, 'tools', 'src', 'kirua_bay_room.webp')
 ZONE = (100, 0, 340, 440)            # x0, y0, x1, y1 : où l'on cherche le feuillage
 FRONT_X = (158, 326)                 # (les colonnes de la façade, reprises de BEFORE ; la descente au-delà)
 FRONT_TOP = (162, 86)                # (le haut de la façade sous la gouttière : le rayon vers FVP par ce point)
@@ -71,13 +78,33 @@ XL, XR = 215, 311                    # la baie : les colonnes des bords de son o
 KH, KS = 36.59, 27.78                # son linteau et son appui : leurs rayons vers FVP, en planches (sur des joints du peintre)
 J = 6                                # la profondeur de l'ébrasement, en colonnes à XR
 HORN = 3                             # (l'appui dépasse de l'ouverture de tant de colonnes de chaque côté)
-INNER = (19, 36, 735, 380)           # dans la référence (x0, y0, x1, y1) : l'intérieur de la baie, son cadre autour
-MULLIONS = ((137, 163),)             # (x0, x1) : son meneau, entre le rideau et la pièce
-TRANSOMS = ((270, 281, 19, 137),)    # (y0, y1, x0, x1) : sa traverse, derrière le rideau
-SCREEN = (384, 219, 473, 290)        # (x0, y0, x1, y1) : l'écran, sa lumière à lui
-NPAL, ACCENT = 12, (4, 50)           # les couleurs de la référence (coupe médiane) ; plus tant de couleurs vives, celles
-                                     # de ses pixels plus loin que tant de toutes les autres
-SUB, CLEAN = 4, 2                    # (points par pixel, de chaque côté ; passes contre les pixels seuls)
+INNER = (0, 0, 1774, 887)            # la pièce (x0, y0, x1, y1, dans son image) : toute, son rideau à gauche
+MULLIONS = ((118 / 716, 144 / 716),)  # (u0, u1, en travers de la vitre) : son meneau, entre le rideau et la pièce
+TRANSOMS = ((234 / 344, 245 / 344, 0.0, 118 / 716),)   # (v0, v1, u0, u1) : sa traverse, devant le rideau
+SMOOTH = 15                          # (la pièce adoucie d'abord, à sa pleine taille : un filtre médian de ce côté, qui garde
+                                     # ses bords et ôte le grain que la réduction changerait en mouchetis)
+NPAL = 9                             # ses couleurs (coupe médiane), plus ses touches (ACCENTS, la médiane de leurs pixels) :
+ACCENTS = (('ecran', (735, 548, 1045, 712), 'violet'), ('ecran_clair', (735, 548, 1045, 712), 'violet clair'),
+           ('plante', (280, 345, 560, 700), 'vert'), ('livres_bleus', (1290, 170, 1680, 880), 'bleu'),
+           ('livres_rouges', (1290, 170, 1680, 880), 'rouge'))
+SCREEN = (735, 548, 1045, 712)       # (x0, y0, x1, y1) : l'écran, sa lumière à lui
+ROWS, BLOCKS = ((160, 287), (297, 427), (437, 577), (587, 737), (747, 887)), ((1300, 1355), (1355, 1450), (1450, 1545),
+                                                                              (1545, 1665))
+LINES = ([('aplat', (878, 243, 1162, 360)), ('aplat', (878, 360, 1162, 497)),            # l'affiche : son ciel, sa terre
+          ('ecran', (737, 553, 1040, 640)), ('ecran', (737, 640, 1040, 708))]           # l'écran : son ciel, sa ville
+         + [('aplat', (bx0, ry0_, bx1, ry1_)) for ry0_, ry1_ in ROWS for bx0, bx1 in BLOCKS]   # l'étagère : des blocs de livres
+         + [('h', (320, 146, 1285, 154)),                                              # la corniche
+            ('cadre', (862, 228, 1177, 512, 14)), ('cadre', (727, 545, 1047, 717, 10)),  # le cadre de l'affiche, le bord de l'écran
+            ('h', (448, 745, 1287, 757)),                                              # le dessus du bureau
+            ('h', (1300, 148, 1690, 160)), ('h', (1300, 287, 1690, 297)), ('h', (1300, 427, 1690, 437)),
+            ('h', (1300, 577, 1690, 587)), ('h', (1300, 737, 1690, 747)),             # les planches de l'étagère
+            ('v', (1276, 145, 1300, 887)), ('v', (1665, 145, 1690, 887)),             # ses montants
+            ('v', (100, 0, 112, 887)), ('v', (195, 0, 207, 887))])                    # deux plis du rideau
+                                     # (dans l'image de la pièce) : redessinés nets par-dessus, chacun de la couleur de
+                                     # l'image sous lui ; un aplat où il couvre la moitié d'un pixel, une ligne au moins
+                                     # d'un pixel (le long des rayons vers FVP, ou d'aplomb), un cadre en quatre lignes
+SUB, MIN_REG, MIN_OFF = 4, 8, 30     # (points par pixel, de chaque côté ; une tache de moins de tant de pixels prend le ton
+                                     # qui l'entoure ; éteinte, de moins de tant : il n'en reste que les grandes formes)
 OLDBOX = (244, 244, 281, 366)        # (la boîte de la petite fenêtre du peintre)
 SRC_X = (278, 325)                   # les planches du peintre, à droite de la petite fenêtre
 CASE = (3, 2, 0.3)                   # le chambranle : ses montants (colonnes, à gauche et à droite), son haut (en planches)
@@ -175,7 +202,7 @@ def main():
     U = lambda xg: (G / (FVP[0] - xg) - a0) / (a1 - a0)                     # (où tombe une colonne en travers de la vitre)
     V = lambda xg, y: (y - ray(KH, xg, G)) / (ray(KS, xg, G) - ray(KH, xg, G))   # (et une ligne de haut en bas)
     rx0, ry0, rx1, ry1 = INNER
-    uref = lambda xr: (xr - rx0) / (rx1 - rx0); vref = lambda yr: (yr - ry0) / (ry1 - ry0)
+    uref = vref = lambda f: f                                               # (le dormant : en fractions de la vitre)
     cls = np.zeros((H, W), np.int8); MUL = np.ones((H, W, 2))              # (MUL : éteinte, allumée)
     mcols = set()
     for m0, m1 in MULLIONS:                                                  # (le meneau : les colonnes qui tombent dessus)
@@ -244,37 +271,87 @@ def main():
         L[0][y, x] = src[0][ys, xs]; L[1][y, x] = [*(src[0][ys, xs, :3] * cut[y, x]), 255]
         L[2][y, x] = 0; L[3][y, x] = src[3][ys, xs]; n_b += 1
 
-    # la pièce : chaque pixel de vitre, la moyenne de la référence sur son morceau du plan de la vitre (le meneau et la
-    # traverse à part), puis la plus proche de ses couleurs, sans tramage
-    ref = Image.open(REF).convert('RGB'); R_ = np.asarray(ref).astype(float)
-    inner = ref.crop(INNER)
+    # la pièce : son image adoucie (SMOOTH), puis chaque pixel de vitre la moyenne de son morceau du plan de la vitre (le
+    # meneau et la traverse à part), ramenée à la plus proche de ses couleurs (NPAL, et ses touches), sans tramage ; une
+    # tache de moins de MIN_REG pixels prend le ton qui l'entoure : ni pixel seul ni bout de trait, ses longues lignes
+    # gardées (les planches de l'étagère, le bord de l'écran, le cadre, le dessus du bureau, les plis du rideau)
+    ref = Image.open(REF).convert('RGB').filter(ImageFilter.MedianFilter(SMOOTH)); R_ = np.asarray(ref).astype(float)
+    inner = ref.crop(INNER); ip = np.asarray(inner).reshape(-1, 3).astype(float)
     pal = np.asarray(inner.quantize(colors=NPAL, method=Image.Quantize.MEDIANCUT).getpalette()[:3 * NPAL]).reshape(NPAL, 3).astype(float)
-    ip = np.asarray(inner).reshape(-1, 3).astype(float)
-    far = ip[np.sqrt(((ip[:, None, :] - pal[None]) ** 2).sum(2)).min(1) > ACCENT[1]]
-    vivid = Image.fromarray(far.astype(np.uint8)[None]).quantize(colors=ACCENT[0], method=Image.Quantize.MEDIANCUT)
-    pal = np.vstack([pal, np.asarray(vivid.getpalette()[:3 * ACCENT[0]]).reshape(-1, 3)])
-    bar = lambda xr, yr: any(m0 - 1 <= xr < m1 + 1 for m0, m1 in MULLIONS) or \
-        any(t0 - 1 <= yr < t1 + 1 and tx0 <= xr < tx1 for t0, t1, tx0, tx1 in TRANSOMS)
+    pick = {'violet': lambda c: c[:, 2] > c[:, 0], 'vert': lambda c: (c[:, 1] > c[:, 0] - 15) & (c[:, 1] > c[:, 2] + 5),
+            'bleu': lambda c: c[:, 2] > c[:, 0] + 20, 'rouge': lambda c: (c[:, 0] > 1.6 * c[:, 2]) & (c[:, 0] > 120)}
+    for name, (ax0, ay0, ax1, ay1), kind in ACCENTS:
+        c = R_[ay0:ay1, ax0:ax1].reshape(-1, 3); c = c[pick[kind.split()[0]](c)]
+        pal = np.vstack([pal, np.percentile(c, 80, axis=0) if kind.endswith('clair') else np.median(c, 0)])
+    du, dv = 1 / (rx1 - rx0), 1 / (ry1 - ry0)
+    bar = lambda u, v: any(m0 - du <= u < m1 + du for m0, m1 in MULLIONS) or \
+        any(t0 - dv <= v < t1 + dv and u0 <= u < u1 for t0, t1, u0, u1 in TRANSOMS)
     sx0, sy0, sx1, sy1 = SCREEN
     q, scr = {}, set()
     for (y, x) in zip(*np.where(cls == 7)):
         pts = []
         for a in range(SUB):
-            xs = x - 0.5 + (a + 0.5) / SUB; xr = rx0 + U(xs) * (rx1 - rx0)
+            xs = x - 0.5 + (a + 0.5) / SUB; u = U(xs)
             for b in range(SUB):
-                yr = ry0 + V(xs, y - 0.5 + (b + 0.5) / SUB) * (ry1 - ry0)
-                if rx0 <= xr < rx1 and ry0 <= yr < ry1 and not bar(xr, yr): pts.append((xr, yr))
+                v = V(xs, y - 0.5 + (b + 0.5) / SUB)
+                if 0 <= u < 1 and 0 <= v < 1 and not bar(u, v): pts.append((rx0 + u * (rx1 - rx0), ry0 + v * (ry1 - ry0)))
         c = np.mean([R_[int(yr), int(xr)] for xr, yr in pts], 0) if pts else ip.mean(0)
         q[y, x] = int(np.argmin(((pal - c) ** 2).sum(1)))
         if pts and np.mean([sx0 <= xr < sx1 and sy0 <= yr < sy1 for xr, yr in pts]) >= 0.5: scr.add((y, x))
-    N8 = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
-    for _ in range(CLEAN):                                                   # (un pixel seul parmi des voisins d'accord : le leur)
-        q0 = dict(q)
-        for (y, x), k in q0.items():
-            nb = [q0[y + dy, x + dx] for dy, dx in N8 if (y + dy, x + dx) in q0]
-            if len(nb) >= 6:
-                best = max(set(nb), key=nb.count)
-                if best != k and nb.count(best) >= 5 and nb.count(k) <= 1: q[y, x] = best
+
+    def regions(q, least, keep=frozenset()):                                 # (les taches de moins de least pixels : le ton
+        q = dict(q); N4 = ((-1, 0), (1, 0), (0, -1), (0, 1))                # qui les entoure le plus ; pas les lignes : keep)
+        for _ in range(12):
+            seen, changed = set(), False
+            for p0 in sorted(q):
+                if p0 in seen: continue
+                comp, todo = [], [p0]; seen.add(p0)
+                while todo:
+                    p_ = todo.pop(); comp.append(p_)
+                    for dy, dx in N4:
+                        n_ = (p_[0] + dy, p_[1] + dx)
+                        if n_ in q and n_ not in seen and q[n_] == q[p0]: seen.add(n_); todo.append(n_)
+                if len(comp) >= least or all(p_ in keep for p_ in comp): continue
+                ts = [q[p_[0] + dy, p_[1] + dx] for p_ in comp for dy, dx in N4
+                      if (p_[0] + dy, p_[1] + dx) in q and q[p_[0] + dy, p_[1] + dx] != q[p0]]
+                if not ts: continue
+                t = max(sorted(set(ts)), key=ts.count)
+                for p_ in comp: q[p_] = t
+                changed = True
+            if not changed: break
+        return q
+    q = regions(q, MIN_REG)
+
+    # par-dessus, nets, les grandes lignes de la pièce et ses aplats (LINES), chacun de la couleur de l'image sous lui
+    near = lambda c: int(np.argmin(((pal - c) ** 2).sum(1)))
+    med = lambda bx: np.median(R_[bx[1]:bx[3], bx[0]:bx[2]].reshape(-1, 3), 0)
+    gl = sorted(q); fu = lambda x_: (U(x_) * (rx1 - rx0) + rx0)
+    fv = lambda x_, y_: (V(x_, y_) * (ry1 - ry0) + ry0)
+    lines = set()
+    def paint(kind, bx, t):
+        x0_, y0_, x1_, y1_ = bx
+        for (y, x) in gl:
+            a_, b_ = fu(x - 0.5), fu(x + 0.5); c_, d_ = fv(x, y - 0.5), fv(x, y + 0.5)
+            if kind == 'h':                                                  # (le long d'un rayon : une rangée au moins)
+                if x0_ <= fu(x) < x1_ and (max(0, min(d_, y1_) - max(c_, y0_)) >= (d_ - c_) / 2 or c_ <= (y0_ + y1_) / 2 < d_):
+                    q[y, x] = t; lines.add((y, x))
+            elif kind == 'v':                                                # (d'aplomb : une colonne au moins)
+                if y0_ <= fv(x, y) < y1_ and (max(0, min(b_, x1_) - max(a_, x0_)) >= (b_ - a_) / 2 or a_ <= (x0_ + x1_) / 2 < b_):
+                    q[y, x] = t; lines.add((y, x))
+            elif x0_ <= (a_ + b_) / 2 < x1_ and y0_ <= (c_ + d_) / 2 < y1_: q[y, x] = t   # (un aplat : le centre du pixel)
+    for kind, bx in LINES:
+        if kind == 'cadre':                                                  # (un cadre : quatre lignes de sa couleur)
+            x0_, y0_, x1_, y1_, w_ = bx
+            t = near(np.median(np.vstack([R_[y0_:y0_ + w_, x0_:x1_].reshape(-1, 3), R_[y0_:y1_, x0_:x0_ + w_].reshape(-1, 3)]), 0))
+            for k_, b2 in (('h', (x0_, y0_, x1_, y0_ + w_)), ('h', (x0_, y1_ - w_, x1_, y1_)),
+                           ('v', (x0_, y0_, x0_ + w_, y1_)), ('v', (x1_ - w_, y0_, x1_, y1_))):
+                paint(k_, b2, t)
+            continue
+        t = near(med(bx)) if kind != 'ecran' else len(pal)
+        if kind == 'ecran': pal = np.vstack([pal, med(bx)])                  # (l'écran : ses tons à lui)
+        paint('aplat' if kind == 'ecran' else kind, bx, t)
+    q = regions(q, MIN_REG, frozenset(lines))
+    scr = {k for k, t in q.items() if t >= NPAL + len(ACCENTS) or k in scr and t >= NPAL}
 
     # ce qu'on en voit : la vitre que les feuilles ne cachent pas ; sa lumière où elles s'ouvrent sur GLOW_MIN pixels
     vis = (cls == 7) & ~front
@@ -286,17 +363,20 @@ def main():
     lit = [(y, x) for (y, x) in zip(*np.where(vis)) if size[lab[y, x]] >= GLOW_MIN]
     edge = [(y, x) for (y, x) in zip(*np.where(cls == 8)) if XL < x < XR and not front[y, x]]
 
-    # éteinte : le verre sombre du peintre, la pièce à peine lisible dedans (sa clarté seule, ses lumières éteintes)
+    # éteinte : le verre sombre du peintre, les grandes formes de la pièce à peine lisibles dedans (leur clarté seule, les
+    # taches de moins de MIN_OFF pixels fondues dans ce qui les entoure, ses lumières et son écran éteints)
     hg = city[old & ~grow(~old, 3)][:, :3]
     lum = pal @ LUM; ks = np.array([q[k] for k in lit])
     z = np.clip((lum - np.median(lum[ks])) / lum[ks].std(), *OFF_Z)
-    offp = hg.mean(0)[None, :] * (1 + OFF_K * z)[:, None]
-    # allumée : la fenêtre éclairée de la rue (la moyenne et l'écart de chaque canal de la lumière de la petite fenêtre),
-    # l'écran gardant sa lumière (sa clarté ramenée de même), l'arête de l'appui dans la lumière de la pièce
+    qo = regions({k: (int(np.argmin(lum)) if k in scr else t) for k, t in q.items()}, MIN_OFF)
+    OFF = {k: hg.mean(0) * (1 + OFF_K * z[t]) for k, t in qo.items()}
+    # allumée : la fenêtre éclairée de la rue (la moyenne et l'écart de chaque canal de la lumière de la petite fenêtre) ;
+    # ses touches et l'écran gardent leur teinte (leur clarté ramenée de même) ; l'arête de l'appui dans sa lumière
     upi = load(UP + '.webp', 'RGBA', BEFORE); upl = upi[upi[..., 3] == 255][:, :3]
     onp = np.clip(upl.mean(0) + (pal - pal[ks].mean(0)) / pal[ks].std(0) * upl.std(0), 0, 255)
     onq = np.clip(upl.mean(0) + (pal - pal[ks].mean(0)) * (upl @ LUM).std() / lum[ks].std(), 0, 255)
-    room = sorted({q[k] for k in lit if k not in scr}, key=lambda k: lum[k])
+    ON = {k: (onq if (k in scr or t >= NPAL) else onp)[t] for k, t in q.items()}
+    room = sorted({q[k] for k in lit if k not in scr and q[k] < NPAL}, key=lambda k: lum[k])
     sill = np.array(EDGE) + SILL_LIT * (onp[room[-1]] - np.array(EDGE))
 
     # le bois du peintre pour les faces de la baie : le corps d'une de ses planches (entre ses joints), pris le long de
@@ -326,13 +406,13 @@ def main():
             continue
         if c in (1, 8): col, sun = np.array(EDGE, float), 255
         elif c == 6: col, sun = np.array(FRAME, float), 0
-        elif c == 7: col, sun = offp[q[y, x]] * MUL[y, x, 0], 0
+        elif c == 7: col, sun = OFF[y, x] * MUL[y, x, 0], 0
         else: col, sun = face(c, x, y) * MUL[y, x, 0], 255
         L[0][y, x, :3] = col; L[1][y, x, :3] = col * cut[y, x]; L[0][y, x, 3] = L[1][y, x, 3] = 255
         L[2][y, x] = 0; L[3][y, x] = sun
         n_w += 1
     spr = np.zeros((H, W, 4))
-    for (y, x) in lit: spr[y, x] = [*((onq if (y, x) in scr else onp)[q[y, x]] * MUL[y, x, 1]), 255]
+    for (y, x) in lit: spr[y, x] = [*(ON[y, x] * MUL[y, x, 1]), 255]
     for (y, x) in edge: spr[y, x] = [*sill, 255]
 
     for (n, m), l in zip(names, L): save(l, n, m)
