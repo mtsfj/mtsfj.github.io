@@ -10,7 +10,8 @@ sky between the two roofs). They are his again (JUNCTION, from OLD), in each lay
 
 Kirua's front runs to its own vanishing point (FVP: where its eave and the painter's own boards right of the small window
 meet, a little under the street's). Left of that window its boards had been redrawn toward the street's (VP), across
-his: they are his again, each pixel the painter's board on its own ray to FVP, taken from his boards right of the window
+his: they are his again, each pixel the painter's board on its own ray to FVP (a different pixel of that board for each
+column, back and forth, so that his grain and contrast stay), taken from his boards right of the window
 (SRC_X, his stains of old foliage taken off first: a pixel much darker or lighter than the median along its ray nearby
 takes that median), the board a whole number of boards over (FRONT_DTHETA) where its ray finds none. The front goes up
 to under the eave (FRONT_TOP, the owner's line, on a ray to FVP, so the dark band under the gutter keeps one width):
@@ -48,8 +49,10 @@ FRONT_DTHETA = 0.0171                # its boards' spacing seen from FVP (rad)
 EAVE_SHADE = (0.72, 3)               # (the eave's shadow on its top: this dark against the eave, gone over that many rows)
 WINDOW = (246, 250, 278, 360)        # (the small window's box: its frame and glass in it left as they are)
 REACH, OFF, PASSES = 14, 0.16, 2     # (a stain: darker or lighter by this than the median along its ray, this many columns either way)
+UP = 'win_z7_up'                     # (the small window's light, a sprite)
 TUFT, CLEAR = 800, 135               # (a tuft of leaves alone in the air: fewer pixels than this, over this row)
-STAIN_Y = 400                        # (black stains on the front taken off above this row: the awning's roof below)
+STAIN_Y, STAIN_X = 400, 300          # (black stains on the front taken off above this row and left of this column: the
+                                     # awning's roof below, the downpipe's clamps right)
 LEAF = 45
 LUM = np.array([0.299, 0.587, 0.114])
 
@@ -86,7 +89,7 @@ def main():
     names = (('layer_city_off.webp', 'RGBA'), ('street_unlit.webp', 'RGBA'), ('night_far.webp', 'RGB'), ('street_sun.webp', 'RGB'))
     L = [load(n, m) for n, m in names]; O = [load(n, m, OLD) for n, m in names]; B = [load(n, m, BEFORE) for n, m in names]
     x0, y0, x1, y1 = ZONE
-    for l, b in zip(L, B): l[y0:y1, SIDE[0]:x1] = b[y0:y1, SIDE[0]:x1]       # (this tool's zone as it was before it)
+    for l, b in zip(L, B): l[y0:y1, SIDE[0]:FRONT_X[1]] = b[y0:y1, SIDE[0]:FRONT_X[1]]   # (this tool's zone as it was before it)
     city = L[0]; H, W = city.shape[:2]
 
     # the new tree's leaves (the dark pixels its change put there, joined to the crown through runs of three, and the
@@ -104,6 +107,30 @@ def main():
     box = np.zeros((H, W), bool); box[wy0:wy1, wx0:wx1] = True               # (and whatever its frame encloses: the curtain's
     out = flood(box & ~win, [(y, x) for y in range(wy0, wy1) for x in (wx0, wx1 - 1)] + [(y, x) for x in range(wx0, wx1) for y in (wy0, wy1 - 1)])
     win = box & ~out                                                        # light in the glass is the window's)
+
+    # the small window to the corner's vanishing point too: each column's head and sill on the rays to FVP through its
+    # middle column's (the painter had them run to the street's), its column moved row for row, in every layer and in its
+    # light (assets/win_z7_up.webp, the same rows)
+    import json
+    s_ = open(A('street.js'), encoding='utf-8').read(); i0 = s_.index('const ASSETS = ') + len('const ASSETS = ')
+    cu = json.JSONDecoder().raw_decode(s_[i0:])[0]['comps'][UP]
+    up = load('win_z7_up.webp', 'RGBA', BEFORE); upn = up.copy()
+    cols = [x for x in range(wx0, wx1) if win[:, x].any()]
+    hs = {x: int(np.where(win[:, x])[0].min()) for x in cols}; ss = {x: int(np.where(win[:, x])[0].max()) for x in cols}
+    xc = cols[len(cols) // 2]
+    nh = {x: int(round(fray(hs[xc], xc, x))) for x in cols}; ns = {x: int(round(fray(ss[xc], xc, x))) for x in cols}
+    src = [l.copy() for l in L]; neww = np.zeros((H, W), bool)
+    for x in cols:
+        sx = x - cu['x']
+        if 0 <= sx < up.shape[1]: upn[:, sx] = 0
+        for y in range(nh[x], ns[x] + 1):
+            yo = int(round(hs[x] + (y - nh[x]) * (ss[x] - hs[x]) / max(1, ns[x] - nh[x])))
+            for k, l in enumerate(L): l[y, x] = src[k][yo, x]
+            neww[y, x] = True
+            if 0 <= sx < up.shape[1] and 0 <= y - cu['y'] < up.shape[0] and 0 <= yo - cu['y'] < up.shape[0]: upn[y - cu['y'], sx] = up[yo - cu['y'], sx]
+    force = win & ~neww                                                     # (where it was and is no more: boards)
+    win = neww
+    save(upn, 'win_z7_up.webp', 'RGBA')
 
     # the junction: the painter's corner shadow and shared downpipe
     jx0, jy0, jx1, jy1 = JUNCTION
@@ -177,15 +204,16 @@ def main():
         first = next((y for y in range(top[x], H) if all(board(x, y + i) for i in range(4))), top[x])   # (its boards as they stood)
         for y in range(top[x], FRONT_FOOT):
             if front[y, x] or win[y, x]: continue
-            if y >= first and not (city[y, x, 3] == 255 and (city[y, x, 0] >= city[y, x, 2] or (y < STAIN_Y and city[y, x, :3] @ LUM < 35))):
+            if y >= first and not force[y, x] and not (city[y, x, 3] == 255 and (city[y, x, 0] >= city[y, x, 2] or (y < STAIN_Y and x < STAIN_X and city[y, x, :3] @ LUM < 35))):
                 continue                                                     # (the front's, its black stains too, nothing else)
             got = None
             for k in [0] + [s * j for j in range(1, 12) for s in (1, -1)]:
                 a = th(x, y) - k * FRONT_DTHETA
-                for xs in range(*SRC_X):
-                    ys = int(round(FVP[1] + np.tan(a) * (xs - FVP[0])))
-                    if 0 <= ys < H and good[ys, xs]: got = (ys, xs); break
-                if got: break
+                pts = [(int(round(FVP[1] + np.tan(a) * (xs - FVP[0]))), xs) for xs in range(*SRC_X)]
+                pts = [p for p in pts if 0 <= p[0] < H and good[p]]
+                if pts:                                                      # (its grain kept: along the board, a different pixel
+                    n = len(pts); i = (SRC_X[0] - 1 - x) % (2 * n)          # of his for each column, mirrored from his edge, back and forth)
+                    got = pts[i if i < n else 2 * n - 1 - i]; break
             if not got: continue
             g = EAVE_SHADE[0] + (1 - EAVE_SHADE[0]) * min(1.0, (y - top[x]) / EAVE_SHADE[1])
             take(x, y, got[0], got[1], g); n_f += 1
