@@ -1,26 +1,26 @@
 #!/usr/bin/env python3
-"""The window at the top left, above the dojo: the window of the owner's reference, set into the wall, its room lit.
+"""The wall at the top left, above the dojo: all boards, and a window of the owner's reference set into it, its room lit.
 
     python3 tools/dojo_window.py      (after tools/tree_bc.py; it takes its zone back from commit BEFORE each time, so it
                                        can be run again)
 
 Over the tree in front of the dojo the house's upper wall shows (x 0..65): all of it but the tree's crown (its leaves,
 the dark pixels the tree's change put there, joined to the crown's mass below through runs of three dark pixels: a thin
-dark line the change also put there is no leaf; and what the leaves enclose). Its window had become a smear (the wall's
-boards, redrawn toward their vanishing point, ran over its frame and its glass). It is now the window of the owner's
-reference (tools/src/dojo_window_ref.png, from ref_house_trad_2: its frame, its mullions, its panes, the curtain at its
-right) set into that wall: its columns spread between the wall's columns XL and XR, its rows along the wall's rays to
-the street's vanishing point VP (its head through (XL, HEAD), as the boards run), each scene pixel one cell of it (a cell
-mostly of its frame's dark is frame, else glass: the mean of its glass); its sill a rail of its frame (SILL rows).
-As every window of the street it is two things. In the layers, the window with its room's light off: its frame the old
-window's casing, its glass the glass of the street's upstairs window on the same side (win_z7_up's, under its light),
-each cell the painter's pixel of the same rank of lightness (in each layer that same pixel). And its light, a sprite of
-its own (assets/win_dojo.webp, a home's window in assets/street.js: on and off a long while, out in the power cut, red
-in the red night): the reference's own panes and curtain, their colours brought to the light of that upstairs window
-(each channel's mean and spread), the tree's crown left out of it (the tree is in front). Over its head the wall's
-boards (and under its sill), the painter's (as redrawn) moved along the wall by BOARD columns, a whole number of
-boards; right of it the boards as they are. In layer_city_off, street_unlit, night_far (0, the street's), street_sun and its sprite. Needs git,
-Pillow, numpy.
+dark line the change also put there is no leaf; and what the leaves enclose). Its old window had become a smear (the
+wall's boards, redrawn toward their vanishing point, ran over it). The wall is now all boards: the painter's (as
+redrawn), moved along the wall by BOARD columns, a whole number of boards, up to WALL (past it they are as they were). Set into it, the window of the owner's
+reference (tools/src/dojo_window_ref.png: the right half of ref_house_trad_2's upper window, its two panes across, its
+curtain), as the house's other windows are drawn on this wall: narrow, upright, its every column carried down the
+wall's slope by whole pixels (SLOPE), so its head, its transoms and its sill run as the boards do while its stiles and
+its mullion stay plumb. Its frame is drawn true (an even outline of FRAME pixels, its mullion and its transoms one
+pixel), in the tones of the frame of the window the painter drew on the left house (its body, its lit edges); its
+panes are the reference's glass, one cell a scene pixel (the mean of its glass there).
+As every window of the street it is two things. In the layers, the window with its room's light off: its panes that
+same painted window's glass under its light (win_z7_up), each cell the painter's pixel of the same rank of lightness, in
+each layer that same pixel. And its light, a sprite of its own (assets/win_dojo.webp, a home's window in
+assets/street.js: on and off a long while, out in the power cut, red in the red night): the reference's own panes and
+curtain, their colours brought to that window's light (each channel's mean and spread). The tree stays in front of
+both. In layer_city_off, street_unlit, night_far (0, the street's), street_sun and its sprite. Needs git, Pillow, numpy.
 """
 import io
 import json
@@ -32,17 +32,19 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
 BEFORE = '45c5cb5'                   # (the layers as they were: the boards over the old window)
-OLD, TREE = '8d4ca3c^', '8d4ca3c'    # (the painter's old window, before the tree was changed; the tree's change)
+OLD, TREE = '8d4ca3c^', '8d4ca3c'    # (before the tree was changed; the tree's change)
 REF = os.path.join(ROOT, 'tools', 'src', 'dojo_window_ref.png')
+REF_GLASS = (245, 40, 457, 220)      # (in the reference: its panes' box, x0, y0, x1, y1, inside its frame)
 ZONE = (0, 0, 66, 60)                # x0, y0, x1, y1: the wall over the tree (the sprite's box too)
 LEAF = 45                            # (a leaf: darker than this, where the tree's change put a pixel)
-VP = (725.0, 625.0)                  # the street's vanishing point (the wall's boards run to it)
-XL, XR, HEAD, TALL = 0, 55, -26, 50  # the window: its left and right columns, its head's row at XL, its height (rows at XR)
-DARK = 60                            # (a cell of the reference: frame where darker than this)
-SILL = 2                             # its sill's rows (the reference stops over its balcony's rail: its rail drawn here)
-BOARD = 62                           # (a whole number of boards along the wall: where the boards over its head come from)
-CASING = (40, 0, 47, 36)             # the old window's casing (x0, y0, x1, y1): the frame's colours
-UP = 'win_z7_up'                     # the street's upstairs window on this side: its glass off (under it) and its light
+BOARD, WALL = (62, 46), 56          # (the boards come from BOARD columns along, whole numbers of boards: the first while it
+CLEAN = 108                          # stays on the clean boards, to column CLEAN, else the second; to column WALL, where the
+                                     # redrawn boards begin clean)
+AT, SIZE, SLOPE = (14, 2), (24, 34), 0.9   # the window: its top left corner, its width and height (px), the wall's slope
+FRAME = 2                            # its outline's width (px); its mullion and its transoms one pixel
+MULL_U, BARS_V = 0.5, (0.33, 0.66)   # its mullion across (share of its width), its transoms down (share of its height)
+PAINTED = (246, 252, 284, 352)       # the window the painter drew on the left house (its frame's tones)
+UP = 'win_z7_up'                     # that window's light (its sprite): its glass off under it, its light
 LUM = np.array([0.299, 0.587, 0.114])
 
 
@@ -74,54 +76,53 @@ def main():
         if 0 <= y < y1 - y0 and 0 <= x < x1 - x0 and not leaf[y, x] and not out[y, x]:
             out[y, x] = True; todo += [(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)]
 
-    # the reference, one cell a scene pixel: frame (mostly dark) or glass (the mean of its glass, and its lightness)
-    ref = np.asarray(Image.open(REF).convert('RGB')).astype(float); rh, rw = ref.shape[:2]; W = XR - XL + 1
-    cell = np.zeros((TALL, W), int); light = np.zeros((TALL, W)); col = np.zeros((TALL, W, 3))
-    for j in range(TALL):
-        for i in range(W):
-            blk = ref[j * rh // TALL:(j + 1) * rh // TALL, i * rw // W:(i + 1) * rw // W].reshape(-1, 3); L = blk @ LUM
-            fr = (L < DARK).mean() >= 0.4; cell[j, i] = fr; part = blk[L < DARK] if fr else blk[L >= DARK]
-            col[j, i] = part.mean(0); light[j, i] = col[j, i] @ LUM
-    for j in range(TALL - SILL, TALL):                                       # (its sill: the frame's rail closes it under its panes)
-        cell[j] = 1; light[j] = np.minimum(light[j], np.median(light[cell == 1]))
+    B = [load(n, m, BEFORE) for n, m in names]; L_ = [load(n, m) for n, m in names]
+    for l, b in zip(L_, B): l[y0:y1, x0:x1] = b[y0:y1, x0:x1]
+    for x in range(x0, WALL + 1):                                            # the wall: all boards (the crown in front)
+        for y in range(y0, y1):
+            if out[y - y0, x - x0]:
+                d = BOARD[0] if x + BOARD[0] <= CLEAN else BOARD[1]
+                for l, b in zip(L_, B): l[y, x] = b[y, x + d]
 
-    # the painter's colours: the casing's pixels (the frame), the upstairs window's glass under its light (the glass off)
-    OL = [load(n, m, OLD) for n, m in names]; B = [load(n, m, BEFORE) for n, m in names]
+    # the painted window's tones: its frame (dark: its body; its lightest dark: the edges the sky lights), its glass off and lit
+    px0, py0, px1, py1 = PAINTED; fr = B[0][py0:py1, px0:px1, :3].reshape(-1, 3); fl = fr @ LUM; fr = fr[fl < 32]; fl = fl[fl < 32]
+    BODY, EDGE = fr[np.argsort(fl)[len(fl) // 3]], fr[np.argsort(fl)[int(len(fl) * 0.95)]]
     s = open(A('street.js'), encoding='utf-8').read(); i0 = s.index('const ASSETS = ') + len('const ASSETS = ')
     up = json.JSONDecoder().raw_decode(s[i0:])[0]['comps'][UP]
     upi = np.asarray(Image.open(os.path.join(ROOT, up['src'].split('?')[0])).convert('RGBA')).astype(float)
     uy, ux = np.where(upi[..., 3] == 255); lit = upi[uy, ux, :3]; uy, ux = uy + up['y'], ux + up['x']
+    order = np.argsort(B[0][uy, ux, :3] @ LUM); gy, gx = uy[order], ux[order]
 
-    def ranked(ys, xs, layers):
-        order = np.argsort(layers[0][ys, xs, :3] @ LUM); return ys[order], xs[order], layers
-    cy, cx = np.mgrid[CASING[1]:CASING[3], CASING[0]:CASING[2]]; cy, cx = cy.ravel(), cx.ravel(); k = OL[0][cy, cx, :3] @ LUM <= 45
-    FRAME, GLASS = ranked(cy[k], cx[k], OL), ranked(uy, ux, B)
+    # the reference's panes, one cell a scene pixel of the window's inside
+    W, H = SIZE; ref = np.asarray(Image.open(REF).convert('RGB')).astype(float)
+    rx0, ry0, rx1, ry1 = REF_GLASS; iw, ih = W - 2 * FRAME, H - 2 * FRAME
+    col = np.zeros((ih, iw, 3))
+    for j in range(ih):
+        for i in range(iw):
+            blk = ref[ry0 + j * (ry1 - ry0) // ih:ry0 + (j + 1) * (ry1 - ry0) // ih, rx0 + i * (rx1 - rx0) // iw:rx0 + (i + 1) * (rx1 - rx0) // iw].reshape(-1, 3)
+            g = blk[blk @ LUM >= 55]; col[j, i] = (g if len(g) else blk).mean(0)
+    light = col @ LUM; m0, s0 = col.reshape(-1, 3).mean(0), col.reshape(-1, 3).std(0) + 1e-6; m1, s1 = lit.mean(0), lit.std(0)
+    mull = FRAME + round(MULL_U * iw) - 1; bars = [FRAME + round(v * ih) for v in BARS_V]
 
-    def pick(j, i):                                                         # (the painter's pixel of its rank among its kind)
-        q = (light[cell == cell[j, i]] < light[j, i]).mean()
-        ys, xs, src = FRAME if cell[j, i] else GLASS
-        k = min(len(ys) - 1, int(q * len(ys))); return [s_[ys[k], xs[k]] for s_ in src]
-    g = cell == 0; m0, s0 = col[g].mean(0), col[g].std(0) + 1e-6; m1, s1 = lit.mean(0), lit.std(0)   # (its light: to the upstairs one's)
-
-    hh = VP[1] + (HEAD - VP[1]) * (VP[0] - XR) / (VP[0] - XL)               # (its head's row at XR, on the ray through (XL, HEAD))
-    L_ = [load(n, m) for n, m in names]
-    for l, b in zip(L_, B): l[y0:y1, x0:x1] = b[y0:y1, x0:x1]
     spr = np.zeros((y1 - y0, x1 - x0, 4))
-    for x in range(x0, x1):
-        for y in range(y0, y1):
-            if not out[y - y0, x - x0]: continue                             # (the crown stays in front)
-            h = VP[1] + (y - VP[1]) * (VP[0] - XR) / (VP[0] - x)            # (its row at XR on its ray)
-            v, u = (h - hh) / TALL, (x - XL) / (XR - XL + 1)
-            if 0 <= v < 1 and 0 <= u < 1:
-                j, i = int(v * TALL), int(u * W)
-                for l, c in zip(L_, pick(j, i)): l[y, x] = c
-                L_[2][y, x] = 0
-                if not cell[j, i]: spr[y - y0, x - x0] = [*np.clip(m1 + (col[j, i] - m0) / s0 * s1, 0, 255), 255]
-            elif x <= XR:                                                    # (over its head, under its sill: the boards, a whole number of them along)
-                for l, b in zip(L_, B): l[y, x] = b[y, x + BOARD]
+    for i in range(W):
+        for j in range(H):
+            x, y = AT[0] + i, AT[1] + j + round(SLOPE * i)                     # (each column down the wall's slope by whole pixels)
+            if not (x0 <= x < x1 and y0 <= y < y1) or not out[y - y0, x - x0]: continue
+            edge = i < FRAME or i >= W - FRAME or j < FRAME or j >= H - FRAME
+            bar = i == mull or j in bars
+            if edge or bar:                                                  # (its frame: its top faces and its left lit by the sky)
+                c = EDGE if (j == 0 or (j in bars and not edge) or (i == 0 and j < H - FRAME)) else BODY
+                for l in L_[:2]: l[y, x, :3] = c; l[y, x, 3] = 255
+            else:
+                ci, cj = i - FRAME, j - FRAME
+                k = min(len(gy) - 1, int((light < light[cj, ci]).mean() * len(gy)))   # (off: the painter's glass of its rank)
+                for l, b in zip(L_[:2], B[:2]): l[y, x] = b[gy[k], gx[k]]
+                spr[y - y0, x - x0] = [*np.clip(m1 + (col[cj, ci] - m0) / s0 * s1, 0, 255), 255]
+            L_[2][y, x] = 0; L_[3][y, x] = 0
     for (n, m), l in zip(names, L_): save(l, n, m)
     save(spr, 'win_dojo.webp', 'RGBA')
-    print('window: the reference', (rw, rh), '->', (W, TALL), 'cells | its light', int((spr[..., 3] > 0).sum()), 'px | crown', int((~out).sum()), 'px')
+    print('window: at', AT, 'size', SIZE, 'slope', SLOPE, '| its light', int((spr[..., 3] > 0).sum()), 'px | crown', int((~out).sum()), 'px')
 
 
 if __name__ == '__main__':
