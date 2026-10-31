@@ -22,7 +22,8 @@ tools/tree_bc.py         remplace le grand arbre devant la maison (dessin : tool
 tools/left_tree_trim.py  abaisse l'arbre de gauche sous le toit de l'oden (sa propre cime peinte redescendue, par touffes entières) et prolonge le flanc du Fuji derrière lui
 tools/cherry_gaps.py     voile les petits trous du cerisier (fuji_tree.webp) : le soir identique, plus de pois bleus le matin ni de taches la nuit
 tools/night_far_clean.py nettoie night_far.webp (pixels de la rue mis à tort dans un plan lointain : lampadaire, bord du feuillage, barrière)
-tools/dojo_window.py     le mur du haut au-dessus du dojo : tout en planches, une fenêtre de la référence (tools/src/dojo_window_ref.png) incrustée sur sa pente, sa lumière en sprite (assets/win_dojo.webp)
+tools/dojo_window.py     le mur du haut au-dessus du dojo : tout en planches, et derrière l'arbre la fenêtre entière de la référence (tools/src/dojo_window_ref.png : son petit toit, son cadre, ses vitres, son garde-corps) posée sur les fuyantes du mur, son petit toit en volume et son ombre, sa lumière en sprite (assets/win_dojo.webp)
+tools/kirua_house_side.py entre la maison du dojo et celle de Kirua : la descente commune et l'angle d'ombre du peintre remis, le pignon de la maison de Kirua (planches qui tournent l'angle, à l'ombre), les taches de l'ancien feuillage retirées de sa façade près de la petite fenêtre
 tools/kirua_gutter.py    la descente de la gouttière sous Kirua : boîte de collecte, col de cygne, tuyau contre l'angle, colliers, dauphin sur le toit bas, au métal de la gouttière dans chaque calque
 tools/pole_cut.py        raccourcit le poteau de droite sous son transformateur (retiré) : chapeau de béton, collier, fût recopié du sien ; son occultation (COCC) depuis son sommet
 cv.pdf                  CV
