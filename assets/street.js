@@ -6275,13 +6275,13 @@
   // ---- a nod to Hunter x Hunter: Killua sits on the front roof's edge near its far end, his legs over the street, looking
   // at the tower and the Fuji, his skateboard leaning on his back. Baked by build_zzzchar_killua.py from the owner's own
   // image, lit by the sunset (terracotta on what faces the far end of the street, violet on what faces the zenith), at
-  // the scale of the house under him (~78 px/m); the eave nearer the viewer hides the back of his seat and the board's
-  // foot. Four layers whose frames are picked by texture offset (no canvas work while he sits): the board (its lean),
+  // the scale of the house under him (~78 px/m); the eave nearer the viewer hides the back of his seat, the gutter's lit
+  // front the board's foot (re-leaned by tools/kirua_board.py). Four layers whose frames are picked by texture offset (no canvas work while he sits): the board (its lean),
   // the body (breathing, the shirt's hem in the gust), the legs (posed by the rig, rig_killua.py: the shin's swing from
   // the knee, the foot's lag), the head (its pitch, the wind in his hair, breathing). He breathes, his hair and his hem
   // move in the gusts, his legs swing from the knee after a little kick now and then, he looks down at the passing bus,
-  // up at the Battle Bus or the fireworks, nods off now and then and comes to with a start. The board leans 11 deg on his
-  // back, its tail in the gutter: the gusts' bursts (toward -x, as the rain goes) rock it a few degrees off him, it falls
+  // up at the Battle Bus or the fireworks, nods off now and then and comes to with a start. The board leans 20 deg on his
+  // back, its tail caught in the gutter: the gusts' bursts (toward -x, as the rain goes) rock it a few degrees off him, it falls
   // back and knocks, and his head takes the knock.
   // Clicked, he is one of the four heroes (below). His Godspeed (godspeed(), the debug page's): the lightning gathers on
   // him and the board, he is a bolt up to the spire with it, sits there a moment, and comes back ----
@@ -6289,14 +6289,14 @@
     body: { x: 294, y: 160, w: 49, h: 51, cols: 3, rows: 3 }, legs: { x: 324, y: 190, w: 31, h: 38, cols: 3, rows: 9 },
     head: { x: 305, y: 136, w: 34, h: 30, cols: 9, rows: 5 },
     rest: { x: 288, y: 138, w: 61, h: 88 }, seat: [325, 199], chest: [313.8, 177.3], tip: { w: 8, h: 11, seat: [4.6, 7.6] },
-    lean: [11.4, 11, 10.5, 10, 9.5, 9, 8.5, 8, 7.5], knee: [-0.15, -0.12, -0.09, -0.06, -0.03, 0, 0.035, 0.07, 0.105], ankle: [-0.02, 0, 0.02] };
+    lean: [20.4, 20, 19.5, 19, 18.5, 18, 17.5, 17, 16.5], knee: [-0.15, -0.12, -0.09, -0.06, -0.03, 0, 0.035, 0.07, 0.105], ankle: [-0.02, 0, 0.02] };
   const KIL = { x: KM.rest.x, y: KM.rest.y, w: KM.rest.w, h: KM.rest.h, state: 'sit', t: 0, edge: [], dash: null, sparks: [], up: false, down: false, tick: 0,
     f: {}, br: Math.random() * 4.6, wind: 0, wt: 0, pitch: 2, pt: 0, doze: 30 + Math.random() * 40, dz: -1, start: 0, jolt: 0, ph: null };
   // his legs, his shirt's hem and the board at rest: the shin's angle k (rad, + under) and speed, the foot's lag a, the
   // hem e (steps), the board's lean b (rad) and speed; the next little kick; the bursts' clock
   const kilPh = () => ({ k: 0, kv: 0, a: 0, av: 0, k2: 0, kv2: 0, a2: 0, av2: 0, e: 0, ev: 0, b: 11 * Math.PI / 180, bv: 0, kt: -9, kick: 0, f: 0, next: 3 + Math.random() * 8, t: Math.random() * 60, acc: 0 });   // (k2, a2: the far leg's)
   KIL.ph = kilPh();
-  const KSRC = { board: 'assets/killua_board.webp?v=2', body: 'assets/killua_body.webp?v=4', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=1' };
+  const KSRC = { board: 'assets/killua_board.webp?v=3', body: 'assets/killua_body.webp?v=4', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=1' };
   const kilMesh = new THREE.Group(); scene.add(kilMesh);        // his four layers, hidden together while he is a bolt
   const kilPart = {};
   for (const [n, z] of [['board', 0.016], ['body', 0.018], ['legs', 0.019], ['head', 0.02]]) {
@@ -6533,7 +6533,8 @@
     const P = K.ph; P.acc += dt; let n = 0;
     while (P.acc >= 1 / 60 && n++ < 6) { P.acc -= 1 / 60; kilPhys(P, 1 / 60, br); }
     if (n > 6) P.acc = 0;
-    kilShow('board', kilNear(KM.lean, P.b * 180 / Math.PI)); kilShow('body', Math.min(2, Math.max(0, Math.round(P.e))) * 3 + b);
+    kilShow('board', kilNear(KM.lean, P.b * 180 / Math.PI + 9));   // (its foot 9 deg out, in the gutter: the rocking as it was)
+    kilShow('body', Math.min(2, Math.max(0, Math.round(P.e))) * 3 + b);
     kilShow('legs', kilNear(KM.knee, P.k) * 3 + kilNear(KM.ankle, P.a)); kilShow('head', K.pitch * 9 + K.wind * 3 + b);
     kilShow('far', kilNear(KM.knee, P.k2) * 3 + kilNear(KM.ankle, P.a2));
   }
