@@ -29,7 +29,7 @@ from scipy import ndimage as ndi
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
-BEFORE = 'aa383bc'                     # (the layers as they were, the tree whole)
+BEFORE = 'c8de52b'                     # (the layers as they were, the tree whole)
 TREE_BOX = (326, 270, 492, 572)        # x0, y0, x1, y1: the tree, right of the house's wall (x 325)
 TOP = 450                              # the crown's highest point: the oden's roof
 MIRROR = 334 + 426                     # the painted top (x 334..426) mirrored: x -> MIRROR - x
