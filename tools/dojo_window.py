@@ -8,7 +8,8 @@ Over the tree in front of the dojo the house's upper wall shows (x 0..131, its c
 there had become a smear (the wall's boards, redrawn toward their vanishing point, ran over it): that part of the wall
 (REFILL) is all boards now, without a seam: its boards run on the rays to the street's vanishing point VP, each the same
 board all along its ray, so each pixel takes the board of its own ray where that ray crosses the wall's clean boards
-(CLEAN), or, where it does not, the board a whole number of boards over (the boards' spacing as seen from VP: DTHETA).
+(CLEAN), or, where it does not, the board a whole number of boards over (the boards' spacing as seen from VP: DTHETA);
+along it a different pixel of that board for each column, back and forth, so that its grain stays.
 
 Lower on that wall, behind the tree, a big window: the owner's reference (tools/src/dojo_window_ref.png, ref_house_trad_7:
 its frame, its two panes and their curtains, its balcony rail), set into the wall in perspective: its head and its sill
@@ -40,8 +41,9 @@ ZONE = (0, 0, 140, 200)              # x0, y0, x1, y1: taken back from BEFORE; w
 WALL_X1 = 131                        # the wall's last column (its corner post past it)
 REFILL = (0, 0, 82, 80)              # the old window's part of the wall and its smudged edge, all boards again
 LEAF = 45                            # (a leaf: darker than this, where the tree's change put a pixel)
-VP = (725.0, 625.0)                  # the street's vanishing point (the boards, the windows' heads and sills run to it)
-CLEAN, DTHETA = (82, 108, 2, 66), 0.01175   # the wall's clean boards (x0, x1, y0, y1); the boards' spacing seen from VP (rad)
+VP = (718.0, 669.0)                  # the corner's vanishing point: the painter's own for these two houses (their boards,
+                                     # their eaves; a little under the street's), the boards, the window's head and sill run to it
+CLEAN, DTHETA = (82, 108, 2, 66), 0.0113    # the wall's clean boards (x0, x1, y0, y1); the boards' spacing seen from VP (rad)
 XL, XR, Y0, H = 8, 122, 0, 100       # the whole window: its first and last columns, its top's row at XL, its height there
 UNIT = ((10, 0, 522, 12), (0, 12, 531, 99), (70, 97, 471, 371), (42, 242, 496, 426))   # in the reference (x0, y0, x1, y1): its
                                      # hood's ridge, its hood (tiles, eaves, the shadow under them), its frame and panes, its balcony
@@ -110,13 +112,15 @@ def main():
     # own ray where that ray crosses the wall's clean boards (CLEAN), or, where it does not, the board a whole number of
     # boards over (the boards' spacing as seen from VP: DTHETA)
     cx0, cx1, cy0, cy1 = CLEAN
-    def board(x, y):
-        th = np.arctan2(y - VP[1], x - VP[0])
+    def board(x, y):                                                         # (its grain kept: along the board, a different pixel
+        th = np.arctan2(y - VP[1], x - VP[0])                                # of the clean boards for each column, back and forth)
         for k in sorted(range(-12, 13), key=abs):
             tn = np.tan(th + k * DTHETA)
-            for xs in range(cx0, cx1 + 1):
-                ys = int(round(VP[1] + tn * (xs - VP[0])))
-                if cy0 <= ys <= cy1: return ys, xs
+            pts = [(int(round(VP[1] + tn * (xs - VP[0]))), xs) for xs in range(cx0, cx1 + 1)]
+            pts = [p for p in pts if cy0 <= p[0] <= cy1]
+            if pts:
+                n = len(pts); i = (cx0 - 1 - x) % (2 * n)                     # (mirrored from the clean boards' edge: no seam)
+                return pts[i if i < n else 2 * n - 1 - i]
     rx0, ry0, rx1, ry1 = REFILL
     for x in range(rx0, rx1):
         for y in range(ry0, ry1):
