@@ -4624,7 +4624,7 @@
     { id: 'affiche', at: [770, 430], fr: "attraper l'affiche", en: 'catch the flyer', kind: 'chase', dur: 6 },
     { id: 'arcade', at: [1416, 592], fr: "rallumer l'arcade", en: 'relight the arcade', kind: 'hover', base: 0, gain: 0, dur: 1.0 },
     { id: 'etoile', at: [640, 262], fr: 'toucher une étoile', en: 'touch a star', kind: 'climb', base: 0.05, gain: 0, dur: 1.4 }];
-  const XP_HOME = [556, 531], XP_BUDGET = 60, XP_EPS = 0.2, XP_OK = 0.8;
+  const XP_HOME = [556, 531], XP_BUDGET = 60, XP_EPS = 0.2, XP_OK = 0.8, XP_WIN = [[549, 518, 568, 539]];   // (XP_WIN: its way out of the window and back in)
   const XP = { on: false, ph: '', t: 0, T: 0, x: 0, y: 0, a: 0, g: null, why: '', alp: 0, from: null, to: null, dur: 0, rows: [], C: {}, tried: {},
     flyX: [], att: null, led: '#ff6fb5', fl: null, saved: lsJSON('mtsfj-explore', null), mesh: null, ledM: null, cv: null, fr: -1, graded: false };
   const XP_COL = { pink: '#ff6fb5', ok: '#5dff9a', no: '#ff4d5e' };
@@ -4688,8 +4688,10 @@
       if (!b) b = [x, y, x, y]; else { b[0] = Math.min(b[0], x); b[1] = Math.min(b[1], y); b[2] = Math.max(b[2], x); b[3] = Math.max(b[3], y); }
       if (i % 4 === 0 && i) { A.push([b[0] - 6, b[1] - 6, b[2] + 7, b[3] + 7]); b = [x, y, x, y]; }
     }
-    if (G) { const k = XP_TRY[G.kind] || XP_TRY.hover; A.push([x1 + k[0], y1 + k[1], x1 + k[2], y1 + k[3]]); }
-    STAGE.done('xp'); return STAGE.spot('xp', d + (G ? G.dur || 6 : 0) + 0.8, { area: A });
+    if (G) { const k = XP_TRY[G.kind] || XP_TRY.hover; A.push([x1 + k[0], y1 + k[1], x1 + k[2], y1 + k[3]]); } else A.push(XP_WIN[0]);   // (home: in through the window)
+    const dur = d + (G ? G.dur || 6 : 0) + 0.8;
+    if (!STAGE.free(A, dur, { name: 'xp' })) return false;   // (its last place kept meanwhile)
+    STAGE.done('xp'); return STAGE.spot('xp', dur, { area: A });
   }
   function xpNext() {
     if (XP.T >= XP_BUDGET) { if (xpLeg([XP_HOME[0] + 4, XP_HOME[1] - 6], null)) xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home'); else { XP.ph = 'wait'; XP.t = 0; STAGE.spot('xp', 1, { area: [[XP.x - 6, XP.y - 6, XP.x + 7, XP.y + 7]] }); } return; }
@@ -4711,7 +4713,7 @@
       : ['explore.py : un agent autotélique. il choisit ses buts', "selon son progrès d'apprentissage. il est dans la rue."];
     Object.assign(XP, { rows: [], C: {}, tried: {}, flyX: [], T: 0, t: 0, x: XP_HOME[0], y: XP_HOME[1], a: 0, ph: 'out', att: null, fl: null });
     if (reduced) { xpSimulate(); return head.concat([L ? '(reduced motion: it ran in simulation. cat explore.log)' : '(mouvement réduit : il a couru en simulation. cat explore.log)']); }
-    XP.on = true; STAGE.done('xp'); STAGE.spot('xp', 3, { area: [[XP_HOME[0] - 7, XP_HOME[1] - 13, XP_HOME[0] + 12, XP_HOME[1] + 8]] });   // (its place, STAGE: out of the window first)
+    XP.on = true; STAGE.done('xp');                // (its place asked as it comes out: stepExplore)
     setTimeout(() => closePC(), 1400);
     return head.concat([L ? '(this window closes: watch the street)' : '(cette fenêtre se ferme : regardez la rue)']);
   }
@@ -4731,9 +4733,10 @@
     if (!XP.mesh) xpBuild();
     if (!XP.graded) { XP.graded = true; try { gradeSprite(XP.mesh.material, 'street'); gradeSprite(XP.ledM.material, 'self'); } catch (e) {} }
     XP.T += dt; XP.t += dt;
-    if (FINS.t >= 0 && XP.ph !== 'home' && XP.ph !== 'in' && XP.ph !== 'out') { xpLeg([XP_HOME[0] + 4, XP_HOME[1] - 6], null); xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home'); }   // (the finale: home at once)
+    if (FINS.t >= 0 && XP.ph !== 'home' && XP.ph !== 'in' && XP.ph !== 'out') { xpLeg([XP_HOME[0] + 4, XP_HOME[1] - 6], null); xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home'); }   // (the finale: home at once, the set closed behind it)
     let led = XP_COL.pink, lv = 1;
     if (XP.ph === 'out') {                       // out of the window: it fades in, rises a little
+      if (!STAGE.res.xp && !STAGE.spot('xp', 3, { area: XP_WIN })) XP.t = 0;   // (its place, STAGE: the window's; taken, it waits inside)
       XP.a = Math.min(1, XP.t / 0.5); XP.x = XP_HOME[0] + 4 * Math.min(1, XP.t / 0.6); XP.y = XP_HOME[1] - 6 * Math.min(1, XP.t / 0.6);
       if (XP.t >= 0.7) xpNext();
     } else if (XP.ph === 'fly' || XP.ph === 'home') {
