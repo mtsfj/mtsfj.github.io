@@ -161,7 +161,7 @@
   const flyTex = loader.load('assets/om_flyer.webp'); flyTex.magFilter = flyTex.minFilter = THREE.LinearFilter; flyTex.generateMipmaps = false;
   const flyer = new THREE.Mesh(new THREE.PlaneGeometry(416, 640), new THREE.MeshBasicMaterial({ map: flyTex, transparent: true, depthWrite: false }));
   flyer.visible = false; flyer.position.z = 4; scene.add(flyer);
-  const flyS = { active: false, t: 0, x: 0, dx: 0, ph: 0, next: 35 + Math.random() * 70, caught: -1 };   // (dx: its drift with the wind while it falls)
+  const flyS = { active: false, t: 0, x: 0, dx: 0, ph: 0, next: 20 + Math.random() * 40, caught: -1 };   // (dx: its drift with the wind while it falls)
 
   // the sky by the hour (package 1): what the hour asks of the sky this frame, set by skyHours() (from stepNight), read by
   // the stars, Mars, the moon, the Battle Bus and its skydivers. nt: the night's depth on the far planes (0 the painted
@@ -562,7 +562,7 @@
   (function () { const g = plGlowC.getContext('2d'), r = g.createRadialGradient(8, 8, 0, 8, 8, 8); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.3, 'rgba(255,255,255,.6)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 16, 16); })();
   const plGlowTex = new THREE.CanvasTexture(plGlowC);
   // ---- STAGE, the street director (package 8): the big events ask it before they start, so that two never run at once on
-  // the street, none starts within 15 s of another (any lane), a street quiet for 45 s pulls in the event that is soonest
+  // the street, none starts within 8 s of another (any lane), a street quiet for 25 s pulls in the event that is soonest
   // due, and the opening or the finale can close the set. Two lanes: the street (the TranZit and the crew, the oden master,
   // the OM flyer, Gengar) and the sky (the Battle Bus, the summit climber: they never block the street).
   // ask(name, seconds, { prio, lane }) answers now and reserves the lane for `seconds` at most (ask for the longest the
@@ -585,7 +585,7 @@
   // leaves on the road), or runs out as the lane's does.
   // Under reduced motion nothing asks (no event starts). stats: the answers; state.res: the places, for the debug page ----
   const STAGE = {
-    GAP: 15, MAX: 45, PULLMAX: 240, on: { street: null, sky: null }, holds: new Map(), last: 0, lastS: 0, end: 0, q: {}, log: [], pulled: null, lastPulled: null,
+    GAP: 8, MAX: 25, PULLMAX: 240, on: { street: null, sky: null }, holds: new Map(), last: 0, lastS: 0, end: 0, q: {}, log: [], pulled: null, lastPulled: null,
     res: {}, ylds: {}, blk: null,
     stats: { yes: 0, hold: 0, busy: 0, gap: 0, pull: 0, place: 0, yld: 0 },
     _tick() { for (const lane of ['street', 'sky']) { const c = this.on[lane]; if (c && t >= c.until) { this.on[lane] = null; if (lane === 'street') this.end = c.until; } } },
@@ -742,7 +742,7 @@
     B.t += dt;
     const trav = B.v * B.t;
     if (B.yv >= 0) { B.yv = Math.min(40, B.yv + 30 * dt); B.y -= B.yv * dt; }   // (giving way: its burner fired, it climbs away)
-    if (trav >= span || (B.yv >= 0 && B.y < -T.H)) { B.active = false; T.mesh.visible = false; B.x = -999; B.next = 150 + Math.random() * 150; STAGE.done('bbus'); return; }   // (2 crossings in 10 min, not 4-5)
+    if (trav >= span || (B.yv >= 0 && B.y < -T.H)) { B.active = false; T.mesh.visible = false; B.x = -999; B.next = 40 + Math.random() * 45; STAGE.done('bbus'); return; }   // (a crossing about every 2 min)
     B.x = B.dir > 0 ? -24 + trav : IW + 24 - trav;
     // the pendulum (five poses) and the envelope's bob; the rim on the side that faces the glow, crossfaded in eighths
     const k = Math.round(2 * Math.sin(B.t / B.ps * 6.2832 + B.p0)), up = Math.sin(B.t / B.tb * 6.2832 + B.pb) > 0.4 ? 1 : 0;
@@ -1297,7 +1297,7 @@
   // 8-15 min; not under the Konami fireworks, never under reduced motion (nothing is made). Its own: not in pwList, the fuse
   // box's blackout leaves it as it is. Not a secret. Debug: ?climber in the URL brings it 4 s after the page opens.
   const CLB = {"W":18,"H":14,"AX":9,"AY":12,"cols":16,"rows":5,"dt":0.1,"seq":[[0,630,269,1],[1,629,269,2],[2,629,268,3],[3,628,266,1],[4,628,266,1],[3,628,266,1],[5,628,265,1],[6,628,265,2],[7,627,264,1],[6,627,264,2],[5,627,264,2],[8,627,264,1],[5,626,264,4],[6,626,264,2],[7,625,263,1],[6,625,263,2],[5,625,263,2],[8,625,263,1],[9,624,263,1],[5,624,263,3],[6,624,263,2],[10,623,262,1],[6,623,262,1],[5,623,262,4],[11,622,261,1],[5,622,261,3],[6,622,261,2],[12,621,261,1],[6,621,261,1],[5,621,261,3],[5,620,261,1],[9,620,261,1],[5,620,261,2],[6,620,261,1],[13,620,261,1],[7,619,260,1],[10,619,260,1],[6,619,260,1],[5,619,260,2],[8,619,260,1],[8,618,260,1],[5,618,260,3],[6,618,260,1],[7,618,260,1],[7,617,260,1],[6,617,260,2],[5,617,260,2],[8,617,260,1],[8,616,260,1],[5,616,260,3],[6,616,260,1],[7,616,260,1],[12,615,260,1],[6,615,260,1],[5,615,260,4],[8,615,260,2],[7,615,260,6],[8,615,260,1],[14,615,260,2],[15,615,260,1],[16,615,260,1],[17,615,260,1],[18,615,260,1],[19,615,260,2],[20,615,260,1],[19,615,260,1],[21,615,260,1],[22,615,260,1],[23,615,260,1],[24,615,260,1],[25,615,260,1],[26,615,260,1],[27,615,260,1],[28,615,260,1],[22,615,260,1],[29,615,260,1],[30,615,260,1],[31,615,260,1],[32,615,260,1],[33,615,260,1],[22,615,260,1],[23,615,260,1],[24,615,260,1],[34,615,260,1],[35,615,260,1],[36,615,260,1],[37,615,260,1],[38,615,260,1],[39,615,260,1],[40,615,260,1],[41,615,260,1],[42,615,260,1],[43,615,260,1],[44,615,260,1],[23,615,260,1],[45,615,260,1],[46,615,260,1],[47,615,260,1],[48,615,260,1],[49,615,260,1],[50,615,260,1],[38,615,260,1],[51,615,260,1],[52,615,260,2],[19,615,260,1],[20,615,260,1],[53,615,260,1],[18,615,260,1],[17,615,260,1],[16,615,260,1],[15,615,260,1],[14,615,260,1],[8,615,260,1],[7,615,260,10],[8,615,260,1],[54,615,260,1],[55,615,260,1],[56,615,260,1],[57,615,260,6],[58,615,260,1],[58,616,260,1],[57,616,260,1],[58,616,260,1],[59,616,260,1],[60,616,260,1],[61,617,260,1],[60,617,260,1],[59,617,260,2],[58,618,260,1],[62,618,260,1],[58,618,260,2],[59,618,260,1],[60,619,260,1],[63,619,260,1],[60,619,260,1],[59,619,260,1],[59,620,261,1],[58,620,261,1],[62,620,261,1],[58,620,261,2],[59,621,261,1],[60,621,261,1],[61,621,261,1],[60,621,261,1],[59,622,261,2],[58,622,261,1],[64,622,261,1],[58,622,261,1],[58,623,262,1],[59,623,262,1],[60,623,262,1],[63,623,262,1],[60,624,263,1],[59,624,263,2],[58,624,263,1],[62,624,263,1],[58,625,263,2],[59,625,263,1],[60,625,263,1],[61,626,264,1],[60,626,264,1],[59,626,264,2],[58,626,264,1],[64,627,264,1],[58,627,264,2],[59,627,264,1],[60,627,264,1],[65,628,266,1],[66,628,266,1],[67,628,266,1],[68,628,267,1],[69,629,268,2],[70,629,269,2]]};
-  const clbS = { t: -1, i: 0, shown: -1, next: /[?&]climber\b/.test(location.search) ? 4 : 180 + Math.random() * 180 };
+  const clbS = { t: -1, i: 0, shown: -1, next: /[?&]climber\b/.test(location.search) ? 4 : 30 + Math.random() * 60 };
   let clb = null, clbTex = null;
   if (!reduced) {
     clbTex = crisp('assets/fuji_climber.webp?v=1'); clbTex.repeat.set(1 / CLB.cols, 1 / CLB.rows);
@@ -1315,7 +1315,7 @@
     }
     clbS.t += dt;
     while (clbS.i < CLB.seq.length && clbS.t >= CLB.seq[clbS.i][4]) clbS.i++;
-    if (clbS.i >= CLB.seq.length) { clb.visible = false; clbS.t = -1; clbS.next = 480 + Math.random() * 420; STAGE.done('climber'); return; }   // gone behind the rim
+    if (clbS.i >= CLB.seq.length) { clb.visible = false; clbS.t = -1; clbS.next = 100 + Math.random() * 100; STAGE.done('climber'); return; }   // gone behind the rim
     if (clbS.i !== clbS.shown) {                                        // a new step: its cell, at its anchor px
       const e = CLB.seq[clbS.i]; clbS.shown = clbS.i;
       clbTex.offset.set((e[0] % CLB.cols) / CLB.cols, 1 - (Math.floor(e[0] / CLB.cols) + 1) / CLB.rows);
@@ -1715,7 +1715,7 @@
     if (!CREW.tex && CREW.vis > 120 && crewMay()) crewLoad();   // (the crew's sheets well before it is due)
     if (reduced && !S.active) return;                // (reduced motion: it never drives; rmBus parks it, by cuts)
     if (!S.active) {
-      S.next = STAGE.due('tranzit', S.next);         // (a street quiet for 45 s pulls it in)
+      S.next = STAGE.due('tranzit', S.next);         // (a street quiet for 25 s pulls it in)
       S.next -= dt; if (S.next >= 0) return;
       if (!LATE.ready.bus) { S.next = 1; return; }     // (its sheets not in yet: a second later)
       const C_ = S.call;                             // (called by CREW.api.callBus: its direction, its stop, held there)
@@ -1810,7 +1810,7 @@
     }
     if (CREW.active) crewStep(dt, x0, L, S);
     if (S.hold && S.wait > 0) S.wait = Math.max(S.wait, 0.5);   // (held at its stop for the finale: CREW.api.release())
-    if ((S.dir > 0 && x0 > BUS.gap[1] + 4) || (S.dir < 0 && x0 + BUS.W < BUS.gap[0] - 4)) { busOff(true); S.next = 70 + Math.random() * 110; crewGone(); }
+    if ((S.dir > 0 && x0 > BUS.gap[1] + 4) || (S.dir < 0 && x0 + BUS.W < BUS.gap[0] - 4)) { busOff(true); S.next = 40 + Math.random() * 70; crewGone(); }
   }
   // ---- TranZit's zombies, riding the bus (bus/zombie_rig.py: rigged figures, joints posed by rotations and IK; dressed
   // and lit by bus/zombie_look.py: torn clothes on spring chains, rotting grey-green skin, tufts of hair, lit by the
@@ -2115,7 +2115,7 @@
       if (now - RMB.kill > 25000) { ZG.active = false; tzHud(); RMB.won = now - 1400; }   // (left alone: it goes 0.8 s on, its riders with it)
     }
     if (STAGE.holds.size || (RMB.won ? now - RMB.won > 2200 : !ZG.active && now - RMB.at > RMB.stay)) {   // (a cut out)
-      busOff(true); S.next = 70 + Math.random() * 110; frame(); rmBusNext(S.next); return;
+      busOff(true); S.next = 40 + Math.random() * 70; frame(); rmBusNext(S.next); return;
     }
     if (cut) frame();
     rmBusNext(0.25);
@@ -4088,7 +4088,7 @@
   // others (the shooting star, zone 1's two scenes, the far city's events, the cat's comings and goings) have their
   // clocks parked, every frame of it (a clock its event sets again once over is parked again, the latest kept), and are
   // given back spread out at its end. The directed ones are parked too: harmless (a parked clock is never pulled in).
-  // Its end is a street event's end to the director: the next start 15 s on at the soonest, a pull-in 45 s on
+  // Its end is a street event's end to the director: the next start 8 s on at the soonest, a pull-in 25 s on
   const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => Z1S, 12], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock's owner, back after (s), the clock ('next')]
   function finHold(on) {
     try {
@@ -5739,7 +5739,7 @@
   // the night: from 1 h to 8 h the balcony is dark (openK('balcony'): the hours stay the rule). A few times an hour Naruto, who cannot
   // sleep, lights it for 30-60 s and crosses or stands at the glass (so the four heroes can be found at any hour); never during the
   // finale, the red night or the power cut. Debug: ?heroes in the URL brings it 4 s after the page opens
-  const NNV = { on: false, next: /[?&]heroes\b/.test(location.search) ? 4 : 240 + Math.random() * 480 };
+  const NNV = { on: false, next: /[?&]heroes\b/.test(location.search) ? 4 : 50 + Math.random() * 100 };
   const heroNight = () => { try { return !(FIN.t >= 0) && !REDN.on && !PW.on; } catch (e) { return true; } };
   function stepWindow(dt) {
     const W2 = WIN2; W2.t += dt; stepNFin(dt);
@@ -5760,7 +5760,7 @@
       if ((W2.t > W2.next || (openK('balcony') < 0.5 && !NNV.on)) && !busy) { W2.state = 'off-going'; W2.t = 0; }   // (the night visit: its own 30-60 s)
     } else {                                                                         // going out, in the same order
       for (let k = 0; k < WL.n; k++) { const tk = W2.t - k * 0.3; W2.I[k] = tk < 0 ? W2.I[k] : Math.max(0, 1 - tk / 0.25); }
-      if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 60 + Math.random() * 180; W2.I = [0, 0, 0, 0]; if (NNV.on) { NNV.on = false; NNV.next = 600 + Math.random() * 600; } }
+      if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 60 + Math.random() * 180; W2.I = [0, 0, 0, 0]; if (NNV.on) { NNV.on = false; NNV.next = 120 + Math.random() * 120; } }
     }
     const here = nStep(dt);
     if (NAR.a || NAR.q.length || here) { if (!STAGE.res.naruto) STAGE.spot('naruto', 60, NAR_AT); } else if (STAGE.res.naruto) STAGE.done('naruto');   // (the finale's own visit too)
@@ -6288,7 +6288,7 @@
   // the grain cut out, like the ramen shop's: its core darkens the glass to about half, as measured on the ramen's), his
   // head and shoulders over the doors' wooden lower half. He walks along the shop a metre inside: feet and head follow
   // lines to the vanishing point (700, 615), he grows as he comes nearer (left), sometimes stops a moment behind the doors
-  const ODOOR = odenGlass(ODEN.door, 'assets/oden_door.webp?v=1'), OIN = { acc: 0, who: null, next: 30 + Math.random() * 60 };
+  const ODOOR = odenGlass(ODEN.door, 'assets/oden_door.webp?v=1'), OIN = { acc: 0, who: null, next: 15 + Math.random() * 40 };
   ODOOR.mesh.visible = false;
   const odShC = document.createElement('canvas'); odShC.width = ODEN.door[2]; odShC.height = ODEN.door[3]; const odSh = odShC.getContext('2d');
   function stepOdenDoor(dt, t) {
@@ -6304,7 +6304,7 @@
     const s = (700 - W.x) / 6.4;                // px per metre, a metre inside the facade (camera 1.2 m up, facade 5.4 m off)
     if (W.stop !== null && Math.abs(W.x - W.stop) < 0.6 && W.wait < 2.2) W.wait += dt;   // stops, looks out at the rain
     else { W.x += W.dir * W.v * (700 - W.x) * (700 - W.x) / (485 * 6.4) * dt; W.ph += dt * W.v * 3.6; }   // along the shop: foreshortened
-    if (W.x < 404 || W.x > 478) { OIN.who = null; OIN.next = 45 + Math.random() * 75; ODOOR.mesh.visible = false; STAGE.done('oden'); return; }
+    if (W.x < 404 || W.x > 478) { OIN.who = null; OIN.next = 25 + Math.random() * 45; ODOOR.mesh.visible = false; STAGE.done('oden'); return; }
     OIN.acc += dt; if (OIN.acc < 1 / 20 || !odenSeen(ODOOR.box)) return; OIN.acc = 0;
     const G = ODOOR, [bx, by, bw, bh] = G.box, g = odSh;
     const m = (v) => v * s, feet = 615 + 1.2 * s, bob = W.wait > 0 ? 0 : Math.abs(Math.sin(W.ph * Math.PI)) * m(0.015);
@@ -6416,12 +6416,12 @@
     gg.globalAlpha = alpha; gg.drawImage(G.sh, 0, 0, w * G.K, h * G.K); gg.filter = 'none'; gg.globalAlpha = 1;
     odenFinish(G); G.mesh.material.opacity = light;
   }
-  const Z1S = { who: null, next: 20 + Math.random() * 40, acc: 0 }, Z1F = { who: null, next: 80 + Math.random() * 120, acc: 0 };
+  const Z1S = { who: null, next: 20 + Math.random() * 40, acc: 0 }, Z1F = { who: null, next: 20 + Math.random() * 40, acc: 0 };
   const z1Busy = (n) => !!((n === 'win_z1_warm' && Z1S.who) || (n === 'win_z1_top' && Z1F.who));   // someone crossing that window now
   // the night: Red's window is dark from 1 h to 4 h (the comp's hours: the rule). A few times an hour he is up late on his Game Boy:
   // its screen's glow lights the glass (a cool light at 0.62, over the comp's own level, never under it) and he comes to stand there,
   // breathing, 16-24 s; then the glow goes. Never during the finale, the red night or the power cut. Debug: ?heroes brings it 4 s in
-  const RNV = { on: false, k: 0, t: 0, next: /[?&]heroes\b/.test(location.search) ? 4 : 300 + Math.random() * 600 };
+  const RNV = { on: false, k: 0, t: 0, next: /[?&]heroes\b/.test(location.search) ? 4 : 60 + Math.random() * 120 };
   function stepZ1(dt, t) {
     if (Z1.top) {                                // (the glow serves the reduced-motion still too: only the visit's own start waits for motion)
       const u = Z1.top.userData, m = Z1.top.material;
@@ -6429,7 +6429,7 @@
       if (RNV.on) {
         RNV.t += dt; RNV.k += (((RNV.t < 30 || Z1F.who) && heroNight() ? 1 : 0) - RNV.k) * Math.min(1, dt * 3);
         m.opacity = Math.max(m.opacity, 0.62 * RNV.k); m.color.setRGB(1 - 0.22 * RNV.k, 1 - 0.1 * RNV.k, 1);
-        if (RNV.t > 30 && !Z1F.who && RNV.k < 0.01) { RNV.on = false; RNV.next = 600 + Math.random() * 600; m.color.setRGB(1, 1, 1); }
+        if (RNV.t > 30 && !Z1F.who && RNV.k < 0.01) { RNV.on = false; RNV.next = 120 + Math.random() * 120; m.color.setRGB(1, 1, 1); }
       }
     }
     // the curtain: crosses the room (2-5 s in the window), sometimes stops a moment; only with the light on
@@ -6468,7 +6468,7 @@
         }
       }
       if (F) {
-        if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 120 + Math.random() * 150; z1Door.mesh.visible = false; STAGE.done('red'); }
+        if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 30 + Math.random() * 45; z1Door.mesh.visible = false; STAGE.done('red'); }
         else if ((Z1F.acc += dt) >= 1 / 20 && odenSeen(z1Door.box) && zrSheet.complete && zrSheet.naturalWidth) {
           Z1F.acc = 0;
           z1Draw(z1Door, light, 0.78, 0.7, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig)); z1Ball(z1Door, F.fig);
@@ -7928,7 +7928,7 @@
     const tex = new THREE.CanvasTexture(cv); tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
     const m = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
     m.visible = false; m.position.z = -2.5; scene.add(m);
-    return { m, g: cv.getContext('2d'), tex, W, H, sig: '', met: null, next: 300 + Math.random() * 300 };
+    return { m, g: cv.getContext('2d'), tex, W, H, sig: '', met: null, next: 40 + Math.random() * 60 };
   })();
   function skShardsDraw(days, full, met) {
     const S = skShards, W = S.W, H = S.H, im = S.g.createImageData(W, H), d = im.data, cx = W / 2, cy = H / 2;
@@ -7971,7 +7971,7 @@
     const days = SKYD.shardsT ? Math.max(0, (Date.now() - SKYD.shardsT) / 864e5) : 30, full = SKYD.fin;
     if (!reduced && !full) {
       if (S.met) { S.met.t += dt; if (S.met.t > 1.4) S.met = null; }
-      else if ((S.next -= dt) < 0) { S.next = 300 + Math.random() * 300; S.met = { t: 0, x: 110 + Math.random() * 40, y: 88 + Math.random() * 16 }; }
+      else if ((S.next -= dt) < 0) { S.next = 60 + Math.random() * 60; S.met = { t: 0, x: 110 + Math.random() * 40, y: 88 + Math.random() * 16 }; }
     }
     const sig = Math.round(days * 4) + '|' + (full ? 1 : 0) + '|' + (S.met ? Math.floor(S.met.t * 30) : -1);
     if (sig !== S.sig) { S.sig = sig; skShardsDraw(days, full, S.met); }
@@ -8459,7 +8459,7 @@
   // him: never a lit frame, never a line); two red eyes once, a blink; then he sinks away, fading, and the screen stutters twice
   // (a ghost and electronics). Seen only through the glass: the door's frames and mullions stay in front of him (the shop's
   // comp's own glass, read at run time). Nothing to hover, no cursor. Reduced motion: he never comes; nor in a power cut ----
-  const GG = { on: false, t: 0, next: 150 + Math.random() * 450, img: new Image(), c: document.createElement('canvas'), acc: 0, sil: null, edge: null, nz: null, mask: null };
+  const GG = { on: false, t: 0, next: 30 + Math.random() * 90, img: new Image(), c: document.createElement('canvas'), acc: 0, sil: null, edge: null, nz: null, mask: null };
   lateImg(GG.img, 'assets/gengar_shadow.webp?v=2'); GG.c.width = 88; GG.c.height = 96;   // (the canvas: x 860-904, y 580-628, 2 px per scene px)
   const ggg = GG.c.getContext('2d', { willReadFrequently: true }), ggD = ggg.createImageData(88, 96);
   const ggTex = new THREE.CanvasTexture(GG.c); ggTex.magFilter = ggTex.minFilter = THREE.NearestFilter; ggTex.generateMipmaps = false;
@@ -8504,7 +8504,7 @@
       Object.assign(GG, { on: true, t: 0 }); ggMesh.visible = true;
     }
     const T = 7.2, t = (GG.t += dt);
-    if (t > T || PW.on) { GG.on = false; ggMesh.visible = false; STAGE.done('gengar'); GG.next = 600 + Math.random() * 900; return; }
+    if (t > T || PW.on) { GG.on = false; ggMesh.visible = false; STAGE.done('gengar'); GG.next = 120 + Math.random() * 180; return; }
     if (Math.abs(t - 4.6) < dt / 2 + 1e-4 || Math.abs(t - 5.15) < dt / 2 + 1e-4) PKS.dip = 0.24;   // the screen stutters as he goes
     GG.acc += dt; if (GG.acc < 1 / 15) return; GG.acc = 0;
     // his path (scene px from his place: his cell's corner at 873.5, 595, his ears either side of the screen's light, his head cutting
@@ -8837,7 +8837,7 @@
   // ---- the healing machine behind the Center's door (lumieres-11): six lights of one scene pixel each, under the PC's screen, in the
   // night mode only: every 3-8 minutes one by one (0.35 s each), three blinks, dark again; their glow a broken cross (a pixel each
   // side, fainter). Additive, the shop's power (the fuses) and the red night (as the train's windows) ----
-  const HEAL = { slots: [[880, 614], [882, 614], [884, 614], [880, 616], [882, 616], [884, 616]], t: -1, next: 60 + Math.random() * 120, keep: 1, seen: 1 };
+  const HEAL = { slots: [[880, 614], [882, 614], [884, 614], [880, 616], [882, 616], [884, 616]], t: -1, next: 30 + Math.random() * 60, keep: 1, seen: 1 };
   const healPts = (() => {
     const n = HEAL.slots.length * 5, g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
@@ -8858,7 +8858,7 @@
     }
     H.t += dt;
     const i = Math.floor(H.t / 0.35), n = HEAL.slots.length, on = i < n ? i + 1 : i < n + 6 ? ((i - n) % 2 ? 0 : n) : -1;
-    if (on < 0) { H.t = -1; H.next = 180 + Math.random() * 300; healPts.visible = false; STAGE.done('heal'); return; }
+    if (on < 0) { H.t = -1; H.next = 40 + Math.random() * 60; healPts.visible = false; STAGE.done('heal'); return; }
     const C = healPts.geometry.attributes.color.array;
     for (let s = 0; s < n; s++) for (let q = 0; q < 5; q++) { const a = s < on ? (q ? 0.28 : 1) : 0, o = (s * 5 + q) * 3; C[o] = 0.62 * a; C[o + 1] = 0.2 * a; C[o + 2] = 0.16 * a; }
     healPts.geometry.attributes.color.needsUpdate = true; healPts.visible = on > 0;
@@ -9219,14 +9219,14 @@
       flyS.caught += dt; const k = Math.max(0, flyS.caught - 0.3) / 0.9, q = 1 - Math.max(0, 1 - flyS.caught / 0.3) * 0.03;
       flyer.scale.set(q, q, 1);
       flyer.position.x = flyS.cx - 950 * k * k; flyer.position.y = flyS.cy + 650 * k * k; flyer.rotation.z = flyS.cr + 0.7 * k;   // (up and to the left: with the wind, as the rain goes)
-      if (k >= 1) { flyS.active = false; flyS.caught = -1; flyer.visible = false; flyer.scale.set(1, 1, 1); flyS.next = 60 + Math.random() * 120; STAGE.done('flyer'); if (FWK.want) fwkTry(); }
+      if (k >= 1) { flyS.active = false; flyS.caught = -1; flyer.visible = false; flyer.scale.set(1, 1, 1); flyS.next = 35 + Math.random() * 70; STAGE.done('flyer'); if (FWK.want) fwkTry(); }
     } else {
       flyS.t += dt; const uf = flyS.t / 4.2;
       flyS.dx -= (40 + 260 * Math.max(0, gust.k)) * 0.5 * dt;   // the wind's drift, left (the drips' drops' rule)
       flyer.position.x = flyS.x + flyS.dx + Math.sin(flyS.t * 1.5 + flyS.ph) * 70;
       flyer.position.y = 340 - uf * (816 + 680);
       flyer.rotation.z = 0.13 * Math.sin(flyS.t * 1.2 + flyS.ph);
-      if (uf >= 1) { flyS.active = false; flyer.visible = false; flyS.next = 60 + Math.random() * 120; STAGE.done('flyer'); }
+      if (uf >= 1) { flyS.active = false; flyer.visible = false; flyS.next = 35 + Math.random() * 70; STAGE.done('flyer'); }
     }
     // moon station: slow warm pulse
     station.material.opacity = (0.06 + 0.3 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.1), 3)) * SKYF.up;   // (set with the moon)
@@ -9317,7 +9317,7 @@
     { at: [4.45, 12.4], a: -Math.PI / 2, s: [['go', 3.3, 12.1], ['go', 2.45, 11.6], ['eye', 0.8], ['look', -0.8, 1.5], ['look', 0.8, 1.5], ['eye', 0.4], ['go', 2.42, 8.4], ['go', 2.38, 5.4]] },
     { at: [-6.4, 16.2], a: Math.PI / 2, s: [['go', -4.7, 16.0], ['go', -2.3, 14.6], ['go', 2.42, 12.6], ['eye', 0.8], ['look', 0.8, 1.5], ['look', -0.8, 1.5], ['eye', 0.4], ['go', 2.4, 8.4], ['go', 2.36, 5.5]] },
     { at: [-6.4, 16.2], a: Math.PI / 2, s: [['go', -4.5, 15.8], ['go', -4.2, 12.6], ['eye', 0.8], ['look', 0.9, 1.6], ['eye', 0.4], ['go', -4.0, 5.6]] }];
-  const DRN = { on: false, next: 130 + Math.random() * 60, r: null, i: 0, st: '', hold: 0, X: 0, Z: 0, h: 0, vy: 0, a: 0, v: 0, roll: 0, led: 0, lt: 0,
+  const DRN = { on: false, next: 25 + Math.random() * 20, r: null, i: 0, st: '', hold: 0, X: 0, Z: 0, h: 0, vy: 0, a: 0, v: 0, roll: 0, led: 0, lt: 0,
     lv: null, gx: 0, gy: 0, w: 0, m: null, V: 0.65, W: 2.4, k: -1 };
   const drnH = (X) => (Math.abs(X) > 2.8 ? 0.15 : 0);   // the ground's height: the sidewalks (15 cm curbs), the road
   const R6L = { e: null };
@@ -9479,7 +9479,7 @@
     if (!D.on) {
       if (reduced || !LATE.ready.r6) return;
       D.next = STAGE.due('drone', D.next); D.next -= dt;
-      if (D.next < 0) { const ri = drnPick(); if (!STAGE.ask('drone', 40, { area: DRN_AREA[ri] })) { D.next = 4 + Math.random() * 5; return; } D.next = 240 + Math.random() * 240; drnStart(ri); }
+      if (D.next < 0) { const ri = drnPick(); if (!STAGE.ask('drone', 40, { area: DRN_AREA[ri] })) { D.next = 4 + Math.random() * 5; return; } D.next = 50 + Math.random() * 50; drnStart(ri); }
       return;
     }
     if ((D.lt += dt) > 20) { D.lt = 0; STAGE.ask('drone', 30); }   // (its lane kept while it is out)
@@ -9849,7 +9849,7 @@
   // still, by the hour. ?e33 in the URL: a
   // walk that ends in the Gommage 4 s after the page opens ----
   const E33 = { lvl: -1, fh: 0, fp: 0, fk: -1, fx: [], rows: null, ban: [772, 541, 20, 30], plq: [764, 598, 4, 7], tip: null, tipOn: false,
-    wk: null, cells: null, P: null, want: 0, wx: 0, next: /[?&]e33\b/.test(location.search) ? 4 : 150 + Math.random() * 210 };
+    wk: null, cells: null, P: null, want: 0, wx: 0, next: /[?&]e33\b/.test(location.search) ? 4 : 30 + Math.random() * 45 };
   E33.mono = plane('assets/e33_monolith.webp?v=1', 753, 280, 49, 91, -1.6);
   nrShade(E33.mono.material, 'tower');
   (function () {                                       // its colour at every hour: its stone (its own colour in the image, as the hour lights it)
@@ -10089,7 +10089,7 @@
         E33.next = STAGE.due('e33', E33.next); E33.next -= dt * (0.35 + 0.65 * NIGHT.home);
         if (E33.next <= 0) {
           if (!visible || document.hidden || PW.on || !STAGE.ask('e33', 40, { area: E33_AREA })) E33.next = 3 + Math.random() * 4;
-          else { e33Walk(/[?&]e33\b/.test(location.search) || Math.random() < 0.34); E33.next = 180 + Math.random() * 240; }
+          else { e33Walk(/[?&]e33\b/.test(location.search) || Math.random() < 0.34); E33.next = 40 + Math.random() * 50; }
         }
       }
     }
@@ -10115,7 +10115,7 @@
         const k = Math.min(1, W.t / 2.4), px = E33.cells[W.c], m = Math.floor(k * px.length), L = W.hx - WKS.ax, T = WKP.row - WKS.ay;
         for (; W.spawned < m; W.spawned++) { const q = px[W.spawned]; if (Math.random() < 0.3) e33Petal(q, L + q.x, T + q.y); }
         W.U.uDis.value = k;
-        if (k >= 1) { e33Off(); E33.next = 240 + Math.random() * 240; }
+        if (k >= 1) { e33Off(); E33.next = 50 + Math.random() * 50; }
       }
       if (W.on) {                                                        // its cell: the torso moves with the walk's cells (a planted foot stays put)
         const mir = W.dir < 0;
