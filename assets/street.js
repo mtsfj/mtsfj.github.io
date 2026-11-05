@@ -2990,11 +2990,12 @@
   // whole scene pixels and graded into the street's night). Its texture, one texel a scene pixel, the canvas's own rows: the
   // room lit (rows 0-385), and shut (386-771: its tubes, sign and claw machine out, its screens, half its marquees and its
   // exit sign on). ARC_PINS: where the model puts, in the canvas (local px), the cabinets' screens, the neon sign, the
-  // marquees and the display on the electrical box (quads: corners top left, top right, bottom right, bottom left; their
+  // marquees, the claw machine's glass and the display on the electrical box (quads: corners top left, top right, bottom right, bottom left; their
   // sides stay upright), the electrical box and the exit sign (rectangles: x, y, w, h)
-  const ARC_PINS = {"scr": [[[20.8, 190.12], [44.52, 190.07], [44.52, 221.89], [20.8, 222.25]], [[54.16, 190.05], [76.24, 190.01], [76.24, 221.41], [54.16, 221.74]], [[87.01, 189.99], [109.48, 189.94], [109.48, 220.91], [87.01, 221.25]]], "sign": [[8.0, 58.34], [19.07, 61.62], [19.07, 86.74], [8.0, 84.13]], "marq": [[[18.83, 167.53], [47.23, 167.73], [47.23, 180.44], [18.83, 180.39]], [[52.37, 167.77], [80.51, 167.97], [80.51, 180.51], [52.37, 180.45]], [[85.14, 168.0], [112.04, 168.19], [112.04, 180.57], [85.14, 180.52]]], "box": [21, 123, 12, 32], "disp": [[21.0, 124.22], [33.0, 124.51], [33.0, 132.43], [21.0, 132.18]], "exit": [76, 62, 5, 4]};
-  // its lights: the screens (their power only: they stay on when it shuts) and the neon sign (with its hours): [quad, light, screen?]
-  const ARC_SCREENS = [[ARC_PINS.scr[0], '#7fe0d8', 1], [ARC_PINS.scr[1], '#e890d8', 1], [ARC_PINS.scr[2], '#7fe0d8', 1], [ARC_PINS.sign, '#ff86d6', 0]];
+  const ARC_PINS = {"scr": [[[20.8, 190.12], [44.52, 190.07], [44.52, 221.89], [20.8, 222.25]], [[54.16, 190.05], [76.24, 190.01], [76.24, 221.41], [54.16, 221.74]], [[87.01, 189.99], [109.48, 189.94], [109.48, 220.91], [87.01, 221.25]]], "sign": [[8.0, 58.34], [19.07, 61.62], [19.07, 86.74], [8.0, 84.13]], "claw": [[8.0, 123.7], [20.12, 124.09], [20.12, 241.62], [8.0, 241.98]], "marq": [[[18.83, 167.53], [47.23, 167.73], [47.23, 180.44], [18.83, 180.39]], [[52.37, 167.77], [80.51, 167.97], [80.51, 180.51], [52.37, 180.45]], [[85.14, 168.0], [112.04, 168.19], [112.04, 180.57], [85.14, 180.52]]], "box": [21, 123, 12, 32], "disp": [[21.0, 124.22], [33.0, 124.51], [33.0, 132.43], [21.0, 132.18]], "exit": [76, 62, 5, 4]};
+  // its lights: the screens (their power only: they stay on when it shuts), the neon sign and the claw machine's glass (with
+  // its hours): [quad, light, screen?]
+  const ARC_SCREENS = [[ARC_PINS.scr[0], '#7fe0d8', 1], [ARC_PINS.scr[1], '#e890d8', 1], [ARC_PINS.scr[2], '#7fe0d8', 1], [ARC_PINS.sign, '#ff86d6', 0], [ARC_PINS.claw, '#ff9ad0', 0]];
   function arcQuad(q, ua, ub, va, vb) {        // a part of a pinned quad (fractions across, down), whole scene pixels, column by column
     ua = ua || 0; ub = ub === undefined ? 1 : ub; va = va || 0; vb = vb === undefined ? 1 : vb;
     const L = q[0][0], R = q[1][0], x0 = Math.round(L + ua * (R - L)), x1 = Math.round(L + ub * (R - L));
@@ -3016,8 +3017,8 @@
       if (hk < 0.999) { ag.globalAlpha = 1 - hk; ag.drawImage(arcImg, 0, ARC.h, ARC.w, ARC.h, 0, 0, ACW, ACH); ag.globalAlpha = 1; }
     }
     if (pwr < 1) { ag.fillStyle = 'rgba(6,4,16,' + 0.9 * (1 - pwr) + ')'; ag.fillRect(0, 0, ACW, ACH); }
-    // the screens and the sign breathe a little (the claw machine, behind the far post, only lights the room); a light runs
-    // along the marquees (arcS.chase, a third of each in turn)
+    // the screens, the sign and the claw machine (what the far post leaves of it) breathe a little; a light runs along the
+    // marquees (arcS.chase, a third of each in turn)
     ag.globalCompositeOperation = 'lighter';
     ARC_SCREENS.forEach(([q, col, scr], i) => {
       const cb = arcS.cab[i % arcS.cab.length];

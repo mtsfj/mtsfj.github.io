@@ -110,6 +110,7 @@ SS = 8
 OUT = 'arcade_interior.webp'
 SCREENS = ((175, 1085, 357, 1260), (432, 1085, 606, 1260), (692, 1085, 874, 1260))   # (dans l'image : u0, v0, u1, v1) les écrans
                                                                 # des trois bornes,
+CLAW_GLASS = (0, 765, 118, 1400)                                # la vitrine à pinces (son haut lumineux, sa vitre), l'enseigne,
 SIGN = (35, 345, 550, 490)                                      # le coffret électrique, son afficheur (sur ses ouïes), les
 FUSEBOX = (563, 697, 663, 885)                                  # frontons des bornes, la sortie de secours (fermée)
 DISPLAY = (567, 706, 661, 752)
@@ -619,6 +620,7 @@ def pins():
     def whole(q):                                                          # (au pixel : ses colonnes, ses rangées)
         return [[float(round(x)), round(y, 2)] for x, y in q]
     return {'scr': [cut(front_quad(*a, FOOT, sc)) for a in SCREENS], 'sign': cut(front_quad(*SIGN, FOOT, sw)),
+            'claw': cut(front_quad(*CLAW_GLASS, BOXES[0][4], S_END - BOXES[0][5])),
             'marq': [cut(front_quad(*m, FOOT, sc)) for m in MARQUEES], 'box': rect(front_quad(*FUSEBOX, FOOT, sw)),
             'disp': whole(front_quad(*DISPLAY, FOOT, sw)), 'exit': rect(front_quad(*EXIT, FOOT, sw))}
 
