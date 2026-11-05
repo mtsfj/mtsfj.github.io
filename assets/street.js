@@ -67,8 +67,8 @@
   const comps = [];
   // what each light is (else by its name: 'win…' a window, 'lamp', else a neon): zone 7's dagashi-ya open ('shop', steady,
   // its tubes wavering a moment now and then), the tabako window ('tube', steady), the drinks machines ('vend', always on;
-  // the right one's tube fails a moment, rarely), the windows of homes ('home', on and off a long while; upstairs a TV
-  // some evenings; the one over the dojo, tools/dojo_window.py), zone 9's paper lantern ('lantern', breathing)
+  // the right one's tube fails a moment, rarely), the windows of homes ('home', on and off a long while: Kirua's room behind
+  // the bay, its monitor alive (BAY, below); the one over the dojo, tools/dojo_window.py), zone 9's paper lantern ('lantern', breathing)
   // a light's own life: a slow, faint drift of its level (two slow waves at its own rates and phases, from its seed: no
   // two lights in step), between 1 - a and 1
   function lightLife(t, s, a) {
@@ -84,9 +84,9 @@
     const kind = COMP_KIND[name] || (name.startsWith('win') || name === 'shop_r' ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
     const shop = name === 'win_z4_shop';             // the Pokémon Center's shop: its opening hours (open as the page opens)
     p.userData = { name, kind, shop, seed: Math.random() * 100, next: shop ? 30 + Math.random() * 60 : kind === 'shop' || kind === 'vend' ? 20 + Math.random() * 50 : 3 + Math.random() * 8, burst: 0, on: true, stut: 0 };
-    if (kind === 'home') {                           // a home's window: on a long while, off a while (upstairs over the kiosk, a TV some evenings)
-      const up = name === 'win_z7_up', u = p.userData;
-      Object.assign(u, { tvOk: up, onT: up ? [70, 110] : [120, 180], offT: up ? [40, 80] : [60, 120], on: Math.random() < 0.75 });
+    if (kind === 'home') {                           // a home's window: on a long while, off a while
+      const u = p.userData;
+      Object.assign(u, { onT: [120, 180], offT: [60, 120], on: Math.random() < 0.75 });
       u.next = (u.on ? u.onT[0] : u.offT[0]) * Math.random(); p.material.opacity = u.on ? 1 : 0;
     }
     if (kind === 'lantern') p.userData.w = 1 + Math.random() * 0.6;
@@ -102,6 +102,42 @@
   const embGlow = plane('assets/z4_emblem_glow.webp?v=1', 876, 444, 70, 104, 1.1, { opacity: 0, blending: THREE.AdditiveBlending });
   const LAY = [[vendPool, comps.find((c) => c.userData.name === 'z7_vending'), () => 1 - 0.3 * vendOff.material.opacity],
     [embGlow, comps.find((c) => c.userData.name === 'z4_emblem'), () => 1]];
+  // Kirua's room behind the bay (tools/kirua_bay_window.py; its light the comp win_z7_up, a home's: on a long while, off a while,
+  // a calm light): its monitor alive. The screen's own pixels in the comp (its violet wallpaper, a city on it) laid again over
+  // it, added, at the room's level (LAY: its power, its hours, red in the red night) times the screen's life: a calm glow
+  // drifting slowly, now and then a small change (a page, a window); some evenings (a third of the times the room lights up)
+  // a film on it, its light jumping from shot to shot, cooling with the picture. Still under reduced motion ----
+  const BAY = { comp: comps.find((c) => c.userData.name === 'win_z7_up'), m: null, f: 0.1, lvl: 0.1, cool: 0, next: 6, film: false, was: false,
+    box: [15, 130, 38, 23] };                        // (the screen in the comp's sprite: its pixels the violet ones in that box)
+  function stepBay(dt, t) {
+    const B = BAY, c = B.comp; if (!c) return;
+    if (!B.m) {                                      // (once, when the comp's image is in)
+      const im = c.material.map && c.material.map.image; if (!im || !im.complete || !im.naturalWidth) return;
+      const [x, y, w, h] = B.box, cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      try {
+        const g = cv.getContext('2d'); g.drawImage(im, -x, -y); const d = g.getImageData(0, 0, w, h);
+        for (let i = 0; i < w * h; i++) { const o = i * 4; if (!(d.data[o + 2] > d.data[o] + 15 && d.data[o + 2] > d.data[o + 1] + 40)) d.data[o + 3] = 0; }
+        g.putImageData(d, 0, 0);
+      } catch (e) { B.comp = null; return; }
+      const tx = new THREE.CanvasTexture(cv); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false;
+      B.m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tx, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 }));
+      const P = ASSETS.comps.win_z7_up; B.m.position.set(P.x + x + w / 2, -(P.y + y + h / 2), c.position.z + 0.0005); B.m.visible = false; scene.add(B.m);
+      LAY.push([B.m, c, () => B.f]);
+    }
+    const on = c.userData.on;
+    if (on && !B.was) { B.film = !reduced && Math.random() < 0.35; B.next = 0; }   // (the room lights up: a film tonight?)
+    B.was = on;
+    if (reduced) { B.f = 0.1; return; }
+    if ((B.next -= dt) < 0) {
+      if (B.film) { B.lvl = 0.02 + Math.random() * 0.3; B.cool = Math.random() < 0.4 ? 1 : 0; B.next = 0.5 + Math.random() * 3; }   // a shot
+      else { B.lvl = 0.04 + Math.random() * 0.08; B.cool = 0; B.next = 12 + Math.random() * 40; }                                  // a page, a window
+    }
+    const tgt = B.film ? B.lvl * (0.965 + 0.035 * Math.sin(t * 29) * Math.sin(t * 7.3)) : B.lvl * lightLife(t, 6.1, 0.2);
+    B.f += (tgt - B.f) * Math.min(1, dt * (B.film ? 12 : 3));
+    const col = B.m.material.color, kc = Math.min(1, dt * 10);
+    col.setRGB(col.r + ((B.cool ? 0.8 : 1) - col.r) * kc, col.g + ((B.cool ? 0.9 : 1) - col.g) * kc, 1);
+  }
+  FEAT.push(stepBay);
 
   // the moon, sunset-lit, ghostly in the upper sky (position, size and opacity hand-tuned)
   const MOONP = { x: 532, y: 42, s: 90 };
@@ -8934,16 +8970,11 @@
         if (u.next < 0) { u.burst = 0.35 + Math.random() * 0.55; u.next = 50 + Math.random() * 100; }
         if (u.burst > 0) { u.burst -= dt; vendOff.material.opacity = stutOn(t, u.seed, 0.09, 0.55) ? 0.85 : 0; } else vendOff.material.opacity = 0;
         vendOff.visible = vendOff.material.opacity > 0;
-      } else if (u.kind === 'home') {  // a home's window: on a long while, then off a while; some evenings upstairs the TV:
-        // its light jumps from shot to shot and cools with the picture, under the warm room light
+      } else if (u.kind === 'home') {  // a home's window: on a long while, then off a while, a calm room light
         u.next -= dt;
-        if (u.next < 0) { u.on = !u.on && nightLit(u); u.next = u.on ? (u.onT[0] + Math.random() * u.onT[1]) * (1 + 0.8 * NIGHT.busy) : (u.offT[0] + Math.random() * u.offT[1]) * (1 - 0.6 * NIGHT.busy); u.tv = u.on && u.tvOk && Math.random() < 0.35; u.tvN = 0; }
+        if (u.next < 0) { u.on = !u.on && nightLit(u); u.next = u.on ? (u.onT[0] + Math.random() * u.onT[1]) * (1 + 0.8 * NIGHT.busy) : (u.offT[0] + Math.random() * u.offT[1]) * (1 - 0.6 * NIGHT.busy); }
         else if (u.on && !nightLit(u) && u.next > 3) u.next = nightDelay();     // bedtime: out soon, each at its own moment
-        let tgt = u.on ? 1 : 0, cool = false;
-        if (u.on && u.tv) { u.tvN -= dt; if (u.tvN < 0) { u.lvl = 0.8 + Math.random() * 0.2; u.cool = Math.random() < 0.4; u.tvN = 0.5 + Math.random() * 3; } tgt = u.lvl; cool = u.cool; }
-        c.material.opacity += (tgt - c.material.opacity) * Math.min(1, dt * (u.tv ? 12 : 3));
-        const col = c.material.color, kc = Math.min(1, dt * 8);
-        col.setRGB(col.r + ((cool ? 0.82 : 1) - col.r) * kc, col.g + ((cool ? 0.92 : 1) - col.g) * kc, 1);
+        c.material.opacity += ((u.on ? 1 : 0) - c.material.opacity) * Math.min(1, dt * 3);
       } else if (u.kind === 'study') c.material.opacity = ws.L;   // the study light on the wall: the lamp's level, as in the window
       else if (u.kind === 'lantern') // the paper lantern breathes, slowly, as the far city's do
         c.material.opacity = 0.955 + 0.045 * Math.sin(t * u.w + u.seed) * (0.7 + 0.3 * Math.sin(t * 0.37 + u.seed * 2));
