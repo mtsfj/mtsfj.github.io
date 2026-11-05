@@ -36,6 +36,8 @@ tools/e33_monolith.py    le Monolithe (Clair Obscur : Expedition 33), son sommet
 tools/e33_banner.py      la bannière de l'Expédition au balcon de la maison du fond (dessin : tools/src/e33_banner_v2_33.webp) et la plaque près de sa porte ; la lanterne éclaire sa pointe (win_z9_lantern.webp) ; ce qu'elle couvre gardé dans tools/src/e33_banner_under.png
 tools/e33_walker.py      le passant du Gommage (assets/e33_walker.webp) : marche de profil sous un parapluie, 16 images, l'arrêt, le dos tourné face au Monolithe ; l'ordre de ses pixels dans le Gommage
 tools/r6_sprites.py      les sprites du clin d'œil R6 : le drone (assets/r6_drone.webp, ses normales r6_drone_n.webp) et la petite caméra murale (r6_cam.webp), dessinés pixel par pixel d'après des modèles mesurés sur des vrais (un robot de reconnaissance lançable, un dôme de surveillance), et le boîtier de l'écran des caméras (r6_panel, r6_bezel, r6_key, r6_key_on, r6_ant .webp)
+tools/dagashi_front.py   le dagashi-ya sous Kirua : par sa porte ouverte une vraie boutique, vue de la rue (le mur du fond de face, ses étagères redressées pixel par pixel, le plafond et le sol en coin, la face du montant, le tube redressé) ; sa vitre de gauche derrière un verre (assets/win_z7_shop.webp)
+tools/tabako_window.py   la fenêtre du tabac (mur de face) : une petite cabine derrière la vitre (le tableau du cadre, la paroi gauche, le fond poussé vers le point de fuite et coupé par le cadre droit, la lumière qui baisse vers le bas, un reflet) (assets/win_z7_kiosk.webp)
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
 ```
