@@ -9061,6 +9061,306 @@
   //
   //
   // ==== feature: Clair Obscur: Expedition 33 (E33) — its own block (FEAT, CLICKS) ====
+  // Three nods to the game. (1) The Monolith on the horizon (tools/e33_monolith.py, from the owner's drawing): a colossal
+  // spire right of Fuji's peak, farther than the mountain, its foot behind the right flank (which cuts it on its
+  // diagonal), lost in the valley's haze above it; a far plane of its own as the tower is: each pixel its stone as the
+  // hour lights it (by night the night's darkest blue, its faces faint; at dawn the dawn's cold, as the pagoda, until the
+  // first sun reaches it, its top before Fuji's summit, then its rock lit; the red night's ramp), mixed with the sky's
+  // own colour behind it by its share in the air (e33_monolith_aux.webp), the sky read where its plane is now (its drift
+  // with the scroll), at its hour, its red night, its grain: the haze is the sky in front of it, never a hole. Behind
+  // Fuji, its climber and its ridge's flash (z -1.6), in front of the moon (the crescent sets behind it before it sets
+  // behind the mountain), the stars (none of the sixteen nor Mars under it, as the sky drifts with the scroll too), the
+  // shooting stars, the lightning's glow (it stands dark against the flash) and the red night's debris. Its 33 is the
+  // owner's brushed one, cut in its faces; its light (e33_mono33.webp, laid over it at its depth, through the same air):
+  // a warm glow at the haze's level at dusk, more by night, a slow breath, out in the morning's air (the far city's
+  // uLitK), red in the red night (its own light), its own: the fuses' cut leaves it lit. (2) The Expedition's banner on
+  // the balcony of the house at the street's end and a bronze plaque by its door (tools/e33_banner.py, in the street's
+  // layers; the lantern lights the banner's tip through its own comp); the plaque's words on hover (a tap on a phone), in
+  // the page's language. (3) The Gommage: now and then someone walks the far sidewalk along the railing under an umbrella
+  // (e33_walker.webp, tools/e33_walker.py: a walk of 16 cells, the stand, the back, the half turn), behind the near
+  // corners as the TranZit is (BUS.occ), under the skyline's haze; lit as the street there is lit now (its colours,
+  // painted for the dusk's light on that sidewalk, scaled by the light the water's picture of the street, WET.rt, shows
+  // on the road at its feet and on the sidewalk beside it, the lamp's cone of lit air taken off: the hours, the red
+  // night, the fuses' dark all reach it). One walk in three it stops at the railing and turns to the Monolith; its 33
+  // flares, and the walker comes apart into red and white petals, its edges first, in a scatter (each pixel's turn: the
+  // sheet's alpha), that tumble as the cherry's do (two tones, one or two pixels) up and away on the wind, lit as it was,
+  // and fade. A click on the Monolith or the banner calls one (on the street's director, STAGE: never over the TranZit,
+  // the finale, the opening). Reduced motion: no walker, no petals; the 33's light still, by the hour. ?e33 in the URL: a
+  // walk that ends in the Gommage 4 s after the page opens ----
+  const E33 = { lvl: -1, flare: 0, rows: null, ban: [772, 541, 20, 30], plq: [764, 598, 4, 7], tip: null, tipOn: false,
+    wk: null, cells: null, P: null, want: 0, wx: 0, next: /[?&]e33\b/.test(location.search) ? 4 : 150 + Math.random() * 210 };
+  E33.mono = plane('assets/e33_monolith.webp?v=1', 753, 280, 49, 91, -1.6);
+  nrShade(E33.mono.material, 'tower');
+  (function () {                                       // its colour at every hour: its stone (its own colour in the image, as the hour lights it)
+    const m = E33.mono.material, prev = m.onBeforeCompile, sp = new THREE.Vector2(), fl = new THREE.Color();   // seen through the air in front of it (its share of
+    const aux = crisp('assets/e33_monolith_aux.webp?v=1');            // the stone: e33_monolith_aux.webp R), the air the sky's own colour
+    m.onBeforeCompile = (sh, r) => {                                   // behind it, read where the sky plane is now (its drift with the
+      prev.call(m, sh, r);                                             // scroll), at its hour, its red night, its grain
+      Object.assign(sh.uniforms, { tE33: { value: aux }, tE33sky: { value: sky.material.map }, uE33sky: { get value() { return sp.set(sky.position.x, sky.position.y); } },
+        uE33fl: { get value() { return ltSky.visible ? fl.copy(ltSky.material.color).multiplyScalar(ltSky.material.opacity) : fl.setRGB(0, 0, 0); } } });   // (the lightning's flash on the whole sky: on the air too)
+      sh.fragmentShader = sh.fragmentShader.replace('void main() {', `uniform sampler2D tE33, tE33sky; uniform vec2 uE33sky; uniform vec3 uE33fl;
+    vec3 e33Sky(vec2 q) {                                         // the air in front of it: the sky's colour there now, smooth (its
+      vec3 t = vec3(0.0);                                         // painted streaks and grain are the sky's, far behind, not the air's)
+      for (int i = 0; i < 5; i++) {
+        vec2 p = q + vec2(float(i - 2) * 3.0, float(i - 2) * 4.0);
+        t += texture2D(tE33sky, vec2((p.x - uE33sky.x + ${(IW + 2 * PAD) / 2}.0) / ${IW + 2 * PAD}.0, (-p.y - uE33sky.y + ${(IH + 2 * PAD) / 2}.0) / ${IH + 2 * PAD}.0)).rgb * 0.2;
+      }
+      vec3 c = t * uNRskyC, b = c;
+      if (uNT > 0.0 || uDW > 0.0) b = skHours(c, t, 1.0, q, 0.0, 0.0);
+      if (uNR > 0.0) b = mix(b, nrSky(c, q), uNR);
+      return b;
+    }
+    vec3 e33Stone(vec3 cm, vec3 t, vec2 q) {                      // its stone now: by night the night's darkest blue (its faces kept, faint);
+      float L = dot(t, NRW), u = clamp((q.y - 280.0) / 85.0, 0.0, 1.0);    // at dawn the dawn's (cold, as the pagoda) until the first sun:
+      vec3 b = cm;                                                // it reaches its top before Fuji's summit and comes down it; its
+      if (uNT > 0.0) b = mix(b, ntSky(0.2212) * (0.35 + 1.0 * L), uNT);  // rock then in the alpenglow, gold, the day's light (Fuji's
+      if (uDW > 0.0) {                                            // rock's colours, by its own light); the red night's ramp
+        vec3 lit = uSun.z < 0.5 ? mix(vec3(0.44, 0.17, 0.13), vec3(0.46, 0.3, 0.2), uSun.z * 2.0) : mix(vec3(0.46, 0.3, 0.2), vec3(0.33, 0.34, 0.39), uSun.z * 2.0 - 1.0);
+        lit *= mix(6.0 * (1.2 - 0.45 * u), 3.93, clamp(uSun.z * 1.6 - 0.6, 0.0, 1.0)) * L * (0.6 + 0.4 * clamp(uDP, 0.0, 1.0));   // (the low sun's light, on its tip most)
+        b = mix(b, mix(dwSky(0.2212) * (0.7 + 1.9 * L), lit, smoothstep(0.25 * u, 0.2 + 0.25 * u, uDP)), uDW);
+      }
+      if (uNR > 0.0) b = mix(b, nrTower(cm, q), uNR);
+      return b;
+    }
+    void main() {`).replace('b = skHours(c, texelColor.rgb, texelColor.a, q, uNRmode, tree);', 'b = c;')
+        .replace('diffuseColor.rgb = b;', 'diffuseColor.rgb = mix(e33Sky(q) + uE33fl, e33Stone(c, texelColor.rgb, q), texture2D(tE33, vUv).r);');
+    };
+    m.customProgramCacheKey = () => 'nr-e33'; m.needsUpdate = true;
+  })();
+  E33.lt = plane('assets/e33_mono33.webp?v=1', 764, 317, 20, 27, -1.599, { opacity: 0 });   // (its paint's own light, through the air)
+  gradeSprite(E33.lt.material, 'self'); E33.lt.visible = false;
+  (function () {                                                       // its pixels, row by row, for a click (down to Fuji's flank: rows to 345)
+    const im = new Image(); im.onload = () => {
+      try {
+        const c = document.createElement('canvas'); c.width = im.width; c.height = im.height; const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+        const d = g.getImageData(0, 0, im.width, im.height).data, R = [];
+        for (let y = 0; y < Math.min(im.height, 345 - 280); y++) { let a = -1, b = -1; for (let x = 0; x < im.width; x++) if (d[(y * im.width + x) * 4 + 3] >= 128) { if (a < 0) a = x; b = x; } R.push(a < 0 ? null : [753 + a, 753 + b + 1]); }
+        E33.rows = R;
+      } catch (e) { E33.rows = null; }
+    };
+    im.src = 'assets/e33_monolith.webp?v=1';
+  })();
+  // ---- (3) the light on the far sidewalk now: GLSL shared by the walker and its petals (uFoot: its feet, scene px). The road
+  // just below its feet (three taps) and the sidewalk either side, the brightest per channel (a shop's glow reaches the
+  // sidewalk, not the road), the lamp's cone taken off; linear, against the dusk's light there (uRef) ----
+  const E3L = `
+    uniform sampler2D tLit, tCone, tOcc; uniform vec4 uCam; uniform vec3 uRef, uAmb; uniform vec2 uFoot; uniform float uLive, uConeK;
+    vec3 e3Cone(vec2 p) { vec2 u = (p - vec2(${LC.x - AIR.hw}.0, ${LC.top}.0)) / vec2(${2 * AIR.hw}.0, ${LC.foot - LC.top}.0);
+      if (u.x < 0.0 || u.y < 0.0 || u.x > 1.0 || u.y > 1.0) return vec3(0.0);
+      vec4 c = texture2D(tCone, vec2(u.x, 1.0 - u.y)); return c.rgb * c.a * uConeK; }
+    vec3 e3Tap(vec2 p) { vec2 uv = vec2((p.x - uCam.x) / (uCam.y - uCam.x), (uCam.w - p.y) / (uCam.w - uCam.z));
+      vec3 c = texture2D(tLit, clamp(uv, 0.001, 0.999)).rgb;
+      vec3 k = (e3Cone(p) + e3Cone(p + vec2(1.0, 0.0)) + e3Cone(p + vec2(0.0, 1.0)) + e3Cone(p + vec2(1.0, 1.0))) * 0.25;   // (its stipple, as the water's filtered picture holds it)
+      return max(c - k, vec3(0.0)); }
+    vec3 e3Light() {
+      vec3 r = uRef * pow(uAmb, vec3(2.2));                             // (no picture of the street: the dusk's light under the night's multiply)
+      if (uLive > 0.5) {
+        vec2 f = floor(uFoot) + 0.5;
+        vec3 road = (e3Tap(f + vec2(-6.0, 7.0)) + e3Tap(f + vec2(0.0, 7.0)) + e3Tap(f + vec2(6.0, 7.0))) / 3.0;
+        vec3 side = max(e3Tap(f + vec2(-13.0, -1.0)), e3Tap(f + vec2(13.0, -1.0)));
+        r = pow(max(road, side), vec3(2.2));
+      }
+      return r;
+    }
+    vec3 e3Lit(vec3 c, vec3 L) { return pow(min(vec3(1.0), pow(c, vec3(2.2)) * L / uRef), vec3(1.0 / 2.2)); }
+    bool e3Hid(vec2 p) {                                                 // behind the near corners (the TranZit's rows), and behind the street-end
+      if (p.x >= 761.0) return true;                                     // house's corner (its walk ends there: never beside its tall doors)
+      float ry = (p.y - ${BUS.occ.y0}.0) / ${BUS.occ.L.length}.0; if (ry < 0.0 || ry > 1.0) return false;
+      vec2 lr = texture2D(tOcc, vec2(ry, 0.5)).rg * 255.0 + vec2(400.0, 700.0); return p.x < lr.x || p.x >= lr.y; }`;
+  const e3U = () => ({                                                   // (the same live sources as the gutter's petals)
+    tLit: { get value() { try { return WET.on && WET.rt ? WET.rt.texture : null; } catch (e) { return null; } } },
+    uCam: { get value() { try { return WET.mesh.material.uniforms.uCam.value; } catch (e) { return new THREE.Vector4(0, IW, 0, IH); } } },
+    uLive: { get value() { try { return WET.on && WET.loaded >= 2 ? 1 : 0; } catch (e) { return 0; } } },
+    tCone: { value: lcCone.material.map }, uConeK: { get value() { return lcCone.visible ? lcCone.material.opacity : 0; } },
+    tOcc: { value: busOccT }, uRef: { value: new THREE.Vector3(0.006, 0.0078, 0.0316) }, uAmb: { get value() { return city.material.color; } },
+    uFoot: { value: new THREE.Vector2(700, 640) } });
+  // the passer-by's sheet: cells of 32 x 46 (its hip over column 14, its feet on row 43): 16 walking (a stride of 30 px, 1.43 m,
+  // each cell drawn at its own fraction of a pixel along it, so a planted foot stays on its pixel), the stand, the back, the half turn
+  const WKC = { cw: 32, ch: 46, ax: 14, ay: 43, n: 19, walk: 16, stand: 16, back: 17, half: 18, stride: 30, v: 27, row: 640, x0: 486, x1: 780, stop: [640, 735] };
+  if (!reduced) {
+    const tex = crispLate('assets/e33_walker.webp?v=1', 'e33', () => {   // its back's pixels read once, for the petals: each one's colour and turn
+      try {
+        const im = tex.image, c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+        const g = c.getContext('2d'); g.drawImage(im, 0, 0); const d = g.getImageData(WKC.back * WKC.cw, 0, WKC.cw, WKC.ch).data, px = [];
+        for (let y = 0; y < WKC.ch; y++) for (let x = 0; x < WKC.cw; x++) { const o = (y * WKC.cw + x) * 4; if (d[o + 3] >= 128) px.push({ x, y, r: d[o], g: d[o + 1], b: d[o + 2], k: (d[o + 3] - 128) / 127 }); }
+        px.sort((a, b) => a.k - b.k); E33.cells = px;
+      } catch (e) { E33.cells = null; }
+    });
+    const U = Object.assign(e3U(), { map: { value: tex }, uCell: { value: new THREE.Vector2(0, 0) }, uDis: { value: -1 } });
+    const mat = new THREE.ShaderMaterial({ uniforms: U, transparent: true, depthWrite: false,
+      vertexShader: 'varying vec2 vUv; varying vec2 vP;\nvoid main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vP = vec2(w.x, -w.y); gl_Position = projectionMatrix * viewMatrix * w; }',
+      fragmentShader: E3L + `
+        uniform sampler2D map; uniform vec2 uCell; uniform float uDis; varying vec2 vUv; varying vec2 vP;
+        void main() {
+          if (e3Hid(vP)) discard;
+          vec2 q = vec2(uCell.y > 0.5 ? 1.0 - vUv.x : vUv.x, vUv.y);       // (heading left: the cell mirrored)
+          vec4 c = texture2D(map, vec2((uCell.x + q.x) / ${WKC.n}.0, q.y));
+          if (c.a < 0.5) discard;
+          float k = (c.a * 255.0 - 128.0) / 127.0;                         // (its turn in the Gommage)
+          if (uDis >= 0.0 && k < uDis) discard;
+          vec3 col = c.rgb;
+          if (uDis >= 0.0) col = mix(col, vec3(0.8, 0.2, 0.27), 0.6 * (1.0 - smoothstep(0.0, 0.07, k - uDis)));   // (about to go: its petals' red)
+          gl_FragColor = vec4(e3Lit(col, e3Light()), 1.0);
+        }` });
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(WKC.cw, WKC.ch), mat); m.visible = false; m.position.z = 0.62; scene.add(m);
+    E33.wk = { m, U, on: false, x: 0, x0: 0, hx: 0, dir: 1, d: 0, st: 'off', t: 0, gom: false, sx: 0, spawned: 0 };
+    // the petals: whole pixels, two tones (a petal turning: one pixel, two across, two down, the second of a pair its
+    // shade), lit as the walker was where it came apart
+    const N = 260, g = new THREE.BufferGeometry(), A = new THREE.BufferAttribute(new Float32Array(N * 3), 3).setUsage(THREE.DynamicDrawUsage),
+      C = new THREE.BufferAttribute(new Float32Array(N * 4), 4).setUsage(THREE.DynamicDrawUsage);
+    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3)); g.setAttribute('aP', A); g.setAttribute('aC', C);
+    const PU = Object.assign(e3U(), { uPx: { value: 1 } });
+    const pm = new THREE.ShaderMaterial({ uniforms: PU, transparent: true, depthWrite: false,
+      vertexShader: `attribute vec3 aP; attribute vec4 aC; uniform float uPx; varying vec4 vC; varying float vS; varying vec2 vP;
+        void main() {                                                    // aP: scene x, row, shape (0: none, 1 one px, 2 two across, 3 two down, 4 three)
+          vec2 c = floor(aP.xy) + 0.5; vC = aC; vS = aP.z; vP = c;
+          if (aP.z < 0.5) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); gl_PointSize = 1.0; return; }
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(c.x, -c.y, 0.0, 1.0); gl_PointSize = 3.0 * uPx;
+        }`,
+      fragmentShader: E3L + `
+        varying vec4 vC; varying float vS; varying vec2 vP;
+        void main() {
+          vec2 o = floor(gl_PointCoord * 3.0) - 1.0;                     // (this fragment's scene px from the stamp's centre)
+          bool two = (vS > 1.5 && vS < 2.5 && o == vec2(1.0, 0.0)) || (vS > 2.5 && vS < 3.5 && o == vec2(0.0, 1.0)), lit = vS > 3.5 && o == vec2(1.0, 0.0), sh = vS > 3.5 && o == vec2(0.0, 1.0);
+          if (!(o == vec2(0.0) || two || lit || sh) || e3Hid(vP + o)) discard;
+          gl_FragColor = vec4(e3Lit(vC.rgb * (two || sh ? 0.72 : lit ? 1.12 : 1.0), e3Light()), vC.a);   // (a petal's own tones: its shade, its light, as the cherry's)
+        }` });
+    const P = new THREE.Points(g, pm); P.position.z = 0.625; P.frustumCulled = false; scene.add(P);
+    P.onBeforeRender = (r, sc, cam) => { const tg = r.getRenderTarget(); PU.uPx.value = (tg ? tg.width : r.domElement.width) / (cam.right - cam.left); };
+    if (WET.on) WET.hide.push(P);                                       // (not in the water's picture: the walker's light is read there)
+    E33.P = { P, A, C, U: PU, live: 0, p: Array.from({ length: N }, () => ({ on: false })) };
+  }
+  function e33Walk(gom) {                                               // a walk along the railing, from one end or the other
+    const W = E33.wk, dir = Math.random() < 0.5 ? 1 : -1, x = dir > 0 ? WKC.x0 : WKC.x1;
+    Object.assign(W, { on: true, dir, x, x0: x, hx: x, d: 0, st: 'walk', t: 0, gom, sx: WKC.stop[0] + Math.random() * (WKC.stop[1] - WKC.stop[0]), spawned: 0 });
+    W.U.uDis.value = -1; W.m.visible = true;
+  }
+  function e33Near(x0) {                                                // called (a click): from behind the nearer corner to the railing, where it stops
+    const W = E33.wk, dir = x0 < (WKC.x0 + WKC.x1) / 2 ? 1 : -1, x = dir > 0 ? WKC.x0 + 6 : WKC.x1 - 6;
+    Object.assign(W, { on: true, dir, x, x0: x, hx: x, d: 0, st: 'walk', t: 0, gom: true, spawned: 0 });
+    W.sx = dir > 0 ? WKC.stop[0] + Math.random() * 30 : WKC.stop[1] - Math.random() * 30; W.U.uDis.value = -1; W.m.visible = true;
+  }
+  const E3PET = { red: [[0.66, 0.17, 0.23], [0.55, 0.13, 0.19], [0.74, 0.27, 0.31]], white: [[0.5, 0.45, 0.49], [0.43, 0.38, 0.43], [0.56, 0.5, 0.54]] };   // (as the dusk lights them there: three tones, as the cherry's, a petal's white, never the night's blue)
+  function e33Petal(px, wx, wy) {                                        // a pixel of the walker let go
+    const Q = E33.P, p = Q.p.find((q) => !q.on); if (!p) return;
+    const white = px.r + px.g + px.b > 240 || Math.random() < 0.28;       // (the umbrella's and the hair's: white; the rest mostly red)
+    const c = (white ? E3PET.white : E3PET.red)[Math.floor(Math.random() * 3)];
+    Object.assign(p, { on: true, x: wx, y: wy, vx: (Math.random() - 0.5) * 10, vy: -(9 + Math.random() * 14), ph: Math.random() * 6.3, w: 2 + Math.random() * 2.5,
+      age: 0, life: 2.6 + Math.random() * 2.2, c, s: Math.random() < 0.8 });
+  }
+  function stepE33(dt, t) {
+    // (1) the Monolith: the tower's multiply by the hour (set by stepNight this frame); its 33's light: faint in the evening, with
+    // the night's depth, gone in the morning's air; a slow breath; a flare at the Gommage
+    E33.mono.material.color.copy(towerMesh.material.color);
+    const br = reduced ? 1 : 0.93 + 0.07 * Math.sin(t * 0.61) * Math.sin(t * 0.23 + 1.3);
+    E33.flare = Math.max(0, E33.flare - dt * 0.4);
+    const cut = 1 - NRU.uFarPow.value, sun = skSm(0.02, 0.3, SKYF.dp) * SKYF.dw;   // (the city's lights out: it is not on their grid, the dark shows it more;
+    const lvl = Math.min(1, ((0.34 + 0.18 * SKYF.nt) * (1 + 0.3 * cut) * br + 0.45 * Math.sin(Math.min(1, E33.flare) * Math.PI)) * (1 - sun) * farMat.uniforms.uLitK.value);   // the first sun on it: out)
+    if (lvl !== E33.lvl) { E33.lvl = lvl; E33.lt.material.opacity = lvl; E33.lt.visible = lvl > 0.004; }
+    const nr = NRED.k.value; if (nr !== E33.nr) { E33.nr = nr; E33.lt.material.color.setRGB(1, 1 - 0.8 * nr, 1 - 0.8 * nr); }   // (red in the red night, as the other lights)
+    const W = E33.wk; if (!W) return;
+    // (3) the walker's next stroll, by the director; rarer in the small hours, never in the fuses' dark
+    if (!W.on) {
+      if (E33.want > 0) {                                                // (called: as soon as the street is free)
+        E33.want -= dt; const on = STAGE.on.street;
+        if (LATE.ready.e33 && E33.cells && !STAGE.holds.size && (!on || on.name === 'e33') && !PW.on && STAGE.ask('e33', 24, { prio: 2 })) { E33.want = 0; e33Near(E33.wx); }
+      } else if (LATE.ready.e33 && E33.cells) {
+        E33.next = STAGE.due('e33', E33.next); E33.next -= dt * (0.35 + 0.65 * NIGHT.home);
+        if (E33.next <= 0) {
+          if (!visible || document.hidden || PW.on || !STAGE.ask('e33', 24)) E33.next = 3 + Math.random() * 4;
+          else { e33Walk(/[?&]e33\b/.test(location.search) || Math.random() < 0.34); E33.next = 180 + Math.random() * 240; }
+        }
+      }
+    }
+    if (W.on) {
+      W.t += dt;
+      if (W.st === 'walk') {
+        const was = W.x; W.x += W.dir * WKC.v * dt; W.d += Math.abs(W.x - was);
+        if (W.gom && (W.x - W.sx) * W.dir >= 0) { W.st = 'stop'; W.t = 0; }
+        else if (W.x < WKC.x0 - 1 || W.x > WKC.x1 + 1) { W.on = false; W.st = 'off'; W.m.visible = false; STAGE.done('e33'); }
+      } else if (W.st === 'stop' && W.t > 0.6) { W.st = 'turn'; W.t = 0; E33.flare = 1; }   // (it stops, turns to the Monolith: the 33 flares)
+      else if (W.st === 'turn' && W.t > 1.6) { W.st = 'dis'; W.t = 0; W.spawned = 0; W.U.uDis.value = 0; }
+      else if (W.st === 'dis') {                                         // 2.4 s: its pixels go in their turn, about one in three a petal
+        const k = Math.min(1, W.t / 2.4), px = E33.cells, n = Math.floor(k * px.length), L = W.hx - WKC.ax, T = WKC.row - WKC.ay;
+        for (; W.spawned < n; W.spawned++) { const q = px[W.spawned]; if (Math.random() < 0.36) e33Petal(q, L + q.x, T + q.y); }
+        W.U.uDis.value = k;
+        if (k >= 1) { W.on = false; W.st = 'off'; W.m.visible = false; W.U.uDis.value = -1; E33.next = 240 + Math.random() * 240; }
+      }
+      if (W.on) {                                                        // its cell, and where: the hip moves with the cells (a planted foot stays put)
+        let cell = WKC.stand, L, mir = W.dir < 0;
+        if (W.st === 'walk') {
+          const cyc = Math.floor(W.d / WKC.stride), c = Math.floor((W.d - cyc * WKC.stride) / WKC.stride * WKC.walk), fl = Math.floor(c * WKC.stride / WKC.walk);
+          cell = c; W.hx = W.x0 + W.dir * (cyc * WKC.stride + fl);
+        } else if (W.st === 'turn' && W.t < 0.22) cell = WKC.half;      // (half way round: mirrored as it walked)
+        else if (W.st !== 'stop') { cell = WKC.back; mir = false; }      // (its back: never mirrored)
+        L = mir ? W.hx - WKC.cw + WKC.ax + 1 : W.hx - WKC.ax;
+        W.U.uCell.value.set(cell, mir ? 1 : 0);
+        W.m.position.set(L + WKC.cw / 2, -(WKC.row - WKC.ay + WKC.ch / 2), 0.62);
+        W.U.uFoot.value.set(W.hx, WKC.row); E33.P.U.uFoot.value.set(W.hx, WKC.row);
+      }
+    }
+    // the petals: up and away on the wind, fluttering, tumbling (one pixel, two across, two down), fading
+    const Q = E33.P, a = Q.A.array, c = Q.C.array, wind = 0.12 * (40 + 260 * gust.k); let live = 0;   // (the rain's wind: away to the left, more in a gust)
+    if (!Q.live && !Q.p.some((p) => p.on)) return;                      // (none up: nothing to write)
+    for (let i = 0; i < Q.p.length; i++) {
+      const p = Q.p[i];
+      if (p.on) { p.age += dt; p.vy *= 1 - 0.18 * dt; p.x += (p.vx - wind) * dt; p.y += p.vy * dt; if (p.age >= p.life) p.on = false; }
+      if (!p.on) { a[i * 3 + 2] = 0; continue; }
+      live++;
+      const fx = Math.sin(p.age * p.w + p.ph) * 1.6, sh = p.s ? [2, 4, 3, 1][Math.floor(p.age * 6 + p.ph) & 3] : 1;
+      a[i * 3] = Math.round(p.x + fx); a[i * 3 + 1] = Math.round(p.y); a[i * 3 + 2] = sh;
+      c[i * 4] = p.c[0]; c[i * 4 + 1] = p.c[1]; c[i * 4 + 2] = p.c[2]; c[i * 4 + 3] = Math.min(1, p.age / 0.15, (p.life - p.age) / 0.9);
+    }
+    Q.A.needsUpdate = true; Q.C.needsUpdate = true; Q.P.visible = live > 0; Q.live = live;
+    if (!W.on && W.st === 'off' && !live && STAGE.on.street && STAGE.on.street.name === 'e33') STAGE.done('e33');
+  }
+  FEAT.push(stepE33);
+  // the rain on the banner runs down the cloth and drips from its lowest points, its tip and a tatter: zone 9's two trickles
+  // there (from the balcony's lip, x 778 and 788, row 563) start from them instead (each drop reads its lip from these)
+  try { for (const S of DRIPS.find((d) => d.n === 'zone9').st) { const q = S.p || S; if (q[0] === 778) { q[0] = 779; q[1] = 567; } else if (q[0] === 788) q[1] = 571; } } catch (e) {}
+  // the pointer in scene px, and how many CSS px a scene px is (a target is never under 24 CSS px)
+  function e33Pt(ev) {
+    const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
+    return { x: camera.left + u * (camera.right - camera.left), y: -(camera.top + v * (camera.bottom - camera.top)), k: r.width / (camera.right - camera.left) };
+  }
+  function e33In(p, b) { const px = Math.max(0, (24 / p.k - b[2]) / 2), py = Math.max(0, (24 / p.k - b[3]) / 2); return p.x >= b[0] - px && p.x < b[0] + b[2] + px && p.y >= b[1] - py && p.y < b[1] + b[3] + py; }
+  function e33OnMono(p) {                                               // a pixel of the Monolith above its haze (its row, widened to 24 CSS px)
+    const R = E33.rows, i = Math.floor(p.y) - 280;
+    if (!R) return e33In(p, [753, 280, 49, 65]);
+    for (let j = Math.max(0, i - 2); j <= Math.min(R.length - 1, i + 2); j++) {   // (a row or two of slack, top and bottom)
+      const r = R[j]; if (!r) continue; const pad = Math.max(0, (24 / p.k - (r[1] - r[0])) / 2);
+      if (p.x >= r[0] - pad && p.x < r[1] + pad) return true;
+    }
+    return false;
+  }
+  // the plaque's words, on hover (a tap on a phone): the showcase card's tip, its words in the page's language
+  E33.tip = document.createElement('div'); E33.tip.className = 'slab-tip e33-tip'; E33.tip.setAttribute('role', 'tooltip');
+  Object.assign(E33.tip.style, { fontFamily: 'var(--pixel)', fontSize: '11px', lineHeight: '1.4', color: 'var(--paper)', padding: '7px 11px', whiteSpace: 'nowrap', letterSpacing: '0.05em' });
+  hero.appendChild(E33.tip);
+  function e33Tip(ev, on) {
+    E33.tipOn = on; E33.tip.classList.toggle('on', on);
+    if (!on) return;
+    E33.tip.textContent = txl('« Pour ceux qui viendront après »', '“For those who come after”');
+    const r = hero.getBoundingClientRect(), w = E33.tip.offsetWidth || 220, h = E33.tip.offsetHeight || 30;
+    E33.tip.style.left = Math.max(8, Math.min(ev.clientX - r.left - w / 2, r.width - w - 8)) + 'px';
+    E33.tip.style.top = Math.max(8, Math.min(ev.clientY - r.top - h - 14, r.height - h - 8)) + 'px';
+  }
+  hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') { const o = e33In(e33Pt(ev), E33.plq); if (o || E33.tipOn) e33Tip(ev, o); } });
+  hero.addEventListener('pointerleave', (ev) => { if (E33.tipOn) e33Tip(ev, false); });
+  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && E33.tipOn) e33Tip(ev, false); });
+  CLICKS.push((ev) => {
+    const p = e33Pt(ev);
+    if (e33In(p, E33.plq)) { e33Tip(ev, ev.pointerType === 'mouse' || !E33.tipOn); return true; }   // (a mouse: its hover shows them already; a tap: on, off)
+    if (E33.tipOn) e33Tip(ev, false);
+    if (starAt(ev) >= 0 || overMars(ev)) return false;                 // (a star, Mars: theirs, however near)
+    if (!e33OnMono(p) && !e33In(p, E33.ban)) return false;
+    if (reduced || !E33.wk) return false;                              // (nothing moves: the click is the street's)
+    E33.flare = Math.max(E33.flare, 0.5);
+    const W = E33.wk;
+    if (W.on) { if (W.st === 'walk') { W.gom = true; W.sx = W.x + W.dir * 4; } }   // (walking: it stops there)
+    else { E33.want = 30; E33.wx = p.x; }
+    return true;
+  });
   // ==== end of E33 ====
   //
   //
