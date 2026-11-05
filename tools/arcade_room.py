@@ -650,9 +650,12 @@ def build(img):
 def unlit_zone(lit):
     """la rue sans courant sous la porte (street_unlit.webp : la coupure de courant, et ce sur quoi la nuit rouge lit la lumière de
     la salle) : la salle elle-même, éteinte, à la place du rideau de fer peint (ses lames feraient des traits rouges dans la nuit
-    rouge) ; de la tête au bord du sol de la porte, les pixels dont le centre y est ; le reste repris au commit BEFORE"""
+    rouge) ; de la tête au bord du sol de la porte, les pixels dont le centre y est ; le reste du cadre de la porte (ARC) repris au
+    commit BEFORE, hors de ce cadre le fichier tel qu'il est (ce que d'autres outils y ont fait reste)"""
     data = subprocess.run(['git', 'show', f'{BEFORE}:assets/street_unlit.webp'], cwd=ROOT, capture_output=True, check=True).stdout
-    U = np.asarray(Image.open(io.BytesIO(data)).convert('RGBA')).astype(float).copy()
+    B = np.asarray(Image.open(io.BytesIO(data)).convert('RGBA')).astype(float)
+    U = np.asarray(Image.open(A('street_unlit.webp')).convert('RGBA')).astype(float).copy()
+    U[ARC[1]:ARC[1] + ARC[3], ARC[0]:ARC[0] + ARC[2]] = B[ARC[1]:ARC[1] + ARC[3], ARC[0]:ARC[0] + ARC[2]]
     k, c = UNLIT
     for lx in range(ARC[2]):
         x = lx + 0.5
