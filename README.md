@@ -38,6 +38,8 @@ tools/e33_walker.py      le passant du Gommage (assets/e33_walker.webp) : marche
 tools/r6_sprites.py      les sprites du clin d'œil R6 : le drone (assets/r6_drone.webp, ses normales r6_drone_n.webp) et la petite caméra murale (r6_cam.webp), dessinés pixel par pixel d'après des modèles mesurés sur des vrais (un robot de reconnaissance lançable, un dôme de surveillance), et le boîtier de l'écran des caméras (r6_panel, r6_bezel, r6_key, r6_key_on, r6_ant .webp)
 tools/dagashi_front.py   le dagashi-ya sous Kirua : par sa porte ouverte une vraie boutique, vue de la rue (le mur du fond de face, ses étagères redressées pixel par pixel sans être tassées, le plafond et le sol en coin au grain de sa peinture, le tube au plafond, la face du montant) ; sa vitre de gauche derrière un verre, éclairée de côté (assets/win_z7_shop.webp)
 tools/tabako_window.py   la fenêtre du tabac (mur de face) : une petite cabine derrière la vitre (le tableau du cadre, la paroi gauche, le fond poussé vers le point de fuite et coupé par le cadre droit, la lumière qui baisse vers le bas, un reflet) (assets/win_z7_kiosk.webp)
+tools/interieur.py       (un module) une pièce vue par une ouverture d'une façade de côté : son fond de face (chaque rayon de la peinture redressé en horizontale, ses bords suivis, ses pixels gardés), le haut et le bas au grain de la peinture
+tools/ichiraku_interior.py Ichiraku : derrière ses portes vitrées, la boutique de face (les bandes de lumière du comptoir et les étagères horizontales), dans layer_city_off, street_unlit, shop_off.webp et le masque ramen_glass.webp
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
 ```
