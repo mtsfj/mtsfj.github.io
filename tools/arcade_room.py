@@ -654,10 +654,14 @@ def main():
         print(json.dumps(pn))
         return
     tex_ = np.concatenate([res['lit'][0], res['closed'][0]], 0)
-    Image.fromarray(np.clip(np.round(tex_), 0, 255).astype(np.uint8), 'RGB').save(A(OUT), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    old = open(A(OUT), 'rb').read() if os.path.exists(A(OUT)) else b''
+    buf = io.BytesIO()
+    Image.fromarray(np.clip(np.round(tex_), 0, 255).astype(np.uint8), 'RGB').save(buf, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    open(A(OUT), 'wb').write(buf.getvalue())
     js = open(A('street.js'), encoding='utf-8').read()
     js, n1 = re.subn(r"const ARC_PINS = \{.*?\};", 'const ARC_PINS = ' + json.dumps(pn, separators=(', ', ': ')) + ';', js)
-    js, n2 = re.subn(r"assets/%s\?v=(\d+)" % re.escape(OUT), lambda m: 'assets/%s?v=%d' % (OUT, int(m.group(1)) + 1), js)
+    bump = 1 if buf.getvalue() != old else 0                                # (sa version : une de plus si la texture a changé)
+    js, n2 = re.subn(r"assets/%s\?v=(\d+)" % re.escape(OUT), lambda m: 'assets/%s?v=%d' % (OUT, int(m.group(1)) + bump), js)
     assert n1 == 1 and n2 == 1, 'street.js : ARC_PINS ou la texture de la salle introuvable'
     open(A('street.js'), 'w', encoding='utf-8').write(js)
     sc = S_END - BOXES[1][5]
