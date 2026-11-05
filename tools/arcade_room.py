@@ -36,16 +36,18 @@ seuil, puis la salle) ; la lumière : le tube, les écrans, la vitrine à pinces
 l'angle), sur le sol (rapportée à celle que le dessin montre devant les bornes : le sol plus sombre vers nous), le plafond
 (autour du tube), les flancs ; le sol reflète la salle (le rayon renvoyé, flou en hauteur) ; l'ombre de contact le long du
 montant. Puis réduit au pixel entier selon ses bords : là où les rayons d'un pixel font deux groupes nets, la couleur du
-groupe qui en tient plus de la moitié, sinon leur moyenne ; jamais de grain. Le dessin est d'abord adouci selon ses bords
+groupe qui en tient plus de la moitié, sinon leur moyenne ; les reflets du sol, flous, par leur moyenne ; jamais de grain. Le dessin est d'abord adouci selon ses bords
 (un petit médian là où il en a, un médian et une moyenne ailleurs). Mise à la nuit de la rue : l'équilibre de ses canaux à
 mi-chemin (GRADE) de celui de l'ancienne salle (au commit BEFORE, déjà dans la lumière de la rue), ce qui luit moins
 (ACC_GRADE), un peu moins saturée (SAT) ; le montant n'y est pas. Fermée : le même modèle, ses tubes, son enseigne et sa
 vitrine éteints, ses écrans, la moitié de ses frontons et sa sortie de secours allumés (CLOSED : ce qui reste de lumière).
 
-Écrit assets/arcade_interior.webp (100 x 772 : la salle allumée, rangées 0-385 du canevas de la porte, puis fermée) et, dans
-assets/street.js, ARC_PINS : où le modèle met ce que drawArcade anime (les écrans des bornes, l'enseigne, les frontons,
-l'afficheur du coffret : des quadrilatères ; le coffret, la sortie de secours : des boîtes), et la version de la texture. Il
-faut git, Pillow, numpy.
+Écrit assets/arcade_interior.webp (100 x 772 : la salle allumée, rangées 0-385 du canevas de la porte, puis fermée) ; dans
+assets/street_unlit.webp (la rue sans courant), sous la porte, la salle éteinte (UNLIT) à la place du rideau de fer peint, le
+reste repris au commit BEFORE (la nuit rouge y lit la lumière de la salle : les lames du rideau y faisaient des traits rouges) ;
+et, dans assets/street.js, ARC_PINS : où le modèle met ce que drawArcade anime (les écrans des bornes, l'enseigne, les
+frontons, la vitrine à pinces, l'afficheur du coffret : des quadrilatères ; le coffret, la sortie de secours : des boîtes), et
+les versions des deux images (une de plus seulement si elles ont changé). Il faut git, Pillow, numpy.
 """
 import io
 import json
@@ -123,6 +125,8 @@ SAT = 0.85
 GROOVE_K, JOINT_K = 0.16, 0.12
 REVEAL_C, SOFFIT_C, ARRIS_C = (8, 13, 25), (5, 10, 19), (36, 20, 46)
 CLOSED = 0.34
+UNLIT = (0.1, (5.4, 3.6, 14.4))    # sans courant (street_unlit, sous la porte) : la salle allumée à tant, plus le sombre que
+                                     # assets/street.js pose sur elle dans la coupure (rgba(6,4,16,0.9))
 LIT = (((175, 1085, 357, 1260), 1.0), ((432, 1085, 606, 1260), 1.0),
        ((160, 962, 378, 1032), 0.5), ((418, 962, 640, 1032), 0.5),
        ((280, 1450, 302, 1495), 1.0), ((540, 1450, 562, 1495), 1.0))
@@ -351,7 +355,7 @@ def floor_library(img):
         med = np.median(st.reshape(-1, 3), 0)
         lum = st @ LUM; ml = np.median(lum)
         g = np.clip(lum / max(ml, 1), 0.85, 1.15)
-        g = 1 + (g - np.convolve(g.mean(0), np.ones(31) / 31, 'same')[None]) * 0.8   # (son grain, ses reflets ôtés)
+        g = 1 + (g - np.convolve(g.mean(0), np.ones(31) / 31, 'same')[None]) * 0.5   # (son grain, ses reflets ôtés)
         strips.append(med[None, None] * g[..., None])
     return strips
 
@@ -454,6 +458,7 @@ def render(img, state):
     Ls = lights(img, state)
     sid, P, Q, D = primary()
     C, EM = shade_points(img, sid, P, Q, lib, Ls, state)
+    RF = np.zeros(C.shape)                                                 # (ses reflets, à part : réduits par leur moyenne)
     # le sol luit : ce qu'il reflète (le rayon renvoyé vers le haut, flou en hauteur, réparti sur les points du pixel)
     m = sid == S_FLOOR
     if m.any():
@@ -464,11 +469,11 @@ def render(img, state):
         RC, _ = shade_points(img, rs, RP, RQ, lib, Ls, state)
         cosg = np.abs(D[m][:, 1]) / np.sqrt((D[m] ** 2).sum(-1))
         R = 0.03 + 0.25 * (1 - cosg) ** 5
-        C[m] = C[m] * (1 - 0.5 * R[:, None]) + RC * R[:, None]
-    return sid, P, C, EM
+        C[m] = C[m] * (1 - 0.5 * R[:, None]); RF[m] = RC * R[:, None]
+    return sid, P, C, EM, RF
 
 
-def reduce(C, sid, EM):
+def reduce(C, sid, EM, RF):
     """chaque pixel de la scène pris sur ses SS x SS points : là où ils font deux groupes nets (un bord), la couleur du groupe qui
     en tient au moins 55 % ; sinon leur moyenne (sans grain). Les points hors de la porte laissés de côté (assets/street.js
     découpe ce bord)"""
@@ -493,6 +498,7 @@ def reduce(C, sid, EM):
     maj = np.where((n1 >= n0)[..., None], c1, c0)
     share = np.maximum(n1, n0) / (SS * SS)
     out = np.where(((gap > 14) & (share >= 0.55))[..., None], maj, mean)
+    out = out + RF.reshape(H, SS, W, SS, 3).mean((1, 3))                  # (les reflets du sol, flous : leur moyenne, jamais de grain)
     ids = np.unique(s)
     cnt = np.stack([(s == k).sum(2) for k in ids], -1)
     surf = ids[cnt.argmax(-1)]
@@ -628,8 +634,8 @@ def pins():
 def build(img):
     res = {}
     for state in ('lit', 'closed'):
-        sid, P, C, EM = render(img, state)
-        out, surf, a, em = reduce(C, sid, EM)
+        sid, P, C, EM, RF = render(img, state)
+        out, surf, a, em = reduce(C, sid, EM, RF)
         out = lines(out, surf)
         out = post_edge(out, surf)
         res[state] = (out, surf, a, em)
@@ -639,6 +645,24 @@ def build(img):
     o = res['closed'][0]; o[y:y + h, x:x + w] = EXIT_C[0]; o[y + 1:y + h - 1, x + 1:x + w - 1] = EXIT_C[1]
     o[y + 1:y + h - 1, x + 2:x + 3] = EXIT_C[2]
     return res, pn
+
+
+def unlit_zone(lit):
+    """la rue sans courant sous la porte (street_unlit.webp : la coupure de courant, et ce sur quoi la nuit rouge lit la lumière de
+    la salle) : la salle elle-même, éteinte, à la place du rideau de fer peint (ses lames feraient des traits rouges dans la nuit
+    rouge) ; de la tête au bord du sol de la porte, les pixels dont le centre y est ; le reste repris au commit BEFORE"""
+    data = subprocess.run(['git', 'show', f'{BEFORE}:assets/street_unlit.webp'], cwd=ROOT, capture_output=True, check=True).stdout
+    U = np.asarray(Image.open(io.BytesIO(data)).convert('RGBA')).astype(float).copy()
+    k, c = UNLIT
+    for lx in range(ARC[2]):
+        x = lx + 0.5
+        top = TOP[0] + TOP[1] * x / ARC[2]; bot = BOT[0] + BOT[1] * x / ARC[2]
+        fl = bot - THR * (bot - top) / (BOT[0] - TOP[0])
+        for ly in range(int(np.ceil(top - 0.5)), min(int(np.floor(fl - 0.5)) + 1, ARC[3])):
+            U[ARC[1] + ly, ARC[0] + lx, :3] = lit[ly, lx] * k + np.array(c)
+    buf = io.BytesIO()
+    Image.fromarray(np.clip(np.round(U), 0, 255).astype(np.uint8), 'RGBA').save(buf, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    return buf.getvalue()
 
 
 def main():
@@ -663,6 +687,11 @@ def main():
     bump = 1 if buf.getvalue() != old else 0                                # (sa version : une de plus si la texture a changé)
     js, n2 = re.subn(r"assets/%s\?v=(\d+)" % re.escape(OUT), lambda m: 'assets/%s?v=%d' % (OUT, int(m.group(1)) + bump), js)
     assert n1 == 1 and n2 == 1, 'street.js : ARC_PINS ou la texture de la salle introuvable'
+    un = unlit_zone(res['lit'][0]); old = open(A('street_unlit.webp'), 'rb').read()   # (la rue sans courant sous la porte, et sa version)
+    if un != old:
+        open(A('street_unlit.webp'), 'wb').write(un)
+        js, n3 = re.subn(r"assets/street_unlit\.webp\?v=(\d+)", lambda m: 'assets/street_unlit.webp?v=%d' % (int(m.group(1)) + 1), js)
+        assert n3 == 1, 'street.js : street_unlit introuvable'
     open(A('street.js'), 'w', encoding='utf-8').write(js)
     sc = S_END - BOXES[1][5]
     X, Z = to_world(T_L + 266 / K, sc)
