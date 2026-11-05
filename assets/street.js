@@ -2984,7 +2984,10 @@
   const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=7';   // (droite-01)
   // screens in the room texture (100x332, mirrored: its aisle runs to the street's vanishing point): [x, y, w, h, light]
   const ARC_SCREENS = [[83, 162, 16, 28, '#7fe0d8'], [68, 160, 14, 27, '#7fd0e8'], [52, 163, 11, 19, '#7fe0d8'], [22, 115, 20, 15, '#6fe8e0'], [82, 110, 13, 18, '#e8a0d0'], [0, 90, 20, 160, '#ff9ad0']];
-  const roomY = (lx, y) => topAt(lx) + bandAt(lx) + y * (botAt(lx) - thrAt(lx) - topAt(lx) - bandAt(lx)) / 332;
+  // the room seen through a door in a side wall: what is deep shows square to us (the room's far end), its level lines level,
+  // not sheared along the wall's rays; so the texture's rows keep the heights they have at the far post (lx 0) right across the
+  // door, and where the door is taller (toward us) the room's ceiling and floor show above and below them (drawArcade)
+  const roomY = (lx, y) => topAt(0) + bandAt(0) + y * (botAt(0) - thrAt(0) - topAt(0) - bandAt(0)) / 332;
   function quad(y0, y1, color) {              // a band between two functions of lx, across the door
     ag.fillStyle = color; ag.beginPath(); ag.moveTo(0, y0(0) * AK);
     for (const lx of [ARC.w]) ag.lineTo(lx * AK, y0(lx) * AK);
@@ -2994,10 +2997,21 @@
     ag.clearRect(0, 0, ACW, ACH);
     ag.imageSmoothingEnabled = false;
     ag.save(); ag.beginPath(); ag.moveTo(0, topAt(0) * AK); ag.lineTo(ACW, topAt(ARC.w) * AK); ag.lineTo(ACW, botAt(ARC.w) * AK); ag.lineTo(0, botAt(0) * AK); ag.closePath(); ag.clip();
-    // the room, one column at a time, stretched to the local height of the opening
+    // the room, one column at a time, its rows level (roomY); above them, up to the door's head, the ceiling (the texture's own
+    // top rows mirrored, in shade); below them, down to the threshold, the floor (its bottom rows mirrored, in shade): whole
+    // scene pixels, nearest
     if (arcImg.complete && arcImg.naturalWidth) for (let lx = 0; lx < ARC.w; lx++) {
-      const y0 = topAt(lx + 0.5) + bandAt(lx + 0.5), y1 = botAt(lx + 0.5) - thrAt(lx + 0.5);
+      const y0 = roomY(lx, 0), y1 = roomY(lx, 332), t = Math.floor(topAt(lx + 0.5)), b = Math.ceil(botAt(lx + 0.5) - thrAt(lx + 0.5));
       ag.drawImage(arcImg, lx, 0, 1, 332, lx * AK, y0 * AK, AK, (y1 - y0) * AK);
+      const r = (y1 - y0) / 332;
+      for (let y = Math.floor(y0) - 1; y >= t; y--) {                       // the ceiling: row by row, mirrored, darker
+        const ty = Math.min(331, Math.floor((y0 - y - 0.5) / r)); ag.drawImage(arcImg, lx, ty, 1, 1, lx * AK, y * AK, AK, AK);
+        ag.fillStyle = 'rgba(8,4,18,' + Math.min(0.7, 0.32 + 0.02 * (y0 - y)) + ')'; ag.fillRect(lx * AK, y * AK, AK, AK);
+      }
+      for (let y = Math.ceil(y1); y < b; y++) {                              // the floor: row by row, mirrored, darker
+        const ty = Math.max(0, 331 - Math.floor((y - y1 + 0.5) / r)); ag.drawImage(arcImg, lx, ty, 1, 1, lx * AK, y * AK, AK, AK);
+        ag.fillStyle = 'rgba(8,4,18,' + Math.min(0.6, 0.25 + 0.02 * (y - y1)) + ')'; ag.fillRect(lx * AK, y * AK, AK, AK);
+      }
     }
     // the fuses' reward: with the power cut the room goes dark, and comes back as its tube catches
     // and by its hours (lumieres-01): shut, its ceiling out (0.3 of its light), its cabinets' attract screens and the fuse prompt kept
