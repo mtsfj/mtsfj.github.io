@@ -15,28 +15,33 @@ VP, ce qui entre dans la boutique est horizontal, ce qui est vertical d'aplomb) 
 
 - le mur du fond, de face (il fait face à la rue qui descend : ses horizontales horizontales, ses verticales d'aplomb),
   un peu au-delà du montant du fond (son plan rejoindrait celui de la façade en x XW, derrière le montant) : les
-  pixels du peintre, chacun dans sa colonne, ses rangées remises de son linteau au pied de ses étagères (deux rayons)
-  entre le haut du mur et son pied (deux horizontales) ; chaque bord net de sa peinture (le tube, les planches, les
-  bocaux, le dessus du meuble) suivi colonne par colonne (EDGE_*) et posé exactement sur sa rangée, sans marche, les
-  rangées entre deux bords réparties entre eux (aucune doublée, quelques-unes sautées) ;
+  pixels du peintre, chacun dans sa colonne ; chaque rayon de sa peinture devient l'horizontale qu'il a à la dernière
+  colonne du mur XR (là, sa peinture telle quelle ; plus près, ses rangées resserrées de (VP_x - x) / (VP_x - XR) autour
+  de l'horizon, pas plus : moins de 8 % à la colonne la plus proche) ; ce qui dépasse en haut et en bas passe derrière le
+  plafond et le sol ; chaque bord net de sa peinture (les planches, les bocaux, le dessus du meuble) suivi colonne par
+  colonne (EDGE_*) et posé exactement sur sa rangée, sans marche, les rangées entre deux bords réparties entre eux
+  (aucune doublée, celles en trop sautées là où sa peinture est la plus unie) ;
 - le plafond, vu d'en dessous, entre le linteau (un rayon) et le haut du mur (une horizontale) : un coin plus large
-  vers le montant proche, sombre vers la porte, plus clair contre le mur où le tube l'éclaire (CEIL : ses tons, en
-  bandes horizontales, une par profondeur) ;
-- le sol, entre le pied du mur (une horizontale) et le seuil du peintre : allumé, la flaque de lumière que le peintre y
-  avait mise (près du seuil, au milieu de l'ouverture), posée à plat sur lui (en perspective : ses bords s'aplatissent),
-  en bandes nettes des tons de son sol (POOL) ; éteint, son sol à lui, chaque colonne le sien, ses rangées réparties de
-  son bord vers les étagères à son seuil sur ce coin ; le pied du mur assombri contre lui (FOOT) ;
+  vers le montant proche ; le grain du haut sombre de la pièce du peintre (CEIL_SRC, chaque pixel rapporté à ses
+  voisins : GRAIN), répété en miroir, à ses tons : sombre vers la porte, plus clair près du tube (CEIL, en bandes) ;
+- le tube du peintre au plafond, de travers à la rue (horizontal, rangée TUBE_ROW), redessiné net (sa boîte, chaque
+  rangée de la couleur médiane de la sienne, ses bouts à lui) ; allumée, sa lueur autour de lui en trois marches
+  (GLOW) ;
+- le sol, entre le pied du mur (une horizontale) et le seuil du peintre : le grain de son sol (chaque colonne de son
+  sol ramenée à FLOOR_ROWS rangées, chaque pixel rapporté à ses voisins), répété en miroir ; allumé, à la flaque de
+  lumière qu'il y avait mise (près du seuil, au milieu de l'ouverture), posée à plat sur lui (en perspective : ses
+  bords s'aplatissent), en bandes de ses tons à lui (POOL) ; éteint, à ses deux tons éteints, le plus clair vers le
+  seuil (FLOOR_OFF) ; le pied du mur assombri contre lui (FOOT) ;
 - le tableau du fond, la face intérieure du montant (de face aussi, J colonnes avant lui : le bois du montant, éclairé
   par la pièce, plus vers elle et vers le sol clair : JAMB) ; la sous-face du linteau, une rangée sombre (avec ce que la
-  pièce du peintre avait au-dessus d'elle) ; sous le montant, le seuil du peintre ;
-- le tube du peintre, redressé sur le haut du mur, redessiné net (TUBE : sa boîte, chaque rangée de la couleur médiane
-  de la sienne) ; allumée, sa lueur autour de lui en trois marches (GLOW).
+  pièce du peintre avait au-dessus d'elle) ; sous le montant, le seuil du peintre.
 
-Allumée, la pièce garde la lumière du peintre (ses couleurs mêmes), un peu plus sombre vers le haut et le bas du mur, loin
-du tube (FALL), et la ligne du plafond contre le mur (JUNCTION). La vitre de la porte de gauche reste où elle est (ses
-marchandises contre le verre, comme une vitrine), mais derrière un verre : allumée, un peu plus sombre que l'ouverture
-(GLASS_DIM) ; un reflet en biais, à peine, deux bandes nettes (SHEEN). Éteinte, comme elle est dans les calques : la
-même géométrie prise dans les pixels sombres du peintre, le plafond et le sol à leurs tons éteints.
+Allumée, la pièce garde la lumière du peintre (ses couleurs mêmes), un peu plus sombre vers le bas du mur (FALL), et la
+ligne du plafond contre le mur (JUNCTION). La vitre de la porte de gauche reste où elle est (ses marchandises contre le
+verre, comme une vitrine), mais derrière un verre (GLASS_DIM) et éclairée de côté, par l'ouverture et le tube : plus
+sombre vers la gauche et vers le bas (PANE_FALL) ; un reflet en biais, à peine, deux bandes nettes (SHEEN). Éteinte, comme
+elle est dans les calques : la même géométrie prise dans les pixels sombres du peintre, le plafond et le sol à leurs
+tons éteints.
 
 Dans layer_city_off et street_unlit (les mêmes ici : leur rapport au commit BEFORE gardé), night_far (0) et street_sun
 (0) ; écrit assets/win_z7_shop.webp (le comp de la boutique, ce qui change quand elle s'allume) et sa boîte dans
@@ -60,7 +65,8 @@ CH, CF, CT = -0.15125, 0.2155, 0.2355   # les rayons de la peinture, y = VP_y + 
                                      # (la dernière rangée du sol au-dessus)
 XW = 270                             # le plan du mur du fond rejoint celui de la façade à cette colonne (derrière le montant)
 J = 5                                # la face intérieure du montant du fond : ses colonnes
-UP = 'win_z7_shop'; UP_POS = (105, 505); UP_V = 6   # le comp de la boutique (sa place au commit BEFORE), sa version
+XR = XB - J                          # (la dernière colonne du mur : la peinture y reste telle quelle)
+UP = 'win_z7_shop'; UP_POS = (105, 505); UP_V = 8   # le comp de la boutique (sa place au commit BEFORE), sa version
 LUM = np.array([0.299, 0.587, 0.114])
 F_PX, EYE = 1250.0, 1.5              # (la focale de la vue, en pixels, estimée sur les distributeurs voisins (un mètre de large
                                      # chacun), et la hauteur de l'œil : seulement pour la lumière, en mètres)
@@ -68,13 +74,19 @@ EDGE_MIN, EDGE_RUN = 8, 4            # un bord de la peinture : un saut de clart
                                      # long de son rayon sur tant de colonnes au moins (à deux colonnes près)
 CEIL = ((0.35, 'lit'), (0.9, 'mid'), (1e9, 'dark'))   # le plafond : ses tons selon la distance au tube (m), en bandes
 TUBE = (197, 217)                    # le tube du peintre : ses colonnes (ses bouts), les rayons de ses bords haut et bas (mesurés) ;
-TUBE_RAYS = (-0.1453, -0.1370)       # redressé sur le mur, sous le plafond
+TUBE_RAYS = (-0.1453, -0.1370)       # au plafond, de travers à la rue (horizontal), sa première rangée à TUBE_ROW
+TUBE_ROW = 544
 GLOW = (0.4, 0.2, 0.08)              # allumée, sa lueur autour de lui (mur et plafond) : la part de sa couleur à 1, 2, 3 pixels
 CEIL_ON = {'lit': (118, 58, 52), 'mid': (78, 38, 44), 'dark': (45, 27, 41)}   # (allumée : près du tube, plus loin, vers la porte)
 CEIL_OFF = {'lit': (44, 27, 40), 'mid': (40, 25, 39), 'dark': (36, 24, 38)}   # (éteinte)
-POOL = ((16.6, 0.2), (0.55, 0.45), (0.72, 0.42, 0.18, 0.06, 0.0), (88, 72, 52, 33, 15))   # allumé, la flaque de lumière sur le sol :
-                                     # son centre (le long de la rue, dans la boutique, m), ses rayons, les limites de ses bandes
-                                     # (sa part), leurs tons (centiles de clarté des pixels du sol du peintre)
+POOL = ((16.6, 0.25), (0.6, 0.55), (0.7, 0.4, 0.16, 0.05, 0.0), (78, 64, 48, 32, 16))   # allumé, la flaque de lumière sur le
+                                     # sol : son centre (le long de la rue, dans la boutique, m), ses rayons, les limites de ses
+                                     # bandes (sa part), leurs tons (centiles de clarté des pixels du sol du peintre)
+FLOOR_OFF = (0.45, (35, 65))         # éteint : ses deux tons (centiles), le plus clair passé cette part du coin vers le seuil
+CEIL_SRC = (181, 196, 6)             # le grain du plafond : le haut sombre de la pièce du peintre (ses colonnes, ses rangées
+                                     # sous son linteau), à gauche de son tube
+FLOOR_SRC, FLOOR_ROWS = (190, 219), 8   # le grain du sol : les colonnes de son sol, ramenées à tant de rangées
+GRAIN = (0.78, 1.28)                 # (le grain : un pixel rapporté à ses voisins, borné)
 FOOT = 0.78                          # le pied du mur contre le sol, sa rangée (allumée et éteinte)
 JUNCTION = (0.8, 0.9)                # la ligne du plafond contre le mur : sa rangée de plafond, la première du mur (allumée)
 FALL = 0.1                           # allumée : le mur un peu plus sombre loin du tube, vers son pied (sa part perdue)
@@ -83,7 +95,8 @@ JAMB = ((71, 49, 46), (0.12, 0.3, 0.45))   # la face du montant : le bois du mon
                                      # sol clair)
 SOFFIT = 0.8                         # la sous-face du linteau : le bois sombre du montant, plus sombre encore
 PANE = (146, 547, 178, 680)          # la vitre de la porte de gauche (x0, y0, x1, y1) : ses marchandises contre le verre
-GLASS_DIM = 0.9                      # allumée : derrière ce verre, un peu plus sombre que l'ouverture
+GLASS_DIM = 0.94                     # allumée : derrière ce verre, un peu plus sombre que l'ouverture ; et éclairées de côté,
+PANE_FALL = (0.24, 0.12)             # par l'ouverture et le tube : plus sombres vers la gauche, vers le bas (leur part perdue)
 SHEEN = ((0.55, 4.0, 3.0), (0.62, 1.5, 6.0))   # le reflet en biais : (sa pente (x par rangée), sa largeur, son ajout) : une
                                      # bande large et faible, une fine un peu plus claire, nettes ; sur la vitre seule
 SHEEN_AT = (152, 560)                # (le point où passent leurs milieux)
@@ -141,16 +154,19 @@ def tracks_of(Lm):
 
 
 def col_map(x, tracks, Co, Fo, Lm):
-    """une colonne du mur : pour chacune de ses rangées, la rangée de la peinture qu'elle montre. Des repères (rangée de
-    sortie, rangée de la peinture) : le haut du mur (le linteau de la peinture), son pied (le pied de ses étagères), chaque
-    bord suivi posé sur sa rangée ; monotones, et jamais plus serrés dans la peinture qu'au mur (en cas de conflit, le bord
-    le plus court lâché). Entre deux repères, les rangées de la peinture dans l'ordre, celles en trop sautées là où elle est
-    la plus unie (là où une rangée ressemble le plus à ses voisines)"""
+    """une colonne du mur : pour chacune de ses rangées, la rangée de la peinture qu'elle montre. Chaque rayon de la peinture
+    devient l'horizontale qu'il a à la colonne XR (là, la peinture telle quelle ; ailleurs ses rangées resserrées de
+    (VP_x - x) / (VP_x - XR) autour de l'horizon, pas plus) ; des repères (rangée de sortie, rangée de la peinture) : le
+    haut et le pied du mur, chaque bord suivi posé sur sa rangée ; monotones, et jamais plus serrés dans la peinture qu'au
+    mur (en cas de conflit, le bord le plus court lâché). Entre deux repères, les rangées de la peinture dans l'ordre,
+    celles en trop sautées là où elle est la plus unie (là où une rangée ressemble le plus à ses voisines)"""
     half = lambda t: np.round(t - 0.5) + 0.5                                # (une limite entre deux rangées)
-    anc = [(half(Co), half(ray(CH, x)), 1e9), (half(Fo), half(ray(CF, x)), 1e9)]
+    K = (VP[0] - x) / (VP[0] - XR)                                           # (le rayon c au mur : sa rangée à la colonne XR)
+    anc = [(half(Co), half(VP[1] + (Co - VP[1]) * K), 1e9), (half(Fo), half(VP[1] + (Fo - VP[1]) * K), 1e9)]
     for cc, n, pts, (xa, xb) in tracks:
-        if xa <= x <= xb:
-            anc.append((half(Co + (cc - CH) / (CF - CH) * (Fo - Co)), pts.get(x, half(ray(cc, x))), n))
+        t = half(ray(cc, XR))
+        if xa <= x <= xb and half(Co) < t < half(Fo):
+            anc.append((t, pts.get(x, half(ray(cc, x))), n))
     anc.sort()
     ok = False
     while not ok:
@@ -170,6 +186,17 @@ def col_map(x, tracks, Co, Fo, Lm):
     return out
 
 
+def tile(P, i, j):                                                           # (un motif répété en miroir : son pixel (i, j))
+    h, w = P.shape[:2]; i %= 2 * h; j %= 2 * w
+    return P[i if i < h else 2 * h - 1 - i, j if j < w else 2 * w - 1 - j]
+
+
+def grain(P):                                                                # (le grain d'un motif : chaque pixel rapporté à
+    Pp = np.pad(P, ((1, 1), (1, 1), (0, 0)), mode='reflect')               # la moyenne de ses voisins, borné)
+    m = sum(Pp[a:a + P.shape[0], b:b + P.shape[1]] for a in range(3) for b in range(3)) / 9
+    return np.clip((P + 1) / (m + 1), GRAIN[0], GRAIN[1])
+
+
 def main():
     names = (('layer_city_off.webp', 'RGBA'), ('street_unlit.webp', 'RGBA'), ('night_far.webp', 'RGB'), ('street_sun.webp', 'RGB'))
     L = [load(n, m) for n, m in names]; B = [load(n, m, BEFORE) for n, m in names]
@@ -184,8 +211,8 @@ def main():
     S = {'on': on, 'off': off}; N = {k: v.copy() for k, v in S.items()}
     lit0 = np.zeros((H, W), bool); lit0[py:py + ch, px:px + cw] = cp[..., 3] > 0   # (ce que le comp allumait)
 
-    # la géométrie : le haut du mur (le linteau au plan du mur), son pied (le seuil au plan du mur) ; le mur de la peinture
-    # (entre son linteau et le pied de ses étagères) y est remis rangée par rangée, ses bords sur leurs rangées
+    # la géométrie : le haut du mur (le linteau au plan du mur), son pied (le seuil au plan du mur) ; la peinture y est
+    # redressée colonne par colonne, ses bords sur leurs rangées (col_map)
     Co, Fo = ray(CH, XW), ray(CT, XW)
     tracks = tracks_of(on @ LUM)
     first = lambda r: int(np.round(r - 0.5)) + 1                             # (la première rangée sous une ligne : son
@@ -198,7 +225,6 @@ def main():
     jt, jb = first(ray(CH, XB + 1)), last(ray(CT, XB + 1))                   # (celles de la face du montant : de face)
     a_m = EYE / CT                                                           # (l'écart de la façade à l'œil, m : le seuil)
     Zw = F_PX * a_m / (VP[0] - XW)                                           # (le mur du fond, à tant de mètres)
-    tx0, tx1 = ((t - VP[0]) * Zw / F_PX for t in TUBE)                       # (le tube, sur le mur : ses bouts, m)
     cls, tbot = {}, {}
     for x in range(XA, XB + 1):
         h0, t1 = first(ray(CH, x)), sill_row(x); tbot[x] = t1 + 0.5
@@ -210,31 +236,40 @@ def main():
         for y in range(h0 - 3, h0 + 1):                                     # (la sous-face : sa rangée, et ce que la pièce du
             if y == h0 or lit0[y, x]: cls[y, x] = 'soffit'                   # peintre avait au-dessus d'elle)
         for y in range(h0 + 1, t1 + 1): cls[y, x] = 'ceil' if y < cw0 else 'wall' if y <= fw1 else 'floor'
-    maps = {x: col_map(x, tracks, Co, Fo, on @ LUM) for x in range(XA, XB - J + 1)}
-    half = lambda t: np.round(t - 0.5) + 0.5
-    r0, r1 = (int(half(Co + (c - CH) / (CF - CH) * (Fo - Co)) + 0.5) for c in TUBE_RAYS)   # (les rangées du tube redressé)
+    maps = {x: col_map(x, tracks, Co, Fo, on @ LUM) for x in range(XA, XR + 1)}
 
-    # le sol : allumé, une flaque de lumière posée sur lui (en perspective), en bandes des tons de son sol à lui (du plus
-    # clair au plus sombre, des centiles de ses pixels)
-    fpx = {k: np.array([S[k][y, x] for x in range(XA, XB - J + 1) for y in range(first(ray(CF, x)), int(tbot[x]))]) for k in S}
+    # le plafond : le grain du haut sombre de la pièce du peintre (CEIL_SRC), répété en miroir, à ses tons (sa distance au
+    # tube, en bandes) ; le sol : le grain de son sol (chaque colonne de son sol ramenée à FLOOR_ROWS rangées), allumé à la
+    # flaque de lumière posée sur lui (en perspective), éteint à ses tons éteints (plus clair vers le seuil)
+    cx0, cx1, cdy = CEIL_SRC
+    cpat = {k: grain(np.array([[S[k][first(ray(CH, x)) + 1 + i, x] for x in range(cx0, cx1)] for i in range(cdy)])) for k in S}
+    fcols = [x for x in range(FLOOR_SRC[0], FLOOR_SRC[1])]
+    def fcol(k, x):
+        ys = list(range(first(ray(CF, x)), int(tbot[x])))
+        return [S[k][ys[int(i * len(ys) / FLOOR_ROWS)], x] for i in range(FLOOR_ROWS)]
+    fpat = {k: grain(np.array([fcol(k, x) for x in fcols]).transpose(1, 0, 2)) for k in S}
+    fpx = {k: np.array([S[k][y, x] for x in range(XA, XR + 1) for y in range(first(ray(CF, x)), int(tbot[x]))]) for k in S}
     def tones(px, pcs):
         o = px[np.argsort(px @ LUM)]; n = len(o)
         return [np.median(o[int(n * max(0, p - 5) / 100):max(int(n * max(0, p - 5) / 100) + 1, int(n * min(100, p + 5) / 100))], 0) for p in pcs]
-    ftone = {'on': tones(fpx['on'], POOL[3])}
+    ftone = {'on': tones(fpx['on'], POOL[3]), 'off': tones(fpx['off'], FLOOR_OFF[1])}
+    tx0, tx1 = ((t - VP[0]) * Zw / F_PX for t in TUBE)                       # (le tube : ses bouts, m)
+    Zt = Zw * (VP[1] - Co) / (VP[1] - (TUBE_ROW + len(TUBE_RAYS) / 2))      # (sa profondeur : celle de sa rangée au plafond)
+
     def floor_px(k, x, y):
         Z = F_PX * EYE / (y - VP[1]); X = (VP[0] - x) * Z / F_PX - a_m       # (sur le sol : le long de la rue, dans la boutique)
+        g = tile(fpat[k], y - fw1 - 1, x - XA)
         if k == 'on':
             e = np.exp(-((Z - POOL[0][0]) / POOL[1][0]) ** 2 - ((X - POOL[0][1]) / POOL[1][1]) ** 2)
-            return ftone['on'][next(i for i, lim in enumerate(POOL[2]) if e >= lim)]
-        u = (y + 0.5 - (fw1 + 0.5)) / (tbot[x] - (fw1 + 0.5))                # (éteint : sa peinture, chaque rangée la sienne
-        return S[k][int(np.floor(ray(CF, x) + u * (tbot[x] - ray(CF, x)))), x]   # le long de la colonne, de son bord vers
-                                                                             # les étagères à son seuil)
+            return ftone['on'][next(i for i, lim in enumerate(POOL[2]) if e >= lim)] * g
+        u = (y - Fo) / max(1e-6, tbot[x] - Fo)
+        return ftone['off'][0 if u < FLOOR_OFF[0] else 1] * g
 
-    def ceil_px(k, x, y):                                                    # (le plafond : sa distance au tube, en bandes)
+    def ceil_px(k, x, y):
         Z = Zw * (VP[1] - Co) / (VP[1] - y); X = (x - VP[0]) * Z / F_PX
-        d = np.hypot(max(0.0, tx0 - X, X - tx1), Zw - Z)
+        d = np.hypot(max(0.0, tx0 - X, X - tx1), Zt - Z)
         band = next(b for lim, b in CEIL if d < lim)
-        return np.array((CEIL_ON if k == 'on' else CEIL_OFF)[band], float)
+        return np.array((CEIL_ON if k == 'on' else CEIL_OFF)[band], float) * tile(cpat[k], y - cw0, x - XA)
 
     for (y, x), c in cls.items():
         for k in S:
@@ -259,26 +294,33 @@ def main():
                 col = S[k][y, x]
             N[k][y, x] = col
 
-    # le tube, redessiné net : chaque rangée de sa boîte (entre ses deux bords) de la couleur médiane de la rangée de même
-    # rang du tube du peintre, le long de ses rayons ; ses bouts, ceux du peintre
-    for y in range(r0, r1):
-        for k in S:
-            row = [S[k][first(ray(TUBE_RAYS[0], xs)) + y - r0, xs] for xs in range(TUBE[0] + 1, TUBE[1])]
-            for x in range(TUBE[0], TUBE[1] + 1):
-                N[k][y, x] = np.median(row, 0) if TUBE[0] < x < TUBE[1] else S[k][first(ray(TUBE_RAYS[0], x)) + y - r0, x]
-
-    # allumée, sa lueur autour de lui, sur le mur et le plafond, en marches (GLOW : la part de sa couleur, à 1, 2, 3 pixels)
-    tcol = np.median([S['on'][first(ray(TUBE_RAYS[0], xs)), xs] for xs in range(TUBE[0] + 1, TUBE[1])], 0)
+    # le tube, au plafond (de travers à la rue : horizontal), redessiné net : chaque rangée de sa boîte de la couleur médiane
+    # de la rangée de même rang du tube du peintre, le long de ses rayons ; ses bouts, ceux du peintre ; là où le plafond se
+    # voit (sous la sous-face)
+    nt = int(round(ray(TUBE_RAYS[1], 207) - ray(TUBE_RAYS[0], 207))) + 1     # (ses rangées)
+    tcol = {k: [np.median([S[k][first(ray(TUBE_RAYS[0], xs)) + i, xs] for xs in range(TUBE[0] + 1, TUBE[1])], 0) for i in range(nt)] for k in S}
+    tube = set()
+    for i in range(nt):
+        y = TUBE_ROW + i
+        for x in range(TUBE[0], TUBE[1] + 1):
+            if cls.get((y, x)) != 'ceil': continue
+            for k in S:
+                N[k][y, x] = tcol[k][i] if TUBE[0] < x < TUBE[1] else S[k][first(ray(TUBE_RAYS[0], x)) + i, x]
+            tube.add((y, x))
+    # allumée, sa lueur autour de lui, sur le plafond et le haut du mur, en marches (GLOW : la part de sa couleur à 1, 2, 3 px)
+    tc = tcol['on'][0]
     for (y, x), c in cls.items():
-        if c in ('wall', 'ceil') and not (r0 <= y < r1 and TUBE[0] <= x <= TUBE[1]):
-            d = max(TUBE[0] - x, x - TUBE[1], r0 - y, y - (r1 - 1), 0)
-            if 1 <= d <= len(GLOW): N['on'][y, x] = N['on'][y, x] + (tcol - N['on'][y, x]) * GLOW[d - 1] * (N['on'][y, x] @ LUM < tcol @ LUM)
+        if c in ('wall', 'ceil') and (y, x) not in tube:
+            d = max(TUBE[0] - x, x - TUBE[1], TUBE_ROW - y, y - (TUBE_ROW + nt - 1), 0)
+            if 1 <= d <= len(GLOW) and N['on'][y, x] @ LUM < tc @ LUM: N['on'][y, x] = N['on'][y, x] + (tc - N['on'][y, x]) * GLOW[d - 1]
 
-    # la vitre de la porte de gauche : allumée, un peu plus sombre ; un reflet en biais, à peine, sur le verre seul
+    # la vitre de la porte de gauche : allumée, plus sombre loin de l'ouverture et du tube (vers la gauche, vers le bas :
+    # ses marchandises éclairées de côté) et derrière un verre ; un reflet en biais, à peine, sur le verre seul
     gx0, gy0, gx1, gy1 = PANE
     for y in range(gy0, gy1):
         for x in range(gx0, gx1):
-            if lit0[y, x]: N['on'][y, x] *= GLASS_DIM
+            if lit0[y, x]:
+                N['on'][y, x] *= GLASS_DIM * (1 - PANE_FALL[0] * (gx1 - 1 - x) / (gx1 - 1 - gx0)) * (1 - PANE_FALL[1] * (y - gy0) / (gy1 - gy0))
     glass = np.zeros((H, W), bool)
     for y in range(gy0, gy1):
         for x in range(gx0, gx1):
@@ -309,8 +351,9 @@ def main():
                       f'"{UP}": {{"src": "assets/{UP}.webp?v={UP_V}", "x": {bx}, "y": {by}, "w": {bw}, "h": {bh}}}', s_)
     assert n_s == 1, 'street.js : le comp de la boutique est introuvable'
     open(A('street.js'), 'w', encoding='utf-8').write(s_)
+    worst = max((max(m.values()) - min(m.values()) + 1) / len(m) for m in maps.values())   # (les rangées de la peinture par rangée du mur)
     print('ouverture', XB - XA + 1, 'colonnes |', len(tracks), 'bords suivis | mur', cw0, '..', fw1, '| montant', jt, '..', jb,
-          '| comp', (bx, by, bw, bh), int(diff.sum()), 'px')
+          '| resserrement des étagères au plus %.1f %%' % (100 * (worst - 1)), '| comp', (bx, by, bw, bh), int(diff.sum()), 'px')
 
 
 if __name__ == '__main__':
