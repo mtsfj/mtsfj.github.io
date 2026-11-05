@@ -40,6 +40,7 @@ tools/dagashi_front.py   le dagashi-ya sous Kirua : par sa porte ouverte une vra
 tools/tabako_window.py   la fenêtre du tabac (mur de face) : une petite cabine derrière la vitre (le tableau du cadre, la paroi gauche, le fond poussé vers le point de fuite et coupé par le cadre droit, la lumière qui baisse vers le bas, un reflet) (assets/win_z7_kiosk.webp)
 tools/interieur.py       (un module) une pièce vue par une ouverture d'une façade de côté : son fond de face (chaque rayon de la peinture redressé en horizontale, ses bords suivis, ses pixels gardés), le haut et le bas au grain de la peinture
 tools/ichiraku_interior.py Ichiraku : derrière ses portes vitrées, la boutique de face (les bandes de lumière du comptoir et les étagères horizontales), dans layer_city_off, street_unlit, shop_off.webp et le masque ramen_glass.webp
+tools/oden_window.py     la fenêtre de l'oden : la boutique de face derrière ses deux vitres, le plafond en coin au-dessus ; le comptoir et la marmite (d'où part la vapeur) à leur place
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
 ```
