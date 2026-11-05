@@ -5906,40 +5906,48 @@
   const RL = { x: 1150, y: 520, w: 80, h: 170, K: 2 };                         // (from the doors' upper panes, seen once the noren is in, to the counter's foot)
   const rlC = document.createElement('canvas'); rlC.width = RL.w * RL.K; rlC.height = RL.h * RL.K; const rlg = rlC.getContext('2d');
   const rlMask = new Image(); rlMask.src = 'assets/ramen_glass.webp?v=5';
-  const TR = new Image(); TR.src = 'assets/teuchi_reach.webp?v=1';             // Teuchi reaching up to the noren's pole (2 cells, 23 x 44; build_ichiraku_life.py)
-  const rlTex = new THREE.CanvasTexture(rlC); rlTex.magFilter = rlTex.minFilter = THREE.LinearFilter; rlTex.generateMipmaps = false;
+  const rlTex = new THREE.CanvasTexture(rlC); rlTex.magFilter = THREE.NearestFilter; rlTex.minFilter = THREE.LinearFilter; rlTex.generateMipmaps = false;   // (the people crisp at any zoom)
   const rlMesh = new THREE.Mesh(new THREE.PlaneGeometry(RL.w, RL.h), new THREE.MeshBasicMaterial({ map: rlTex, transparent: true, depthWrite: false }));
   rlMesh.position.set(RL.x + RL.w / 2, -(RL.y + RL.h / 2), 0.47); scene.add(rlMesh);
-  // Ichiraku's people, every frame the sheet has for them (Path of the Ninja: overworld walks, three frames a view; build_sprites):
-  // Teuchi front 0-2 (stand, step, step), side 3-5, back 6-8; the customers from behind, cut at the hips, Tazuna 9-11, Mizuki 12-14
-  const RP = { img: new Image(), cw: 23, ch: 37, h: [36, 34, 34, 36, 35, 35, 36, 34, 34, 22, 22, 22, 22, 22, 22] }; RP.img.src = 'assets/ramen_people.webp?v=2';
-  // behind the lit glass only their shadows show: drawn at scene res (in scene coordinates), one dark colour, then enlarged with smoothing
+  // Ichiraku's people in the room of tools/ichiraku_interior.py (the doors' glass, the counter, the stools, the end wall: a small 3D
+  // model seen by the street's eye), each at his own depth and so at its scale (1400 / Z px a metre): Teuchi in his aisle behind the
+  // counter (T, cut by it and by what stands in front of him: O, the lantern, the bowls, the counter's edge), Teuchi at the door
+  // with his hooked pole up to the noren's rail (R), the regular on the corner stool (S), Naruto on the right-hand one (N), the
+  // regular walking from his stool to the door (W: a size for each pixel of his height, his feet on the floor at his depth),
+  // the glass column by column (G: under the noren's rail, the rail across, the bottom's light edge), where the steam rises
+  // (the bowls before their stools, the stock pot). Written by tools/ichiraku_figures.py with assets/ramen_figures.webp: crisp
+  // silhouettes, one per frame and size (Teuchi and the regular redrawn at their size, Naruto's frames kept pixel for pixel)
+  const IRF = {"T":{"cells":[[0,0,48,43],[49,0,48,43],[98,0,48,43],[147,0,48,43],[196,0,48,43],[245,0,48,43],[294,0,48,43],[343,0,48,43],[392,0,48,43]],"y":600,"cx":24,"z":27.27,"at":{"counter":1199.0,"pots":1205.3,"shelf":1183.7}},"R":{"cells":[[0,44,84,192],[85,44,84,192]],"x":1194.0,"y":500,"cx":42,"z":16.68},"S":{"cells":[[170,44,36,42],[207,44,36,42],[244,44,36,42]],"x":1165.1,"y":620,"cx":18},"N":{"cells":[[281,44,23,47],[305,44,23,47],[329,44,23,47],[353,44,23,47],[377,44,23,47],[401,44,23,47]],"x":1218.4,"y":614,"cx":11.5},"W":{"h0":98,"cells":[[[425,44,38,98],[464,44,38,98],[0,237,38,98]],[[39,237,38,99],[78,237,38,99],[117,237,38,99]],[[156,237,38,100],[195,237,38,100],[234,237,38,100]],[[273,237,38,101],[312,237,38,101],[351,237,38,101]],[[390,237,38,102],[429,237,38,102],[468,237,38,102]],[[0,340,40,103],[41,340,40,103],[82,340,40,103]],[[123,340,40,104],[164,340,40,104],[205,340,40,104]],[[246,340,40,105],[287,340,40,105],[328,340,40,105]],[[369,340,40,106],[410,340,40,106],[451,340,40,106]],[[0,447,40,107],[41,447,40,107],[82,447,40,107]],[[123,447,40,108],[164,447,40,108],[205,447,40,108]],[[246,447,42,109],[289,447,42,109],[332,447,42,109]],[[375,447,42,110],[418,447,42,110],[461,447,42,110]],[[0,558,42,111],[43,558,42,111],[86,558,42,111]],[[129,558,42,112],[172,558,42,112],[215,558,42,112]],[[258,558,42,113],[301,558,42,113],[344,558,42,113]],[[387,558,44,114],[432,558,44,114],[0,673,44,114]],[[45,673,44,115],[90,673,44,115],[135,673,44,115]],[[180,673,44,116],[225,673,44,116],[270,673,44,116]],[[315,673,44,117],[360,673,44,117],[405,673,44,117]],[[450,673,44,118],[0,792,44,118],[45,792,44,118]],[[90,792,44,119],[135,792,44,119],[180,792,44,119]],[[225,792,46,120],[272,792,46,120],[319,792,46,120]],[[366,792,46,121],[413,792,46,121],[460,792,46,121]],[[0,914,46,122],[47,914,46,122],[94,914,46,122]],[[141,914,46,123],[188,914,46,123],[235,914,46,123]],[[282,914,46,124],[329,914,46,124],[376,914,46,124]],[[423,914,46,125],[0,1040,46,125],[47,1040,46,125]],[[94,1040,48,126],[143,1040,48,126],[192,1040,48,126]],[[241,1040,48,127],[290,1040,48,127],[339,1040,48,127]],[[388,1040,48,128],[437,1040,48,128],[0,1169,48,128]],[[49,1169,48,129],[98,1169,48,129],[147,1169,48,129]],[[196,1169,48,130],[245,1169,48,130],[294,1169,48,130]],[[343,1169,50,131],[394,1169,50,131],[445,1169,50,131]],[[0,1301,50,132],[51,1301,50,132],[102,1301,50,132]],[[153,1301,50,133],[204,1301,50,133],[255,1301,50,133]],[[306,1301,50,134],[357,1301,50,134],[408,1301,50,134]],[[459,1301,50,135],[0,1437,50,135],[51,1437,50,135]],[[102,1437,50,136],[153,1437,50,136],[204,1437,50,136]],[[255,1437,52,137],[308,1437,52,137],[361,1437,52,137]],[[414,1437,52,138],[0,1576,52,138],[53,1576,52,138]],[[106,1576,52,139],[159,1576,52,139],[212,1576,52,139]],[[265,1576,52,140],[318,1576,52,140],[371,1576,52,140]],[[424,1576,52,141],[0,1718,52,141],[53,1718,52,141]],[[106,1718,52,142],[159,1718,52,142],[212,1718,52,142]],[[265,1718,54,143],[320,1718,54,143],[375,1718,54,143]],[[430,1718,54,144],[0,1863,54,144],[55,1863,54,144]],[[110,1863,54,145],[165,1863,54,145],[220,1863,54,145]],[[275,1863,54,146],[330,1863,54,146],[385,1863,54,146]],[[440,1863,54,147],[0,2011,54,147],[55,2011,54,147]],[[110,2011,56,148],[167,2011,56,148],[224,2011,56,148]],[[281,2011,56,149],[338,2011,56,149],[395,2011,56,149]]],"top":1.82,"from":[8.61,25.92],"to":[5.854,17.25]},"O":[0,2161,82,110,1150,590],"G":[[1160,522,631,636,681],[1161,521,631,636,681],[1162,521,631,636,681],[1163,521,631,636,681],[1164,521,631,636,682],[1165,520,631,636,682],[1166,520,631,636,682],[1167,520,631,636,682],[1168,520,631,636,682],[1169,520,631,636,682],[1170,519,631,636,682],[1173,519,631,636,683],[1174,519,631,636,683],[1175,518,631,636,683],[1176,518,631,636,683],[1177,518,631,636,683],[1178,518,631,636,684],[1179,518,631,636,684],[1180,517,631,636,684],[1181,517,631,636,684],[1182,517,631,636,684],[1183,517,631,636,684],[1184,517,631,636,685],[1185,516,631,636,685],[1192,515,631,636,686],[1193,515,631,636,686],[1194,514,631,636,686],[1195,514,631,636,686],[1196,514,631,636,686],[1197,514,631,636,686],[1198,514,631,636,687],[1199,513,631,636,687],[1200,513,631,636,687],[1201,513,631,636,687],[1202,513,631,636,687],[1203,513,631,636,687],[1204,512,631,636,687],[1205,512,631,636,688],[1209,511,631,636,688],[1210,511,631,636,688],[1211,511,631,636,688],[1212,511,631,636,689],[1213,511,631,636,689],[1214,510,631,636,689],[1215,510,631,636,689],[1216,510,631,636,689],[1217,510,631,636,689],[1218,510,631,636,689],[1219,509,631,636,690],[1220,509,631,636,690],[1221,509,631,636,690],[1222,509,631,636,690],[1223,509,631,636,690]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]]};
+  const IRFI = new Image(); IRFI.src = 'assets/ramen_figures.webp?v=1';
+  const irGlass = new Path2D();                                                // (the glass, in scene px: the people only there)
+  for (const [x, top, a, b, bot] of IRF.G || []) { irGlass.rect(x, top, 1, a - top + 1); irGlass.rect(x, b, 1, bot - b + 1); }
+  // behind the lit glass only their shadows show: drawn at scene res (in scene coordinates), one dark colour, crisp
   const shC = document.createElement('canvas'); shC.width = RL.w; shC.height = RL.h; const shg = shC.getContext('2d'); shg.translate(-RL.x, -RL.y);
-  // seen through the glass and the steam they blur, and the painting's grain shows in them: a blurred copy at the
-  // texture's resolution, then speckled with a fixed grain (one scene pixel per grain, blotchy like the painting)
+  // the painting's grain shows in them: a fixed grain, one scene pixel per grain, blotchy like the painting
   const sbC = document.createElement('canvas'); sbC.width = RL.w * RL.K; sbC.height = RL.h * RL.K; const sbg = sbC.getContext('2d');
   const grC = document.createElement('canvas'); grC.width = RL.w; grC.height = RL.h;
   (function () { const g = grC.getContext('2d'), im = g.createImageData(RL.w, RL.h), d = im.data;
     for (let i = 0; i < d.length; i += 4) d[i + 3] = Math.random() < 0.5 ? 20 + Math.random() * 60 : 0; g.putImageData(im, 0, 0); })();
   const RAM = { acc: 0, cook: { view: 0, t: 0, next: 5, work: 0 }, wisps: [], dip: 0 };
-  for (let i = 0; i < 4; i++) RAM.wisps.push({ t: Math.random() * 2.6, x: 1172 + Math.random() * 40 });
-  // Teuchi's evening, from the sheet's frames, timed in code: he goes between his three places behind the counter (the pots on
-  // the left, the counter in the middle, the shelf on the right) at a walking pace, eased in and out, his steps by the distance
+  for (let i = 0; i < 5; i++) RAM.wisps.push({ t: Math.random() * 2.6, s: i % 3 });   // (each from a bowl or the stock pot: IRF.wisps)
+  // Teuchi's evening, timed in code: he goes between his three places behind the counter (the shelf of jars on the left, the
+  // counter in the middle, the stock pot on the right: IRF.T.at) at a walking pace, eased in and out, his steps by the distance
   // walked (no sliding, no jump); he turns through his side view (front, side, back, never front to back at once); at the
   // counter his arms work in bursts (his stepping frames' arms, the feet behind the counter), at the pots he stirs (his back's),
-  // at the shelf he looks for something; he glances at the street now and then; he breathes (his head rises half a pixel,
-  // about every 4 s); nothing holds still more than a few seconds. Reduced motion: at the counter, front, still
-  const TCH = { x: 1199, x0: 1199, tx: 1199, mt: 0, md: 0, view: 0, want: 0, vt: 0, act: 'counter', at: 0, dur: 6, burst: 0, bt: 0, arm: 0, dist: 0, dir: -1, f: 0, br: 0, glance: 0 };
-  const TCH_AT = { counter: [1199, 0], pots: [1187, 2], shelf: [1215, 2] };   // each place: his x, the view he works in (0 front, 1 side, 2 back)
+  // at the shelf he looks for something; he glances at the street now and then; he breathes (his head rises a pixel, about
+  // every 4 s); nothing holds still more than a few seconds. Reduced motion: at the counter, front, still
+  const TCH_AT = { counter: [IRF.T.at.counter, 0], pots: [IRF.T.at.pots, 2], shelf: [IRF.T.at.shelf, 2] };   // each place: his x, the view he works in (0 front, 1 side, 2 back)
+  const TCH = { x: TCH_AT.counter[0], x0: TCH_AT.counter[0], tx: TCH_AT.counter[0], mt: 0, md: 0, view: 0, want: 0, vt: 0, act: 'counter', at: 0, dur: 6, burst: 0, bt: 0, arm: 0, dist: 0, dir: -1, f: 0, br: 0, glance: 0 };
+  const TCH_V = 28, TCH_STEP = 4.3;                                            // (his pace and his step, in px at his depth: 0.55 m/s)
   function stepTeuchi(dt, t) {
     const T = TCH;
     T.br = reduced ? 0 : 0.5 * Math.sin(t * 1.55);
-    if (reduced) { Object.assign(T, { x: 1199, view: 0, f: 0 }); return; }
+    if (reduced) { Object.assign(T, { x: TCH_AT.counter[0], view: 0, f: 0 }); return; }
     T.at += dt;
     if (T.md > 0) {                                                            // walking: eased, his frame from the distance walked
       if (T.view !== 1) { T.vt += dt; if (T.vt > 0.15) { T.vt = 0; T.view += Math.sign(1 - T.view); } T.f = [0, 3, 6][T.view]; return; }
       T.mt += dt; const u = Math.min(1, T.mt / T.md), k = u * u * (3 - 2 * u), nx = T.x0 + (T.tx - T.x0) * k;
-      T.dist += Math.abs(nx - T.x); T.x = nx; T.f = 3 + [0, 1, 0, 2][Math.floor(T.dist / 2.6) % 4];
+      T.dist += Math.abs(nx - T.x); T.x = nx; T.f = 3 + [0, 1, 0, 2][Math.floor(T.dist / TCH_STEP) % 4];
       if (u >= 1) { T.md = 0; T.dist = 0; T.f = 3; T.want = TCH_AT[T.act][1]; T.vt = 0; }
       return;
     }
@@ -5956,21 +5964,23 @@
     if (T.at > T.dur) {                                                        // the next place
       const go = T.act === 'counter' ? (Math.random() < 0.62 ? 'pots' : 'shelf') : 'counter';
       T.act = go; T.at = 0; T.dur = go === 'counter' ? 6 + Math.random() * 10 : go === 'pots' ? 4 + Math.random() * 5 : 2.5 + Math.random() * 3;
-      T.x0 = T.x; T.tx = TCH_AT[go][0]; T.md = Math.max(0.6, Math.abs(T.tx - T.x0) / 17); T.mt = 0; T.dist = 0; T.dir = Math.sign(T.tx - T.x0) || -1; T.vt = 0;
+      T.x0 = T.x; T.tx = TCH_AT[go][0]; T.md = Math.max(0.6, Math.abs(T.tx - T.x0) / TCH_V); T.mt = 0; T.dist = 0; T.dir = Math.sign(T.tx - T.x0) || -1; T.vt = 0;
     }
   }
-  // the regular, seated on the corner stool with his back to the doors (Tazuna in his straw hat): his back frames, his arms at the
+  // the regular, seated on the corner stool with his back to the doors (Tazuna in his straw hat): his back, his elbows at the
   // bowl in bursts, a breath. He is there whenever the shop is open; as the closing begins (before the neon, long before the
-  // noren) he gets up (seated to standing on his stool, a short cross-fade: no sitting frames to invent) and walks out along the
-  // glass on his side frames (ramen_regular.webp, build_ramen_regular.py), his steps from the distance walked, behind the doors'
-  // frame; in the morning he is in his place again. A driven hour, the first frame or reduced motion: there or gone at once
-  const REG = { st: 'seat', t: 0, a: 1, x: 1163, dist: 0, f: 0, bt: 0, burst: 0, br: 0, hk0: -1, img: new Image() };
-  REG.img.src = 'assets/ramen_regular.webp?v=1';                               // (3 cells of 27 x 41: stand, step, step; facing left)
+  // noren) he gets up (seated to standing by his stool, a short cross-fade) and walks to the door, toward us: from his stool to
+  // just behind the left door's glass (IRF.W: from, to, in metres), growing as he comes (each size its own crisp frame, his feet
+  // on the floor at his depth), his steps from the distance walked; at the door he steps out (a short fade). In the morning he
+  // is in his place again. A driven hour, the first frame or reduced motion: there or gone at once
+  const REG = { st: 'seat', t: 0, a: 1, X: 0, Z: 0, dist: 0, f: 0, bt: 0, burst: 0, br: 0, hk0: -1 };
+  const REG_V = 1.35, REG_OUT = 0.45;                                          // (his walk, m/s; his step through the door, s)
+  const regAt = (u) => { const [x0, z0] = IRF.W.from, [x1, z1] = IRF.W.to; return [x0 + (x1 - x0) * u, z0 + (z1 - z0) * u]; };
   function stepGuests(dt, t) {
     const R = REG, hk = openK('ramen'), live = R.hk0 >= 0 && Math.abs(hk - R.hk0) < 0.05 && !reduced; R.hk0 = hk;
     const want = hk > 0.97;
     R.br = reduced ? 0 : 0.45 * Math.sin(t * 1.4 + 0.7);
-    if (R.st === 'seat' && !want) { if (live && R.img.complete && R.img.naturalWidth) { R.st = 'up'; R.t = 0; } else R.st = 'gone'; }
+    if (R.st === 'seat' && !want) { if (live && IRFI.complete && IRFI.naturalWidth) { R.st = 'up'; R.t = 0; } else R.st = 'gone'; }
     else if (R.st === 'gone' && want) { R.st = 'seat'; R.a = live ? 0 : 1; }
     if (R.st === 'seat') {
       R.a = Math.min(1, R.a + dt / 1.2);                                         // (the morning, if seen: he is there, softly)
@@ -5978,19 +5988,25 @@
       if (R.burst > 0) { if ((R.bt -= dt) < 0) { R.bt = 0.22 + Math.random() * 0.16; R.f = R.f === 1 ? 2 : 1; R.burst--; } }
       else { R.f = 0; if (Math.random() < dt * 0.45) R.burst = 3 + ((Math.random() * 4) | 0); }
     } else if (R.st === 'up') {                                                 // up from his stool
-      R.t += dt; if (R.t > 0.4) { R.st = 'walk'; R.t = 0; R.x = 1163; R.dist = 0; }
-    } else if (R.st === 'walk') {                                               // out along the glass, eased in and out
-      R.t += dt; const u = Math.min(1, R.t / 1.3), k = u * u * (3 - 2 * u), nx = 1163 - 24 * k;
-      R.dist += Math.abs(nx - R.x); R.x = nx; R.f = [0, 1, 0, 2][Math.floor(R.dist / 2.6) % 4];
-      if (u >= 1) R.st = 'gone';
-    }
+      R.t += dt; if (R.t > 0.4) { R.st = 'walk'; R.t = 0; [R.X, R.Z] = regAt(0); R.dist = 0; }
+    } else if (R.st === 'walk') {                                               // to the door, eased in and out (0.6 s each)
+      const [x0, z0] = IRF.W.from, [x1, z1] = IRF.W.to, L = Math.hypot(x1 - x0, z1 - z0), T = L / REG_V + 0.6, a = 0.6;
+      R.t += dt; const tt = Math.min(R.t, T), d = REG_V * (tt < a ? tt * tt / (2 * a) : tt > T - a ? (T - a) - (T - tt) * (T - tt) / (2 * a) : tt - a / 2) / L;
+      const [nx, nz] = regAt(Math.min(1, d)); R.dist += Math.hypot(nx - R.X, nz - R.Z); R.X = nx; R.Z = nz;
+      R.f = [0, 1, 0, 2][Math.floor(R.dist / 0.36) % 4];
+      if (R.t >= T) { R.st = 'out'; R.t = 0; R.f = 0; }
+    } else if (R.st === 'out') { R.t += dt; if (R.t > REG_OUT) R.st = 'gone'; }   // (through the door)
+  }
+  function regWalk(X, Z, f, a, L) {                                            // (the regular standing at (X, Z): his size, his feet on the floor)
+    const W = IRF.W, s = 1400 / Z, n = Math.max(0, Math.min(W.cells.length - 1, Math.round(W.top * s) - W.h0)), c = W.cells[n][f];
+    L.push({ c, x: Math.round(700 + X * s - c[2] / 2), y: Math.round(615 + 1.5 * s) - c[3], a });
   }
   function guestsNear(L) {                                                     // (into the near pass, droite-08's)
-    const R = REG;
-    if ((R.st === 'seat' || R.st === 'up') && RP.img.complete && RP.img.naturalWidth)
-      L.push({ img: RP.img, sx: (9 + R.f) * 23, sy: 15, w: 23, h: 22, x: 1163, top: 601 + R.br, s: 2.45, back: [6.2, 5.0, 5.4], a: R.st === 'up' ? 1 - R.t / 0.4 : R.a });
-    if ((R.st === 'up' || R.st === 'walk') && R.img.complete && R.img.naturalWidth)
-      L.push({ img: R.img, sx: (R.st === 'up' ? 0 : R.f) * 27, sy: 0, w: 27, h: 41, x: R.st === 'up' ? 1163 : R.x, top: 698 - 41 * 2.6, s: 2.6, back: null, a: R.st === 'up' ? R.t / 0.4 : 1 });
+    const R = REG, S = IRF.S, b = R.br > 0.25 ? 1 : 0;
+    if (R.st === 'seat' || R.st === 'up') L.push({ c: S.cells[R.f], x: Math.round(S.x - S.cx), y: S.y - b, a: R.st === 'up' ? 1 - R.t / 0.4 : R.a });
+    if (R.st === 'up') regWalk(IRF.W.from[0], IRF.W.from[1], 0, R.t / 0.4, L);
+    if (R.st === 'walk') regWalk(R.X, R.Z, R.f, 1, L);
+    if (R.st === 'out') regWalk(R.X, R.Z, 0, 1 - R.t / REG_OUT, L);
   }
   function stepRamen(dt, t) {
     for (const m of vent) {                      // the vent: puffs rise, swell, drift left with the wind and fade
@@ -6002,73 +6018,53 @@
     }
     stepTeuchi(dt, t); stepGuests(dt, t);
     if (RAM.dip <= 0 && Math.random() < dt * 0.08) RAM.dip = 0.09; RAM.dip = Math.max(0, RAM.dip - dt);
-    for (const w of RAM.wisps) { w.t += dt; if (w.t > 2.6) { w.t = 0; w.x = 1170 + Math.random() * 44; } }
+    for (const w of RAM.wisps) { w.t += dt; if (w.t > 2.6) { w.t = 0; w.s = (Math.random() * IRF.wisps.length) | 0; } }
     RAM.acc += dt; if (RAM.acc < 1 / 20) return; RAM.acc = 0;
-    const K = RL.K, X = (x) => (x - RL.x) * K, Y = (y) => (y - RL.y) * K;
-    rlg.globalCompositeOperation = 'source-over'; rlg.clearRect(0, 0, rlC.width, rlC.height);
-    if (RP.img.complete && RP.img.naturalWidth) {
-      shg.globalCompositeOperation = 'source-over'; shg.clearRect(RL.x, RL.y, RL.w, RL.h); shg.imageSmoothingEnabled = true; shg.fillStyle = '#220a06';
-      // shadows on the glass and noren of a receding facade: foreshortened (squeezed across, ~(x-700)/1700, a bit
-      // less so the poses still read) and sheared so their lines run toward the vanishing point (700, 615)
-      const FS = 0.42, persp = (cx, y, yMid) => { shg.translate(cx, y); shg.transform(FS, FS * (615 - yMid) / (700 - cx), 0, 1, 0, 0); };
-      const spr = (f, cx, top, sc, clipY) => {     // top = the top of the head, so it stays put from frame to frame
-        shg.save(); if (clipY) { shg.beginPath(); shg.rect(RL.x, RL.y, RL.w, clipY - RL.y); shg.clip(); }
-        persp(cx, top, top + RP.h[f] * sc / 2);
-        shg.drawImage(RP.img, f * RP.cw, 0, RP.cw, RP.ch, -RP.cw * sc / 2, -(RP.ch - RP.h[f]) * sc, RP.cw * sc, RP.ch * sc); shg.restore();
-      };
-      const reach = IR.take >= 0 ? (IR.out ? 2.4 - IR.take : IR.take) : -1;          // the noren taken in (or hung out): his arms up behind the panes
-      if (reach >= 0 && reach < 2.4 && TR.complete && TR.naturalWidth) {            // (at the door, right behind its glass: as tall as the door allows)
-        shg.save(); shg.globalAlpha = Math.min(1, reach / 0.3, (2.4 - reach) / 0.3); persp(1194, 530, 610);
-        shg.drawImage(TR, (reach < 0.6 || reach > 1.9 ? 0 : 23), 0, 23, 44, -23 * 2.1, 0, 23 * 4.2, 44 * 3.4); shg.restore();
-      } else {                                                                       // Teuchi, behind the counter (his breath: from the counter up)
-        const f = TCH.f, top = 601 - TCH.br;
-        shg.save(); shg.beginPath(); shg.rect(RL.x, RL.y, RL.w, 641 - RL.y); shg.clip(); persp(TCH.x, top, top + RP.h[f] * 0.75);
-        if (TCH.view === 1 && TCH.dir > 0) shg.scale(-1, 1);                        // (the side frames face left: walking right, mirrored)
-        shg.drawImage(RP.img, f * RP.cw, 0, RP.cw, RP.ch, -RP.cw * 0.75, -(RP.ch - RP.h[f]) * 1.5, RP.cw * 1.5, RP.ch * 1.5); shg.restore();
+    const K = RL.K, X = (x) => (x - RL.x) * K, Y = (y) => (y - RL.y) * K, ok = IRFI.complete && IRFI.naturalWidth;
+    const wisps = (g, pot) => {                  // the steam: from the stock pot (behind Teuchi), from the bowls (in front of him)
+      for (const w of RAM.wisps) {
+        const W = IRF.wisps[w.s]; if (!W || (w.s === IRF.wisps.length - 1) !== pot) continue;
+        const [wx, wy, rise, rr] = W, k = w.t / 2.6, r = (0.6 + 1.4 * k) * rr * K, gx = X(wx + Math.sin(t * 2 + w.s * 1.7) * 0.25 * rise * k), gy = Y(wy - rise * k);
+        const gr = g.createRadialGradient(gx, gy, 0, gx, gy, r); gr.addColorStop(0, 'rgba(255,240,225,' + 0.3 * Math.sin(Math.PI * k) + ')'); gr.addColorStop(1, 'rgba(255,240,225,0)');
+        g.fillStyle = gr; g.fillRect(gx - r, gy - r, 2 * r, 2 * r);
       }
-      shg.globalCompositeOperation = 'source-in'; shg.fillRect(RL.x, RL.y, RL.w, RL.h);   // nothing of their colours left, one dark shade
-      sbg.globalCompositeOperation = 'source-over'; sbg.clearRect(0, 0, sbC.width, sbC.height); sbg.imageSmoothingEnabled = true;
-      sbg.filter = 'blur(2px)'; sbg.drawImage(shC, 0, 0, sbC.width, sbC.height); sbg.filter = 'none';   // enlarged and blurred: soft shadows
-      sbg.globalCompositeOperation = 'destination-out'; sbg.imageSmoothingEnabled = false; sbg.drawImage(grC, 0, 0, sbC.width, sbC.height);   // the grain
-      rlg.globalAlpha = 0.86; rlg.drawImage(sbC, 0, 0); rlg.globalAlpha = 1; rlg.imageSmoothingEnabled = false;   // (the glass mask below stays crisp)
-    }
+    };
+    const masked = (g) => { if (rlMask.complete && rlMask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(rlMask, 0, 0, rlC.width, rlC.height); g.globalCompositeOperation = 'source-over'; } };
+    // their silhouettes, crisp, one dark colour, the painting's grain, on the glass only (and what is nearer cut out of them)
+    const people = (list, colour, grain, alpha, occ) => {
+      shg.setTransform(1, 0, 0, 1, -RL.x, -RL.y); shg.globalCompositeOperation = 'source-over'; shg.globalAlpha = 1; shg.clearRect(RL.x, RL.y, RL.w, RL.h);
+      shg.imageSmoothingEnabled = false;
+      for (const P of list) {
+        shg.globalAlpha = Math.max(0, Math.min(1, P.a == null ? 1 : P.a)); const [sx, sy, w, h] = P.c;
+        if (P.flip) { shg.save(); shg.translate(P.x + w, P.y); shg.scale(-1, 1); shg.drawImage(IRFI, sx, sy, w, h, 0, 0, w, h); shg.restore(); }
+        else shg.drawImage(IRFI, sx, sy, w, h, P.x, P.y, w, h);
+      }
+      shg.globalAlpha = 1;
+      if (occ) { const [sx, sy, w, h, x, y] = IRF.O; shg.globalCompositeOperation = 'destination-out'; shg.drawImage(IRFI, sx, sy, w, h, x, y, w, h); }
+      shg.globalCompositeOperation = 'source-in'; shg.fillStyle = colour; shg.fillRect(RL.x, RL.y, RL.w, RL.h);
+      shg.globalCompositeOperation = 'destination-out'; shg.globalAlpha = grain; shg.drawImage(grC, RL.x, RL.y); shg.globalAlpha = 1;
+      shg.globalCompositeOperation = 'destination-in'; shg.fill(irGlass); shg.globalCompositeOperation = 'source-over';
+      rlg.imageSmoothingEnabled = false; rlg.globalAlpha = alpha; rlg.drawImage(shC, 0, 0, rlC.width, rlC.height); rlg.globalAlpha = 1;
+    };
+    rlg.globalCompositeOperation = 'source-over'; rlg.globalAlpha = 1; rlg.clearRect(0, 0, rlC.width, rlC.height);
     rlg.fillStyle = 'rgba(255,196,128,' + Math.max(0, 0.05 + 0.04 * Math.sin(t * 0.9) - (RAM.dip > 0 ? 0.05 : 0)) + ')';
     rlg.fillRect(0, 0, rlC.width, rlC.height);      // the room's light breathes on everything
-    for (const w of RAM.wisps) {                 // steam over the bowls
-      const k = w.t / 2.6, r = (2 + 5 * k) * K, gx = X(w.x + Math.sin(t * 2 + w.x) * 2 * k), gy = Y(640 - 46 * k);
-      const g = rlg.createRadialGradient(gx, gy, 0, gx, gy, r); g.addColorStop(0, 'rgba(255,240,225,' + 0.3 * Math.sin(Math.PI * k) + ')'); g.addColorStop(1, 'rgba(255,240,225,0)');
-      rlg.fillStyle = g; rlg.fillRect(gx - r, gy - r, 2 * r, 2 * r);
+    wisps(rlg, true); masked(rlg);
+    const reach = IR.take >= 0 ? (IR.out ? 2.4 - IR.take : IR.take) : -1;            // the noren taken in (or hung out)
+    const atDoor = ok && reach >= 0 && reach < 2.4;
+    if (ok && !atDoor) {                                                             // Teuchi, behind the counter (his breath: a pixel)
+      const T = IRF.T, c = T.cells[TCH.f];
+      people([{ c, x: Math.round(TCH.x) - T.cx, y: T.y - (TCH.br > 0.25 ? 1 : 0), flip: TCH.view === 1 && TCH.dir > 0 }], '#220a06', 1, 0.86, true);
     }
-    if (rlMask.complete && rlMask.naturalWidth) { rlg.globalCompositeOperation = 'destination-in'; rlg.drawImage(rlMask, 0, 0, rlC.width, rlC.height); rlg.globalCompositeOperation = 'source-over'; }
-    // the people seated at the counter, between it and the doors (Naruto, droite-08; the customers): nearer the glass than Teuchi,
-    // so larger, crisper and darker, in front of the counter's things: drawn after
-    // its mask, cut by the doors' own glass (their mullions and rail in front of them). Each: an atlas cell (sx, sy, w, h), its
-    // place (x, the head's top), px per cell px; the lower back drawn down to the stool (half-widths at the shoulders' last row,
-    // the waist, the stool)
+    sbg.globalCompositeOperation = 'source-over'; sbg.clearRect(0, 0, sbC.width, sbC.height); wisps(sbg, false); masked(sbg);
+    rlg.drawImage(sbC, 0, 0);                                                        // (the bowls' steam, in front of him)
+    // the people at the counter, on the stools before it (Naruto, droite-08; the regular), and the regular on his way to the
+    // door: nearer than Teuchi, darker; Teuchi at the door with his pole, nearer still
     IRNEAR.length = 0;
-    if (NRM.st === 'here' && NRM.img.complete && NRM.img.naturalWidth) IRNEAR.push({ img: NRM.img, sx: NRM.f * 23, sy: 12, w: 23, h: 25, x: 1211, top: 592 + NRM.br, s: 2.4, back: [6.4, 5.2, 5.6] });
+    if (NRM.st === 'here') IRNEAR.push({ c: IRF.N.cells[NRM.f], x: Math.round(IRF.N.x - IRF.N.cx), y: IRF.N.y - (NRM.br > 0.25 ? 1 : 0) });
     guestsNear(IRNEAR);
-    if (IRNEAR.length) {
-      shg.globalCompositeOperation = 'source-over'; shg.clearRect(RL.x, RL.y, RL.w, RL.h); shg.imageSmoothingEnabled = true;
-      for (const F of IRNEAR) {
-        const NQ = 0.52, bot = F.h * F.s;
-        shg.save(); shg.translate(F.x, F.top); shg.transform(NQ, NQ * (615 - (F.top + 30)) / (700 - F.x), 0, 1, 0, 0);
-        if (F.flip) shg.scale(-1, 1);
-        shg.globalAlpha = F.a == null ? 1 : Math.max(0, Math.min(1, F.a));           // (a figure's own fade: the colour fill below keeps it)
-        shg.drawImage(F.img, F.sx, F.sy, F.w, F.h, -F.w / 2 * F.s, 0, F.w * F.s, F.h * F.s);
-        if (F.back) { const [a, b, c] = F.back; shg.fillStyle = '#000'; shg.beginPath(); shg.moveTo(-a * F.s, bot - 0.5); shg.lineTo(a * F.s, bot - 0.5); shg.lineTo(b * F.s, bot + 14);
-          shg.lineTo(c * F.s, bot + 40); shg.lineTo(-c * F.s, bot + 40); shg.lineTo(-b * F.s, bot + 14); shg.fill(); }
-        shg.restore();
-      }
-      shg.globalCompositeOperation = 'source-in'; shg.fillStyle = '#14060a'; shg.fillRect(RL.x, RL.y, RL.w, RL.h);
-      sbg.globalCompositeOperation = 'source-over'; sbg.clearRect(0, 0, sbC.width, sbC.height); sbg.imageSmoothingEnabled = true;
-      sbg.filter = 'blur(1px)'; sbg.drawImage(shC, 0, 0, sbC.width, sbC.height); sbg.filter = 'none';
-      sbg.globalCompositeOperation = 'destination-out'; sbg.globalAlpha = 0.5; sbg.imageSmoothingEnabled = false; sbg.drawImage(grC, 0, 0, sbC.width, sbC.height); sbg.globalAlpha = 1;
-      sbg.globalCompositeOperation = 'destination-in'; sbg.beginPath();
-      for (const [a, b] of [[1158, 1171], [1173, 1186], [1191, 1207], [1208, 1224]]) for (const [c, d] of [[598, 632], [637, 690]]) sbg.rect((a - RL.x) * K, (c - RL.y) * K, (b - a) * K, (d - c) * K);
-      sbg.fill(); sbg.globalCompositeOperation = 'source-over';
-      rlg.globalAlpha = 0.95; rlg.drawImage(sbC, 0, 0); rlg.globalAlpha = 1;
-    }
+    if (atDoor) { const R = IRF.R; IRNEAR.push({ c: R.cells[reach < 0.6 || reach > 1.9 ? 0 : 1], x: Math.round(R.x) - R.cx, y: R.y, a: Math.min(1, reach / 0.3, (2.4 - reach) / 0.3) }); }
+    if (ok && IRNEAR.length) people(IRNEAR, '#14060a', 0.5, 0.95, false);
     rlTex.needsUpdate = true;
   }
 
@@ -6118,11 +6114,10 @@
   // droite-08: when Naruto leaves his window (its panes go out), now and then he goes down to Ichiraku (he lives above it): some
   // 20-40 s later his shadow sits at the counter, seen from behind (the spiky crown, the headband's tails), slurps his noodles,
   // a minute or two, then leaves; his window stays dark meanwhile (NAR.away, read by stepWindow; never in the finale, which
-  // holds him at his window: NFIN). Its frames: naruto_ramen.webp
-  // (build_extras.py: a small rig, 6 cells): sit, lean, slurp a, slurp b, head up (tails left), tails right ----
-  const NRM = { st: 'idle', t: 0, wait: 0, f: 0, ft: 0, seq: [], w2: 'off', br: 0, img: new Image() };
+  // holds him at his window: NFIN). On the right-hand stool, his bowl before him; his frames (naruto_ramen.webp, kept pixel for
+  // pixel in assets/ramen_figures.webp, IRF.N): sit, lean, slurp a, slurp b, head up (tails left), tails right ----
+  const NRM = { st: 'idle', t: 0, wait: 0, f: 0, ft: 0, seq: [], w2: 'off', br: 0 };
   const IRNEAR = [];                                                           // (the people near the glass, this frame)
-  NRM.img.src = 'assets/naruto_ramen.webp?v=1';
   function stepNaruRamen(dt, hk) {
     const s2 = WIN2.state, left = NRM.w2 === 'off-going' && s2 === 'off'; NRM.w2 = s2;
     if (NRM.st === 'idle') {

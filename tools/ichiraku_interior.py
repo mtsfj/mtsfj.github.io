@@ -24,8 +24,9 @@ moyenne, ses bouteilles de 35 à 40 cm, ses bols de 20 cm), le haut de son compt
 pour que sa marmite soit derrière la troisième vitre (POT). Par le verre, sous le noren, on en voit une bande de 1,3 m de
 large, de 1 m à 1,9 m de haut : les casseroles et les louches, la marmite à couvercle, des bocaux, l'armoire aux bols, le
 haut de la grande marmite. Sur le
-comptoir des clients, des objets de l'image (OBJETS : deux bols, un verre, des condiments, une bouteille ; de face, posés sur
-son dessus, à l'échelle d'un bol de 21 cm, K_OBJ ; leur silhouette, shape_ok) ; sa face en planches (PLANK : leur ton tiré
+comptoir des clients, des objets de l'image (OBJETS : deux bols, chacun devant son tabouret, celui du milieu et celui de
+Naruto ; un verre, des condiments, une bouteille ; de face, posés sur son dessus, à l'échelle d'un bol de 21 cm, K_OBJ ; leur
+silhouette, shape_ok) ; sa face en planches (PLANK : leur ton tiré
 des planches de l'image, leurs joints), à l'ombre sous son arête, plus sombre vers le sol ; le retrait du pied, la barre pour
 les pieds (RAIL). Devant lui, trois tabourets (STOOLS : sous le client du coin, sous Naruto, un entre eux) : un coussin rond
 rouge, quatre pieds, l'anneau. Au-dessus du comptoir, pendue à 1,6 m, une lanterne de l'image (LANTERN). Le plafond et le sol
@@ -93,15 +94,17 @@ POT = (382.0, 1198.0)                # (la colonne de l'image au milieu de la ma
 WALL_GAIN = 1.2                      # (l'image dans la lumière de la boutique : plus claire, un peu plus chaude)
 TINT = (1.04, 0.98, 0.9)
 OBJ_Z, K_OBJ = 0.17, 420.0           # les objets du comptoir : derrière son arête de tant, pixels de l'image par mètre
-OBJETS = (('bol', (303, 786, 389, 838), 1180.0),
-          ('verre', (398, 784, 426, 826), 1194.0),
-          ('rect', (430, 758, 450, 799), 1199.5),
-          ('rect', (455, 758, 476, 799), 1203.0),
-          ('bol', (390, 650, 461, 692), 1215.5),
-          ('bouteille', (184, 744, 213, 801), 1166.0))
 STOOLS = (1163.0, 1189.5, 1216.0)    # les tabourets : la colonne de la rue où tombe leur milieu
 STOOL = dict(dz=0.28, r=0.16, top=0.66, th=0.055, leg=0.013, at=0.115, ring=0.27)   # (devant le comptoir de dz, le coussin :
                                      # son rayon, son dessus, son épaisseur ; les pieds : leur rayon, leur écart ; l'anneau)
+BOL = lambda i: round(VX + (STOOLS[i] - VX) * (Z_C - STOOL['dz']) / (Z_C + OBJ_Z), 1)   # (un bol devant le tabouret i : son
+                                     # X, sa colonne à la profondeur des objets)
+OBJETS = (('bol', (303, 786, 389, 838), BOL(1)),
+          ('verre', (398, 784, 426, 826), 1192.5),
+          ('rect', (430, 758, 450, 799), 1196.5),
+          ('rect', (455, 758, 476, 799), 1200.0),
+          ('bol', (390, 650, 461, 692), BOL(2)),
+          ('bouteille', (184, 744, 213, 801), 1166.0))
 LANTERN = ((232, 246, 277, 314), 1179.0, 0.19, 1.6, 0.12)   # (sa boîte dans l'image, sa colonne, sa largeur, son bas (m),
                                      # derrière l'arête du comptoir de tant)
 SS = 8                               # (SS x SS rayons par pixel)
