@@ -9056,6 +9056,516 @@
   }
 
   // ==== feature: Rainbow Six Siege (R6) — its own block (FEAT, CLICKS) ====
+  // A nod to the game's ideas, every design here original (tools/r6_sprites.py draws the sprites from models built on real ones: a
+  // police throwbot, a dome camera): a scout drone that now and then rolls out onto the street, a small security camera under the
+  // arcade's eave, and behind them the camera screen (a click on either): the street's own live picture, one camera at a time.
+  // Texts in the page's language, at the moment
+  const R6T = {
+    fr: { title: 'CAMÉRAS', close: 'Fermer', prev: 'caméra précédente', next: 'caméra suivante', cam: 'caméra',
+      live: 'vue en direct : ', lost: 'SIGNAL PERDU', rec: 'REC', ir: 'IR', batt: 'BATT', kb: 'Caméras de la rue',
+      names: ['ARCHE 1', 'ARCHE 2', 'EN FACE', 'RAMEN', 'ARCHE 3', 'ARCHE 4', 'ARCHE PTZ'],   // (each camera named by its mount)
+      said: ["l'arche, le carrefour", "l'arche, le bout de la rue", "la façade d'en face, l'échoppe de ramen", "l'échoppe de ramen, les boutiques d'en face", "l'arche, le Centre Pokémon", "l'arche, le Fuji", "caméra 7, l'arche, PTZ : suivi du drone"], wait: 'PTZ : pas de drone dans la rue', rect: 'VUE REDRESSÉE' },
+    en: { title: 'CAMERAS', close: 'Close', prev: 'previous camera', next: 'next camera', cam: 'camera',
+      live: 'live view: ', lost: 'SIGNAL LOST', rec: 'REC', ir: 'IR', batt: 'BATT', kb: 'Street cameras',
+      names: ['ARCH 1', 'ARCH 2', 'OPPOSITE', 'RAMEN', 'ARCH 3', 'ARCH 4', 'ARCH PTZ'],
+      said: ['the arch, the crossing', "the arch, the street's far end", 'across the street, the ramen stall', 'the ramen stall, the shops across', 'the arch, the Pokémon Center', 'the arch, Mount Fuji', 'camera 7, the arch, PTZ: tracking the drone'], wait: 'PTZ: no drone in the street', rect: 'RECTIFIED VIEW' } };
+  const r6T = () => R6T[document.documentElement.lang === 'en' ? 'en' : 'fr'];
+  function r6At(ev) {                            // a pointer's scene px, through the render's camera
+    const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
+    return [camera.left + u * (camera.right - camera.left), -(camera.top + v * (camera.bottom - camera.top))];
+  }
+  const r6Finger = (ev) => ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse);
+  function r6Hit(ev, x0, y0, x1, y1) {           // a pointer on a box (scene px), the box grown to 24 CSS px at least (44 for a finger)
+    const [x, y] = r6At(ev), k = canvas.getBoundingClientRect().width / (camera.right - camera.left), m = (r6Finger(ev) ? 44 : 24) / k;
+    const gx = Math.max(0, (m - (x1 - x0)) / 2), gy = Math.max(0, (m - (y1 - y0)) / 2);
+    return x >= x0 - gx && x <= x1 + gx && y >= y0 - gy && y <= y1 + gy;
+  }
+
+  // ---- the scout drone: a two-wheeled throwable recon robot, as police and soldiers roll one into a room before them (20 cm across,
+  // two rubber tyres 10.8 cm high, the tube between them with its lens in front, a tail trailing to the ground, two whip antennas
+  // raked back from the tube's ends, a green status light front and back), drawn whole-pixel by tools/r6_sprites.py at each width it
+  // takes on the street (10..36 px), from 9 sides (the 7 others: the same mirrored), its wheels at 8 turns of 45 degrees (the tread's
+  // tread moves on a quarter lug, a marker on each tyre goes round) (assets/r6_drone.webp: its colours; r6_drone_n.webp: each pixel's normal, class). Now and
+  // then (the street director's lane, 4-8 min apart, the first after ~2-3 min on screen) it rolls out from cover (from behind the
+  // pole, out of zone 7's alley; on a narrow view, the route that starts and stops in it), drops off the curb, stops at the roadside
+  // strip (between the white line and the curb, where a small robot may go) or on the sidewalk, turns its lens on us a moment,
+  // looks left and right (its round wheels then), rolls off toward us along the strip or the sidewalk out of the frame (0.65 m/s, a Throwbot's pace); a phone's drifting view
+  // holds still while it is in it. On the ground plane (x 700 + 959.5 X / Z, y 615 + 959.5 (1.41 - h) / Z; the sidewalks 15 cm up, as
+  // their painted curbs measure: 12 px at x 924 and x 480, 12 m away), whole pixels, its size its depth's. Lit by the street as the water's
+  // pass sees it right now (WET.rt: the lamp's pool, the shops, the sky; the power cut, the red night, the morning with them): each
+  // pixel by its normal from the light round it (the ground under it, beside it, before and behind it, as the petals take theirs:
+  // the ground's albedo 0.19; black rubber and anodizing never above 0.32 of the bare ground's light beside it: a painted mark
+  // under it does not lift it), the street lamp its key light (from where it hangs, in the colour of the lit ground under it), its
+  // edges catching the brightest light they face (the shops', the arcade's), the lens a glint of the brightest; its status lights its own
+  // (green in the red night too). Hidden behind the pole (COCC) and the left facades (crewOccTex's plane, the alley's mouth open); a contact shadow; mirrored
+  // at its own feet in the wet street (wet.webp); out of the water's own picture. A click: the camera screen, on its track. Never
+  // under reduced motion. Its side changes only past the side's edge by 4 degrees (no chatter at a waypoint); its contact shadow as
+  // long as it is seen (its width front on, its tail's length side on) ----
+  const R6D = {"size":[1024,3852],"L":[[10,49.751,21,15,10,12,0,0],[11,54.726,23,16,11,13,168,0],[12,59.701,25,17,12,14,352,0],[13,64.677,27,19,13,15,552,0],[14,69.652,27,21,13,17,768,0],[15,74.627,29,22,14,18,0,189],[16,79.602,31,23,15,19,232,189],[17,84.577,33,24,16,20,480,189],[18,89.552,35,25,17,21,744,189],[19,94.527,37,27,18,22,0,414],[20,99.502,39,29,19,24,296,414],[21,104.478,39,30,19,25,608,414],[22,109.453,41,31,20,26,0,684],[23,114.428,43,33,21,27,328,684],[24,119.403,45,34,22,28,0,981],[25,124.378,47,36,23,30,360,981],[26,129.353,49,38,24,31,0,1305],[27,134.328,49,39,24,32,392,1305],[28,139.303,51,40,25,33,0,1656],[29,144.279,53,43,26,35,408,1656],[30,149.254,55,44,27,36,0,2043],[31,154.229,57,45,28,37,440,2043],[32,159.204,59,48,29,39,0,2448],[33,164.179,61,49,30,40,472,2448],[34,169.154,61,50,30,41,0,2889],[35,174.129,63,53,31,43,488,2889],[36,179.104,65,54,32,44,0,3366]]};   // (r6_sprites.py's layout: per width [px, px per m, cell w, h, ground point x, y, block x, y]; a block: 8 wheel turns across, 9 sides down)
+  // its routes on the ground (X, Z in m): where it starts (hidden), its heading (rad: 0 away, pi/2 to the right), its steps: go to
+  // X, Z; eye: its lens on us a while; look: on us turned by a (rad), a while
+  const DRN_RT = [
+    { at: [4.45, 12.4], a: -Math.PI / 2, s: [['go', 3.3, 12.1], ['go', 2.45, 11.6], ['eye', 0.8], ['look', -0.8, 1.5], ['look', 0.8, 1.5], ['eye', 0.4], ['go', 2.42, 8.4], ['go', 2.38, 5.4]] },
+    { at: [-6.4, 16.2], a: Math.PI / 2, s: [['go', -4.7, 16.0], ['go', -2.3, 14.6], ['go', 2.42, 12.6], ['eye', 0.8], ['look', 0.8, 1.5], ['look', -0.8, 1.5], ['eye', 0.4], ['go', 2.4, 8.4], ['go', 2.36, 5.5]] },
+    { at: [-6.4, 16.2], a: Math.PI / 2, s: [['go', -4.5, 15.8], ['go', -4.2, 12.6], ['eye', 0.8], ['look', 0.9, 1.6], ['eye', 0.4], ['go', -4.0, 5.6]] }];
+  const DRN = { on: false, next: 130 + Math.random() * 60, r: null, i: 0, st: '', hold: 0, X: 0, Z: 0, h: 0, vy: 0, a: 0, v: 0, roll: 0, led: 0, lt: 0,
+    lv: null, gx: 0, gy: 0, w: 0, m: null, V: 0.65, W: 2.4, k: -1 };
+  const drnH = (X) => (Math.abs(X) > 2.8 ? 0.15 : 0);   // the ground's height: the sidewalks (15 cm curbs), the road
+  const R6L = { e: null };
+  function r6Lamp() {                            // the street lamp's light now: its level and, in the fuses' cut or the finale's dying
+    if (!lampComp || !lampComp.visible) return 0;   // lights, its power (applied to the lamp only while the street renders)
+    let p = 1;
+    if (PW.on && PW.list) { if (!R6L.e || R6L.e.o !== lampComp) R6L.e = PW.list.find((e) => e.o === lampComp) || null; if (R6L.e) p = R6L.e.p; }
+    return lampComp.material.opacity * p;
+  }
+  const DRN_VS = 'uniform vec4 uCell; varying vec2 vUv, vW;\n'
+    + 'void main() { vUv = uCell.xy + uv * uCell.zw; vec4 w = modelMatrix * vec4(position, 1.0); vW = vec2(w.x, -w.y); gl_Position = projectionMatrix * viewMatrix * w; }';
+  const DRN_FS = `uniform sampler2D tA, tN, tLit, tWet; uniform vec4 uCam; uniform vec3 uQ; uniform float uLit, uMode, uW, uLed, uFlip, uGain, uLamp, uH; uniform vec3 uSh; uniform vec4 uPole[10];
+    varying vec2 vUv, vW;
+    /*NRH*/
+    vec3 lt(vec2 p) { vec2 uv = vec2((p.x - uCam.x) / (uCam.y - uCam.x), (uCam.w - p.y) / (uCam.w - uCam.z)); return pow(texture2D(tLit, clamp(uv, 0.001, 0.999)).rgb, vec3(2.2)); }
+    void main() {
+      vec2 p = floor(vW) + 0.5; float Z = uQ.z;
+      // behind the pole, behind the left facades (their plane 5.49 m left of the eye, down to its foot; the alley's mouth open)
+      if (Z > 9.95) for (int i = 0; i < 10; i++) { vec4 r = uPole[i]; if (p.y >= r.x && p.y < r.y + 1.0 && p.x >= r.z && p.x < r.w + 1.0) discard; }
+      if (p.x < 504.0 && p.y < 615.0 + 0.2575 * (700.0 - p.x) && 5268.0 / (700.0 - p.x) < Z && !(p.x >= 352.0 && p.x < 398.0 && p.y >= 565.0 && p.y < 707.0)) discard;
+      if (uMode > 1.5) {                         // its contact shadow: two steps, whole pixels
+        // (a soft body shadow, its half width and its shift toward the tail uSh.xy; under each wheel a dark contact, uSh.z apart)
+        vec2 d = (p - uQ.xy - vec2(uSh.y * uW, 0.5)) / vec2(uSh.x * uW, 0.1 * uW + 0.7); float r = dot(d, d);
+        vec2 e1 = (p - uQ.xy - vec2(uSh.z * uW, 0.5)) / vec2(0.14 * uW + 0.6, 1.1), e2 = (p - uQ.xy - vec2(-uSh.z * uW, 0.5)) / vec2(0.14 * uW + 0.6, 1.1);
+        float k = min(dot(e1, e1), dot(e2, e2));
+        if (r > 1.0 && k > 1.0) discard;
+        gl_FragColor = vec4(0.0, 0.0, 0.0, k <= 1.0 ? 0.46 : r < 0.45 ? 0.2 : 0.11); return;
+      }
+      vec4 a = texture2D(tA, vUv); if (a.a < 0.5) discard;
+      vec4 nb = texture2D(tN, vUv);
+      vec2 n = (nb.rg * 255.0 - 127.5) / 127.5; n.x *= uFlip; float nz = sqrt(max(0.0, 1.0 - dot(n, n))), cls = floor(nb.b * 255.0 / 40.0 + 0.5);
+      // the light round it (the street's picture, its own pixels out of it): the ground under it, either side, behind it, before it
+      vec2 q = uQ.xy; float w = max(8.0, uW);
+      vec3 G = vec3(0.012, 0.011, 0.02), Lf = G, Rt = G, B = G, F = G, Gm = G;
+      if (uLit > 0.5) {
+        vec3 g1 = lt(q + vec2(-0.35 * w, 1.0)), g2 = lt(q + vec2(0.35 * w, 1.0)), g3 = lt(q + vec2(0.0, 2.5));
+        G = (g1 + g2 + g3) / 3.0; Gm = min(min(g1, g2), g3);   // (Gm: the darkest of them, the bare road beside a painted mark)
+        Lf = max(lt(q + vec2(-1.3 * w, 0.0)), 0.8 * lt(q + vec2(-2.6 * w, -0.4 * w)));
+        Rt = max(lt(q + vec2(1.3 * w, 0.0)), 0.8 * lt(q + vec2(2.6 * w, -0.4 * w)));
+        B = lt(q + vec2(0.0, -1.3 * w)); F = lt(q + vec2(0.0, 0.9 * w));
+      }
+      float up = max(0.0, n.y), dn = max(0.0, -n.y);
+      vec3 E = G / 0.19 * (0.4 + 0.6 * up) + G * 0.8 * dn                      // (from above, as the ground takes it; the ground's own light below)
+        + (Lf * max(0.0, -n.x) + Rt * max(0.0, n.x)) / 0.19 * 0.6 + F * 0.5 * nz;   // (from the sides: what lights the ground there; before it)
+      // the street lamp: its light from where it hangs (as its pool on the road measures it); a highlight where it glances off
+      vec3 nv = vec3(n, nz), Lv = vec3(2.14 - (uQ.x - 700.0) * Z / 959.5, 5.6 - uH, Z - 9.2);   // (screen axes: z toward the eye)
+      float dd = length(Lv); Lv /= dd;
+      vec3 EL = G / 0.19 * 0.8 * uLamp * 31.4 / (dd * dd);   // (its colour: the lit ground's under it, as the painter's pool is; red in the red night)
+      E += EL * max(0.0, dot(nv, Lv)) * 0.55;   // (black plastic, rubber: little of it diffused; its glints below)
+      float ks = cls < 0.5 ? 0.15 : cls < 1.5 ? 0.5 : cls < 2.5 ? 1.0 : cls < 3.5 ? 1.2 : 0.0;
+      vec3 ab = pow(a.rgb, vec3(2.2));   // (the cap by albedo: the hub, the bezel, the tube keep their steps over the rubber)
+      vec3 c = min(ab * E * uGain, Gm * 0.32 * clamp(dot(ab, vec3(0.3333)) / 0.0075, 0.6, 3.0)) + EL * ks * pow(max(0.0, dot(nv, normalize(Lv + vec3(0.0, 0.0, 1.0)))), 24.0) * 0.6;
+      // its edges catch the brightest light on the side they face (the shops, the far street): a painter's rim
+      float l2 = length(n);
+      if (uLit > 0.5 && l2 > 0.2) {
+        vec2 d = vec2(n.x, -n.y) / l2, d2 = vec2(d.x * 0.825 + d.y * 0.565, -d.x * 0.565 + d.y * 0.825), d3 = vec2(d.x * 0.825 - d.y * 0.565, d.x * 0.565 + d.y * 0.825);
+        vec2 o = q - vec2(0.0, 0.3 * w);
+        vec3 Hm = max(max(max(lt(o + d * 1.6 * w), lt(o + d * 3.2 * w)), max(lt(o + d2 * 1.6 * w), lt(o + d2 * 3.2 * w))), max(lt(o + d3 * 1.6 * w), lt(o + d3 * 3.2 * w)));
+        float sp = cls < 0.5 ? 0.17 : cls < 1.5 ? 0.34 : cls < 2.5 ? 0.6 : 0.65;   // (a shop's or the arcade's light on the edges facing it)
+        c += Hm * sp * pow(1.0 - nz, 1.5);
+      }
+      if (cls > 1.5 && cls < 2.5) c += 0.5 * max(max(Lf, Rt), max(B, F));   // the lens: a glint of the brightest round it
+      c = pow(min(c, vec3(1.0)), vec3(1.0 / 2.2));
+      if (cls > 3.5) c = a.rgb * uLed;           // its status lights: its own, green (its battery's, not the street's: the red night leaves them)
+      float al = 1.0;
+      if (uMode > 0.5) {                         // its reflection: on the wet street only, under its own feet
+        vec3 wm = texture2D(tWet, vec2(p.x / 1456.0, 1.0 - (p.y - 600.0) / 216.0)).rgb;
+        al = clamp(wm.r * 2.0, 0.0, 1.0) * step(600.0, p.y) * (0.55 + 0.45 * wm.b) * smoothstep(0.0, 2.0, p.y - uQ.y); c *= 0.62;
+        if (al < 0.01) discard;
+      }
+      gl_FragColor = vec4(c, al);
+    }`;
+  (function () {
+    const cam0 = new THREE.Vector4(0, IW, 0, IH), poles = [];
+    for (let i = 0; i < 10; i++) { const r = COCC.pole.runs[i] || [-9, -9, -9, -9]; poles.push(new THREE.Vector4(r[0], r[1], r[2], r[3])); }
+    const tA = crispLate('assets/r6_drone.webp?v=2', 'r6'), tN = crispLate('assets/r6_drone_n.webp?v=2', 'r6');
+    const U = { tA: { value: tA }, tN: { value: tN }, uQ: { value: new THREE.Vector3() }, uW: { value: 10 }, uLed: { value: 0 }, uFlip: { value: 1 }, uGain: { value: 1.8 }, uLamp: { value: 0 }, uH: { value: 0 }, uSh: { value: new THREE.Vector3(0.58, 0, 0.42) }, uPole: { value: poles },
+      tLit: { get value() { try { return WET.on && WET.rt ? WET.rt.texture : null; } catch (e) { return null; } } },
+      uCam: { get value() { try { return WET.mesh.material.uniforms.uCam.value; } catch (e) { return cam0; } } },
+      uLit: { get value() { try { return WET.on && WET.loaded >= 2 ? 1 : 0; } catch (e) { return 0; } } },
+      tWet: { get value() { try { return WET.mesh.material.uniforms.tWet.value; } catch (e) { return null; } } } };
+    const mk = (mode, z) => {
+      const m = new THREE.ShaderMaterial({ uniforms: Object.assign({ uCell: { value: new THREE.Vector4() }, uMode: { value: mode } }, U), vertexShader: DRN_VS, fragmentShader: DRN_FS,
+        transparent: true, depthWrite: false, side: THREE.DoubleSide });   // (a mirrored side: its quad flipped)
+      m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, NRU); sh.fragmentShader = sh.fragmentShader.replace('/*NRH*/', NR_HEAD); };
+      m.customProgramCacheKey = () => 'r6-drone';
+      const o = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); o.position.z = z; o.visible = false; o.frustumCulled = false; scene.add(o);
+      if (WET.on) WET.hide.push(o);             // (its own picture in the water is its reflection below)
+      return o;
+    };
+    DRN.m = { body: mk(0, 1.3), refl: WET.on ? mk(1, 1.156) : null, shad: mk(2, 1.152), U };
+  })();
+  function drnLevel(s) { let b = 0; R6D.L.forEach((L, i) => { if (Math.abs(L[1] - s) < Math.abs(R6D.L[b][1] - s)) b = i; }); return R6D.L[b]; }
+  function drnDraw() {                           // its pixels this frame: the level, the side, the wheels' turn, whole-pixel places
+    const D = DRN, M = D.m, s = CF / D.Z, L = drnLevel(s), [w, , cw, ch, ax, ay, bx, by] = L, [AW, AH] = R6D.size;
+    D.gx = 700 + CF * D.X / D.Z; D.gy = 615 + CF * (1.41 - D.h) / D.Z; D.w = w; D.lv = L;
+    const fx = Math.sin(D.a), fz = Math.cos(D.a), cl = Math.hypot(D.X, D.Z), ex = -D.X / cl, ez = -D.Z / cl;   // its forward; toward the eye
+    const psi = Math.atan2(-(ex * fz - ez * fx), ex * fx + ez * fz);   // the eye's side of it (0: its lens on us; +: round its left)
+    if (D.k < 0 || Math.abs(angTo(D.k * Math.PI / 8, psi)) > Math.PI / 16 + 0.07) D.k = ((Math.round(psi / (Math.PI / 8)) % 16) + 16) % 16;   // (4 degrees past a side's edge)
+    const k = D.k, row = k <= 8 ? k : 16 - k, flip = k <= 8 ? 1 : -1, sp = Math.sin(k * Math.PI / 8), cp = Math.cos(k * Math.PI / 8);
+    M.U.uSh.value.set(0.58 * Math.abs(cp) + 0.42 * Math.abs(sp), 0.14 * sp, 0.42 * Math.abs(cp));   // (its shadow: its width front on, wheel and tail side on, shifted to the tail; the wheels' contacts)
+    const f = ((Math.floor(D.roll / (Math.PI / 4)) % 8) + 8) % 8;
+    const x0 = bx + f * cw, y0 = by + row * ch;
+    const left = Math.round(D.gx) - (flip > 0 ? ax : cw - ax), top = Math.round(D.gy) - ay, gyr = Math.round(D.gy);
+    M.U.uQ.value.set(D.gx, D.gy, D.Z); M.U.uW.value = w; M.U.uLed.value = D.led; M.U.uFlip.value = flip; M.U.uH.value = D.h + 0.06;
+    M.U.uLamp.value = r6Lamp() * SKYF.dayL;      // (the street lamp's light now)
+    for (const o of [M.body, M.refl]) if (o) o.material.uniforms.uCell.value.set(x0 / AW, 1 - (y0 + ch) / AH, cw / AW, ch / AH);
+    M.body.scale.set(cw * flip, ch, 1); M.body.position.set(left + cw / 2, -(top + ch / 2), 1.2 + (50 - D.Z) * 0.004);
+    if (M.refl) { M.refl.scale.set(cw * flip, -ch, 1); M.refl.position.set(left + cw / 2, -(2 * gyr - (top + ch / 2)), 1.156); }
+    M.shad.scale.set(w * 1.7, w * 0.5 + 4, 1); M.shad.position.set(Math.round(D.gx), -(gyr + 1), 1.152);
+    for (const o of [M.body, M.refl, M.shad]) if (o) o.visible = true;
+  }
+  function drnOff() { DRN.on = false; for (const o of [DRN.m.body, DRN.m.refl, DRN.m.shad]) if (o) o.visible = false; STAGE.done('drone'); if (R6M.cam === 6) r6Lost(); }
+  function drnStart(ri) {
+    const R = DRN_RT[ri === undefined ? drnPick() : ri];
+    Object.assign(DRN, { on: true, r: R, i: 0, st: '', hold: 0, X: R.at[0], Z: R.at[1], h: drnH(R.at[0]), vy: 0, a: R.a, v: 0, roll: 0, led: 1, lt: 0, k: -1 });
+    drnDraw();
+  }
+  function drnPick() {                          // a route: any on a wide view; on a narrow one (a phone), one that starts and stops in it
+    const l = camera.left, r = camera.right, n = DRN_RT.length;
+    if (r - l > 900) return Math.floor(Math.random() * n);
+    const sx = (P) => 700 + CF * P[0] / P[1], inV = (x, m) => x > l + m && x < r - m;
+    const sc = DRN_RT.map((R) => { const e = R.s.findIndex((q) => q[0] === 'eye'), st = R.s[e - 1]; const x = sx([st[1], st[2]]); return (inV(x, 40) ? 2 : 0) + (x > l + 0.4 * (r - l) ? 1 : 0) + (inV(sx(R.at), 0) ? 1 : 0) + Math.random() * 0.5; });   // (its stop clear of the title, bottom left)
+    return sc.indexOf(Math.max(...sc));
+  }
+  const angTo = (a, b) => { let d = (b - a) % (2 * Math.PI); if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; return d; };
+  function drnTurn(to, dt) {                     // in place, toward to; true once there (its wheels turn against each other)
+    const d = angTo(DRN.a, to), s = Math.min(Math.abs(d), DRN.W * dt);
+    DRN.a += Math.sign(d) * s; DRN.roll += s * 0.0845 / 0.054; return Math.abs(d) - s < 0.01;
+  }
+  function stepDrone(dt, t) {
+    const D = DRN;
+    if (!D.on) {
+      if (reduced || !LATE.ready.r6) return;
+      D.next = STAGE.due('drone', D.next); D.next -= dt;
+      if (D.next < 0) { if (!STAGE.ask('drone', 40)) { D.next = 4 + Math.random() * 5; return; } D.next = 240 + Math.random() * 240; drnStart(); }
+      return;
+    }
+    if ((D.lt += dt) > 20) { D.lt = 0; STAGE.ask('drone', 30); }   // (its lane kept while it is out)
+    const S = D.r.s[D.i];
+    if (!S) { drnOff(); return; }
+    if (S[0] === 'go') {
+      const dx = S[1] - D.X, dz = S[2] - D.Z, dist = Math.hypot(dx, dz), to = Math.atan2(dx, dz), N = D.r.s[D.i + 1];
+      if (D.st !== 'roll' && Math.abs(angTo(D.a, to)) > 0.3 && D.v < 0.05) { drnTurn(to, dt); }   // (first face the way)
+      else {
+        D.st = 'roll';
+        const ahead = N && N[0] === 'go' ? Math.abs(angTo(to, Math.atan2(N[1] - S[1], N[2] - S[2]))) : 9;
+        const vEnd = ahead < 0.6 ? D.V : 0, vMax = Math.sqrt(vEnd * vEnd + 2 * 1.6 * Math.max(0, dist - 0.02));
+        D.v = Math.min(D.V, vMax, D.v + 1.6 * dt);
+        D.a += Math.max(-2 * dt, Math.min(2 * dt, angTo(D.a, to)));   // (steering while it rolls)
+        const ds = Math.min(dist, D.v * dt);
+        D.X += Math.sin(D.a) * ds; D.Z += Math.cos(D.a) * ds; D.roll += ds / 0.054;
+        if (dist - ds < 0.03 || (dx * (S[1] - D.X) + dz * (S[2] - D.Z)) < 0) { D.i++; D.st = ''; if (vEnd === 0) D.v = 0; }
+      }
+    } else {                                       // eye / look: turned toward the eye (and a), then held
+      const to = Math.atan2(-D.X, -D.Z) + (S[0] === 'look' ? S[1] : 0), hold = S[0] === 'look' ? S[2] : S[1];
+      if (D.st !== 'hold') { if (drnTurn(to, dt)) { D.st = 'hold'; D.hold = hold; } }
+      else if ((D.hold -= dt) <= 0) { D.i++; D.st = ''; }
+    }
+    // the curb: off it, it falls (and bounces a little); never up one (no route asks it)
+    const hT = drnH(D.X);
+    if (D.h > hT + 1e-4 || D.vy) { D.vy -= 9.8 * dt; D.h += D.vy * dt; if (D.h <= hT) { D.h = hT; D.vy = D.vy < -0.4 ? -D.vy * 0.22 : 0; } }
+    else D.h = hT;
+    D.led = 1;                                     // (its status lights: on while it is out)
+    drnDraw();
+    if (camera.right - camera.left < 900 && D.gx > camera.left + 10 && D.gx < camera.right - 10 && !drnHidden()) PAN.wait = Math.max(PAN.wait, 0.5);   // (a phone's drifting view holds on it)
+    if (D.gy - 0.2 * CF / D.Z > IH + 2) drnOff();   // (out at the bottom of the frame)
+  }
+  function drnHidden() {                         // (behind the pole, or still behind the left facades: not to be clicked there)
+    const D = DRN, x = D.gx, y = D.gy;
+    if (D.Z > 9.95 && x > 1022 && x < 1068 && y < 752) return true;
+    return x < 504 && 5268 / (700 - x) < D.Z && !(x >= 352 && x < 398);
+  }
+  function overDrone(ev) { const w = DRN.w; return DRN.on && !drnHidden() && r6Hit(ev, DRN.gx - 0.6 * w, DRN.gy - 0.75 * w, DRN.gx + 0.6 * w, DRN.gy + 1); }
+  FEAT.push(stepDrone);
+
+  // ---- the wall camera: a small vandal-proof dome camera screwed flat on the wall (an ivory base, a smoked half-sphere on it, its lens
+  // and its infrared LEDs inside), on the tall building on the right under its tiled eave, at the corner over the arcade's opening,
+  // looking down the street (tools/r6_sprites.py: r6_cam.webp, six cells: its pixels in the eave's shadow, graded as the street's
+  // sprites; the arcade's light on what of it faces the opening (its housing's rim the palest), at the arcade's level, its flicker and
+  // its hours; its status light; its infrared LEDs; the street lamp's light on its dome (one highlight; dim when the lamp is out); its
+  // status light's glow). Its status light: a steady dim red, brighter for a beat every 2 s (on a narrow view, a phone's, or wherever it is
+  // under 14 CSS px, the beat glows round it: the camera is small there), steady bright while the screen is open (someone is watching); its infrared LEDs a
+  // dull red as the street gets dark (the feed's infrared with them: r6IR). On the arcade's circuit: the fuses' cut and the finale's dying lights take it
+  // out; after 2 s it comes back on its battery (as the Center's PC, never in the finale's dark before its dawn), dimmer, its blink
+  // slower, no infrared. The red night: its lights red as all the street's lights. A click (a finger: a little round it): the screen ----
+  const R6C = { x: 1302, y: 380, w: 15, h: 17 };   // (r6_sprites.py: its cell's top-left x, y, w, h (scene px); r6_cam.webp: six such cells across)
+  Object.assign(R6C, { out: 0, bat: 0, m: {} });
+  (function () {
+    const tex = crispLate('assets/r6_cam.webp?v=3', 'r6', () => { if (reduced) frame(); }), C = R6C, AWc = C.w * 6;
+    const mk = (i, z, add) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(C.w, C.h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
+      const a = m.geometry.attributes.uv, u0 = i * C.w / AWc, u1 = (i + 1) * C.w / AWc;
+      a.setXY(0, u0, 1); a.setXY(1, u1, 1); a.setXY(2, u0, 0); a.setXY(3, u1, 0); a.needsUpdate = true;
+      m.position.set(C.x + C.w / 2, -(C.y + C.h / 2), z); m.visible = false; scene.add(m); return m;
+    };
+    C.m = { base: mk(0, 1.1), rim: mk(1, 1.1001, true), led: mk(2, 1.1002, true), ir: mk(3, 1.1003, true), gl: mk(4, 1.1004, true), halo: mk(5, 1.1005, true) };
+    gradeSprite(C.m.base.material, 'street'); for (const k of ['rim', 'led', 'ir', 'gl', 'halo']) gradeSprite(C.m[k].material, 'self');
+  })();
+  function stepWallCam(dt, t) {
+    const C = R6C, M = C.m;
+    if (!M.base.visible) { if (!LATE.ready.r6) return; M.base.visible = true; r6Kb.hidden = false; }   // (and the keyboard's way in to its screen)
+    const pz = PW.on ? pwShade.material.uniforms.uPow.value[0] : 1;   // (the arcade's circuit: the fuses' cut, the finale's dying lights)
+    const arc = spill.material.opacity * (0.25 + 0.75 * HRS.k.arcade);   // (the arcade's light now: its flicker, its power, its hours)
+    M.rim.material.opacity = Math.min(1, arc); M.rim.visible = arc > 0.01;
+    C.out = pz < 0.5 && (FINS.t < 0 || FIN.dawn >= 0) ? C.out + dt : 0;
+    C.bat = C.out > 2 ? Math.min(1, C.bat + dt / 1.2) : Math.max(0, C.bat - dt * 3);
+    const live = R6M.open, on = live || reduced ? 1 : (t % 2) < 0.14 ? 1 : 0.45, onB = live || reduced ? 0.35 : (t % 4) < 0.12 ? 0.35 : 0.15;
+    const lv = Math.max(on * pz, C.bat * onB);
+    M.led.material.opacity = lv; M.led.visible = lv > 0.004;
+    const sm = camera.right - camera.left < 900 || canvas.clientWidth / (camera.right - camera.left) * C.h < 14;   // (a narrow view, or the camera under 14 CSS px: a phone held sideways)
+    const hz = !live && !reduced && sm && (t % 2) < 0.14 ? pz * 0.8 : 0;   // (its beat's glow: there only)
+    M.halo.material.opacity = hz; M.halo.visible = hz > 0.01;
+    M.ir.material.opacity = r6IR() * 0.7; M.ir.visible = M.ir.material.opacity > 0.01;   // (its infrared: as the street gets dark; never on its battery)
+    M.gl.material.opacity = 0.2 + 0.8 * r6Lamp(); M.gl.visible = true;   // (the street's lights on its dome and lens: the lamp's, a little sky; dim in a cut)
+  }
+  function overWallCam(ev) { const C = R6C; return r6Hit(ev, C.x, C.y, C.x + C.w, C.y + C.h); }
+  FEAT.push(stepWallCam);
+
+  // ---- the camera screen: the street rendered live into its own small target with its own camera (as the water's pass does), only
+  // while the screen is open, from the street's own frame (FEAT), 12 times a second (6 on a slow device; none while the street is
+  // scrolled away; once per change under reduced motion), its light its own (the box rendered first as the water's pass sees it,
+  // and the water, the drone, the drips, the steam and the rain lit from that, not from the view's picture): one camera at a time,
+  // each a camera of the street's network (the wall dome is one of them: a click on it opens the network's recorder), its
+  // view the one its mount gives: the cameras on the street's entrance arch behind us, high over its middle (the crossing, the
+  // street's far end, the Pokémon Center, Fuji: all on our own line of sight; and its pan-tilt camera, which follows the drone while
+  // it is out), the camera on the facade across from the ramen stall (its front face on: the facade's plane as our eye sees it, rectified)
+  // and the stall's own camera (the shops across, the same way), read back, graded as a feed (a little washed and green; after dark the infrared's grey), drawn at a
+  // sensor's resolution (about 120 px across, resampled: never the painting's own pixels), each of its pixels a whole number of the
+  // screen's device pixels (up to 3 a CSS px), with its grain, its scanlines, its vignette; over it
+  // the camera's number and its mount, REC, the street's own date (early April: its cherries in bloom; not on the narrowest phones) and
+  // hour, its mode; on the drone,
+  // corners round it, its tag 16 CSS px. The far cameras' infrared keeps its blacks and its lights. The screen is a rugged
+  // handheld monitor, as the units that show a throwable robot's camera (its casing, bezel and keys: r6_sprites.py's pixel sprites,
+  // site.css's R6 section). Previous / next (the keys, the arrows, a swipe), a key for each camera (and the drone's: always there,
+  // dim and off while the drone is away); Esc, x, a click outside or the phone's Back closes; Tab stays inside (the secrets' rule: it is a
+  // .pc); the page does not scroll under it; its keys 44 px. While it is open a phone's drifting view holds still. A keyboard's way
+  // in: a button in the street, shown when it takes the focus ----
+  const R6CAMS = [[696, 664, 210], [688, 600, 184], { X: 5.4, Z: [13.0, 8.5], h: 2.75 }, { X: -5.49, Z: [7.6, 12.6], h: 1.95 }, [874, 470, 150], [600, 300, 220]];
+  // ([centre x, y, width] in scene px, a view along our eye's; or a facade's plane seen face on: X (m), its depths at the view's
+  // left and right edges, the height at its middle; on the ground model x 700 + 959.5 X / Z, y 615 + 959.5 (1.41 - h) / Z)
+  const R6M = { open: false, cam: 0, rt: null, cv: null, g: null, src: null, sg: null, buf: null, img: null, cam6: null, sw: 0, prev: null,
+    track: [0, 0], lost: -1, noise: [], vig: null, scan: null, W: 0, H: 0, k: 3, tick: 0, clock: 0, acc: 0, dpr: 1, wrt: null, hist: false };
+  const r6m = document.createElement('div'); r6m.className = 'pc r6m'; r6m.setAttribute('role', 'dialog'); r6m.setAttribute('aria-modal', 'true'); r6m.setAttribute('aria-labelledby', 'r6m-title');
+  r6m.innerHTML = '<div class="pc-win r6m-win"><div class="pc-bar"><span class="r6m-title" id="r6m-title"></span><button class="pc-x" type="button">×</button></div>'
+    + '<div class="r6m-box"><div class="r6m-bez"><div class="r6m-scr"><canvas role="img"></canvas><div class="r6m-glass"></div><div class="r6m-osd" aria-hidden="true">'
+    + '<span class="r6m-tl"><b class="r6m-no"></b> <b class="r6m-nm"></b></span><span class="r6m-tr r6m-rec"><i></i>REC</span>'
+    + '<span class="r6m-bl r6m-time"><span class="r6m-date"></span><span class="r6m-hms"></span></span><span class="r6m-br r6m-mode" hidden></span><span class="r6m-mid" hidden></span></div></div></div>'
+    + '<div class="r6m-ctl"><button type="button" class="r6m-prev"></button><div class="r6m-list"></div><button type="button" class="r6m-next"></button></div>'
+    + '<p class="r6m-sr" aria-live="polite"></p></div></div>';
+  document.body.appendChild(r6m);
+  const r6q = (s) => r6m.querySelector(s), r6Btn = [];
+  for (let i = 0; i < 7; i++) {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = i < 6 ? String(i + 1) : '7 PTZ';
+    b.addEventListener('click', () => r6Go(i)); r6q('.r6m-list').appendChild(b); r6Btn.push(b);
+  }
+  function r6Lang() {
+    const T = r6T();
+    r6q('.r6m-title').textContent = T.title; r6q('.pc-x').setAttribute('aria-label', T.close);
+    r6q('.r6m-prev').setAttribute('aria-label', T.prev); r6q('.r6m-next').setAttribute('aria-label', T.next);
+    r6Btn.forEach((b, i) => b.setAttribute('aria-label', i < 6 ? T.cam + ' ' + (i + 1) + ' : ' + T.said[i] : T.said[i]));
+    r6Kb.textContent = T.kb;
+    if (R6M.open) r6Osd(true);
+  }
+  function r6DroneKey(on) {                      // the drone's key: always there (no reflow), dim and off while the drone is away
+    const b = r6Btn[6]; if (b.disabled === !on) return;
+    b.title = on ? '' : r6T().wait; b.setAttribute('aria-label', on ? r6T().said[6] : r6T().wait);   // (why it is off: no drone in the street)
+    if (!on && document.activeElement === b) r6Btn[0].focus({ preventScroll: true });   // (the focus never falls out of the dialog)
+    b.disabled = !on;
+  }
+  const r6Kb = document.createElement('button'); r6Kb.type = 'button'; r6Kb.className = 'r6-kb'; r6Kb.hidden = true;   // (a keyboard's way in)
+  r6Kb.addEventListener('click', () => r6Open(R6M.cam < 6 ? R6M.cam : 0, true)); hero.appendChild(r6Kb);
+  r6Lang(); new MutationObserver(r6Lang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  function r6Fit() {                             // the canvas at the screen's own device pixels (its layout size: not the window's pop-in scale)
+    const sc = r6q('.r6m-scr'), dpr = Math.min(3, window.devicePixelRatio || 1); R6M.dpr = dpr;
+    const W = Math.max(64, Math.round(sc.clientWidth * dpr)), H = Math.max(48, Math.round(sc.clientHeight * dpr));
+    if (W !== R6M.W || H !== R6M.H) { R6M.W = R6M.cv.width = W; R6M.H = R6M.cv.height = H; R6M.vig = null; R6M.scan = null; }
+  }
+  function r6Build() {
+    if (R6M.cv) return;
+    R6M.cv = r6q('canvas'); R6M.g = R6M.cv.getContext('2d');
+    R6M.src = document.createElement('canvas'); R6M.sg = R6M.src.getContext('2d');
+    R6M.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.NearestFilter, magFilter: THREE.NearestFilter, stencilBuffer: false });
+    R6M.cam6 = new THREE.OrthographicCamera(0, 1, 0, -1, -10, 10);
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    for (let k = 0; k < 4; k++) {                  // the feed's grain: four frames of it, a light speckle
+      const c = document.createElement('canvas'); c.width = 160; c.height = 120; const g = c.getContext('2d'), im = g.createImageData(160, 120);
+      for (let i = 0; i < im.data.length; i += 4) { const v = rnd() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 22 + rnd() * 26; }
+      g.putImageData(im, 0, 0); R6M.noise.push(c);
+    }
+  }
+  function r6Pl(c, u, v) {                       // a facade's camera: its view's point (u, v in 0..1) on the plane, to the street's px
+    const Z = c.Z[0] + (c.Z[1] - c.Z[0]) * u, s = Math.abs(c.Z[1] - c.Z[0]) * R6M.H / R6M.W, h = c.h + s * (0.5 - v);
+    return [700 + 959.5 * c.X / Z, 615 + 959.5 * (1.41 - h) / Z];
+  }
+  function r6Box(i, t) {                         // a camera's box (scene px, 4:3, by its width; a facade's: round its plane's corners); the drone's follows it
+    if (i === 6) {                               // (the arch's pan-tilt camera, following the drone)
+      const w = 132, h = 99;
+      if (DRN.on) { const tx = DRN.gx - w / 2, ty = DRN.gy - 0.45 * DRN.w - h / 2; R6M.track[0] += (tx - R6M.track[0]) * 0.3; R6M.track[1] += (ty - R6M.track[1]) * 0.3; }
+      return [Math.round(Math.max(0, Math.min(IW - w, R6M.track[0]))), Math.round(Math.max(0, Math.min(IH - h, R6M.track[1]))), w, h];   // (inside the painting)
+    }
+    const c = R6CAMS[i];
+    if (!Array.isArray(c)) {
+      const q = [r6Pl(c, 0, 0), r6Pl(c, 1, 0), r6Pl(c, 0, 1), r6Pl(c, 1, 1)], xs = q.map((p) => p[0]), ys = q.map((p) => p[1]);
+      const x0 = Math.max(0, Math.floor(Math.min(...xs)) - 2), y0 = Math.max(0, Math.floor(Math.min(...ys)) - 2);
+      return [x0, y0, Math.min(IW, Math.ceil(Math.max(...xs)) + 2) - x0, Math.min(IH, Math.ceil(Math.max(...ys)) + 2) - y0];
+    }
+    const [cx, cy, cw] = c, w = cw, h = Math.round(cw * 3 / 4);
+    return [Math.round(cx - w / 2), Math.round(cy - h / 2), w, h];
+  }
+  function r6Feed(t) {                           // the street into the target (its own px), resampled to the camera's sensor, back into the screen
+    const [x, y, w, h] = r6Box(R6M.cam, t), C = R6M.cam6, ks = Math.max(2, Math.round(R6M.W / 120)), sw = Math.ceil(R6M.W / ks), sh = Math.ceil(R6M.H / ks);
+    R6M.k = ks * sw / w; R6M.ks = ks; R6M.at = [x, y];   // (a sensor about 120 px wide, its pixels ks device px: never the painting's own pixels)
+    C.left = x; C.right = x + w; C.top = -y; C.bottom = -(y + h); C.updateProjectionMatrix();
+    if (R6M.rt.width !== w || R6M.rt.height !== h) { R6M.rt.setSize(w, h); R6M.buf = new Uint8Array(w * h * 4); }
+    if (R6M.src.width !== sw || R6M.src.height !== sh) { R6M.src.width = sw; R6M.src.height = sh; R6M.img = R6M.sg.createImageData(sw, sh); }
+    const fv = flyer.visible; flyer.visible = false;   // (the flyer drops in front of the street's lens, not theirs)
+    const prev = renderer.getRenderTarget(), sv = r6Lit(x, y, w, h);
+    renderer.setRenderTarget(R6M.rt); renderer.render(scene, C); renderer.setRenderTarget(prev);
+    if (sv) { WET.rt = sv.rt; sv.u.tScene.value = sv.ts; sv.u.uCam.value.copy(sv.cam); RAIN.U.uCam.value.copy(sv.rc); RAIN.U.tLight.value = sv.rl; }
+    flyer.visible = fv;
+    renderer.readRenderTargetPixels(R6M.rt, 0, 0, w, h, R6M.buf);
+    const b = R6M.buf, d = R6M.img.data, ir = r6IR(), far = R6M.cam === 1 || R6M.cam === 5, fx = w / sw, fy = h / sh, pl = R6M.cam < 6 && !Array.isArray(R6CAMS[R6M.cam]) ? R6CAMS[R6M.cam] : null;
+    const px = [0, 0, 0], at = (sx, sy, k) => {   // (the target's px at sx, sy, bilinear, added k times into px)
+      sx = Math.min(w - 1, Math.max(0, sx)); sy = Math.min(h - 1, Math.max(0, sy));
+      const x0 = Math.floor(sx), y0 = Math.floor(sy), tx = sx - x0, ty = sy - y0, x1 = Math.min(w - 1, x0 + 1), r0 = (h - 1 - y0) * w * 4, r1 = (h - 1 - Math.min(h - 1, y0 + 1)) * w * 4;
+      for (let c = 0; c < 3; c++) px[c] += k * ((1 - ty) * ((1 - tx) * b[r0 + x0 * 4 + c] + tx * b[r0 + x1 * 4 + c]) + ty * ((1 - tx) * b[r1 + x0 * 4 + c] + tx * b[r1 + x1 * 4 + c]));
+    };
+    for (let j = 0; j < sh; j++) {
+      for (let i = 0, p = j * sw * 4; i < sw; i++, p += 4) {
+        px[0] = px[1] = px[2] = 0;
+        if (pl) for (let n = 0; n < 4; n++) { const q = r6Pl(pl, (i + 0.25 + 0.5 * (n & 1)) / sw, (j + 0.25 + 0.5 * (n >> 1)) / sh); at(q[0] - x - 0.5, q[1] - y - 0.5, 0.25); }   // (a facade's sensor px: four points of the plane, averaged)
+        else for (let n = 0; n < 4; n++) at((i + 0.25 + 0.5 * (n & 1)) * fx - 0.5, (j + 0.25 + 0.5 * (n >> 1)) * fy - 0.5, 0.25);   // (four points a sensor px: its lens's blur)
+        const r = px[0], g = px[1], bl = px[2], L = 0.3 * r + 0.59 * g + 0.11 * bl;
+        if (ir > 0) {                          // after dark: the infrared's grey, lifted (far off, where it reaches nothing: the blacks and the lights kept)
+          const v = far ? Math.max(0, Math.min(255, L * 1.35 - 6)) : Math.min(255, 14 + L * 1.7), cr = 6 + (L + (r - L) * 0.78) * 1.06, cg = 8 + (L + (g - L) * 0.78) * 1.1, cb = 6 + (L + (bl - L) * 0.78) * 1.02;
+          d[p] = cr + (v * 0.93 - cr) * ir; d[p + 1] = cg + (v - cg) * ir; d[p + 2] = cb + (v * 0.9 - cb) * ir;
+        } else { d[p] = 6 + (L + (r - L) * 0.78) * 1.06; d[p + 1] = 8 + (L + (g - L) * 0.78) * 1.1; d[p + 2] = 6 + (L + (bl - L) * 0.78) * 1.02; }
+        d[p + 3] = 255;
+      }
+    }
+    R6M.sg.putImageData(R6M.img, 0, 0);
+    r6Paint(t);
+  }
+  const r6IR = () => skSm(0.12, 0.45, CLOCK.S ? CLOCK.S.n : 0) * SKYF.dayL * (PW.on ? Math.min(1, pwShade.material.uniforms.uPow.value[0]) : 1);   // (its LEDs and its feed together)
+  function r6Lit(x, y, w, h) {                   // the box as the water's pass would see it (and round it: what its water mirrors, what
+    if (!WET.on || WET.loaded < 2 || !WET.rt) return null;   // lights the drone), and what reads that pass pointed at it (put back after)
+    const x0 = Math.max(0, x - 40), x1 = Math.min(IW, x + w + 40), y0 = Math.max(0, Math.min(y, 1220 - (y + h)) - 40), y1 = Math.min(IH, y + h + 40);
+    const C = R6M.camL || (R6M.camL = new THREE.OrthographicCamera(0, 1, 0, -1, -10, 10)), lw = x1 - x0, lh = y1 - y0;
+    C.left = x0; C.right = x1; C.top = -y0; C.bottom = -y1; C.updateProjectionMatrix();
+    if (!R6M.wrt) R6M.wrt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
+    if (R6M.wrt.width !== lw || R6M.wrt.height !== lh) R6M.wrt.setSize(lw, lh);
+    const H = WET.hide, V = WET.vis;
+    for (let i = 0; i < H.length; i++) { V[i] = H[i].visible; H[i].visible = false; }
+    WET.mesh.visible = false; renderer.setRenderTarget(R6M.wrt); renderer.render(scene, C); WET.mesh.visible = true;
+    for (let i = 0; i < H.length; i++) H[i].visible = V[i];
+    const u = WET.mesh.material.uniforms, sv = { rt: WET.rt, u, ts: u.tScene.value, cam: u.uCam.value.clone(), rc: RAIN.U.uCam.value.clone(), rl: RAIN.U.tLight.value };
+    WET.rt = R6M.wrt; u.tScene.value = R6M.wrt.texture; u.uCam.value.set(C.left, C.right, -C.top, -C.bottom);
+    RAIN.U.uCam.value.set(C.left, C.right, -C.top, -C.bottom); if (RAIN.U.uLive.value) RAIN.U.tLight.value = R6M.wrt.texture;
+    return sv;
+  }
+  function r6Paint(t) {                          // the screen: the feed (k device px a scene px), its grain, the switch's static, scanlines, vignette
+    const g = R6M.g, W = R6M.W, H = R6M.H, k = R6M.k;
+    g.imageSmoothingEnabled = false; g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+    const sw = R6M.sw > 0 || R6M.lost >= 0;
+    if (!sw) g.drawImage(R6M.src, 0, 0, R6M.src.width * R6M.ks, R6M.src.height * R6M.ks);
+    g.globalAlpha = sw ? 1 : 0.5; g.drawImage(R6M.noise[reduced ? 0 : (R6M.tick++ & 3)], 0, 0, R6M.src.width, R6M.src.height, 0, 0, R6M.src.width * R6M.ks, R6M.src.height * R6M.ks);   // (its grain at the sensor's px)
+    if (sw) { g.globalAlpha = 0.55; g.fillStyle = '#000'; g.fillRect(0, 0, W, H); for (let i = 0; i < 5; i++) { g.globalAlpha = 0.25; g.fillStyle = '#fff'; g.fillRect(0, Math.random() * H, W, 2 + Math.random() * H * 0.04); } }
+    g.globalAlpha = 1;
+    if (!reduced && !sw) { const yb = ((t / 7) % 1) * (H * 1.4) - H * 0.2; const gr = g.createLinearGradient(0, yb - H * 0.08, 0, yb + H * 0.08); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,255,255,0.035)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, yb - H * 0.08, W, H * 0.16); }
+    if (!R6M.scan) { const c = document.createElement('canvas'); c.width = 1; c.height = 3; const cg = c.getContext('2d'); cg.fillStyle = 'rgba(0,0,0,0.3)'; cg.fillRect(0, 2, 1, 1); R6M.scan = g.createPattern(c, 'repeat'); }
+    g.fillStyle = R6M.scan; g.fillRect(0, 0, W, H);
+    if (!R6M.vig) { const c = document.createElement('canvas'); c.width = W; c.height = H; const cg = c.getContext('2d'), gr = cg.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.35, W / 2, H / 2, Math.hypot(W, H) / 2); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,0.6)'); cg.fillStyle = gr; cg.fillRect(0, 0, W, H); R6M.vig = c; }
+    g.drawImage(R6M.vig, 0, 0);
+    if (R6M.cam === 6 && DRN.on && !sw) {          // the drone tracked: pixel corners round it, its tag
+      const u = Math.max(2, Math.round(2 * R6M.dpr)), wd = DRN.w, x0 = Math.round((DRN.gx - 0.7 * wd - R6M.at[0]) * k), y0 = Math.round((DRN.gy - 0.95 * wd - R6M.at[1]) * k);
+      const x1 = Math.round((DRN.gx + 0.7 * wd - R6M.at[0]) * k), y1 = Math.round((DRN.gy + 2 - R6M.at[1]) * k), L = 4 * u;
+      g.fillStyle = '#b8ffd0';
+      for (const [cx, cy, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) {
+        g.fillRect(sx > 0 ? cx : cx - L, sy > 0 ? cy : cy - u, L, u); g.fillRect(sx > 0 ? cx : cx - u, sy > 0 ? cy : cy - L, u, L);
+      }
+      g.font = Math.round(16 * R6M.dpr) + 'px Silkscreen, monospace'; g.textBaseline = 'bottom'; g.fillText('TRK', x0, y0 - u);
+    }
+  }
+  function r6Osd(full) {                         // the camera's number and name, the date, the street's hour, REC, the mode
+    const T = r6T(), i = R6M.cam, h = (((reduced && CLOCK.live ? localHour() : CLOCK.h) % 24) + 24) % 24, s = Math.floor(h * 3600), now = new Date();
+    const p2 = (n) => String(n).padStart(2, '0');
+    const sd = new Date(now.getFullYear(), 3, 2);   // (the street's own day: early April, the cherries in bloom; as a Japanese recorder stamps it)
+    r6q('.r6m-date').textContent = sd.getFullYear() + '/04/02(' + '日月火水木金土'[sd.getDay()] + ') ';
+    r6q('.r6m-hms').textContent = p2(Math.floor(s / 3600)) + ':' + p2(Math.floor(s / 60) % 60) + ':' + p2(s % 60);
+    const md = R6C.bat > 0.5 ? T.batt : r6IR() > 0.5 ? T.ir : '', me = r6q('.r6m-mode'); me.textContent = md; me.hidden = !md;
+    if (!full) return;
+    r6q('.r6m-no').textContent = 'CAM ' + p2(i + 1); r6q('.r6m-nm').textContent = T.names[i] + (i < 6 && !Array.isArray(R6CAMS[i]) ? '\n' + T.rect : '');   // (a facade's plane, de-warped: said so)
+    const mid = r6q('.r6m-mid'); mid.hidden = R6M.lost < 0; mid.textContent = T.lost;
+    R6M.cv.setAttribute('aria-label', T.live + T.said[i]);
+    r6Btn.forEach((b, n) => b.setAttribute('aria-pressed', String(n === i)));
+    r6DroneKey(DRN.on || i === 6);
+  }
+  function stepFeed(dt, t) {                     // (the street's frame: the feed at 12 a second, 6 on a slow device; nothing while closed)
+    if (!R6M.open || reduced) return;
+    PAN.wait = Math.max(PAN.wait, 0.5);          // (a phone's drifting view holds while the screen is open)
+    if (R6M.sw > 0) R6M.sw -= dt;
+    if (R6M.lost >= 0 && (R6M.lost += dt) > 1.6) { R6M.lost = -1; R6M.cam = 0; R6M.sw = 0.2; r6Osd(true); r6Say(); }
+    if ((R6M.acc += dt) < (PACE.slow ? 1 / 6 : 1 / 12)) return;
+    R6M.acc = 0; r6Feed(t); r6Osd(false); r6DroneKey(DRN.on || R6M.cam === 6);
+  }
+  FEAT.push(stepFeed);
+  function r6Say() { const T = r6T(), i = R6M.cam; r6q('.r6m-sr').textContent = i < 6 ? T.cam + ' ' + (i + 1) + ' : ' + T.said[i] : T.said[i]; }
+  function r6Go(i) {                             // to camera i (6: the track), with the switch's static
+    if (i === 6 && !DRN.on) return;
+    if (i === 6) { R6M.track[0] = DRN.gx - 66; R6M.track[1] = DRN.gy - 0.45 * DRN.w - 49.5; }
+    R6M.cam = i; R6M.lost = -1; R6M.sw = reduced ? 0 : 0.22; r6Osd(true); r6Say();
+    if (reduced) r6Feed(0);
+  }
+  function r6Step(d) { const n = DRN.on ? 7 : 6; r6Go(((R6M.cam + d) % n + n) % n); }
+  function r6Lost() { if (!R6M.open) return; R6M.lost = 0; r6Osd(true); if (reduced) { R6M.lost = -1; r6Go(0); } }
+  function r6Open(i, kb) {
+    r6Build(); r6Lang();
+    R6M.prev = document.activeElement; R6M.open = true; R6M.lost = -1; R6M.acc = 1;
+    r6m.classList.add('on'); showSlab(null, false); r6Fit();
+    if (!R6M.hist) try { history.pushState({ r6: 1 }, ''); R6M.hist = true; } catch (e) {}   // (a phone's Back: closes it)
+    r6Go(i); R6M.sw = reduced ? 0 : 0.3;
+    if (kb) r6q('.pc-x').focus({ preventScroll: true });   // (from the keyboard: on its close key; from a finger or a mouse: the window
+    else { const w = r6q('.r6m-win'); w.tabIndex = -1; w.focus({ preventScroll: true }); }   // itself, no ring on a key nobody chose)
+    clearInterval(R6M.clock);
+    if (reduced) { r6Feed(0); r6Osd(false); R6M.clock = setInterval(() => r6Osd(false), 1000); }
+    else if (!visible) { r6Feed(0); r6Osd(false); }   // (the street scrolled away: one still picture)
+  }
+  function r6Close(back) {
+    if (!R6M.open) return;
+    R6M.open = false; clearInterval(R6M.clock); r6m.classList.remove('on');
+    if (R6M.hist) { R6M.hist = false; if (back !== true) try { history.back(); } catch (e) {} }
+    const p = R6M.prev; if (p && p.focus && p !== document.body && document.contains(p)) try { p.focus({ preventScroll: true }); } catch (e) {}
+  }
+  window.addEventListener('popstate', () => { if (R6M.open) { R6M.hist = false; r6Close(true); } });
+  r6m.addEventListener('touchmove', (ev) => { if (ev.cancelable) ev.preventDefault(); }, { passive: false });   // (the page under it stays put)
+  r6m.addEventListener('wheel', (ev) => ev.preventDefault(), { passive: false });
+  r6q('.pc-x').addEventListener('click', () => r6Close());
+  r6q('.r6m-prev').addEventListener('click', () => r6Step(-1)); r6q('.r6m-next').addEventListener('click', () => r6Step(1));
+  r6m.addEventListener('click', (ev) => { if (ev.target === r6m) r6Close(); });
+  document.addEventListener('keydown', (ev) => {
+    if (!R6M.open) return;
+    if (ev.key === 'Escape') { r6Close(); ev.preventDefault(); ev.stopPropagation(); }
+    else if (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight') { r6Step(ev.key === 'ArrowLeft' ? -1 : 1); ev.preventDefault(); ev.stopPropagation(); }
+  }, true);
+  (function () {                                 // a swipe across the screen: the next or the previous camera
+    const sc = r6q('.r6m-scr'); let p0 = null;
+    sc.addEventListener('pointerdown', (ev) => { p0 = [ev.clientX, ev.clientY, ev.pointerId]; });
+    sc.addEventListener('pointerup', (ev) => { if (!p0 || ev.pointerId !== p0[2]) return; const dx = ev.clientX - p0[0], dy = ev.clientY - p0[1]; p0 = null; if (Math.abs(dx) > 36 && Math.abs(dx) > 1.5 * Math.abs(dy)) r6Step(dx < 0 ? 1 : -1); });
+    sc.addEventListener('pointercancel', () => { p0 = null; });
+  })();
+  window.addEventListener('resize', () => { if (R6M.open) { r6Fit(); if (reduced) r6Feed(0); } });
+  CLICKS.push((ev) => {
+    if (overDrone(ev)) { r6Open(6); return true; }
+    if (LATE.ready.r6 && overWallCam(ev)) { r6Open(R6M.cam < 6 ? R6M.cam : 0); return true; }
+    return false;
+  });
   // ==== end of R6 ====
   //
   //

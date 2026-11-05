@@ -431,3 +431,59 @@ a.chip:hover { border-color: var(--rule-2); color: var(--paper); }
   .site-bar nav a, .site-bar .brand { padding: 3px 4px; margin: -3px -4px; }
   input[type=range] { padding-block: 6px; margin-block: -6px; }
 }
+
+/* ==== R6: the street's camera screen (assets/street.js, its R6 block): a rugged handheld monitor, as the units that show a throwable
+   robot's camera, drawn as pixel sprites (tools/r6_sprites.py: its panel, its screen's bezel, its keys, 9-slice) at 2 CSS px a pixel;
+   the live picture in it, the camera's number and name, the date and the hour over it, the cameras' keys under it (a grid of 44 px
+   keys; the drone's two wide, always there, dim while the drone is away) ==== */
+.r6m { overscroll-behavior: contain; }
+.pc-win.r6m-win { --u: 2px; width: min(640px, calc(100vw - 16px), calc((100svh - 270px) * 4 / 3 + 64px)); margin-top: 34px; background: none; box-shadow: none;
+  border: 16px solid transparent; border-image: url(r6_panel.webp?v=1) 8 fill / 16px / 0 stretch; image-rendering: pixelated; }
+.r6m-win::after { content: ""; position: absolute; bottom: 100%; right: 26px; width: 8px; height: 32px; margin-bottom: 14px; background: url(r6_ant.webp?v=1) 0 0 / 8px 32px; image-rendering: pixelated; }   /* (one antenna: a pair read as a sign's cords) */
+.r6m .pc-bar { position: relative; background: none; color: #9a9aa6; padding: 0 0 8px 6px; font: 400 16px/1 var(--pixel); letter-spacing: 0; }
+.r6m .pc-x { position: relative; width: 32px; height: 32px; padding: 0; border: 8px solid transparent; border-image: url(r6_key.webp?v=1) 4 fill / 8px / 0 stretch; background: none; image-rendering: pixelated; font-size: 0; color: transparent; }
+.r6m .pc-x::before { content: ""; position: absolute; left: 3px; top: 3px; width: 2px; height: 2px; color: #d9d9e0; background: currentColor;   /* (an x of 2 px pixels) */
+  box-shadow: 8px 0, 2px 2px, 6px 2px, 4px 4px, 2px 6px, 6px 6px, 0 8px, 8px 8px; }
+.r6m .pc-x::after { content: ""; position: absolute; inset: -14px; }   /* (its target: 44 px and more) */
+.r6m .pc-x:focus { outline: none; }
+.r6m .pc-x:focus-visible { background: none; outline: 2px dashed #f2f2f6; outline-offset: 2px; border-radius: 0; }   /* (the focus: white, dashed, square; the pink is the lit key's) */
+@media (hover: hover) { .r6m .pc-x:hover { background: none; outline: 2px solid #5a5a66; outline-offset: 2px; } }
+.r6m-box { position: relative; padding: 0 2px 2px; }
+.r6m-bez { border: 8px solid transparent; border-image: url(r6_bezel.webp?v=1) 4 / 8px / 0 stretch; image-rendering: pixelated; }
+.r6m-scr { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #040308; touch-action: none; user-select: none; -webkit-user-select: none; }
+.r6m-scr canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+.r6m-glass { position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 18px 2px rgba(0,0,0,.6); }
+.r6m-osd { position: absolute; inset: 0; pointer-events: none; font: 400 16px/1 var(--pixel); color: #eafff3; }
+.r6m-osd > span { position: absolute; white-space: nowrap; padding: 2px 4px; background: rgba(3,5,6,.66); }
+.r6m-osd b { font-weight: 400; }
+.r6m-tl { left: 8px; top: 8px; } .r6m-osd > .r6m-tl { white-space: pre; line-height: 1.25; } .r6m-win:focus { outline: none; } .r6m-tr { right: 8px; top: 8px; } .r6m-bl { left: 8px; bottom: 8px; } .r6m-br { right: 8px; bottom: 8px; }
+.r6m-mid { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.r6m-rec i { display: inline-block; width: 8px; height: 8px; margin: 0 6px 0 0; background: #ff3b30; vertical-align: 2px; animation: r6-rec 1.2s steps(1) infinite; }
+@keyframes r6-rec { 50% { opacity: 0; } }
+.r6m-ctl { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; }
+.r6m-list { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, 44px); justify-content: center; gap: 6px; }
+.r6m-list button:last-child { grid-column: span 2; }
+.r6m-list button:disabled { color: #8a8a96; cursor: default; }   /* (the drone's key while it is away: there, off, still legible; its title says why) */
+.r6m-ctl button { position: relative; min-width: 44px; height: 44px; padding: 0 6px; border: 8px solid transparent; border-image: url(r6_key.webp?v=1) 4 fill / 8px / 0 stretch; background: none; image-rendering: pixelated;
+  color: #dcdce4; font: 400 16px/1 var(--pixel); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+.r6m-ctl button[aria-pressed="true"] { border-image-source: url(r6_key_on.webp?v=1); color: #2a0e1f; }
+@media (hover: hover) { .r6m-ctl button:not(:disabled):hover { outline: 2px solid #5a5a66; outline-offset: 2px; } }
+.r6m-ctl button:focus { outline: none; }
+.r6m-ctl button:focus-visible { outline: 2px dashed #f2f2f6; outline-offset: 2px; border-radius: 0; }
+.r6m-prev::before, .r6m-next::before { content: ""; position: absolute; left: 50%; top: 50%; width: 2px; height: 2px; margin: -7px 0 0 -4px; color: inherit;   /* (a triangle of 2 px pixels: its shadows) */
+  box-shadow: 0 6px, 2px 4px, 2px 6px, 2px 8px, 4px 2px, 4px 4px, 4px 6px, 4px 8px, 4px 10px, 6px 0, 6px 2px, 6px 4px, 6px 6px, 6px 8px, 6px 10px, 6px 12px; }
+.r6m-next::before { transform: scaleX(-1); }
+.r6m-sr { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 440px) { .r6m-ctl { gap: 6px; margin-top: 12px; } }
+@media (max-width: 379px) { .r6m-date { display: none; } .r6m-list button:last-child { grid-column: 1 / -1; } }   /* (the narrowest phones: the hour alone, clear of the mode; the drone's key the row's width) */
+@media (max-height: 520px) and (min-width: 560px) {   /* (a phone held sideways: the keys beside the screen) */
+  .pc-win.r6m-win { width: min(calc(100vw - 16px), calc((100svh - 128px) * 4 / 3 + 258px)); margin-top: 30px; }
+  .r6m-win::after { height: 16px; background-position: 0 100%; }   /* (a short stub: the window's 30 px over it) */
+  .r6m-box { display: flex; gap: 12px; align-items: flex-start; } .r6m-bez { flex: 1; }
+  .r6m-ctl { width: 194px; flex: none; margin-top: 0; flex-wrap: wrap; justify-content: space-between; row-gap: 8px; }   /* (four keys a row) */
+  .r6m-list { order: 3; flex: 0 0 100%; grid-template-columns: repeat(4, 44px); justify-content: start; } }
+@media (prefers-reduced-motion: reduce) { .r6m-rec i { animation: none; } }
+.r6-kb { position: absolute; left: 16px; bottom: 16px; z-index: 6; padding: 10px 14px; border: 2px solid #ff8ad1; border-radius: 0; background: #0b0a10; color: #f2f2f6;   /* (a keyboard's way in to the screen: shown when focused) */
+  font: 400 16px/1 var(--pixel); cursor: pointer; outline: none; }
+.r6-kb:not(:focus) { width: 1px; height: 1px; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* ==== end of R6 ==== */
