@@ -6212,28 +6212,33 @@
     rr(-0.235 + 0.025 * sw, 0.31, 0.085, 0.58, 0.04); rr(0.15 - 0.025 * sw, 0.31, 0.085, 0.58, 0.04);     // arms
     rr(-0.17, 1.0, 0.15, 0.75, 0.05); rr(0.02, 1.0, 0.15, 0.75, 0.05); g.restore();                     // legs
   }
-  // Red, Pokémon's trainer, Pikachu on his shoulder (the balcony door's visitor; build_zzzchar_red.py): a jointed body
-  // posed joint by joint (rig_red.py, after the owner's references: the cap, the vest's popped collar, the backpack, the
-  // baggy jeans, the sneakers): his walk from normative joint-angle curves, his soles rolling on the floor without
-  // slipping; the stop; the Poké Ball tossed and caught twice by the shoulder, elbow and wrist, the other hand in his
-  // pocket; a three-step turn, the head leading; the start; Pikachu's ears and tail on springs. One sheet of
-  // silhouettes (red_sil.webp), each row rendered through the door's camera where it is played. He walks along the
-  // street, his path 0.37 m behind the glass (X 6.72 m across the street, the room's floor 6.03 m over our eyes): w
-  // metres toward us from his stop, his scale is s = 1400 / (ZS - w) px per metre and his path's floor point
-  // (700 + 6.72 s, 615 - 6.03 s); a walk frame i is drawn at a root moving at his walk's speed where it was at phase
-  // i/n, so a foot in stance stays put
-  const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 33.4129, ppm: 44, w0: -4.43, D: 1.0066, v: 1.007, xa0: 0.266, xr0: -0.248 };
-  const ZRC = { walkT: [0, 36, 73, 16, 18, 69], walkA: [73, 36, 73, 16, 18, 68], settle: [146, 35, 74, 7, 16, 71], idle: [220, 32, 72, 4, 17, 69], toss: [292, 38, 101, 38, 17, 98], turn: [393, 35, 73, 12, 17, 69], start: [466, 37, 73, 6, 20, 68] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
-  const ZRB = [null,null,null,null,null,null,null,[34.0,23.8],[34.0,13.0],[34.0,6.6],[34.0,4.5],[34.0,6.6],[34.0,13.1],[34.0,24.0],[34.0,39.1],null,null,null,null,null,null,null,null,[34.0,17.9],[34.0,9.3],[34.0,5.0],[34.0,5.0],[34.0,9.4],[34.0,18.0],[34.0,31.0],null,null,null,null,null,null,null,null];   // the toss row: the Poké Ball's place in each cell (px), null while it is in his hand (red_meta.json)
-  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=2');   // (late; his visit already waits for the sheet)
+  // Red, Pokémon's trainer, Pikachu on his shoulder (the balcony door's visitor): one sheet of silhouettes (red_sil.webp,
+  // cut by tools/red_sheet.py from the owner's sprite sheet, tools/src/red_sheet.webp: the cap and its visor, the vest's
+  // popped collar, the backpack, Pikachu's ears and tail), every frame at one scale (ZR.ppm px a metre, 1.6 m tall) on
+  // one ground line, the floor point under his root at (ZRC[row][4], [5]) in its cell. He walks along the street, his
+  // path 0.37 m behind the glass (X 6.72 m across the street, the room's floor 6.03 m over our eyes), seen side on: in,
+  // to the right (walkT), out, to the left (walkA, its mirror). w metres toward us from his stop, his scale is
+  // s = 1400 / (ZS - w) px per metre and his path's floor point (700 + 6.72 s, 615 - 6.03 s); along it, at the scale of
+  // each place, the floor point moves zrU(w1) - zrU(w0) px of the sheet: a step is ZR.D of them (the walk rows' four
+  // frames, the planted foot moving back by a quarter of it at each), and a walk frame i is drawn where the root was at
+  // phase i/n, so a planted foot stays put. The stop: the last half step, his head turned to us first, then all of him;
+  // the Poké Ball tossed and caught twice; the turn to his left; the first step out
+  const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 33.4129, ppm: 88, w0: -5.54, D: 42.8, v: 71.3, xa0: -0.2837, xr0: -0.4119 };   // (D: px of the sheet a step; v: px of the sheet a second)
+  const ZRC = { walkT: [0, 91, 147, 4, 50, 144], walkA: [147, 91, 147, 4, 41, 144], settle: [294, 75, 149, 2, 39, 147], idle: [443, 83, 150, 4, 32, 148], toss: [593, 88, 152, 8, 46, 149], turn: [745, 73, 148, 3, 33, 146] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
+  const ZRB = [[1,0.3,10.6,57.7],[2,0.15,10.3,57.7],[3,0.0479,12.9,48.6],[3,0.0479,12.7,39.4],[3,0.0479,12.6,32.1],[3,0.0479,12.4,26.9],[4,0.0479,12.3,23.6],[4,0.0479,12.1,22.2],[4,0.0479,11.9,22.9],[4,0.0479,11.8,25.6],[5,0.0479,11.6,30.2],[5,0.0479,11.5,36.8],[5,0.0479,11.3,45.4],[6,0.25,11.3,53.3],[7,0.3,12.2,59.0]];   // one toss: [its toss cell, s, the Poké Ball's centre in the cell (px)], every 0.05 s while it flies (a parabola, g = 9.81)
+  const zrU = (w) => -ZR.x * ZR.ppm * Math.log(ZR.zs - w), zrW = (u) => ZR.zs - Math.exp(-u / (ZR.x * ZR.ppm));   // w <-> his floor point along his path (px of the sheet)
+  const zrToss = (k) => ZRB.map(([i, dt, x, y]) => ['toss', i, dt * k, 0, [x, y]]);   // a toss at k times its pace (the ball in each step)
+  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=3');   // (late; his visit already waits for the sheet)
+  z1Door.sh.width = z1Door.box[2] * z1Door.K; z1Door.sh.height = z1Door.box[3] * z1Door.K;   // (his shadow drawn at the glass's 2x: the sheet is too)
   function z1Red(g, ox, oy, f) {                  // his frame f = { row, i, w } into the door's canvas (its box at ox, oy)
     const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
+    g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
     g.drawImage(zrSheet, f.i * c[1], c[0], c[1], c[2], 700 + ZR.x * s - c[4] * k - ox, 615 - ZR.kf * s - c[5] * k - oy, c[1] * k, c[2] * k);
     g.globalCompositeOperation = 'source-in'; g.fillRect(0, 0, g.canvas.width, g.canvas.height); g.globalCompositeOperation = 'source-over';
   }
-  function z1Ball(G, f) {                         // the Poké Ball in the air: crisp over the blurred glass (2 x 2 px, dark, its top lit by the room),
-    if (!f || f.row !== 'toss' || !ZRB[f.i]) return;   // masked by the glazing like him; the blur would eat a 7-cm ball at 1x
-    const c = ZRC.toss, s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm, [bx, by] = ZRB[f.i], K = G.K, g = G.g, [, , w, h] = G.box;
+  function z1Ball(G, f) {                         // the Poké Ball: crisp over the blurred glass (2 x 2 px, dark, its top lit by the room),
+    if (!f || !f.b) return;                       // masked by the glazing like him; the blur would eat a 7-cm ball at 1x
+    const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm, [bx, by] = f.b, K = G.K, g = G.g, [, , w, h] = G.box;
     const x = Math.round(700 + ZR.x * s - c[4] * k + bx * k - G.box[0] - 1), y = Math.round(615 - ZR.kf * s - c[5] * k + by * k - G.box[1] - 1);
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 0.85;
     g.fillStyle = '#200c12'; g.fillRect(x * K, y * K, 2 * K, 2 * K); g.fillStyle = '#5a2e38'; g.fillRect(x * K, y * K, K, K);
@@ -6242,33 +6247,35 @@
     G.tex.needsUpdate = true;
   }
   function z1RPlan(night) {                       // his visit: in, the stop, the tosses between two pauses (at night: he just stands there, up late), the turn, out
-    const F = { w: ZR.w0, q: [], a: null, fig: null }, run = (row, n, dt) => Array.from({ length: n }, (_, i) => [row, i, dt]);
+    const F = { w: ZR.w0, q: [], a: null, fig: null };
     const idle = (t) => { const q = []; for (let i = 0; t > 0; t -= 0.8, i = (i + 1) % 4) q.push(['idle', i, 0.8]); return q; };   // breathing
-    F.q.push({ k: 'go', to: -ZR.xa0, dir: 1, row: 'walkT', ph0: -ZR.xa0 });                 // there his left heel strikes
-    F.q.push({ k: 'frames', seq: run('settle', ZRC.settle[3], 0.1), after: () => { F.w += ZR.xa0; } });   // the last step
-    F.q.push({ k: 'frames', seq: (night ? idle(16 + Math.random() * 8) : idle(1.5 + Math.random() * 2).concat(run('toss', ZRC.toss[3], 0.1), idle(0.8 + Math.random() * 2.4)))
-      .concat(run('turn', ZRC.turn[3], 0.1), run('start', ZRC.start[3], 0.1)), after: () => { F.w += ZR.xr0; } });
+    const hand = (dt) => [['toss', 0, dt]];       // (his hand at his vest: the ball taken out, put back)
+    F.q.push({ k: 'go', to: -ZR.xa0, dir: 1, row: 'walkT', ph0: -ZR.xa0 });                 // there his next step would land
+    F.q.push({ k: 'frames', seq: [['settle', 0, 0.16], ['settle', 1, 0.14], ['turn', 0, 0.16]], init() { F.w += ZR.xa0; } });   // the last half step, he turns to us
+    F.q.push({ k: 'frames', seq: (night ? idle(16 + Math.random() * 8) : idle(1.5 + Math.random() * 2).concat(hand(0.3), zrToss(1), zrToss(1), hand(0.3), idle(0.8 + Math.random() * 2.4)))
+      .concat([['turn', 0, 0.16], ['turn', 1, 0.16], ['turn', 2, 0.22], ['walkA', 0, 0.14, ZR.xr0]]), after: () => { F.w += ZR.xr0; } });   // the turn, the first step
     F.q.push({ k: 'go', to: ZR.w0, dir: -1, row: 'walkA', init() { this.ph0 = F.w; } });
     return F;
   }
   function z1RStep(F, dt) {                       // moves him along, picks his frame; false when he is gone
     if (!F.a) { if (!F.q.length) return false; F.a = F.q.shift(); F.a.t = 0; if (F.a.init) F.a.init(); }
     const A = F.a; A.t += dt;
-    if (A.k === 'go') {                           // the walk's phase follows the distance (0 at A.ph0)
-      const n = ZRC[A.row][3], rem = (A.to - F.w) * A.dir, ds = Math.min(rem, ZR.v * dt);
-      F.w += ds * A.dir;
-      const ph = ((((F.w - A.ph0) * A.dir) / ZR.D) % 1 + 1) % 1, i = Math.floor(ph * n) % n;
-      F.fig = { row: A.row, i, w: F.w - A.dir * ZR.D * (ph - i / n) };              // drawn where frame i's feet are planted
-      if (rem - ds <= 1e-6) F.a = null;
-    } else {                                      // frames where he stands
+    if (A.k === 'go') {                           // the walk's phase follows his floor point along his path (0 at A.ph0)
+      const n = ZRC[A.row][3], u = zrU(F.w), rem = (zrU(A.to) - u) * A.dir, du = Math.min(rem, ZR.v * dt), u1 = u + du * A.dir;
+      F.w = zrW(u1);
+      const ph = ((((u1 - zrU(A.ph0)) * A.dir) / ZR.D) % 1 + 1) % 1, i = Math.floor(ph * n) % n;
+      F.fig = { row: A.row, i, w: zrW(u1 - A.dir * ZR.D * (ph - i / n)) };   // drawn where frame i's feet are planted
+      if (rem - du <= 1e-6) F.a = null;
+    } else {                                      // frames where he stands ([row, frame, s, w from here, the ball])
       let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
       if (j >= A.seq.length) { if (A.after) A.after(); F.a = null; return z1RStep(F, 0); }
-      F.fig = { row: A.seq[j][0], i: A.seq[j][1], w: F.w };
+      const q = A.seq[j]; F.fig = { row: q[0], i: q[1], w: F.w + (q[3] || 0), b: q[4] || null };
     }
     return true;
   }
   function z1Draw(G, light, alpha, blur, draw) {   // into its glass: one dark colour, enlarged, blurred, grain cut out
-    const [, , w, h] = G.box, g = G.shg; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, w, h); g.fillStyle = '#200c12'; draw(g);
+    const [, , w, h] = G.box, g = G.shg, q = G.sh.width / w; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, G.sh.width, G.sh.height);
+    g.setTransform(q, 0, 0, q, 0, 0); g.fillStyle = '#200c12'; draw(g);   // (in the box's px, whatever the canvas's size)
     const gg = G.g; gg.clearRect(0, 0, G.c.width, G.c.height); gg.imageSmoothingEnabled = true; gg.filter = 'blur(' + blur + 'px)';
     gg.globalAlpha = alpha; gg.drawImage(G.sh, 0, 0, w * G.K, h * G.K); gg.filter = 'none'; gg.globalAlpha = 1;
     odenFinish(G); G.mesh.material.opacity = light;
@@ -6311,9 +6318,9 @@
         } else z1Cur.mesh.material.opacity = light;
       }
     }
-    // the balcony door: Red walks along the inside of the window toward us (at his walk's own pace, ~4 s) into the
-    // parted curtain, stops, tosses his Poké Ball and catches it, twice, Pikachu on his shoulder; he turns round (three
-    // steps) and walks back: z1RPlan, z1RStep
+    // the balcony door: Red walks along the inside of the window toward us, side on (two steps in sight), stops at the
+    // parted curtain and turns to us, tosses his Poké Ball and catches it, twice, Pikachu on his shoulder; he turns to his
+    // left and walks back: z1RPlan, z1RStep
     if (Z1.top) {
       let F = Z1F.who; const light = Z1.top.material.opacity;
       if (!F) {
@@ -6691,7 +6698,7 @@
     let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
     if (j >= A.seq.length) return;
     A.seq[j] = [A.seq[j][0], A.seq[j][1], t];   // (this breath ends now)
-    A.seq.splice(j + 1, 0, ...Array.from({ length: ZRC.toss[3] }, (_, i) => ['toss', i, 0.05]));
+    A.seq.splice(j + 1, 0, ['toss', 0, 0.15], ...zrToss(0.5), ['toss', 0, 0.15]);
   }
   function fourHit(k) {                          // he is clicked (or tapped) while he is there
     const again = FOUR.k.includes(k), [x, y] = heroAt(k);
