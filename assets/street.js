@@ -9908,7 +9908,137 @@
   //
   //
   //
-  // ==== feature: rooftop garden above Naruto (ROOF) — its own block, if it needs code ====
+  // ==== feature: rooftop garden above Naruto (ROOF) — its own block ====
+  // The garden on the roof over Naruto's window (tools/naruto_roof.py) moves in the gusts as the cherry does in its rustle: on
+  // each gust's push (once a gust), the same hierarchy of three damped springs (treeTables: the crown, the tiers, the leaves),
+  // driven by 2-4 pushes over the gust (treeGust, scaled by its peak), each pixel looking up where it came from (whole pixels,
+  // 1-2 px, it never tears). The maple's crown sways from its fork, more toward its top and its tiers' ends, each tier a little
+  // late and its own way up or down, the leaves fluttering last; the wind from the right reaches its right side first. The
+  // clipped shrubs and the low hedge only shiver at their tops (the hedge still under the menu's text). What a leaf uncovers is
+  // what is behind it (assets/roof_sway.webp, tools/roof_sway.py: building C's wall, the trunk, else the sky as it shows now);
+  // a leaf never shows over the parapet in front. One overlay plane (z 0.013: over the street, its power cut's unlit quad),
+  // 24 pictures a second while it moves, only what differs from the resting picture, each pixel graded as the plane it shows
+  // (the street's, the sky's: nrShadeKinds, the cherry's overlay's), lit as the street is there (the power cut, the finale's
+  // dark street: the unlit layer's leaves). Never under reduced motion, nor when it is out of the frame ----
+  const ROOF = { state: 0, tries: 0, x0: 0, y0: 0, W: 0, H: 0, t: -1, dur: 0, acc: 0, since: 99, seen: 0, tab: null, P: null, mesh: null,
+    tex: null, g2: null, id: null, kd: null, ktex: null, A: null, rows: null, list: null, sky: null, sk: [0, 0, 0, 0], unlit: null, ok: false };
+  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=1');
+  function roofRead(im, x, y, w, h, W, H) {            // an image's pixels (RGBA) in a box of its plane (W x H: the plane's size), once
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true });
+    g.imageSmoothingEnabled = false; g.drawImage(im, -x, -y, W || im.naturalWidth, H || im.naturalHeight); return g.getImageData(0, 0, w, h).data;
+  }
+  function roofInit() {                                // once, at the first gust its images are in for; else later
+    const B = ROOF, ci = city.material.map && city.material.map.image, si = sky.material.map && sky.material.map.image;
+    if (!roofImg.complete || !roofImg.naturalWidth || !ci || !ci.complete || !ci.naturalWidth || !si || !si.complete || !si.naturalWidth) return;
+    try {
+      const W = B.W = roofImg.naturalWidth, H = B.H = roofImg.naturalHeight / 3, N = W * H;
+      B.x0 = 1127; B.y0 = 11;                          // (tools/roof_sway.py: its box)
+      const D = roofRead(roofImg, 0, 0, W, 3 * H), C = roofRead(ci, B.x0, B.y0, W, H), M = 40;
+      B.sky = roofRead(si, B.x0 + PAD - M, B.y0 + PAD - M, W + 2 * M, H + 2 * M, IW + 2 * PAD, IH + 2 * PAD); B.sk = [B.x0 - M, B.y0 - M, W + 2 * M, H + 2 * M];   // (the sky round it: its drift with the scroll)
+      const f32 = () => new Float32Array(N);
+      const A = B.A = { C, U: D.subarray(0, N * 4), UU: D.subarray(N * 4, 2 * N * 4), CU: null, m: new Uint8Array(N), k: new Uint8Array(N), w: f32(), fol: new Uint8Array(N),
+        clip: new Uint8Array(N), l0: f32(), l1: f32(), l2: f32(), u1x: f32(), u1y: f32(), u2x: f32(), u2y: f32(), cl: new Float32Array(96) };
+      for (let i = 0; i < N; i++) {
+        const o = (2 * N + i) * 4, v = D[o]; A.clip[i] = D[o + 2] > 127 ? 1 : 0;
+        if (v >= 16) { A.fol[i] = D[o + 1] > 0 ? 1 : 2; A.m[i] = v >> 4; A.k[i] = v & 15; A.w[i] = D[o + 1] / 255; }   // (2: a leaf that stays: a cushion's foot, the hedge under the menu)
+      }
+      for (let r = 1; r <= 2; r++) {                   // the ring round each plant (2 px): its nearest leaf's field, where a leaf may show
+        const m2 = A.m.slice(), k2 = A.k.slice(), w2 = A.w.slice();
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          const i = y * W + x; if (A.m[i] || A.fol[i] || !A.clip[i]) continue;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) {
+            const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= W || Y >= H) continue;
+            const j = Y * W + X; if (A.m[j]) { m2[i] = A.m[j]; k2[i] = A.k[j]; w2[i] = A.w[j]; break; }
+          }
+        }
+        A.m.set(m2); A.k.set(k2); A.w.set(w2);
+      }
+      const list = []; for (let i = 0; i < N; i++) if (A.m[i]) list.push(i);
+      B.list = new Int32Array(list);
+      const nC = treeNoise(W, H, 6, 31), nT = treeNoise(W, H, 9, 32);
+      let xa = 1e9, xb = -1e9; for (const i of B.list) { const x = i % W; xa = Math.min(xa, x); xb = Math.max(xb, x); }
+      for (const i of B.list) {                        // the gust reaches the right side first; each tier a little late; the leaves last
+        const x = i % W, r = (xb - x) / Math.max(1, xb - xa), a2 = Math.PI + 2.2 * nC[i];
+        A.l0[i] = 0.03 + 0.1 * r; A.l1[i] = A.l0[i] + 0.04 + (A.k[i] * 0.013) % 0.06; A.l2[i] = A.l1[i] + 0.04 + 0.05 * (0.5 + 0.5 * nT[i]);
+        A.u2x[i] = Math.cos(a2); A.u2y[i] = Math.sin(a2);
+      }
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H; B.g2 = cv.getContext('2d'); B.id = B.g2.createImageData(W, H);
+      B.tex = new THREE.CanvasTexture(cv); B.tex.magFilter = B.tex.minFilter = THREE.NearestFilter; B.tex.generateMipmaps = false;
+      B.kd = new Uint8Array(N * 4); B.ktex = new THREE.DataTexture(B.kd, W, H, THREE.RGBAFormat); B.ktex.magFilter = B.ktex.minFilter = THREE.NearestFilter; B.ktex.generateMipmaps = false;
+      const mat = new THREE.MeshBasicMaterial({ map: B.tex, transparent: true, depthWrite: false });
+      nrShadeKinds(mat, B.ktex);                       // (each pixel graded as the plane it shows: the street's, the sky's)
+      B.mesh = new THREE.Mesh(new THREE.PlaneGeometry(W, H), mat); B.mesh.position.set(B.x0 + W / 2, -(B.y0 + H / 2), 0.013); B.mesh.visible = false; scene.add(B.mesh);
+      B.state = 1;
+    } catch (e) { B.state = -1; }                      // (no pixels to read: the garden stays still)
+  }
+  function roofSetup() {                               // a new gust: each tier's own way, up or down, toward the left
+    const A = ROOF.A;
+    for (let k = 0; k < 48; k++) { const a = Math.PI + (Math.random() * 2 - 1) * 0.75; A.cl[2 * k] = Math.cos(a); A.cl[2 * k + 1] = Math.sin(a); }
+    for (const i of ROOF.list) { const c = 2 * (A.m[i] * 16 + A.k[i] - 16); A.u1x[i] = A.cl[c]; A.u1y[i] = A.cl[c + 1]; }
+  }
+  const ROOF_AMP = [0, 1.25, 0.85, 0.75];              // (the maple, the shrubs, the hedge: their freedom)
+  const roofSs = (a, b, v) => { const u = Math.max(0, Math.min(1, (v - a) / (b - a))); return u * u * (3 - 2 * u); };
+  function roofPow(x, y) {                             // the street's power at a pixel (the fuses' cut, the finale's dark), as its unlit quad reads it
+    const U = pwShade.material.uniforms, ss = roofSs;
+    let p = U.uAmb.value * ss(U.uFront.value - 60, U.uFront.value + 60, x);
+    for (let i = 0; i < PW_ZONES.length; i++) { const z = PW_ZONES[i], a = ss(z[0] - 6, z[0] + 6, x) * (1 - ss(z[2] - 6, z[2] + 6, x)) * ss(z[1] - 6, z[1] + 6, y) * (1 - ss(z[3] - 6, z[3] + 6, y)); p += (U.uPow.value[i] - p) * a; }
+    return p;
+  }
+  function roofAt(a, s) { if (s <= 0) return 0; const f = s * 240, k = f | 0; if (k >= a.length - 1) return 0; return a[k] + (a[k + 1] - a[k]) * (f - k); }   // a spring at s into the gust
+  function roofCompute(t) {                            // the picture at t into the gust: only what differs from the resting one
+    const B = ROOF, A = B.A, W = B.W, H = B.H, od = B.id.data, kd = B.kd, tb = B.tab, C = A.C, U = A.U, at = roofAt;
+    const dark = PW.on, CU = A.CU, UU = A.UU;
+    const sx = B.x0 - B.sk[0] + (IW / 2 - sky.position.x), sy = B.y0 - B.sk[1] + (sky.position.y + IH / 2), S = B.sky, SW = B.sk[2], SH = B.sk[3];
+    od.fill(0);
+    for (let n = 0; n < B.list.length; n++) {
+      const i = B.list[n], m = A.m[i], g = ROOF_AMP[m] * A.w[i];
+      const e0 = at(tb[0], t - A.l0[i]), e1 = at(tb[1], t - A.l1[i]), e2 = at(tb[2], t - A.l2[i]);
+      const dx = Math.round(g * (-e0 + 0.55 * e1 * A.u1x[i] + 0.35 * e2 * A.u2x[i])), dy = Math.round(g * (0.1 * e0 + 0.55 * e1 * A.u1y[i] + 0.35 * e2 * A.u2y[i]));
+      if (!dx && !dy) continue;
+      const x = i % W, y = (i / W) | 0, X = x - dx, Y = y - dy, j = Y * W + X;
+      let src = null, o = 0, kind = 3;
+      if (X >= 0 && Y >= 0 && X < W && Y < H && A.fol[j] && A.m[j] === m && A.clip[i]) { src = C; o = j * 4; }   // a leaf moved here
+      else if (A.fol[i] === 1) { src = U; o = i * 4; if (U[o + 3] < 128) kind = 0; }   // what it uncovers
+      else continue;
+      let r, gg, b;
+      if (kind === 0) { const q = ((sy + y) * SW + sx + x) * 4; if (sy + y < 0 || sx + x < 0 || sy + y >= SH || sx + x >= SW) continue; r = S[q]; gg = S[q + 1]; b = S[q + 2]; }
+      else {
+        r = src[o]; gg = src[o + 1]; b = src[o + 2];
+        if (dark) {                                    // (its power out: the unlit layer's leaf, or what is behind it there)
+          const p = roofPow(B.x0 + x, B.y0 + y);
+          if (p < 0.999) { if (!CU) continue; const s2 = src === C ? CU : UU; r = s2[o] + (r - s2[o]) * p; gg = s2[o + 1] + (gg - s2[o + 1]) * p; b = s2[o + 2] + (b - s2[o + 2]) * p; }
+        }
+      }
+      const k4 = i * 4; od[k4] = r; od[k4 + 1] = gg; od[k4 + 2] = b; od[k4 + 3] = 255;
+      kd[((H - 1 - y) * W + x) * 4] = kind * 40;
+    }
+    B.g2.putImageData(B.id, 0, 0); B.tex.needsUpdate = true; B.ktex.needsUpdate = true;
+  }
+  function stepRoof(dt) {
+    const B = ROOF; if (reduced || B.state < 0) return;
+    if (B.t < 0) {
+      B.since += dt;
+      const blow = gust.on && gust.phase === 'push' && !gust.legacy && B.seen !== gust.t0;   // a gust reaching its push (each once)
+      if (!blow) return;
+      B.seen = gust.t0;
+      if (!B.state && B.tries++ < 40) roofInit();
+      if (B.state !== 1 || B.since < 1.5) return;
+      if (camera.right < B.x0 || camera.left > B.x0 + B.W || -camera.top > B.y0 + B.H || -camera.bottom < B.y0) return;   // (out of the frame: not now)
+      if (PW.on && !B.A.CU) {                          // (the power out: the unlit layer's pixels, once it is in)
+        const ui = PW.ready && PW.unlit && PW.unlit.image; if (!ui || !ui.complete || !ui.naturalWidth) return;
+        B.A.CU = roofRead(ui, B.x0, B.y0, B.W, B.H);
+      }
+      roofSetup();
+      B.t = 0; B.acc = 1; B.dur = Math.min(4, Math.max(1.5, gust.dur - 0.4));
+      B.P = treeGust(B.dur); const a = 0.45 + 0.4 * Math.min(1.35, gust.peak); for (const q of B.P) q.a *= a;
+      B.tab = treeTables(B.dur, B.P);
+      return;
+    }
+    B.t += dt; B.acc += dt;
+    if (B.acc >= 1 / 24) { B.acc = 0; roofCompute(B.t); B.mesh.visible = true; }   // 24 pictures a second
+    if (B.t >= B.dur + 0.5) { B.t = -1; B.since = 0; B.mesh.visible = false; }   // (its ringing out, then nothing of it on screen)
+  }
+  FEAT.push(stepRoof);
   // ==== end of ROOF ====
 
   new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(hero);
