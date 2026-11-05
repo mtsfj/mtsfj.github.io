@@ -9160,14 +9160,14 @@
   }
   const DRN_VS = 'uniform vec4 uCell; varying vec2 vUv, vW;\n'
     + 'void main() { vUv = uCell.xy + uv * uCell.zw; vec4 w = modelMatrix * vec4(position, 1.0); vW = vec2(w.x, -w.y); gl_Position = projectionMatrix * viewMatrix * w; }';
-  const DRN_FS = `uniform sampler2D tA, tN, tLit, tWet; uniform vec4 uCam; uniform vec3 uQ; uniform float uLit, uMode, uW, uLed, uFlip, uGain, uLamp, uH; uniform vec3 uSh; uniform vec4 uPole[10];
+  const DRN_FS = `uniform sampler2D tA, tN, tLit, tWet; uniform vec4 uCam; uniform vec3 uQ; uniform float uLit, uMode, uW, uLed, uFlip, uGain, uLamp, uH, uIR; uniform vec3 uSh; uniform vec4 uPole[13];
     varying vec2 vUv, vW;
     /*NRH*/
     vec3 lt(vec2 p) { vec2 uv = vec2((p.x - uCam.x) / (uCam.y - uCam.x), (uCam.w - p.y) / (uCam.w - uCam.z)); return pow(texture2D(tLit, clamp(uv, 0.001, 0.999)).rgb, vec3(2.2)); }
     void main() {
       vec2 p = floor(vW) + 0.5; float Z = uQ.z;
       // behind the pole, behind the left facades (their plane 5.49 m left of the eye, down to its foot; the alley's mouth open)
-      if (Z > 9.95) for (int i = 0; i < 10; i++) { vec4 r = uPole[i]; if (p.y >= r.x && p.y < r.y + 1.0 && p.x >= r.z && p.x < r.w + 1.0) discard; }
+      if (Z > 9.95) for (int i = 0; i < 13; i++) { vec4 r = uPole[i]; if (p.y >= r.x && p.y < r.y + 1.0 && p.x >= r.z && p.x < r.w + 1.0) discard; }   // (all its rows, to its foot: the body never goes below 719, its reflection does)
       if (p.x < 504.0 && p.y < 615.0 + 0.2575 * (700.0 - p.x) && 5268.0 / (700.0 - p.x) < Z && !(p.x >= 352.0 && p.x < 398.0 && p.y >= 565.0 && p.y < 707.0)) discard;
       if (uMode > 1.5) {                         // its contact shadow: two steps, whole pixels
         // (a soft body shadow, its half width and its shift toward the tail uSh.xy; under each wheel a dark contact, uSh.z apart)
@@ -9211,6 +9211,10 @@
         c += Hm * sp * pow(1.0 - nz, 1.5);
       }
       if (cls > 1.5 && cls < 2.5) c += 0.5 * max(max(Lf, Rt), max(B, F));   // the lens: a glint of the brightest round it
+      if (uIR > 0.0) {                           // (the tracking camera's own infrared flood, its PTZ view only: the drone reads in it, its black
+        float dl = dot(ab, vec3(0.3333)), sh = (0.12 + 0.46 * nz + 0.2 * up) * (0.38 + 0.62 * dl / (dl + 0.012));   // plastics grey as they are in the
+        c = mix(c, vec3(sh) * (cls > 1.5 && cls < 2.5 ? 1.5 : 1.0), uIR);   // infrared, lit from the lens: what faces it brighter, the lens a glint)
+      }
       c = pow(min(c, vec3(1.0)), vec3(1.0 / 2.2));
       if (cls > 3.5) c = a.rgb * uLed;           // its status lights: its own, green (its battery's, not the street's: the red night leaves them)
       float al = 1.0;
@@ -9223,9 +9227,9 @@
     }`;
   (function () {
     const cam0 = new THREE.Vector4(0, IW, 0, IH), poles = [];
-    for (let i = 0; i < 10; i++) { const r = COCC.pole.runs[i] || [-9, -9, -9, -9]; poles.push(new THREE.Vector4(r[0], r[1], r[2], r[3])); }
+    for (let i = 0; i < 13; i++) { const r = COCC.pole.runs[i] || [-9, -9, -9, -9]; poles.push(new THREE.Vector4(r[0], r[1], r[2], r[3])); }
     const tA = crispLate('assets/r6_drone.webp?v=2', 'r6'), tN = crispLate('assets/r6_drone_n.webp?v=2', 'r6');
-    const U = { tA: { value: tA }, tN: { value: tN }, uQ: { value: new THREE.Vector3() }, uW: { value: 10 }, uLed: { value: 0 }, uFlip: { value: 1 }, uGain: { value: 1.8 }, uLamp: { value: 0 }, uH: { value: 0 }, uSh: { value: new THREE.Vector3(0.58, 0, 0.42) }, uPole: { value: poles },
+    const U = { tA: { value: tA }, tN: { value: tN }, uQ: { value: new THREE.Vector3() }, uW: { value: 10 }, uLed: { value: 0 }, uFlip: { value: 1 }, uGain: { value: 1.8 }, uLamp: { value: 0 }, uH: { value: 0 }, uIR: { value: 0 }, uSh: { value: new THREE.Vector3(0.58, 0, 0.42) }, uPole: { value: poles },
       tLit: { get value() { try { return WET.on && WET.rt ? WET.rt.texture : null; } catch (e) { return null; } } },
       uCam: { get value() { try { return WET.mesh.material.uniforms.uCam.value; } catch (e) { return cam0; } } },
       uLit: { get value() { try { return WET.on && WET.loaded >= 2 ? 1 : 0; } catch (e) { return 0; } } },
@@ -9289,8 +9293,11 @@
     }
     if ((D.lt += dt) > 20) { D.lt = 0; STAGE.ask('drone', 30); }   // (its lane kept while it is out)
     const S = D.r.s[D.i];
-    if (!S) { drnOff(); return; }
-    if (S[0] === 'go') {
+    if (!S) {                                      // (its route done: on along its heading until it is out of the frame)
+      D.v = Math.min(D.V, D.v + 1.6 * dt); const ds = D.v * dt;
+      D.X += Math.sin(D.a) * ds; D.Z += Math.cos(D.a) * ds; D.roll += ds / 0.054;
+      if (D.Z < 2) { drnOff(); return; }
+    } else if (S[0] === 'go') {
       const dx = S[1] - D.X, dz = S[2] - D.Z, dist = Math.hypot(dx, dz), to = Math.atan2(dx, dz), N = D.r.s[D.i + 1];
       if (D.st !== 'roll' && Math.abs(angTo(D.a, to)) > 0.3 && D.v < 0.05) { drnTurn(to, dt); }   // (first face the way)
       else {
@@ -9315,7 +9322,8 @@
     D.led = 1;                                     // (its status lights: on while it is out)
     drnDraw();
     if (camera.right - camera.left < 900 && D.gx > camera.left + 10 && D.gx < camera.right - 10 && !drnHidden()) PAN.wait = Math.max(PAN.wait, 0.5);   // (a phone's drifting view holds on it)
-    if (D.gy - 0.2 * CF / D.Z > IH + 2) drnOff();   // (out at the bottom of the frame)
+    const L = D.lv;                                // (out of the frame, the whole sprite: its top below, or its side past an edge)
+    if (Math.round(D.gy) - L[5] > IH || Math.round(D.gx) + L[2] < 0 || Math.round(D.gx) - L[2] > IW) drnOff();
   }
   function drnHidden() {                         // (behind the pole, or still behind the left facades: not to be clicked there)
     const D = DRN, x = D.gx, y = D.gy;
@@ -9467,7 +9475,8 @@
     if (R6M.src.width !== sw || R6M.src.height !== sh) { R6M.src.width = sw; R6M.src.height = sh; R6M.img = R6M.sg.createImageData(sw, sh); }
     const fv = flyer.visible; flyer.visible = false;   // (the flyer drops in front of the street's lens, not theirs)
     const prev = renderer.getRenderTarget(), sv = r6Lit(x, y, w, h);
-    renderer.setRenderTarget(R6M.rt); renderer.render(scene, C); renderer.setRenderTarget(prev);
+    if (R6M.cam === 6) DRN.m.U.uIR.value = 0.45 + 0.35 * r6IR();   // (the PTZ's own infrared on its target, more after dark)
+    renderer.setRenderTarget(R6M.rt); renderer.render(scene, C); renderer.setRenderTarget(prev); DRN.m.U.uIR.value = 0;
     if (sv) { WET.rt = sv.rt; sv.u.tScene.value = sv.ts; sv.u.uCam.value.copy(sv.cam); RAIN.U.uCam.value.copy(sv.rc); RAIN.U.tLight.value = sv.rl; }
     flyer.visible = fv;
     renderer.readRenderTargetPixels(R6M.rt, 0, 0, w, h, R6M.buf);
@@ -9514,7 +9523,8 @@
     const g = R6M.g, W = R6M.W, H = R6M.H, k = R6M.k;
     g.imageSmoothingEnabled = false; g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     const sw = R6M.sw > 0 || R6M.lost >= 0;
-    if (!sw) g.drawImage(R6M.src, 0, 0, R6M.src.width * R6M.ks, R6M.src.height * R6M.ks);
+    if (R6M.lost < 0) g.drawImage(R6M.src, 0, 0, R6M.src.width * R6M.ks, R6M.src.height * R6M.ks);   // (a switch: the new camera's picture under its static, with its name)
+    else { g.fillStyle = '#000'; g.fillRect(0, 0, W, H); }   // (the signal lost: static on black)
     g.globalAlpha = sw ? 1 : 0.5; g.drawImage(R6M.noise[reduced ? 0 : (R6M.tick++ & 3)], 0, 0, R6M.src.width, R6M.src.height, 0, 0, R6M.src.width * R6M.ks, R6M.src.height * R6M.ks);   // (its grain at the sensor's px)
     if (sw) { g.globalAlpha = 0.55; g.fillStyle = '#000'; g.fillRect(0, 0, W, H); for (let i = 0; i < 5; i++) { g.globalAlpha = 0.25; g.fillStyle = '#fff'; g.fillRect(0, Math.random() * H, W, 2 + Math.random() * H * 0.04); } }
     g.globalAlpha = 1;
@@ -9530,7 +9540,12 @@
       for (const [cx, cy, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) {
         g.fillRect(sx > 0 ? cx : cx - L, sy > 0 ? cy : cy - u, L, u); g.fillRect(sx > 0 ? cx : cx - u, sy > 0 ? cy : cy - L, u, L);
       }
-      g.font = Math.round(16 * R6M.dpr) + 'px Silkscreen, monospace'; g.textBaseline = 'bottom'; g.fillText('TRK', x0, y0 - u);
+      g.font = Math.round(16 * R6M.dpr) + 'px Silkscreen, monospace'; g.textBaseline = 'bottom';
+      const tw = Math.ceil(g.measureText('TRK').width), th = Math.round(16 * R6M.dpr), cr = R6M.cv.getBoundingClientRect(), sk = W / Math.max(1, cr.width), osd = [];
+      for (const e of r6m.querySelectorAll('.r6m-osd > span')) { if (e.hidden) continue; const r = e.getBoundingClientRect(); if (r.width) osd.push([(r.left - cr.left) * sk - u, (r.top - cr.top) * sk - u, (r.right - cr.left) * sk + u, (r.bottom - cr.top) * sk + u]); }
+      const clear = (x, y) => x >= 0 && x + tw <= W && y - th >= 0 && y <= H && osd.every((b) => x + tw < b[0] || x > b[2] || y < b[1] || y - th > b[3]);
+      const at = [[x0, y0 - u], [x0, y1 + th + u], [x1 - tw, y0 - u], [x1 - tw, y1 + th + u], [x1 + 2 * u, y0 + th], [x0 - tw - 2 * u, y0 + th]].find(([x, y]) => clear(x, y));   // (its tag: above its box, else below, else beside: never over the camera's own text)
+      if (at) g.fillText('TRK', at[0], at[1]);
     }
   }
   function r6Osd(full) {                         // the camera's number and name, the date, the street's hour, REC, the mode
@@ -9561,7 +9576,7 @@
     if (i === 6 && !DRN.on) return;
     if (i === 6) { R6M.track[0] = DRN.gx - 66; R6M.track[1] = DRN.gy - 0.45 * DRN.w - 49.5; }
     R6M.cam = i; R6M.lost = -1; R6M.sw = reduced ? 0 : 0.22; r6Osd(true); r6Say();
-    if (reduced) r6Feed(0);
+    if (R6M.open) r6Feed(reduced ? 0 : t);       // (its picture now, with its name: never the old one under the new name)
   }
   function r6Step(d) { const n = DRN.on ? 7 : 6; r6Go(((R6M.cam + d) % n + n) % n); }
   function r6Lost() { if (!R6M.open) return; R6M.lost = 0; r6Osd(true); if (reduced) { R6M.lost = -1; r6Go(0); } }
