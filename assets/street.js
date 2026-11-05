@@ -10360,6 +10360,149 @@
   FEAT.push(stepRoof);
   // ==== end of ROOF ====
 
+  // ---- the dagashi-ya's obaa-chan (tools/dagashi_obaachan.py, from the owner's sheet), in the shop of tools/dagashi_interior.py (a
+  // small 3D model seen by the street's eye): behind her counter, at her depth (Z 26.45 m: 53 px a metre, 79 px standing), the
+  // counter's top cutting her at her forearms, the left door's stile and the far post in front of her, her elbow seen through the
+  // left door's glass (DGO.V: what of her shows at her depth, from the model; the glass, its sheen, as on the room behind it).
+  // DGO: her atlas cells [sx, sy, w, h, ax, ay] (ay: the counter's row seated, the soles' standing; the dark row DGO.dark below,
+  // her in the shop's dark), her seat (x, the counter's row), her standing row, her walk (w0..w5 and the steps that keep a planted
+  // foot on its pixel), her trip to the shelf (its first frame and how many: the same frames there and back, so she comes back to
+  // her very pixel), the shelf's x, how much higher she stands than she sits. She is there while the shop is open (openK); as it
+  // shuts she gets up and walks off to the back of the house, left, past the glass; in the morning she comes back the same way (a
+  // driven hour, the first frame, reduced motion: there or gone at once). Her day, timed in code: seated, she looks at the street
+  // (s0), now and then smiles, her eyes closed (s1), breathes (a pixel, every 4 s or so); now and then she fans herself (s2, the
+  // fan beating), slides her abacus's beads (a0, a1), holds a candy out to a child at the counter and laughs (c0, l0), or dozes,
+  // her chin on her hand (s3: most in the early afternoon and the late evening). Rarely she gets up, walks over to the shelf seen
+  // through the glass, turns her back (b0) and reaches up to it (r0), or stands there with her long stick (k0), and comes back
+  // (STAGE: her place while she is up). Lit by the shop (the comp's level and its power; red in the red night, as its light), in
+  // its dark in a power cut. Reduced motion: seated, still ----
+  const DGO = {"cells":{"s0":[0,0,46,50,21,47],"s1":[47,0,46,50,21,47],"s2":[94,0,47,50,20,47],"s3":[142,0,46,46,22,43],"a0":[189,0,47,50,24,47],"a1":[237,0,48,50,24,47],"c0":[286,0,44,49,20,46],"l0":[331,0,47,48,22,45],"b0":[379,0,42,81,21,81],"r0":[422,0,42,83,17,83],"k0":[465,0,45,81,22,81],"w0":[511,0,41,80,17,80],"w1":[553,0,41,78,17,78],"w2":[595,0,42,77,17,77],"w3":[638,0,46,77,20,77],"w4":[685,0,46,78,20,78],"w5":[732,0,44,78,19,78],"s2b":[777,0,47,50,20,47]},"dark":84,"V":[825,0,82,220,146,525],"seat":[192,655],"stand":676,"shelf":164,"trip":[0,7],"walk":["w0","w1","w2","w3","w4","w5"],"step":[4,8,2,6,4,0],"rise":12,"z":26.45,"ppm":52.93};   // (tools/dagashi_obaachan.py)
+  const OBA = { img: new Image(), A: null, V: null, st: 'gone', act: 'idle', t: 0, dur: 6, f: 's0', ft: 0, ab: false, look: 0, br: 0, brT: 3,
+    x: 0, flip: false, next: '', stick: false, path: null, pi: 0, then: null, trip: 60 + Math.random() * 90, hk0: -1, sig: '',
+    shop: comps.find((c) => c.userData.name === 'win_z7_shop'), pe: null };
+  const OBA_AT = [[140, 555, 222, 680]];                                     // (her place while she is up, STAGE: the glass, the stick into the opening)
+  OBA.img.src = 'assets/dagashi_obaachan.webp';
+  (function () {
+    const V = DGO.V || [0, 0, 1, 1, 0, 0], W = V[2], H = V[3];
+    const mk = (z, kind) => {
+      const c = document.createElement('canvas'); c.width = W; c.height = H;
+      const tex = new THREE.CanvasTexture(c); tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
+      m.position.set(V[4] + W / 2, -(V[5] + H / 2), z); m.visible = false; scene.add(m); gradeSprite(m.material, kind);
+      return { c, g: c.getContext('2d'), tex, m, id: null };
+    };
+    OBA.out = [mk(1.1005, 'street'), mk(1.1006, 'self')];                    // (in the shop's dark; lit by it: over the shop's comp, 1.1)
+  })();
+  OBA.img.onload = () => {
+    try {
+      const im = OBA.img, c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+      const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0);
+      OBA.A = g.getImageData(0, 0, im.width, im.height); OBA.V = g.getImageData(DGO.V[0], DGO.V[1], DGO.V[2], DGO.V[3]).data;
+      for (const o of OBA.out) o.id = o.g.createImageData(DGO.V[2], DGO.V[3]);
+    } catch (e) { OBA.A = null; }
+    if (reduced) requestAnimationFrame(() => frame());                      // (no loop then: her first picture)
+  };
+  function obaDraw(key, x, y, flip) {          // her frame into both pictures: cut by what is before her, behind the glass as the room
+    const sig = key + x + ',' + y + (flip ? 'f' : ''); if (sig === OBA.sig) return; OBA.sig = sig;
+    const [sx, sy, w, h, ax, ay] = DGO.cells[key], A = OBA.A.data, AW = OBA.A.width, V = OBA.V, [, , W, H, X0, Y0] = DGO.V;
+    const x0 = Math.round(x) - (flip ? w - ax : ax) - X0, y0 = Math.round(y) - ay - Y0;
+    for (let k = 0; k < 2; k++) {
+      const d = OBA.out[k].id.data; d.fill(0);
+      for (let i = 0; i < h; i++) {
+        const Y = y0 + i; if (Y < 0 || Y >= H) continue;
+        for (let j = 0; j < w; j++) {
+          const X = x0 + j; if (X < 0 || X >= W) continue;
+          const s = ((sy + i + (k ? 0 : DGO.dark)) * AW + sx + (flip ? w - 1 - j : j)) * 4, v = (Y * W + X) * 4;
+          if (!A[s + 3] || !V[v + 3]) continue;
+          const glass = V[v] > 127, f = glass && k ? 0.92 : 1, add = glass ? V[v + 1] / 40 : 0;   // (behind the glass: dimmer when lit, its sheen)
+          d[v] = A[s] * f + add; d[v + 1] = A[s + 1] * f + add; d[v + 2] = A[s + 2] * f + add; d[v + 3] = 255;
+        }
+      }
+      OBA.out[k].g.putImageData(OBA.out[k].id, 0, 0); OBA.out[k].tex.needsUpdate = true;
+    }
+  }
+  const OBA_STEP = 0.15, OBA_UP = 0.4;                                       // (a frame of her walk, s: about 0.5 m/s, an old lady's ; standing up, sitting down)
+  function obaPath(x, fi, dir, n, xEnd) {     // her walk from (x, frame fi) on, dir -1 left (mirrored) or +1 right: n frames, or until
+    const P = [[DGO.walk[fi], x]], L = DGO.walk.length;   // past xEnd; each frame the body moves by the step that keeps the planted foot
+    for (let k = 0; k < (n || 99); k++) {
+      x += dir * DGO.step[fi]; fi = (fi + 1) % L; P.push([DGO.walk[fi], x]);
+      if (xEnd != null && (x - xEnd) * dir >= 0) break;
+    }
+    return P;
+  }
+  function obaTo(xEnd, fiEnd, dir, xFar) {    // a walk that ends at (xEnd, frame fiEnd), coming from as far as xFar
+    const P = [[DGO.walk[fiEnd], xEnd]], L = DGO.walk.length; let x = xEnd, fi = fiEnd;
+    while ((x - xFar) * dir > 0) { fi = (fi + L - 1) % L; x -= dir * DGO.step[fi]; P.unshift([DGO.walk[fi], x]); }
+    return P;
+  }
+  const obaEnd = () => (DGO.trip[0] + DGO.trip[1]) % DGO.walk.length;      // (the frame she stops in, at the shelf and at her seat)
+  function obaWalk(P, flip, then) { Object.assign(OBA, { st: 'walk', path: P, pi: 0, t: 0, flip, then }); OBA.f = P[0][0]; OBA.x = P[0][1]; }
+  function obaPick() {                         // the next thing she does in her seat, by the hour
+    const h = (CLOCK.h + CLOCK.wake) % 24, nap = (h >= 13 && h < 16) || h >= 20 || h < 1 ? 3 : 0.35;
+    const W = [['idle', 2.2], ['fan', h >= 11 && h < 20 ? 1.2 : 0.6], ['doze', nap], ['abacus', 1.1], ['candy', 0.9], ['trip', OBA.trip <= 0 ? 1.5 : 0]];
+    let r = Math.random() * W.reduce((a, b) => a + b[1], 0);
+    for (const [k, w] of W) { r -= w; if (r <= 0) return k; }
+    return 'idle';
+  }
+  function stepOba(dt) {
+    const O = OBA, ok = O.A && DGO.cells;
+    if (!ok) return;
+    const hk = openK('dagashi'), live = O.hk0 >= 0 && Math.abs(hk - O.hk0) < 0.05 && !reduced; O.hk0 = hk;
+    const want = hk > 0.97, [sx, sy] = DGO.seat;
+    if (O.st === 'gone' && want) {             // (the morning: she comes back from the back of the house, left, to her seat)
+      if (live && STAGE.spot('obaachan', 12, { area: OBA_AT, prio: 2 })) obaWalk(obaTo(sx, obaEnd(), 1, 120), false, () => { O.st = 'down'; O.t = 0; });
+      else { O.st = 'seat'; O.act = 'idle'; O.t = 0; O.dur = 4; }
+    } else if (O.st !== 'gone' && !want && O.st !== 'walk') {   // (closing: she gets up and goes, or is gone)
+      if (live && (O.st === 'seat' || O.st === 'reach')) {
+        STAGE.spot('obaachan', 12, { area: OBA_AT, prio: 2 });
+        if (O.st === 'seat') { O.st = 'up'; O.t = 0; O.next = 'leave'; }
+        else obaWalk(obaPath(O.x, obaEnd(), -1, 0, 120), true, () => { O.st = 'gone'; STAGE.done('obaachan'); });
+      } else if (O.st !== 'up' && O.st !== 'down') { O.st = 'gone'; STAGE.done('obaachan'); }
+    }
+    O.t += dt; O.trip -= dt;
+    if (O.st === 'seat') {
+      if (!reduced && (O.brT -= dt) < 0) { const z = O.act === 'doze'; O.br = O.br ? 0 : 1; O.brT = O.br ? (z ? 1.3 : 0.45) : (z ? 1.9 : 3.2 + Math.random() * 1.6); }   // (a breath: up a pixel; slower asleep)
+      if (reduced) { O.f = 's0'; O.br = 0; }
+      else if (O.act === 'idle') {
+        O.f = O.look > 0 ? 's1' : 's0'; O.look -= dt;
+        if (O.look < -4 && Math.random() < dt * 0.25) O.look = 1.5 + Math.random() * 1.5;   // (a smile, her eyes closed)
+      } else if (O.act === 'fan') { O.f = Math.floor(O.t / 0.17) % 2 ? 's2b' : 's2'; }
+      else if (O.act === 'doze') O.f = 's3';    // (her chin on her hand)
+      else if (O.act === 'abacus') { if ((O.ft -= dt) < 0) { O.ft = 0.3 + Math.random() * 0.45; O.ab = !O.ab; } O.f = O.ab ? 'a1' : 'a0'; }   // (the beads slid)
+      else if (O.act === 'candy') { O.f = O.t < O.dur - 1.3 ? 'c0' : 'l0'; }   // (held out to a child at the counter; then she laughs)
+      if (!reduced && O.t > O.dur) {
+        const k = obaPick();
+        if (k === 'trip') {
+          if (STAGE.spot('obaachan', 12, { area: OBA_AT })) { O.st = 'up'; O.t = 0; O.next = 'shelf'; O.trip = 90 + Math.random() * 150; }
+          else { O.trip = 4 + Math.random() * 4; O.t = 0; O.dur = 3; }
+        } else {
+          O.act = k; O.t = 0;
+          O.dur = k === 'idle' ? 5 + Math.random() * 9 : k === 'fan' ? 3 + Math.random() * 4 : k === 'doze' ? 14 + Math.random() * 26 : k === 'abacus' ? 6 + Math.random() * 7 : 3.6;
+        }
+      }
+      obaDraw(O.f, sx, sy - O.br, false);
+    } else if (O.st === 'up' || O.st === 'down') {   // (standing up from her seat, sitting down: the counter hides her as she rises)
+      const k = Math.min(1, O.t / OBA_UP), off = Math.round(DGO.rise * (O.st === 'up' ? 1 - k : k));
+      O.flip = O.st === 'up'; obaDraw(DGO.walk[O.flip ? DGO.trip[0] : obaEnd()], sx, DGO.stand + off, O.flip); O.x = sx;   // (up: the first frame
+                                                                             // of her walk off, left; down: the last of her walk back)
+      if (k >= 1 && O.st === 'down') { O.st = 'seat'; O.act = 'idle'; O.t = 0; O.dur = 4 + Math.random() * 4; STAGE.done('obaachan'); }
+      else if (k >= 1 && O.next === 'leave') obaWalk(obaPath(sx, DGO.trip[0], -1, 0, 120), true, () => { O.st = 'gone'; STAGE.done('obaachan'); });
+      else if (k >= 1) obaWalk(obaPath(sx, DGO.trip[0], -1, DGO.trip[1]), true, () => { O.st = 'reach'; O.t = 0; O.stick = Math.random() < 0.4; O.dur = 2.6 + Math.random() * 1.8; });
+    } else if (O.st === 'walk') {
+      if (O.t >= OBA_STEP) { O.t -= OBA_STEP; O.pi++; if (O.pi >= O.path.length) { O.pi = O.path.length - 1; O.then(); } }
+      if (O.st === 'walk') { [O.f, O.x] = O.path[O.pi]; obaDraw(O.f, O.x, DGO.stand, O.flip); }
+    } else if (O.st === 'reach') {               // (at the shelf: she turns her back to us, reaches up to it, or stands there with her long stick)
+      obaDraw(O.t < 0.45 || O.t > O.dur - 0.5 ? 'b0' : O.stick ? 'k0' : 'r0', O.x, DGO.stand, false);
+      if (O.t > O.dur) obaWalk(obaPath(O.x, DGO.trip[0], 1, DGO.trip[1]), false, () => { O.st = 'down'; O.t = 0; });
+    }
+    if (O.st === 'gone') { for (const o of OBA.out) o.m.visible = false; return; }
+    if (!O.pe && PW.on && PW.list) O.pe = PW.list.find((e) => e.o === O.shop) || null;
+    const lv = (O.shop ? O.shop.material.opacity : 1) * (PW.on && O.pe ? O.pe.p : 1);   // (the shop's light on her: its level, its power)
+    OBA.out[0].m.visible = true; OBA.out[1].m.material.opacity = lv; OBA.out[1].m.visible = lv > 0.004;
+  }
+  FEAT.push(stepOba);
+  // ==== end of DGO ====
+
   new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(hero);
   if (reduced) window.addEventListener('resize', () => frame());   // (no loop then: the title and the window follow a resize at once)
   frame();
