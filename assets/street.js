@@ -571,27 +571,100 @@
   // ordinary starts, except the names in cast (the opening's beats: ['bbus', 'oden'], or '*' for everyone), which
   // start freely; release(reason) opens it. due(name, seconds) is a street event's idle timer: unchanged, or 0 for the
   // pull-in (the soonest due within 4 min; a parked timer never is; the sky keeps its own rhythm).
-  // Under reduced motion nothing asks (no event starts). stats: the answers, for the debug page ----
+  // Its places (no two events in the same place on screen, none hiding another): an ask may say where its event will be,
+  // o.area: [x0, y0, x1, y1] rects in scene px over its course (o.sky: behind the buildings, the rects cut to the sky over
+  // the skyline, where it can be seen), and o.sweep: how fast a moving event's area may move, [left, right, up, down] px/s
+  // (it keeps its place up to date with place(name, area)). A start whose area meets a live reservation's (that one grown
+  // by its sweep over the seconds asked) is refused, whatever the lane; spot(name, seconds, o) reserves a place with no lane
+  // nor spacing (a figure at a window, the yo-yo's trick, a show in the sky; o.soft: the cat's, which never refuses, it goes
+  // in; o.own: the event's own other place, which it may meet: the skydivers leaving their bus); free(area, seconds, o) only looks. A called ask (prio 2) first asks what is in its way to give way, each by its own
+  // yield (onYield(name, fn): the drone back to cover or off toward us, the walker's Gommage, the cat in, the Battle Bus up
+  // and away, the yo-yo back in his hand; o.bump: only the soft ones, the TranZit over the cat), and starts once the place
+  // is clear: its caller asks again meanwhile. hold(reason, cast, area): the set closes over area too, what is in it gives
+  // way (evict). A reservation goes with done(name) (done(name, true): the lane freed, the place kept for what the event
+  // leaves on the road), or runs out as the lane's does.
+  // Under reduced motion nothing asks (no event starts). stats: the answers; state.res: the places, for the debug page ----
   const STAGE = {
     GAP: 15, MAX: 45, PULLMAX: 240, on: { street: null, sky: null }, holds: new Map(), last: 0, lastS: 0, end: 0, q: {}, log: [], pulled: null, lastPulled: null,
-    stats: { yes: 0, hold: 0, busy: 0, gap: 0, pull: 0 },
+    res: {}, ylds: {}, blk: null,
+    stats: { yes: 0, hold: 0, busy: 0, gap: 0, pull: 0, place: 0, yld: 0 },
     _tick() { for (const lane of ['street', 'sky']) { const c = this.on[lane]; if (c && t >= c.until) { this.on[lane] = null; if (lane === 'street') this.end = c.until; } } },
     _cast(name) { for (const c of this.holds.values()) if (c === '*' || (c && c.indexOf(name) >= 0)) return true; return false; },
+    _sky(A) {                                                               // rects cut to the sky over the skyline (its 8 px columns, close ones merged)
+      const L = [];
+      for (const [x0, y0, x1, y1] of A) {
+        let cur = null;
+        for (let c = Math.max(0, Math.floor(x0 / 8)); c <= Math.min(181, Math.floor((x1 - 0.001) / 8)); c++) {
+          const a = Math.max(x0, c * 8), b = Math.min(x1, c * 8 + 8), y = Math.min(y1, SKYLINE[c]);
+          if (y <= y0 || b <= a) { cur = null; continue; }
+          if (cur && Math.abs(cur[3] - y) <= 6) { cur[2] = b; cur[3] = Math.max(cur[3], y); } else L.push(cur = [a, y0, b, y]);
+        }
+      }
+      return L;
+    },
+    _area(raw, sky, g) {                                                     // its rects, grown by g = [left, right, up, down] px, cut to the sky if it is behind the buildings
+      const A = g ? raw.map((r) => [r[0] - g[0], r[1] - g[2], r[2] + g[1], r[3] + g[3]]) : raw;
+      return sky ? this._sky(A) : A;
+    },
+    _meet(A, dur, name, call, own) {                                         // the live places in the way of A within dur s (each grown by its sweep meanwhile;
+      const L = [];                                                          // a soft one, the cat's, only in a called ask's way: it never refuses; own: the
+      for (const k in this.res) {                                            // event's own other place, the bus its skydivers leave)
+        const r = this.res[k]; if (t >= r.until) { delete this.res[k]; continue; }
+        if (k === name || k === own || (r.soft && !call)) continue;
+        const d = Math.min(dur, r.until - t), B = r.sw ? this._area(r.raw, r.sky, r.sw.map((v) => v * d)) : r.area;
+        if (B.some((b) => A.some((a) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3]))) L.push(k);
+      }
+      return L;
+    },
+    _yield(k, by) { const r = this.res[k]; if (r && !r.asked && this.ylds[k]) { r.asked = by; this.stats.yld++; try { this.ylds[k](by); } catch (e) {} } },
+    _clear(name, A, dur, call, own) {                                        // nothing in the way? (called, 2: what is there asked to give way first; a bump, 1: the soft only)
+      let L = this._meet(A, dur, name, call, own);
+      if (L.length && call) {
+        for (const k of L) if (call > 1 || this.res[k].soft) this._yield(k, name);
+        L = this._meet(A, dur, name, call, own);                              // (one that gives way at once, the cat: the place is free now)
+      }
+      if (L.length) { this.stats.place++; this.blk = [+t.toFixed(1), name, L.join()]; return false; }
+      return true;
+    },
+    _put(name, o, dur, lane) {
+      const raw = o.area.map((r) => r.slice()), sky = !!o.sky;
+      this.res[name] = { raw, sky, area: this._area(raw, sky), sw: o.sweep || null, until: t + dur, lane: lane || null, soft: !!o.soft };
+    },
+    evict(area, by) {                                                        // (a set closing over a place: what is in it gives way, even behind the roofs a moment, the Battle Bus
+      for (const k in this.res) {                                            // there; the cat, when something comes in front of it)
+        const r = this.res[k]; if (t >= r.until || r.soft || k === by) continue;
+        if (r.raw.some((b) => area.some((a) => a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3]))) this._yield(k, by);
+      }
+    },
     ask(name, seconds, o) {
       this._tick(); o = o || {};
       const lane = o.lane === 'sky' ? 'sky' : 'street', prio = o.prio || 1, cur = this.on[lane], dur = seconds > 0 ? seconds : 30;
-      if (cur && cur.name === name) { cur.until = Math.max(cur.until, t + dur); return true; }   // (on already: its reservation kept)
+      if (cur && cur.name === name) {                                       // (on already: its reservations kept; a new place asked, checked as a start's)
+        if (o.area) { if (!this._clear(name, this._area(o.area, o.sky), dur, prio >= 2 ? 2 : o.bump ? 1 : 0)) return false; this._put(name, o, dur, lane); }
+        cur.until = Math.max(cur.until, t + dur); const r = this.res[name]; if (r) r.until = Math.max(r.until, t + dur); return true;
+      }
       const free = prio >= 2 || this._cast(name);                           // (called, or sent by the script that holds the set)
       if (!free && this.holds.size) { this.stats.hold++; return false; }      // (a closed set)
       if (!free && cur) { this.stats.busy++; return false; }                  // (its lane is taken)
       if (!free && t - this.last < this.GAP) { this.stats.gap++; return false; }   // (too soon after the last start)
+      if (o.area && !this._clear(name, this._area(o.area, o.sky), dur, prio >= 2 ? 2 : o.bump ? 1 : 0)) return false;   // (its place taken, whatever the lane)
       this.on[lane] = { name, until: t + dur, prio }; this.last = t; if (lane === 'street') this.lastS = t; delete this.q[name]; this.stats.yes++;
+      if (o.area) this._put(name, o, dur, lane);
       this.log.push([+t.toFixed(1), name, lane]); if (this.log.length > 60) this.log.shift();
       return true;
     },
-    done(name) {
+    spot(name, seconds, o) {                                                 // a place only: no lane, no spacing (true: it is the event's now)
+      o = o || {}; const dur = seconds > 0 ? seconds : 30, r = this.res[name];
+      if (r && t < r.until) { r.until = Math.max(r.until, t + dur); return true; }
+      if (!this._clear(name, this._area(o.area, o.sky), dur, (o.prio || 1) >= 2 ? 2 : o.bump ? 1 : 0, o.own)) return false;
+      this._put(name, o, dur, null); return true;
+    },
+    place(name, area, sweep) { const r = this.res[name]; if (!r) return; r.raw = area; r.area = this._area(area, r.sky); if (sweep !== undefined) r.sw = sweep; },   // (a moving event: where it is now)
+    free(area, seconds, o) { o = o || {}; return !this._meet(this._area(area, o.sky), seconds || 0, o.name || '').length; },
+    onYield(name, fn) { this.ylds[name] = fn; },
+    done(name, keep) {                                                       // (keep: its lane freed, its place kept a while: what it leaves on the road)
       for (const lane of ['street', 'sky']) { const c = this.on[lane]; if (c && c.name === name) { this.on[lane] = null; if (lane === 'street') this.end = t; } }
-      delete this.q[name];
+      delete this.q[name]; if (!keep) delete this.res[name]; else if (this.res[name]) this.res[name].lane = null;
     },
     due(name, seconds) {
       this._tick(); this.q[name] = [seconds, t];
@@ -607,10 +680,14 @@
       if (best !== name) return seconds;
       this.pulled = { name, t }; this.lastPulled = name; delete this.q[name]; this.stats.pull++; return 0;
     },
-    hold(reason, cast) { this.holds.set(reason, cast || null); },
+    hold(reason, cast, area) { this.holds.set(reason, cast || null); if (area) this.evict(area, reason); },   // (area: the set closes over it, what is there gives way)
     release(reason) { this.holds.delete(reason); },
     get busy() { this._tick(); return !!this.on.street; },
-    get state() { this._tick(); return { on: { street: this.on.street && this.on.street.name, sky: this.on.sky && this.on.sky.name }, holds: [...this.holds.keys()], last: +this.last.toFixed(1), end: +this.end.toFixed(1), stats: Object.assign({}, this.stats), log: this.log.slice(-12) }; }
+    get state() {
+      this._tick(); const res = {};
+      for (const k in this.res) { const r = this.res[k]; if (t < r.until) res[k] = { area: r.area.map((a) => [Math.floor(a[0]), Math.floor(a[1]), Math.ceil(a[2]), Math.ceil(a[3])]), until: +r.until.toFixed(1), lane: r.lane, asked: r.asked || null }; }
+      return { on: { street: this.on.street && this.on.street.name, sky: this.on.sky && this.on.sky.name }, holds: [...this.holds.keys()], last: +this.last.toFixed(1), end: +this.end.toFixed(1), stats: Object.assign({}, this.stats), log: this.log.slice(-12), res, blocked: this.blk };
+    }
   };
   // ---- the Battle Bus (build_zzzbattlebus.py), in the airliner's place: now and then a striped night balloon with the bus
   // slung under it drifts across the dusk, left or right, behind the tower, the tree and the street (the airliner's
@@ -650,10 +727,11 @@
     if (!B.active) {
       B.next -= dt;
       if (B.next >= 0 || reduced || !B.ok) return;
-      if (!STAGE.ask('bbus', 90, { lane: 'sky' })) { B.next = 3 + Math.random() * 4; return; }   // (the director says not now: asked again in a few seconds)
-      B.active = true; B.t = 0; B.dir = Math.random() < 0.5 ? 1 : -1; B.y = 70 + Math.random() * 90;
+      const dir = Math.random() < 0.5 ? 1 : -1, y = 70 + Math.random() * 90, ti = y < 100 ? 0 : y < 130 ? 1 : 2, H = B.tiers[ti].H;   // higher up = farther = smaller
+      if (!STAGE.ask('bbus', 90, { lane: 'sky', sky: true, area: [[-60, y - 11 - (H >> 1), IW + 60, y + 1 + H - (H >> 1)]] })) { B.next = 3 + Math.random() * 4; return; }   // (the director says not now: asked again in a few seconds; its place: its band of sky)
+      B.active = true; B.t = 0; B.dir = dir; B.y = y; B.yv = -1;
       B.v = (IW + 280) / (55 + Math.random() * 30);                    // px/s: the airliner's crossing, 55-85 s over the same stretch
-      B.ti = B.y < 100 ? 0 : B.y < 130 ? 1 : 2;                // higher up = farther = smaller
+      B.ti = ti;
       B.ps = 4 + Math.random() * 2; B.p0 = Math.random() * 6.283; B.pb = Math.random() * 6.283; B.tb = 7 + Math.random() * 3;
       for (let i = 0; i < 4; i++) B.sd[i] = Math.random() * 100;
       B.dipN = [6 + Math.random() * 14, 8 + Math.random() * 16, 10 + Math.random() * 20]; B.dip = [0, 0, 0];
@@ -663,7 +741,8 @@
     const T = B.tiers[B.ti], span = IW + 48;
     B.t += dt;
     const trav = B.v * B.t;
-    if (trav >= span) { B.active = false; T.mesh.visible = false; B.x = -999; B.next = 150 + Math.random() * 150; STAGE.done('bbus'); return; }   // (2 crossings in 10 min, not 4-5)
+    if (B.yv >= 0) { B.yv = Math.min(40, B.yv + 30 * dt); B.y -= B.yv * dt; }   // (giving way: its burner fired, it climbs away)
+    if (trav >= span || (B.yv >= 0 && B.y < -T.H)) { B.active = false; T.mesh.visible = false; B.x = -999; B.next = 150 + Math.random() * 150; STAGE.done('bbus'); return; }   // (2 crossings in 10 min, not 4-5)
     B.x = B.dir > 0 ? -24 + trav : IW + 24 - trav;
     // the pendulum (five poses) and the envelope's bob; the rim on the side that faces the glow, crossfaded in eighths
     const k = Math.round(2 * Math.sin(B.t / B.ps * 6.2832 + B.p0)), up = Math.sin(B.t / B.tb * 6.2832 + B.pb) > 0.4 ? 1 : 0;
@@ -687,8 +766,10 @@
     // whole pixels: its axis column at ix, its centre row at iy (it climbs a little over the crossing, as the airliner did)
     const ix = Math.round(B.x), iy = Math.round(B.y - Math.min(1, trav / span) * 10);
     T.mesh.position.set(ix - T.AX + T.W / 2, -(iy - (T.H >> 1) + T.H / 2), -1);
+    STAGE.place('bbus', [[ix - T.AX - 1, iy - (T.H >> 1) - 1, ix - T.AX + T.W + 1, iy - (T.H >> 1) + T.H + 1]], [B.dir < 0 ? B.v + 1 : 1, B.dir > 0 ? B.v + 1 : 1, B.yv >= 0 ? 41 : 1, 1]);   // (its place: where it is, how fast it goes and where)
     T.mesh.scale.x = B.dir;
   }
+  STAGE.onYield('bbus', () => { const B = BBUS; if (B.active && B.yv < 0) { B.yv = 0; B.fl = 1; B.fn = 8 + Math.random() * 12; } });   // (a show called in its sky: its burner fires and it climbs away out of the frame)
 
   // ---- the Battle Bus's passengers (not one of the counted secrets): click the bus (its pixels, a pixel round them, three for a
   // finger; nothing where the street, the tree or the front pixels cover it) and its door opens: two to four tiny skydivers
@@ -801,12 +882,12 @@
       G.door = [B.dir > 0 ? left + d[0] : left + T.W - d[0], top + d[1]]; G.bv = B.dir * B.v;
     }
     if (!G.run) return;
-    let live = 0;
+    let live = 0, x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     for (const F of G.figs) {
       if (!F.on) continue;
       F.age += dt;
       const tau = F.age - F.te;
-      if (tau < 0) { live++; continue; }                                              // not out yet
+      if (tau < 0) { live++; x0 = Math.min(x0, G.door[0] - GLX); y0 = Math.min(y0, G.door[1] - GLY - 3); x1 = Math.max(x1, G.door[0] - GLX + GLC); y1 = Math.max(y1, G.door[1] + GLC - GLY); continue; }   // not out yet (its place: the door)
       if (tau < 0.1) { F.x = G.door[0]; F.y = G.door[1] - 2.3 * F.u; F.vx = G.bv; F.vy = 0; }   // in the door, going with the bus
       else {
         if (tau < F.td) { F.vy = Math.min(F.vy + 170 * dt, 105); F.vx += (F.f * 4 - F.vx) * (1 - Math.exp(-dt / 1.1)); }   // falling: gravity against a drag, the bus's speed bleeding off
@@ -823,8 +904,10 @@
       for (let i = 0; i < GLC * GLC && !vis; i++) { if (!F.img.data[i * 4 + 3]) continue; const X = X0 + i % GLC, Y = Y0 + (i / GLC | 0); vis = X >= 0 && Y >= 0 && X < IW && Y < IH && !G.st[Y * IW + X]; }
       F.hid = vis ? 0 : F.hid + dt; if (F.hid > 0.4) { F.on = false; F.mesh.visible = false; continue; }   // wholly behind the street (a moment behind a pole is not): done
       F.mesh.position.set(Math.floor(F.x) - GLX + GLC / 2, -(Math.floor(F.y) - GLY + GLC / 2), -0.99); F.mesh.visible = true; live++;
+      x0 = Math.min(x0, X0); y0 = Math.min(y0, Y0); x1 = Math.max(x1, X0 + GLC); y1 = Math.max(y1, Y0 + GLC);
     }
     G.run = live > 0;
+    if (!G.run) STAGE.done('glide'); else if (x1 > x0) { const f = BBUS.dir, fall = G.figs.some((F) => F.on && F.age - F.te < F.td); STAGE.place('glide', [[x0 - 1, y0 - 1, x1 + 1, y1 + 1]], [f < 0 ? 60 : 8, f > 0 ? 60 : 8, 4, fall ? 110 : 42]); }   // (their place: where they are, as fast as they go, ahead and down)
   }
   function gldCherry() {                             // the cherry's pixels in the mountain's layer, as the far layers' shader takes them (skCherry), read once
     if (GLD.ch !== undefined) return GLD.ch;
@@ -883,7 +966,9 @@
   }
   function gldDrop() {                               // the bus's door opens: two to four leave, one after another
     const G = GLD, B = BBUS;
-    if (reduced || !B.active || G.run || G.t < G.next) return false;
+    if (reduced || !B.active || G.run || G.t < G.next || STAGE.holds.has('finale')) return false;
+    const dx = G.door[0], dy = G.door[1], f = B.dir, reach = 60 + 56 * Math.max(4, (Math.min(IH, 470) - dy) / 20);   // (their wedge of sky: down to the skyline at 20 px/s at least, 56 px/s ahead at most)
+    if (!STAGE.spot('glide', 47, { sky: true, own: 'bbus', area: [[f > 0 ? dx - 20 : dx - reach, dy - 14, f > 0 ? dx + reach : dx + 20, IH]] })) return false;   // (something in their way: the door stays shut)
     gldOcc();                                                                         // (the street's skyline, once)                  // (a drop on, or less than 10 s since the last: nothing)
     const n = 2 + Math.floor(Math.random() * 3), shuf = (a) => a.sort(() => Math.random() - 0.5);
     const ord = shuf([0, 1, 2, 3].slice(0, n)), look = shuf([0, 1, 2, 3, 4, 5]), wing = shuf([0, 1, 2, 3, 4, 5]);
@@ -1037,14 +1122,23 @@
       scene.remove(b.glow); b.glow.geometry.dispose(); b.glow.material.map.dispose(); b.glow.material.dispose(); b.shapeDone = b.done = true;
     }
   }
+  // the shows ask their sky first (STAGE, called: the Battle Bus climbs away; a show waits for its place, a moment, half a minute at most)
+  const FWK_KON = [[563, 16, 939, 298], [287, 113, 764, 315], [610, 90, 620, 642], [888, 176, 898, 642], [780, 123, 790, 642]];   // (the bursts, their embers' fall, the beam; the rockets)
+  const FWK_OM = [[610, 56, 858, 334], [674, 56, 746, 290], [700, 104, 717, 642], [726, 60, 740, 642]];
+  function fwkCall(area, dur, go) { FWK.want = { area, dur, go, until: t + 30 }; fwkTry(); }
+  function fwkTry() {
+    const W = FWK.want; if (!W || FWK.active) return;
+    if (STAGE.holds.has('finale')) { if (t > W.until) FWK.want = null; return; }   // (the finale's sky is its own: after it)
+    if (STAGE.spot('fwk', W.dur, { sky: true, prio: 2, area: W.area })) { FWK.want = null; W.go(); } else if (t > W.until) FWK.want = null;
+  }
   function startFireworks() {
-    if (FWK.active || !FWK.pts) return;
+    if (FWK.active || FWK.want || !FWK.pts) return;
     if (reduced) { foundSecret('konami'); fwkStatic(); return; }   // (no loop there: the picture, still)
-    FWK.active = true; FWK.t = 0; foundSecret('konami');
-    FWK.queue = [
+    foundSecret('konami');
+    fwkCall(FWK_KON, 10, () => { FWK.active = true; FWK.t = 0; FWK.queue = [
       { at: 0, P: peony(170, 46, PINK), x: 615, y: 92, s: 1, expl: 0.5, hold: 0.2, fall: 1.3 },
       { at: 0.45, P: peony(150, 40, GOLD), x: 893, y: 178, s: 1, expl: 0.5, hold: 0.2, fall: 1.3 },
-      { at: 1.25, P: FWK.pts, x: 785, y: 125, s: 2.2, mirror: false, expl: 0.7, hold: 2.6, fall: 1.8, glitter: true, beam: true }];
+      { at: 1.25, P: FWK.pts, x: 785, y: 125, s: 2.2, mirror: false, expl: 0.7, hold: 2.6, fall: 1.8, glitter: true, beam: true }]; });
   }
   // ---- the OM flyer's secret: catch it while it falls past the lens, and a firework goes up between the pagoda and the
   // tree. First the Champions League cup, the owner's pixel art (anim/ucl/ucl_trophy.py: cut out of his picture, its
@@ -1076,8 +1170,11 @@
     ['tifo0', 5.0, TIFO[0].x, TIFO[0].y, 2, 0.7, 0, 0, false], ['tifo1', 5.8, TIFO[1].x, TIFO[1].y, 2, 0.7, 0, 0, false],
     ['tifo2', 6.6, TIFO[2].x, TIFO[2].y, 2, 0.7, 0, 0, false]];
   function startOM() {
-    if (FWK.active) return;
+    if (FWK.active || FWK.want) return;
     if (reduced) { omStatic(); return; }
+    fwkCall(FWK_OM, 16, () => { omGo(); });
+  }
+  function omGo() {
     FWK.active = true; FWK.t = 0;                  // (not the Konami secret: this queue is the OM's)
     // the cup alone: it holds 2.3 s, then crumbles in under a second, the top first; the picture: its three salvos hold
     // together 2 s after the last has burst, then let go row by row from the top, a row every 24 ms
@@ -1153,7 +1250,25 @@
   function catchFlyer() {
     if (reduced) { foundSecret('om'); omStatic(); return; }
     flyS.caught = 0; flyS.cx = flyer.position.x; flyS.cy = flyer.position.y; flyS.cr = flyer.rotation.z;
+    const A = [[flyS.cx - 950 - 380, -flyS.cy - 650 - 380, flyS.cx + 330, -flyS.cy + 380]];   // (its way up and off to the left: what can give way does, the yo-yo, the Battle Bus)
+    STAGE.place('flyer', A); STAGE.evict(A, 'flyer'); if (STAGE.res.flyer) STAGE.res.flyer.until = Math.max(STAGE.res.flyer.until, t + 1.5);
     foundSecret('om'); startOM();
+  }
+  // the flyer's place (STAGE): the column of the frame it falls through, its sheet tilted, swinging 70 px, the wind's drift on it.
+  // It falls only when that drift is known: no gust due over its fall (the one blowing, if one blows, is followed to its end)
+  function flyDrift() {
+    const g = gust; if (g.hold > 0 || g.legacy || g.next < 4.4) return -1;
+    const G = { t: g.t, peak: g.peak, hol: g.hol, seed: g.seed, dur: g.dur }; let k = g.k, on = g.on, D = 0;
+    for (let i = 0; i < 264; i++) { let f = 0; if (on) { G.t += 1 / 60; f = gustShape(G); if (G.t >= G.dur) { on = false; f = 0; } } k += (f - k) * Math.min(1, 8 / 60); D += (40 + 260 * Math.max(0, k)) * 0.5 / 60; }
+    return D * 1.08 + 6;
+  }
+  const flyCol = (x, D) => [[x - D - 322, 0, x + 322, IH]];
+  function flyAsk() {                              // a column clear of the others' places (eight tries along the street), else not now
+    const D = flyDrift(); if (D < 0) return false;
+    let x = 460 + Math.random() * 620;
+    for (let i = 0; i < 8; i++) { const c = 460 + Math.random() * 620; if (STAGE.free(flyCol(c, D), 6)) { x = c; break; } }
+    if (!STAGE.ask('flyer', 6, { area: flyCol(x, D) })) return false;
+    flyS.wx = x; return true;
   }
   const KONAMI = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a'];
   let konamiAt = 0;
@@ -1195,7 +1310,7 @@
     if (clbS.t < 0) {                                                   // waiting for the next chance
       clbS.next -= dt;
       if (clbS.next > 0 || (typeof FWK === 'object' && FWK.active)) return;
-      if (!STAGE.ask('climber', 26, { lane: 'sky' })) { clbS.next = 3 + Math.random() * 4; return; }   // (the director: not now)
+      if (!STAGE.ask('climber', 26, { lane: 'sky', sky: true, area: [[604, 246, 641, 273]] })) { clbS.next = 3 + Math.random() * 4; return; }   // (the director: not now; his place: the summit's last slope)
       clbS.t = 0; clbS.i = 0; clbS.shown = -1;
     }
     clbS.t += dt;
@@ -1572,7 +1687,11 @@
   const busPool = busPart('', BUS.pool[0], BUS.pool[1], 0.6455, { map: fogTex, color: 0xffe6c0, blending: THREE.AdditiveBlending, opacity: 0.12 });
   const busShop = comps.find((c) => c.userData.shop);   // the Pokémon Center's shop, under the red awning
   const busS = { active: false, next: 20 + Math.random() * 120, dir: 1, x: 0, v: 0, ang: 0, stop: -1, wait: 0, bob: 0, bobN: 1, k: 1, ev: 0, burst: 0, dip: 0, dipK: 1, drop: 0, hk: 1, hf: 0, crew: false, crewWait: 0, hold: false, call: null, stP: 1, stT: 0, box: 0, tele: -1 };
-  function busOff(keep) { busS.active = false; for (const m of BUS.list) m.visible = false; busZOff(keep); crewOff(); STAGE.done('tranzit'); }   // (keep: the shot lying on the road, the plank; the street free again)
+  function busOff(keep) { busS.active = false; for (const m of BUS.list) m.visible = false; busZOff(keep); crewOff(); STAGE.done('tranzit', keep); }   // (keep: the shot lying on the road, the plank; the street free again, their place kept while they lie there: busZTick)
+  // its place (STAGE): the junction (the bus, its riders over the roof, its beam and pool, the plank on the road); with the crew, the
+  // right half of the street to our side (the horde, its shadows and reflections); the finale's last stand, the street from side to side
+  const BUS_AREA = [[[504, 496, 871, 668]], [[504, 496, 871, 668], [700, 524, IW, IH]], [[0, 496, IW, IH]]];   // (between the near corners: 504 to 870 at its rows; up to a shot rider thrown over its roof)
+  const busRect = (m) => { const p = m.geometry.parameters, w = p.width * Math.abs(m.scale.x) / 2, h = p.height * Math.abs(m.scale.y) / 2; return [m.position.x - w - 1, -m.position.y - h - 1, m.position.x + w + 1, -m.position.y + h + 1]; };
   const busStage = () => { if (t - busS.stT > 30) { busS.stT = t; STAGE.ask('tranzit', 120, { prio: busS.stP }); } };   // (a long stop: its reservation kept ahead)
   function busCrackle(dt) {                        // the tubes: a buzz, stutters, dips, now and then a drop-out (by time slots: the same at any refresh rate)
     const S = busS; S.ev -= dt;
@@ -1601,9 +1720,10 @@
       if (!LATE.ready.bus) { S.next = 1; return; }     // (its sheets not in yet: a second later)
       const C_ = S.call;                             // (called by CREW.api.callBus: its direction, its stop, held there)
       S.stP = C_ ? 2 : 1;                            // (the street director first: a called pass goes through a closed set)
-      if (!STAGE.ask('tranzit', 120, { prio: S.stP })) { S.next = 3 + Math.random() * 4; return; }
-      S.stT = t;
       const due = !C_ && !ZG.due && crewWants();     // (the crew due: this pass heads right, to its stop)
+      const area = BUS_AREA[C_ ? (C_.crew ? (C_.left ? 2 : 1) : 0) : due ? 1 : 0];   // (its place: the cat, at its door at the end of the street, goes in)
+      if (!STAGE.ask('tranzit', 120, { prio: S.stP, bump: true, area })) { S.next = C_ ? 0.5 : 3 + Math.random() * 4; return; }   // (called: asked again soon, once what is in its way has given way)
+      S.stT = t;
       S.dir = C_ ? C_.dir : due ? 1 : Math.random() < 0.5 ? 1 : -1; S.v = BUS.V; S.ang = 0; S.wait = 0; S.bob = 0;
       S.x = S.dir > 0 ? BUS.gap[0] - BUS.W - BUS.beam[0] : BUS.gap[1] + BUS.beam[0];   // its beam comes first round the corner
       if (C_) { S.stop = C_.stopAt; S.crew = C_.crew; S.crewWait = 0; S.hold = C_.hold; S.call = null; S.tz = false; }
@@ -1853,6 +1973,11 @@
       if (p.life <= 0) p.st = 'none';
     }
     zPlankDraw();
+    if (!busS.active && STAGE.res.tranzit) {        // (the bus gone: its place kept while its plank or a shot rider lies on the road)
+      const p = ZS.pl, R = []; if (zPlank.visible) R.push(p.st === 'lying' ? [Math.round(p.x) - 9, Math.round(p.y) - 2, Math.round(p.x) + 9, Math.round(p.y) + 3] : busRect(zPlank));   // (lying: flat, its 2 rows)
+      for (const z of ZP) if (z.on && z.base.visible) R.push(busRect(z.base));
+      if (R.length) { STAGE.place('tranzit', R); STAGE.res.tranzit.until = Math.max(STAGE.res.tranzit.until, t + 1); } else STAGE.done('tranzit');
+    }
     for (const z of ZP) {                          // shot: the drop to the road, a while lying there, gone
       if (!z.on || !z.dying) continue;
       z.t += reduced ? 0 : dt; z.lit = Math.max(0, 1 - z.t * 1.5);   // (out of the saloon's light as it falls; reduced motion: lying at once)
@@ -3293,6 +3418,9 @@
   function stepPower(dt) {                     // the reward's clock: each light's power this frame, the unlit street's
     if (FZ.boot >= 0) { FZ.boot += dt; if (FZ.boot > 0.9 && FZ.state === 'boot') { FZ.state = 'live'; FZ.live = arcS.t; } if (FZ.boot > 3.4) FZ.boot = -1; }
     if (PW.shell) stepShell(dt);
+    if (PW.shWant > 0 && !PW.shell) {             // (its shell asks its sky first, as a show: STAGE)
+      if (STAGE.spot('shell', 4, { sky: true, prio: 2, area: [[863, 62, 947, 168], [901, 100, 909, 334]] })) { PW.shWant = 0; launchShell(); } else if (t > PW.shWant) PW.shWant = 0;
+    }
     if (!PW.on) return;
     if (PW.ext) { PW.ext(dt); return; }      // (the finale's own schedule)
     const u = (PW.u += dt), L = PW.list;
@@ -3304,7 +3432,7 @@
     U.uAmb.value = u < 0.12 ? [1, 0.3, 0.8, 0][(u / 0.03) | 0] : 1;
     for (let k = 0; k < PW_ZONES.length; k++) U.uPow.value[k] = pwAt(PW_ZONES[k][4], k + 1);
     while (PW.zon < PW_ZONES.length && u > (PW_ZONES[PW.zon][4] < 0 ? PW.FAR : PW.W0 + (1456 - PW_ZONES[PW.zon][4]) / PW.V)) { PW.zon++; }
-    if (!PW.shot && u > 3) { PW.shot = true; if (!PW.shell) launchShell(); }
+    if (!PW.shot && u > 3) { PW.shot = true; PW.shWant = t + 30; }
     if (u > PW.END) { PW.on = false; pwShade.visible = false; }
   }
   // ---- the red night (the eleventh's reward) and the eleventh's start. The street's lights go red, their brightness
@@ -3965,7 +4093,7 @@
   function finHold(on) {
     try {
       if (typeof STAGE !== 'undefined' && STAGE && typeof STAGE.hold === 'function') {
-        if (on) STAGE.hold('finale');
+        if (on) STAGE.hold('finale', null, [[-100, -100, IW + 100, IH + 100]]);   // (the set closes over the whole street and its edges: what is out gives way, the drone, the walker, the Battle Bus)
         else {                                   // (over: to the director, a street event that ends now, so its spacing and its
           STAGE.release('finale');               // pull-in count from here, unless the street is still taken: its own end will)
           if (!STAGE.busy) { STAGE.ask('finale', 0.1, { prio: 2 }); STAGE.done('finale'); }
@@ -4061,7 +4189,7 @@
     }
     B.S.geo.attributes.position.needsUpdate = true; B.S.geo.attributes.color.needsUpdate = true;
     B.S.pts.material.opacity = Math.max(0, 1 - fall / 1.3);
-    if (fall > 1.3) { scene.remove(B.S.pts); B.S.geo.dispose(); B.S.pts.material.dispose(); PW.shell = null; }
+    if (fall > 1.3) { scene.remove(B.S.pts); B.S.geo.dispose(); B.S.pts.material.dispose(); PW.shell = null; STAGE.done('shell'); }
   }
   drawArcade();
 
@@ -4551,9 +4679,22 @@
     return G.at;
   }
   function xpGo(to, ph) { XP.from = [XP.x, XP.y]; XP.to = to; XP.dur = Math.max(0.7, Math.min(3, Math.hypot(to[0] - XP.x, to[1] - XP.y) / 150)); XP.t = 0; XP.ph = ph || 'fly'; }
+  const XP_TRY = { hover: [-7, -6, 8, 7], circle: [-23, -14, 23, 6], land: [-6, -10, 15, 21], morse: [-6, -7, 7, 8], climb: [-6, -64, 8, 7], chase: [-6, -6, 7, 7] };   // (round its target, what each try covers)
+  function xpLeg(to, G) {                        // its place for a leg (STAGE): boxes along its arc, and its try at the end; true when it is its own
+    const [x0, y0] = [XP.x, XP.y], [x1, y1] = to, lift = Math.min(60, Math.hypot(x1 - x0, y1 - y0) * 0.18), A = [], d = Math.max(0.7, Math.min(3, Math.hypot(x1 - x0, y1 - y0) / 150));
+    let b = null;
+    for (let i = 0; i <= 16; i++) {
+      const e = i / 16, x = x0 + (x1 - x0) * e, y = y0 + (y1 - y0) * e - lift * 4 * e * (1 - e);
+      if (!b) b = [x, y, x, y]; else { b[0] = Math.min(b[0], x); b[1] = Math.min(b[1], y); b[2] = Math.max(b[2], x); b[3] = Math.max(b[3], y); }
+      if (i % 4 === 0 && i) { A.push([b[0] - 6, b[1] - 6, b[2] + 7, b[3] + 7]); b = [x, y, x, y]; }
+    }
+    if (G) { const k = XP_TRY[G.kind] || XP_TRY.hover; A.push([x1 + k[0], y1 + k[1], x1 + k[2], y1 + k[3]]); }
+    STAGE.done('xp'); return STAGE.spot('xp', d + (G ? G.dur || 6 : 0) + 0.8, { area: A });
+  }
   function xpNext() {
-    if (XP.T >= XP_BUDGET) { xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home'); return; }
-    const [G, why, alp] = xpPick(); XP.g = G; XP.why = why; XP.alp = alp; xpGo(xpTarget(G));
+    if (XP.T >= XP_BUDGET) { if (xpLeg([XP_HOME[0] + 4, XP_HOME[1] - 6], null)) xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home'); else { XP.ph = 'wait'; XP.t = 0; STAGE.spot('xp', 1, { area: [[XP.x - 6, XP.y - 6, XP.x + 7, XP.y + 7]] }); } return; }
+    for (let i = 0; i < 6; i++) { const [G, why, alp] = xpPick(), to = xpTarget(G); if (xpLeg(to, G)) { XP.g = G; XP.why = why; XP.alp = alp; xpGo(to); return; } }
+    XP.ph = 'wait'; XP.t = 0; STAGE.spot('xp', 1, { area: [[XP.x - 6, XP.y - 6, XP.x + 7, XP.y + 7]] });   // (nowhere clear: it hovers a moment where it is)
   }
   function xpRecord(c, note) {                   // an attempt's outcome: its competence (null: none to measure), the log's row
     const G = XP.g; XP.tried[G.id] = true;
@@ -4570,7 +4711,7 @@
       : ['explore.py : un agent autotélique. il choisit ses buts', "selon son progrès d'apprentissage. il est dans la rue."];
     Object.assign(XP, { rows: [], C: {}, tried: {}, flyX: [], T: 0, t: 0, x: XP_HOME[0], y: XP_HOME[1], a: 0, ph: 'out', att: null, fl: null });
     if (reduced) { xpSimulate(); return head.concat([L ? '(reduced motion: it ran in simulation. cat explore.log)' : '(mouvement réduit : il a couru en simulation. cat explore.log)']); }
-    XP.on = true;
+    XP.on = true; STAGE.done('xp'); STAGE.spot('xp', 3, { area: [[XP_HOME[0] - 7, XP_HOME[1] - 13, XP_HOME[0] + 12, XP_HOME[1] + 8]] });   // (its place, STAGE: out of the window first)
     setTimeout(() => closePC(), 1400);
     return head.concat([L ? '(this window closes: watch the street)' : '(cette fenêtre se ferme : regardez la rue)']);
   }
@@ -4590,7 +4731,7 @@
     if (!XP.mesh) xpBuild();
     if (!XP.graded) { XP.graded = true; try { gradeSprite(XP.mesh.material, 'street'); gradeSprite(XP.ledM.material, 'self'); } catch (e) {} }
     XP.T += dt; XP.t += dt;
-    if (FINS.t >= 0 && XP.ph !== 'home' && XP.ph !== 'in' && XP.ph !== 'out') xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home');   // (the finale: home at once)
+    if (FINS.t >= 0 && XP.ph !== 'home' && XP.ph !== 'in' && XP.ph !== 'out') { xpLeg([XP_HOME[0] + 4, XP_HOME[1] - 6], null); xpGo([XP_HOME[0] + 4, XP_HOME[1] - 6], 'home'); }   // (the finale: home at once)
     let led = XP_COL.pink, lv = 1;
     if (XP.ph === 'out') {                       // out of the window: it fades in, rises a little
       XP.a = Math.min(1, XP.t / 0.5); XP.x = XP_HOME[0] + 4 * Math.min(1, XP.t / 0.6); XP.y = XP_HOME[1] - 6 * Math.min(1, XP.t / 0.6);
@@ -4603,9 +4744,11 @@
         if (XP.ph === 'home') { XP.ph = 'in'; XP.t = 0; }
         else { XP.ph = 'try'; XP.t = 0; XP.att = { x0: XP.x, y0: XP.y, d: 1e9, seen: false }; if (XP.g.kind === 'chase') xpFlyer(); }
       }
+    } else if (XP.ph === 'wait') {               // (its way taken: it hovers, then looks again)
+      if (XP.t >= 0.6) xpNext();
     } else if (XP.ph === 'in') {                 // back in through the window
       XP.a = Math.max(0, 1 - XP.t / 0.5); XP.x = XP_HOME[0] + 4 - 4 * Math.min(1, XP.t / 0.5); XP.y = XP_HOME[1] - 6 + 6 * Math.min(1, XP.t / 0.5);
-      if (XP.t >= 0.6) { XP.on = false; XP.mesh.visible = XP.ledM.visible = false; xpSave(); return; }
+      if (XP.t >= 0.6) { XP.on = false; XP.mesh.visible = XP.ledM.visible = false; xpSave(); STAGE.done('xp'); return; }
     } else if (XP.ph === 'try') {
       const G = XP.g, A = XP.att, u = XP.t;
       if (G.kind === 'hover') { XP.x = A.x0 + (Math.sin(u * 7) > 0.6 ? 1 : 0); XP.y = A.y0 + Math.round(Math.sin(u * 3)); if (u >= G.dur) xpRecord(xpComp(G)); }
@@ -4625,7 +4768,7 @@
       } else if (G.kind === 'climb') {           // up toward a star: its ceiling, straining
         const k = Math.min(1, u / 1.2); XP.y = A.y0 - 57 * (1 - (1 - k) * (1 - k)); XP.x = A.x0 + (u > 1.2 ? (Math.sin(u * 40) > 0 ? 1 : 0) : 0);
         if (u >= G.dur) xpRecord(xpComp(G));
-      } else if (G.kind === 'chase') xpChase(dt, u);
+      } else if (G.kind === 'chase') { xpChase(dt, u); STAGE.place('xp', [[XP.x - 6, XP.y - 6, XP.x + 7, XP.y + 7]], [130, 130, 130, 130]); }   // (after the flyer: where it is, as fast as it goes)
     } else if (XP.ph === 'flash') {              // the attempt's outcome: three blinks, then on
       led = XP.fl.col; lv = Math.floor(XP.t / 0.1) % 2 ? 0.2 : 1;
       if (XP.t >= 0.5) xpNext();
@@ -5588,6 +5731,7 @@
     return true;
   }
   const WIN2 = { state: 'off', t: 0, next: 4 + Math.random() * 5, I: [0, 0, 0, 0], acc: 0, shown: true };
+  const NAR_AT = { area: [[WL.x, WL.y, WL.x + WL.w, WL.y + WL.h]] };             // (his place, STAGE: the window)
   const FLICK = [0, 0.75, 0.1, 0.95, 0.35, 1];                                     // a tube catching, step 60 ms
   // the night: from 1 h to 8 h the balcony is dark (openK('balcony'): the hours stay the rule). A few times an hour Naruto, who cannot
   // sleep, lights it for 30-60 s and crosses or stands at the glass (so the four heroes can be found at any hour); never during the
@@ -5607,13 +5751,16 @@
         const tk = W2.t - k * 0.45; if (tk < 0) { W2.I[k] = 0; continue; }
         const f = Math.floor(tk / 0.06); W2.I[k] = f < FLICK.length ? FLICK[f] : 0.95 + 0.05 * Math.sin(W2.t * 1.3 + k);
       }
-      if (!busy && (NAR.next -= dt) < 0 && W2.t > 3 && W2.next - W2.t > 9 && nSheet.complete && nSheet.naturalWidth) { nPlan(); NAR.next = 14 + Math.random() * 16; }   // (his sheet in)
+      if (!busy && (NAR.next -= dt) < 0 && W2.t > 3 && W2.next - W2.t > 9 && nSheet.complete && nSheet.naturalWidth) {   // (his sheet in)
+        if (STAGE.spot('naruto', 60, NAR_AT)) { nPlan(); NAR.next = 14 + Math.random() * 16; } else NAR.next = 1.5 + Math.random();   // (his place, STAGE: the window; taken, a moment later)
+      }
       if ((W2.t > W2.next || (openK('balcony') < 0.5 && !NNV.on)) && !busy) { W2.state = 'off-going'; W2.t = 0; }   // (the night visit: its own 30-60 s)
     } else {                                                                         // going out, in the same order
       for (let k = 0; k < WL.n; k++) { const tk = W2.t - k * 0.3; W2.I[k] = tk < 0 ? W2.I[k] : Math.max(0, 1 - tk / 0.25); }
       if (W2.t > WL.n * 0.3 + 0.3) { W2.state = 'off'; W2.t = 0; W2.next = 60 + Math.random() * 180; W2.I = [0, 0, 0, 0]; if (NNV.on) { NNV.on = false; NNV.next = 600 + Math.random() * 600; } }
     }
     const here = nStep(dt);
+    if (NAR.a || NAR.q.length || here) { if (!STAGE.res.naruto) STAGE.spot('naruto', 60, NAR_AT); } else if (STAGE.res.naruto) STAGE.done('naruto');   // (the finale's own visit too)
     W2.acc += dt; if (W2.acc < 1 / 20) return; W2.acc = 0;
     const lit = W2.I.some(v => v > 0.01);
     if (!lit && !here && !W2.shown && !NAR.dbg) return;                            // dark and empty: nothing to upload
@@ -6145,7 +6292,7 @@
     let W = OIN.who;
     if (!W) {
       OIN.next = STAGE.due('oden', OIN.next); OIN.next -= dt; if (OIN.next > 0) return;
-      if (!STAGE.ask('oden', 12)) { OIN.next = 3 + Math.random() * 4; return; }   // (the director: not now)
+      if (!STAGE.ask('oden', 12, { area: [ODEN.door.slice(0, 2).concat([ODEN.door[0] + ODEN.door[2], ODEN.door[1] + ODEN.door[3]])] })) { OIN.next = 3 + Math.random() * 4; return; }   // (the director: not now; his place: the door's glass)
       const ltr = Math.random() < 0.5;          // the master from the counter, a customer from the door, either way
       W = OIN.who = { x: ltr ? 407 : 475, dir: ltr ? 1 : -1, hat: Math.random() < 0.45, ph: 0, wait: 0,
         stop: Math.random() < 0.55 ? 430 + Math.random() * 24 : null, v: 0.5 + Math.random() * 0.2 };
@@ -6287,7 +6434,8 @@
       let W = Z1S.who; const light = Z1.warm.material.opacity;
       if (!W) {
         Z1S.next -= dt;
-        if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7) {
+        if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7 && !STAGE.spot('z1s', 20, { area: [[1081, 288, 1111, 424]] })) Z1S.next = 1.5 + Math.random();   // (his place, STAGE: the curtain; taken, a moment later)
+        else if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7) {
           const dir = Math.random() < 0.5 ? 1 : -1;
           W = Z1S.who = { x: dir > 0 ? 1062 : 1126, dir, v: 8 + Math.random() * 4, stop: Math.random() < 0.45 ? 1088 + Math.random() * 14 : null, wait: 0, ph: 0 };
           z1Cur.mesh.visible = true; Z1S.acc = 1;
@@ -6296,7 +6444,7 @@
       if (W) {
         if (W.stop !== null && Math.abs(W.x - W.stop) < 0.5 && W.wait < 1.8) W.wait += dt;
         else { W.x += W.dir * W.v * dt; W.ph += dt * 3.4; }
-        if (W.x < 1056 || W.x > 1132 || light < 0.02) { Z1S.who = null; Z1S.next = 35 + Math.random() * 55; z1Cur.mesh.visible = false; }
+        if (W.x < 1056 || W.x > 1132 || light < 0.02) { Z1S.who = null; Z1S.next = 35 + Math.random() * 55; z1Cur.mesh.visible = false; STAGE.done('z1s'); }
         else if ((Z1S.acc += dt) >= 1 / 20 && odenSeen(z1Cur.box)) {
           Z1S.acc = 0;
           const x = W.x, s = 0.16 * (x - 700) * 1.12, top = 615 - 0.72 * (x - 700), sl = (top + 50 - 615) / (x - 700);   // his shadow: a little bigger than him
@@ -6311,10 +6459,13 @@
       let F = Z1F.who; const light = Z1.top.material.opacity;
       if (!F) {
         Z1F.next -= dt;
-        if (Z1F.next < 0 && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) { F = Z1F.who = z1RPlan(RNV.on); z1Door.mesh.visible = true; Z1F.acc = 1; }
+        if (Z1F.next < 0 && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) {
+          if (!STAGE.spot('red', 60, { area: [[963, 226, 1006, 363]] })) Z1F.next = 1.5 + Math.random();   // (his place, STAGE: the balcony door's glass; taken, a moment later)
+          else { F = Z1F.who = z1RPlan(RNV.on); z1Door.mesh.visible = true; Z1F.acc = 1; }
+        }
       }
       if (F) {
-        if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 120 + Math.random() * 150; z1Door.mesh.visible = false; }
+        if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 120 + Math.random() * 150; z1Door.mesh.visible = false; STAGE.done('red'); }
         else if ((Z1F.acc += dt) >= 1 / 20 && odenSeen(z1Door.box) && zrSheet.complete && zrSheet.naturalWidth) {
           Z1F.acc = 0;
           z1Draw(z1Door, light, 0.78, 0.7, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig)); z1Ball(z1Door, F.fig);
@@ -6392,12 +6543,13 @@
     px(cx + (spin % 2 ? 1 : -1), cy - 1, n < 2 ? '#b4bfd0' : '#d6e2f2');          // its cold glint, turning (quieter in his hand)
     yoTex.needsUpdate = true;
   }
-  function yoRest(next) { const Y = YO; Y.t = -1; Y.drawn = true; if (next) Y.next = next; yoDraw(0, 0, 0); }   // back in his hand
+  function yoRest(next) { const Y = YO; if (Y.t >= 0) STAGE.done('yoyo'); Y.t = -1; Y.drawn = true; if (next) Y.next = next; yoDraw(0, 0, 0); }   // back in his hand
   function stepYoyo(dt) {
     const Y = YO;
     if (Y.t < 0) {                                                                    // in his hand (drawn once: so it stays, still, under reduced motion)
       if (!Y.drawn) yoRest();
       if (reduced || KIL.state !== 'sit' || (Y.next -= dt) > 0) return;
+      if (!STAGE.spot('yoyo', 4, { area: [[YO.x, YO.y, YO.x + YO.w, YO.y + YO.h]] })) { Y.next = 1 + Math.random() * 2; return; }   // (its place, STAGE: under his hand; taken, a moment later)
       Y.t = 0; Y.acc = 1; Y.kind = YO_KIND.filter(k => k !== Y.kind)[Math.floor(Math.random() * 2)];   // (never the same twice running)
     }
     if (KIL.state !== 'sit') { yoRest(20 + Math.random() * 25); return; }
@@ -6418,6 +6570,7 @@
     if (t > YO_DUR[Y.kind]) yoRest(20 + Math.random() * 25);
   }
 
+  STAGE.onYield('yoyo', () => { if (YO.t >= 0) yoRest(20 + Math.random() * 25); });   // (something passing through: back in his hand)
   // ---- now and then, silent sheet lightning behind Fuji: 1 to 3 in ten minutes, never two close (none under reduced
   // motion). A few quick pulses light the sky behind the mountain (behind its silhouette), its ridge and the cherry tree's
   // edges against the sky (rims: build_zzzanim_lightning.py); and Killua's hair on his roof keeps a faint electric-blue
@@ -6757,10 +6910,14 @@
   const catEyes = [0, 2].map((dx) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), catMat()); m.position.z = 0.6; m.userData.dx = dx; scene.add(m); return m; });
   const catGlow = new THREE.Mesh(new THREE.PlaneGeometry(7, 4), new THREE.MeshBasicMaterial({ map: plGlowTex, color: 0xc4e678, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }));
   catGlow.position.z = 0.6; scene.add(catGlow);
+  const CAT_AT = { soft: true, area: [[829, 627, 841, 634]] };   // (its place, STAGE: soft, it never refuses a start; what passes in front of it asks it in)
   function stepCat(dt) {
     const C = CAT;
     C.stay -= dt;
     if (C.stay < 0 && C.slow < 0) { C.here = !C.here; C.stay = C.here ? 45 + Math.random() * 110 : 30 + Math.random() * 70; C.dx = 0; C.away = 0; }
+    const out = !reduced && C.here && !C.hid && C.spook < 0;                    // (reduced motion: nothing asks; nothing passes either)
+    if (out && !STAGE.res.cat && !STAGE.spot('cat', 1e4, CAT_AT)) { C.here = false; C.stay = 4 + Math.random() * 6; }   // (something there: later)
+    else if (!out && C.spook < 0 && STAGE.res.cat) STAGE.done('cat');
     let k = C.here ? 1 : 0;
     if (C.here && C.slow < 0) {
       C.blink -= dt; if (C.blink < 0) C.blink = 2.5 + Math.random() * 4.5;
@@ -6777,7 +6934,7 @@
     }
     // the street's events (catSpook, catPeek): a glance toward the bus, then in; back after it, half-lidded a moment
     if (C.spook >= 0) { C.spook += dt; if (C.spook < 0.35) { C.dx = -1; C.away = 0; C.lookT = 0; } else { C.spook = -1; C.hid = true; C.dx = 0; } }
-    if (C.hid) { k = 0; if (C.peek > 0 && (C.peek -= dt) <= 0) { C.hid = false; C.lids = 1.2; C.here = true; C.stay = Math.max(C.stay, 30); C.peek = 0; } }
+    if (C.hid) { k = 0; if (C.peek > 0 && (C.peek -= dt) <= 0) { if (STAGE.free(CAT_AT.area, 2)) { C.hid = false; C.lids = 1.2; C.here = true; C.stay = Math.max(C.stay, 30); C.peek = 0; } else C.peek = 2; } }   // (its place still taken: a peek later)
     if (C.lids > 0) { C.lids -= dt; k = Math.min(k, 0.5); }
     C.k += (k - C.k) * Math.min(1, dt * 25);
     for (const m of catEyes) { m.position.x = C.x + C.dx + m.userData.dx + 0.5; m.position.y = -(C.y + 0.5); m.material.opacity = 0.6 * C.k; m.visible = C.k > 0.01; }
@@ -6795,6 +6952,7 @@
   function catSpook() { const C = CAT; if (C.hid || C.spook >= 0) return; C.spook = C.here ? 0 : 0.35; C.peek = 0; }
   function catPeek(after) { const C = CAT; if (!C.hid && C.spook < 0) return; C.peek = C.peek > 0 ? Math.min(C.peek, after) : after; }
   try { CREW.api.on('stop', catSpook); CREW.api.on('gone', () => catPeek(6)); } catch (e) {}
+  STAGE.onYield('cat', () => { catSpook(); STAGE.done('cat'); });   // (the TranZit's pass, the finale: a glance toward it, then in; back after it)
   try { FIN.api.on('stand', catSpook); FIN.api.on('dawn', () => catPeek(6)); FIN.api.on('end', () => catPeek(1)); } catch (e) {}
 
   // ---- the catch (secret): now and then the big cherry tree's lower-left lobe rustles, as if something hid in it; click it while it
@@ -8338,7 +8496,7 @@
       if (openK('centerNight') < 0.5 || PW.on) return;                          // (the Center's night mode, 1 h-6 h)
       if ((GG.next -= dt) > 0) return;
       if (!(GG.img.complete && GG.img.naturalWidth)) { GG.next = 2; return; }   // (its sheet not in yet)
-      if (!STAGE.ask('gengar', 10)) { GG.next = 3 + Math.random() * 4; return; }
+      if (!STAGE.ask('gengar', 10, { area: [[860, 580, 904, 628]] })) { GG.next = 3 + Math.random() * 4; return; }   // (his place: the door's glass, his canvas)
       if (!GG.sil) ggRead();
       Object.assign(GG, { on: true, t: 0 }); ggMesh.visible = true;
     }
@@ -8690,10 +8848,14 @@
   })();
   function stepHeal(dt) {
     const H = HEAL, night = centerNight() > 0.5;
-    if (H.t < 0) { if (!night || reduced) { healPts.visible = false; return; } if ((H.next -= dt) > 0) { healPts.visible = false; return; } H.t = 0; }
+    if (H.t < 0) {
+      if (!night || reduced) { healPts.visible = false; return; } if ((H.next -= dt) > 0) { healPts.visible = false; return; }
+      if (!STAGE.spot('heal', 6, { area: [[878, 612, 887, 619]] })) { H.next = 2 + Math.random() * 2; healPts.visible = false; return; }   // (its place, STAGE: Gengar or the horde before the door, a moment later)
+      H.t = 0;
+    }
     H.t += dt;
     const i = Math.floor(H.t / 0.35), n = HEAL.slots.length, on = i < n ? i + 1 : i < n + 6 ? ((i - n) % 2 ? 0 : n) : -1;
-    if (on < 0) { H.t = -1; H.next = 180 + Math.random() * 300; healPts.visible = false; return; }
+    if (on < 0) { H.t = -1; H.next = 180 + Math.random() * 300; healPts.visible = false; STAGE.done('heal'); return; }
     const C = healPts.geometry.attributes.color.array;
     for (let s = 0; s < n; s++) for (let q = 0; q < 5; q++) { const a = s < on ? (q ? 0.28 : 1) : 0, o = (s * 5 + q) * 3; C[o] = 0.62 * a; C[o + 1] = 0.2 * a; C[o + 2] = 0.16 * a; }
     healPts.geometry.attributes.color.needsUpdate = true; healPts.visible = on > 0;
@@ -8755,6 +8917,7 @@
     if (T.t < 0) {
       if (T.done || CLOCK.over || CLOCK.h < 0.917 || CLOCK.h >= 1.417) return;
       if ((T.wait -= dt) > 0) return;
+      if (!STAGE.spot('train', 30, { area: [[T.x0 - 2, T.y - 3, T.x1 + 2, T.y + 4]] })) { T.wait = 2; return; }   // (its place, STAGE: the valley's line behind the junction; the TranZit or a walker there, a moment later)
       T.t = 0; trainPts.visible = true;
     }
     T.t += dt;
@@ -8764,7 +8927,7 @@
       P[i * 3] = x; P[i * 3 + 1] = -(T.y + 0.5); Cc[i * 3] = k; Cc[i * 3 + 1] = 0.86 * k; Cc[i * 3 + 2] = 0.64 * k;   // (warm, as the far windows)
     });
     trainPts.geometry.attributes.position.needsUpdate = true; trainPts.geometry.attributes.color.needsUpdate = true;
-    if (head - 14 > T.x1) { T.t = -1; T.done = true; trainPts.visible = false; }
+    if (head - 14 > T.x1) { T.t = -1; T.done = true; trainPts.visible = false; STAGE.done('train'); }
   }
   function stepNight(dt) {
     const C = CLOCK;
@@ -9026,17 +9189,20 @@
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
     stepSwitch();                                    // the switch box by the Center: its toggles, its light
     // Konami fireworks: launch the queued shells on time, step every burst, stop when the sky is clear again
+    if (FWK.want) fwkTry();                          // (a show waiting for its sky)
     if (FWK.active) {
       FWK.t += dt;
       while (FWK.queue.length && FWK.queue[0].at <= FWK.t) launchBurst(FWK.queue.shift());
       for (const b of FWK.bursts) stepBurst(b, dt);
       FWK.bursts = FWK.bursts.filter(b => !b.done);
-      if (!FWK.queue.length && !FWK.bursts.length) FWK.active = false;
+      if (!FWK.queue.length && !FWK.bursts.length) { FWK.active = false; STAGE.done('fwk'); }
     }
     stepClimber(dt);                                 // the summit climber (rare; the blackout leaves it as it is)
     // shooting star
-    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { shoot.active = true; shoot.t = 0; let hx, hy, hk = 0; do { hx = 200 + Math.random() * 900; hy = 20 + Math.random() * 150; } while (hy > skyTop(hx) - 20 && ++hk < 30); streak.position.set(hx, -hy, -2.75); } }
-    else { shoot.t += dt; const u = shoot.t / 0.7; streak.position.x += 260 * dt; streak.position.y -= 105 * dt; streak.material.opacity = u < 0.25 ? u * 4 : Math.max(0, 1 - (u - 0.25) / 0.75); if (u >= 1) { shoot.active = false; streak.material.opacity = 0; shoot.next = 20 + Math.random() * 45; } }
+    if (!shoot.active) { shoot.next -= dt; if (shoot.next < 0) { let hx, hy, hk = 0; const at = () => [[hx - 1, hy - 1, hx + 207, hy + 85]];   // (its streak's place, STAGE: clear of the others')
+      do { hx = 200 + Math.random() * 900; hy = 20 + Math.random() * 150; } while ((hy > skyTop(hx) - 20 || !STAGE.free(at(), 0.8, { sky: true })) && ++hk < 30);
+      if (hk < 30 && STAGE.spot('shoot', 0.8, { sky: true, area: at() })) { shoot.active = true; shoot.t = 0; streak.position.set(hx, -hy, -2.75); } else shoot.next = 2 + Math.random() * 3; } }
+    else { shoot.t += dt; const u = shoot.t / 0.7; streak.position.x += 260 * dt; streak.position.y -= 105 * dt; streak.material.opacity = u < 0.25 ? u * 4 : Math.max(0, 1 - (u - 0.25) / 0.75); if (u >= 1) { shoot.active = false; streak.material.opacity = 0; shoot.next = 20 + Math.random() * 45; STAGE.done('shoot'); } }
     // the far city's lights
     stepFar(dt, t);
     for (const o of OBST) { const k = reduced ? 0.8 : obstK(((t + o.ph) % 2) / 2); for (const m of o.m) { m.material.opacity = 0.95 * k; m.visible = k > 0.005; } }   // (2 s: on for about 1)
@@ -9044,13 +9210,13 @@
     // fog: each sheet drifts on its own slow phase; the wind of a gust thins them all
     for (const f of fogs) { const u = f.userData; f.position.x = u.x0 + Math.sin(t * 0.13 + u.ph) * u.dr; f.material.opacity = u.o * (1 - 0.35 * gust.k) * (0.92 + 0.08 * Math.sin(t * 0.21 + u.ph)) * (f === fogs[0] ? SKYF.air : 1); }
     // OM flyer drop: pendulum fall through the frame, ~2.6 s
-    if (!flyS.active) { flyS.next = STAGE.due('flyer', flyS.next); flyS.next -= dt; if (flyS.next < 0 && !STAGE.ask('flyer', 8)) flyS.next = 3 + Math.random() * 4;   // (the director: not now, asked again in a few seconds)
-      if (flyS.next < 0) { flyS.active = true; flyS.t = 0; flyS.x = 460 + Math.random() * 620; flyS.dx = 0; flyS.ph = Math.random() * 6; flyer.visible = true; } }
+    if (!flyS.active) { flyS.next = STAGE.due('flyer', flyS.next); flyS.next -= dt; if (flyS.next < 0 && !flyAsk()) flyS.next = 3 + Math.random() * 4;   // (the director: not now, asked again in a few seconds)
+      if (flyS.next < 0) { flyS.active = true; flyS.t = 0; flyS.x = flyS.wx; flyS.dx = 0; flyS.ph = Math.random() * 6; flyer.position.set(flyS.x + Math.sin(flyS.ph) * 70, 340, 4); flyer.rotation.z = 0.13 * Math.sin(flyS.ph); flyer.visible = true; } }   // (its first frame where it starts, not where the last one went)
     else if (flyS.caught >= 0) {                     // caught: it stops a moment (a little tug), then the wind takes it off
       flyS.caught += dt; const k = Math.max(0, flyS.caught - 0.3) / 0.9, q = 1 - Math.max(0, 1 - flyS.caught / 0.3) * 0.03;
       flyer.scale.set(q, q, 1);
       flyer.position.x = flyS.cx - 950 * k * k; flyer.position.y = flyS.cy + 650 * k * k; flyer.rotation.z = flyS.cr + 0.7 * k;   // (up and to the left: with the wind, as the rain goes)
-      if (k >= 1) { flyS.active = false; flyS.caught = -1; flyer.visible = false; flyer.scale.set(1, 1, 1); flyS.next = 60 + Math.random() * 120; STAGE.done('flyer'); }
+      if (k >= 1) { flyS.active = false; flyS.caught = -1; flyer.visible = false; flyer.scale.set(1, 1, 1); flyS.next = 60 + Math.random() * 120; STAGE.done('flyer'); if (FWK.want) fwkTry(); }
     } else {
       flyS.t += dt; const uf = flyS.t / 4.2;
       flyS.dx -= (40 + 260 * Math.max(0, gust.k)) * 0.5 * dt;   // the wind's drift, left (the drips' drops' rule)
@@ -9266,6 +9432,28 @@
     for (const o of [M.body, M.refl, M.shad]) if (o) o.visible = true;
   }
   function drnOff() { DRN.on = false; for (const o of [DRN.m.body, DRN.m.refl, DRN.m.shad]) if (o) o.visible = false; STAGE.done('drone'); if (R6M.cam === 6) r6Lost(); }
+  // each route's place (STAGE): every place along it (its sprite either way round, its reflection, its shadow), out to the frame's
+  // edge on its last heading, a little round it (its steering's curves); one box, so that a way out across it stays inside
+  const DRN_AREA = DRN_RT.map((R) => {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, X = R.at[0], Z = R.at[1], hx = 0, hz = 0;
+    const put = (X, Z) => { const L = drnLevel(CF / Z), [w, , cw, ch, , ay] = L, gx = 700 + CF * X / Z, gy = 615 + CF * (1.41 - drnH(X)) / Z;
+      x0 = Math.min(x0, gx - cw, gx - w); x1 = Math.max(x1, gx + cw, gx + w); y0 = Math.min(y0, gy - ay); y1 = Math.max(y1, gy + ay + 2, gy + w * 0.25 + 4); };
+    for (const q of R.s) {
+      if (q[0] !== 'go') continue;
+      const d = Math.hypot(q[1] - X, q[2] - Z), n = Math.ceil(d / 0.1); hx = (q[1] - X) / d; hz = (q[2] - Z) / d;
+      for (let i = 0; i <= n; i++) put(X + (q[1] - X) * i / n, Z + (q[2] - Z) * i / n);
+      X = q[1]; Z = q[2];
+    }
+    for (let i = 0; i < 200 && Z > 2; i++) { X += hx * 0.1; Z += hz * 0.1; put(X, Z); if (615 + CF * 1.26 / Z - 40 > IH) break; }   // (on along its heading, out of the frame)
+    return [[x0 - 14, y0 - 14, x1 + 14, y1 + 14]];
+  });
+  STAGE.onYield('drone', () => {               // (a set closing over its street, the finale's: it leaves at once, back into cover while it is still on its own
+    const D = DRN; if (!D.on || D.r.yld) return;   // sidewalk and that is nearer, else straight off toward us, its route's way out; never up a curb)
+    if (drnHidden()) { drnOff(); return; }
+    const R = D.r, last = R.s.filter((q) => q[0] === 'go').pop(), dc = Math.hypot(R.at[0] - D.X, R.at[1] - D.Z), dl = Math.hypot(last[1] - D.X, last[2] - D.Z);
+    const home = Math.abs(D.X) > 2.8 && Math.sign(D.X) === Math.sign(R.at[0]) && dc <= dl;
+    D.r = { at: R.at, a: R.a, s: [home ? ['go', R.at[0], R.at[1]] : last], yld: true, home }; D.i = 0; D.st = ''; D.hold = 0;
+  });
   function drnStart(ri) {
     const R = DRN_RT[ri === undefined ? drnPick() : ri];
     Object.assign(DRN, { on: true, r: R, i: 0, st: '', hold: 0, X: R.at[0], Z: R.at[1], h: drnH(R.at[0]), vy: 0, a: R.a, v: 0, roll: 0, led: 1, lt: 0, k: -1 });
@@ -9288,12 +9476,13 @@
     if (!D.on) {
       if (reduced || !LATE.ready.r6) return;
       D.next = STAGE.due('drone', D.next); D.next -= dt;
-      if (D.next < 0) { if (!STAGE.ask('drone', 40)) { D.next = 4 + Math.random() * 5; return; } D.next = 240 + Math.random() * 240; drnStart(); }
+      if (D.next < 0) { const ri = drnPick(); if (!STAGE.ask('drone', 40, { area: DRN_AREA[ri] })) { D.next = 4 + Math.random() * 5; return; } D.next = 240 + Math.random() * 240; drnStart(ri); }
       return;
     }
     if ((D.lt += dt) > 20) { D.lt = 0; STAGE.ask('drone', 30); }   // (its lane kept while it is out)
     const S = D.r.s[D.i];
-    if (!S) {                                      // (its route done: on along its heading until it is out of the frame)
+    if (!S) {                                      // (its route done: on along its heading until it is out of the frame; back in cover: gone)
+      if (D.r.home) { drnOff(); return; }
       D.v = Math.min(D.V, D.v + 1.6 * dt); const ds = D.v * dt;
       D.X += Math.sin(D.a) * ds; D.Z += Math.cos(D.a) * ds; D.roll += ds / 0.054;
       if (D.Z < 2) { drnOff(); return; }
@@ -9774,6 +9963,7 @@
   // street's start; the start x hides the whole cell, both ways), where it stops at the railing (the gommage's spot; the plain
   // walk's lookout, its back turned a while before it turns back): never past the railing's end (the house's corner, x 761)
   const WKP = { row: 640, x0: 486, stop: [640, 735], turn: 0.75, look: [2.5, 4.5] };
+  const E33_AREA = [[484, 510, 772, 648], [726, 278, 822, 382]];   // (its place, STAGE: the sidewalk to the railing and the petals over it; the Monolith, its 33's flare)
   if (!reduced) {
     const tex = crispLate('assets/e33_walkers.webp?v=1', 'e33', () => {   // each character's back's pixels read once, for its petals: each one's turn
       try {
@@ -9891,11 +10081,11 @@
     if (!W.on) {
       if (E33.want > 0) {                                                // (called: as soon as the street is free)
         E33.want -= dt; const on = STAGE.on.street;
-        if (LATE.ready.e33 && E33.cells && !STAGE.holds.size && (!on || on.name === 'e33') && !PW.on && STAGE.ask('e33', 40, { prio: 2 })) { E33.want = 0; e33Near(); }
+        if (LATE.ready.e33 && E33.cells && !STAGE.holds.size && (!on || on.name === 'e33') && !PW.on && STAGE.ask('e33', 40, { prio: 2, area: E33_AREA })) { E33.want = 0; e33Near(); }
       } else if (LATE.ready.e33 && E33.cells) {
         E33.next = STAGE.due('e33', E33.next); E33.next -= dt * (0.35 + 0.65 * NIGHT.home);
         if (E33.next <= 0) {
-          if (!visible || document.hidden || PW.on || !STAGE.ask('e33', 40)) E33.next = 3 + Math.random() * 4;
+          if (!visible || document.hidden || PW.on || !STAGE.ask('e33', 40, { area: E33_AREA })) E33.next = 3 + Math.random() * 4;
           else { e33Walk(/[?&]e33\b/.test(location.search) || Math.random() < 0.34); E33.next = 180 + Math.random() * 240; }
         }
       }
@@ -9946,9 +10136,16 @@
       c[i * 4] = p.c[0]; c[i * 4 + 1] = p.c[1]; c[i * 4 + 2] = p.c[2]; c[i * 4 + 3] = Math.min(1, p.age / 0.15, (p.life - p.age) / 0.9);
     }
     Q.A.needsUpdate = true; Q.C.needsUpdate = true; Q.P.visible = live > 0; Q.live = live;
-    if (!W.on && W.st === 'off' && !live && STAGE.on.street && STAGE.on.street.name === 'e33') STAGE.done('e33');
+    if (!W.on && W.st === 'off' && !live && (STAGE.res.e33 || (STAGE.on.street && STAGE.on.street.name === 'e33'))) STAGE.done('e33');
   }
   FEAT.push(stepE33);
+  STAGE.onYield('e33', () => {                                          // (a set closing over its sidewalk, the finale's: it comes apart where it is, as a click on the
+    const W = E33.wk; if (!W || !W.on || W.st === 'dis') return;        // Monolith has it; on its way back near the corner it just goes on)
+    if (W.st === 'walk' && W.dir < 0 && W.x < WKP.x0 + 70) return;
+    if (W.st === 'walk') W.sx = W.dir > 0 ? W.x : W.x - 4;
+    else if (W.st === 'turn' || W.st === 'back') { e33Flare(1.6); W.hold = Math.min(W.hold, W.t + 0.5); }
+    W.gom = true;
+  });
   // the rain on the banner runs down the cloth and drips from its lowest points, its tip and a tatter (zone 9's trickles: its pent
   // roof's channels either side; none from the roof where the banner hangs over it): two trickles of their own, thinner, the
   // bead running down the cloth before it lets go
