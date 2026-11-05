@@ -2979,7 +2979,7 @@
   const thrAt = (lx) => 6 * hAt(lx);
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
-  arcImg.src = 'assets/arcade_interior.webp?v=13';
+  arcImg.src = 'assets/arcade_interior.webp?v=14';
   const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=7';   // (droite-01)
   // the room behind the door: a small model of it seen through the street's own camera (tools/arcade_room.py: the door
   // found in the street's space from its lines; behind it a box room turned 24 degrees toward the street (its long axis
@@ -3331,7 +3331,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=44', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=45', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6214,7 +6214,7 @@
   const ZRB = [[1,0.3,10.6,57.7],[2,0.15,10.3,57.7],[3,0.0479,12.9,48.6],[3,0.0479,12.7,39.4],[3,0.0479,12.6,32.1],[3,0.0479,12.4,26.9],[4,0.0479,12.3,23.6],[4,0.0479,12.1,22.2],[4,0.0479,11.9,22.9],[4,0.0479,11.8,25.6],[5,0.0479,11.6,30.2],[5,0.0479,11.5,36.8],[5,0.0479,11.3,45.4],[6,0.25,11.3,53.3],[7,0.3,12.2,59.0]];   // one toss: [its toss cell, s, the Poké Ball's centre in the cell (px)], every 0.05 s while it flies (a parabola, g = 9.81)
   const zrU = (w) => -ZR.x * ZR.ppm * Math.log(ZR.zs - w), zrW = (u) => ZR.zs - Math.exp(-u / (ZR.x * ZR.ppm));   // w <-> his floor point along his path (px of the sheet)
   const zrToss = (k) => ZRB.map(([i, dt, x, y]) => ['toss', i, dt * k, 0, [x, y]]);   // a toss at k times its pace (the ball in each step)
-  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=3');   // (late; his visit already waits for the sheet)
+  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=4');   // (late; his visit already waits for the sheet)
   z1Door.sh.width = z1Door.box[2] * z1Door.K; z1Door.sh.height = z1Door.box[3] * z1Door.K;   // (his shadow drawn at the glass's 2x: the sheet is too)
   function z1Red(g, ox, oy, f) {                  // his frame f = { row, i, w } into the door's canvas (its box at ox, oy)
     const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
