@@ -2979,7 +2979,7 @@
   const thrAt = (lx) => 6 * hAt(lx);
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
-  arcImg.src = 'assets/arcade_interior.webp?v=12';
+  arcImg.src = 'assets/arcade_interior.webp?v=13';
   const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=7';   // (droite-01)
   // the room behind the door: a small model of it seen through the street's own camera (tools/arcade_room.py: the door
   // found in the street's space from its lines; behind it a box room turned 24 degrees toward the street (its long axis
@@ -3089,11 +3089,14 @@
     gl.addColorStop(0, '#16121f'); gl.addColorStop(1, '#08060e'); ag.fillStyle = gl; fzBox(0, FZW);   // the glass, dark
     if (pw < 0.5) return;
     const glow = (col, a) => { ag.globalCompositeOperation = 'lighter'; ag.globalAlpha = a * pw; ag.fillStyle = col; fzBox(0, FZW); ag.globalCompositeOperation = 'source-over'; ag.globalAlpha = 1; };
-    if (FZ.state === 'dead') {                 // the prompt: FUSE (across, if the display is narrower than its four glyphs), then a ?, in turn
-      const fit = FZW >= 15, run = fit ? 1.6 : (16 + FZW) / 12, ph = tt % (run + 0.8);
-      if (ph < run) {
+    if (FZ.state === 'dead') {                 // the prompt: FUSE, then a ?, in turn (a display narrower than its four glyphs: FUSE
+      const fit = FZW >= 15, step = !fit && reduced, run = fit || step ? 1.6 : (16 + FZW) / 12, ph = tt % (run + 0.8);   // runs
+      if (ph < run) {                          // across it; reduced motion: FU, then SE)
         ag.fillStyle = '#b5772f';
-        ['F', 'U', 'S', 'E'].forEach((c, i) => fzGlyph(c, fit ? mid(4) + i * 4 : FZW - Math.floor(ph * 12) + i * 4)); glow('#e39b45', 0.05);
+        if (fit) ['F', 'U', 'S', 'E'].forEach((c, i) => fzGlyph(c, mid(4) + i * 4));
+        else if (step) (ph < 0.8 ? ['F', 'U'] : ['S', 'E']).forEach((c, i) => fzGlyph(c, mid(2) + i * 4));
+        else ['F', 'U', 'S', 'E'].forEach((c, i) => fzGlyph(c, FZW - Math.floor(ph * 12) + i * 4));
+        glow('#e39b45', 0.05);
       } else if (ph < run + 0.5) { ag.fillStyle = '#e39b45'; fzGlyph('?', mid(1)); glow('#e39b45', 0.04); }
       return;
     }
@@ -3328,7 +3331,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=42', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=44', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
