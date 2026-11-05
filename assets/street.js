@@ -2972,75 +2972,66 @@
   const spill = plane('assets/arcade_spill.webp?v=8', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
-  const NEON = ['#7fb5c8', '#d9a860', '#c97aa0', '#6fae8a'];
   // the door sits on a wall receding to the street's vanishing point (~700, 615): in local px its top edge rises
   // from 456 to 432 across the 100 px, the threshold drops from 799 to 827, so the right side is the taller one
   const topAt = (lx) => 26 - 24 * (lx / ARC.w), botAt = (lx) => 369 + 28 * (lx / ARC.w);
   const hAt = (lx) => (botAt(lx) - topAt(lx)) / 343;                 // local scale, 1 at the left post
-  const bandAt = (lx) => 0, thrAt = (lx) => 6 * hAt(lx);
+  const thrAt = (lx) => 6 * hAt(lx);
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
-  arcImg.src = 'assets/arcade_interior.webp?v=11';
+  arcImg.src = 'assets/arcade_interior.webp?v=12';
   const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=7';   // (droite-01)
-  // screens in the room texture (100x332, mirrored: its aisle runs to the street's vanishing point): [x, y, w, h, light]
-  const ARC_SCREENS = [[83, 162, 16, 28, '#7fe0d8'], [68, 160, 14, 27, '#7fd0e8'], [52, 163, 11, 19, '#7fe0d8'], [22, 115, 20, 15, '#6fe8e0'], [82, 110, 13, 18, '#e8a0d0'], [0, 90, 20, 160, '#ff9ad0']];
-  // the room seen through a door in a side wall: what is deep shows square to us (the room's far end), its level lines level,
-  // not sheared along the wall's rays; so the texture's rows keep the heights they have at the far post (lx 0) right across the
-  // door, and where the door is taller (toward us) the room's ceiling and floor show above and below them (drawArcade)
-  const roomY = (lx, y) => topAt(0) + bandAt(0) + y * (botAt(0) - thrAt(0) - topAt(0) - bandAt(0)) / 332;
-  function quad(y0, y1, color) {              // a band between two functions of lx, across the door
-    ag.fillStyle = color; ag.beginPath(); ag.moveTo(0, y0(0) * AK);
-    for (const lx of [ARC.w]) ag.lineTo(lx * AK, y0(lx) * AK);
-    ag.lineTo(ACW, y1(ARC.w) * AK); ag.lineTo(0, y1(0) * AK); ag.closePath(); ag.fill();
+  // the room behind the door: a small model of it seen through the street's own camera (tools/arcade_room.py: the door
+  // found in the street's space from its lines; behind it a box room turned 24 degrees toward the street (its long axis
+  // runs down the street, toward a vanishing point at x 77 on the horizon, as its floor's planks do), its end wall 5 m from
+  // the far post along that axis, seen obliquely; the owner's picture of that wall on it at the scale of a 1.7 m cabinet,
+  // slid so the claw machine's cut edge stays behind the far post; the claw machine and three cabinets as boxes standing
+  // out from it, in a row receding in perspective; the ceiling tube along that row; lit, supersampled, brought down to
+  // whole scene pixels and graded into the street's night). Its texture, one texel a scene pixel, the canvas's own rows: the
+  // room lit (rows 0-385), and shut (386-771: its tubes, sign and claw machine out, its screens, half its marquees and its
+  // exit sign on). ARC_PINS: where the model puts, in the canvas (local px), the cabinets' screens, the neon sign, the
+  // marquees and the display on the electrical box (quads: corners top left, top right, bottom right, bottom left; their
+  // sides stay upright), the electrical box and the exit sign (rectangles: x, y, w, h)
+  const ARC_PINS = {"scr": [[[20.8, 190.12], [44.52, 190.07], [44.52, 221.89], [20.8, 222.25]], [[54.16, 190.05], [76.24, 190.01], [76.24, 221.41], [54.16, 221.74]], [[87.01, 189.99], [109.48, 189.94], [109.48, 220.91], [87.01, 221.25]]], "sign": [[8.0, 58.34], [19.07, 61.62], [19.07, 86.74], [8.0, 84.13]], "marq": [[[18.83, 167.53], [47.23, 167.73], [47.23, 180.44], [18.83, 180.39]], [[52.37, 167.77], [80.51, 167.97], [80.51, 180.51], [52.37, 180.45]], [[85.14, 168.0], [112.04, 168.19], [112.04, 180.57], [85.14, 180.52]]], "box": [21, 123, 12, 32], "disp": [[21.0, 124.22], [33.0, 124.51], [33.0, 132.43], [21.0, 132.18]], "exit": [76, 62, 5, 4]};
+  // its lights: the screens (their power only: they stay on when it shuts) and the neon sign (with its hours): [quad, light, screen?]
+  const ARC_SCREENS = [[ARC_PINS.scr[0], '#7fe0d8', 1], [ARC_PINS.scr[1], '#e890d8', 1], [ARC_PINS.scr[2], '#7fe0d8', 1], [ARC_PINS.sign, '#ff86d6', 0]];
+  function arcQuad(q, ua, ub, va, vb) {        // a part of a pinned quad (fractions across, down), whole scene pixels, column by column
+    ua = ua || 0; ub = ub === undefined ? 1 : ub; va = va || 0; vb = vb === undefined ? 1 : vb;
+    const L = q[0][0], R = q[1][0], x0 = Math.round(L + ua * (R - L)), x1 = Math.round(L + ub * (R - L));
+    for (let x = x0; x < x1; x++) {
+      const u = (x + 0.5 - L) / (R - L), top = q[0][1] + u * (q[1][1] - q[0][1]), bot = q[3][1] + u * (q[2][1] - q[3][1]);
+      const y0 = Math.round(top + va * (bot - top)), y1 = Math.round(top + vb * (bot - top));
+      if (y1 > y0) ag.fillRect(x * AK, y0 * AK, AK, (y1 - y0) * AK);
+    }
   }
   function drawArcade() {
     ag.clearRect(0, 0, ACW, ACH);
     ag.imageSmoothingEnabled = false;
     ag.save(); ag.beginPath(); ag.moveTo(0, topAt(0) * AK); ag.lineTo(ACW, topAt(ARC.w) * AK); ag.lineTo(ACW, botAt(ARC.w) * AK); ag.lineTo(0, botAt(0) * AK); ag.closePath(); ag.clip();
-    // the room, one column at a time, its rows level (roomY); above them, up to the door's head, the ceiling (the texture's own
-    // top rows mirrored, in shade); below them, down to the threshold, the floor (its bottom rows mirrored, in shade): whole
-    // scene pixels, nearest
-    if (arcImg.complete && arcImg.naturalWidth) for (let lx = 0; lx < ARC.w; lx++) {
-      const y0 = roomY(lx, 0), y1 = roomY(lx, 332), t = Math.floor(topAt(lx + 0.5)), b = Math.ceil(botAt(lx + 0.5) - thrAt(lx + 0.5));
-      ag.drawImage(arcImg, lx, 0, 1, 332, lx * AK, y0 * AK, AK, (y1 - y0) * AK);
-      const r = (y1 - y0) / 332;
-      for (let y = Math.floor(y0) - 1; y >= t; y--) {                       // the ceiling: row by row, mirrored, darker
-        const ty = Math.min(331, Math.floor((y0 - y - 0.5) / r)); ag.drawImage(arcImg, lx, ty, 1, 1, lx * AK, y * AK, AK, AK);
-        ag.fillStyle = 'rgba(8,4,18,' + Math.min(0.7, 0.32 + 0.02 * (y0 - y)) + ')'; ag.fillRect(lx * AK, y * AK, AK, AK);
-      }
-      for (let y = Math.ceil(y1); y < b; y++) {                              // the floor: row by row, mirrored, darker
-        const ty = Math.max(0, 331 - Math.floor((y - y1 + 0.5) / r)); ag.drawImage(arcImg, lx, ty, 1, 1, lx * AK, y * AK, AK, AK);
-        ag.fillStyle = 'rgba(8,4,18,' + Math.min(0.6, 0.25 + 0.02 * (y - y1)) + ')'; ag.fillRect(lx * AK, y * AK, AK, AK);
-      }
-    }
     // the fuses' reward: with the power cut the room goes dark, and comes back as its tube catches
-    // and by its hours (lumieres-01): shut, its ceiling out (0.3 of its light), its cabinets' attract screens and the fuse prompt kept
+    // and by its hours (lumieres-01): shut, the room as it is shut (its own picture, crossfaded), the fuse prompt kept
     const pwr = PW.on ? PW.arc : 1, hk = HRS.k.arcade, pw = pwr * (0.3 + 0.7 * hk);   // (HRS: openK by frame; drawArcade also runs at load)
-    if (pwr < 1) { ag.fillStyle = 'rgba(6,4,16,' + 0.9 * (1 - pwr) + ')'; ag.fillRect(0, 0, ACW, ACH); }
-    if (hk < 0.999) {                            // the hours' dark: all but the screens (their glass: out of the path)
-      const a2 = 1 - (1 - 0.9 * (1 - pw)) / Math.max(0.05, 1 - 0.9 * (1 - pwr));
-      ag.save(); ag.beginPath(); ag.rect(0, 0, ACW, ACH);
-      for (const q of ARC_ROW.concat([BOOT_Q[2][0]])) q.forEach(([qx, qy], k) => { const X = qx * AK, Y = roomY(qx, qy) * AK; if (k) ag.lineTo(X, Y); else ag.moveTo(X, Y); });
-      { const [x, y, w, h] = ARC_SCREENS[3], cx = x + w / 2; ag.rect(x * AK, roomY(cx, y) * AK, w * AK, (roomY(cx, y + h) - roomY(cx, y)) * AK); }
-      ag.clip('evenodd'); ag.fillStyle = 'rgba(6,4,16,' + Math.max(0, a2) + ')'; ag.fillRect(0, 0, ACW, ACH); ag.restore();
-      ag.globalAlpha = (1 - hk) * pwr; ag.fillStyle = '#1f9b52'; fzPx(34, 71.2, 6, 2.7);   // 非常口: the exit sign, always lit
-      ag.fillStyle = '#9dffbf'; fzPx(38, 72.1, 1, 0.9); fzPx(35, 72.1, 2, 0.9); ag.globalAlpha = 1;
+    if (arcImg.complete && arcImg.naturalWidth) {                  // the room: whole scene pixels, nearest
+      ag.drawImage(arcImg, 0, 0, ARC.w, ARC.h, 0, 0, ACW, ACH);
+      if (hk < 0.999) { ag.globalAlpha = 1 - hk; ag.drawImage(arcImg, 0, ARC.h, ARC.w, ARC.h, 0, 0, ACW, ACH); ag.globalAlpha = 1; }
     }
-    // cabinet screens, the cyan sign and the claw machine breathe a little
+    if (pwr < 1) { ag.fillStyle = 'rgba(6,4,16,' + 0.9 * (1 - pwr) + ')'; ag.fillRect(0, 0, ACW, ACH); }
+    // the screens and the sign breathe a little (the claw machine, behind the far post, only lights the room); a light runs
+    // along the marquees (arcS.chase, a third of each in turn)
     ag.globalCompositeOperation = 'lighter';
-    ARC_SCREENS.forEach(([x, y, w, h, col], i) => {
-      const cb = arcS.cab[i % arcS.cab.length], cx = x + w / 2;
-      ag.globalAlpha = (0.05 + 0.05 * (cb.c % 2) + 0.03 * (cb.c === 3)) * (i < 4 ? pwr : pw); ag.fillStyle = col;   // (the screens: their power only)
-      if (i < 3) { rowPath(ARC_ROW[i]); ag.fill(); }            // the row's screens: on their own slanted glass
-      else ag.fillRect(x * AK, roomY(cx, y) * AK, w * AK, (roomY(cx, y + h) - roomY(cx, y)) * AK);
+    ARC_SCREENS.forEach(([q, col, scr], i) => {
+      const cb = arcS.cab[i % arcS.cab.length];
+      ag.globalAlpha = (0.05 + 0.05 * (cb.c % 2) + 0.03 * (cb.c === 3)) * (scr ? pwr : pw); ag.fillStyle = col; arcQuad(q);
     });
+    ag.globalAlpha = 0.07 * pw; ag.fillStyle = '#ffd0f0';
+    for (const q of ARC_PINS.marq) arcQuad(q, arcS.chase / 3, (arcS.chase + 1) / 3);
     ag.globalCompositeOperation = 'source-over'; ag.globalAlpha = 1;
-    drawBoot(); drawFuseScreen(pwr);            // the row's screens booting (the reward), the fuse cabinet's own screen (its power only)
+    // the pink sign now and then stutters, with its light on the pavement (arcS.flick)
+    if (arcS.flick < 1) { ag.fillStyle = 'rgba(6,4,16,' + 0.5 * (1 - arcS.flick) * pw + ')'; arcQuad(ARC_PINS.sign); }
+    drawBoot(); drawFuseScreen(pwr);            // the cabinets' screens booting (the reward), the box's display (its power only)
     // rain streaks catching the light of the doorway
     ag.strokeStyle = 'rgba(200,190,230,' + 0.1 * pw + ')'; ag.lineWidth = 1;
     for (let k = 0; k < 18; k++) { const rx = ((k * 37 + Math.floor(arcS.t * 40) * 3) % ARC.w) * AK, ry = (30 + (k * 53) % 300) * AK; ag.beginPath(); ag.moveTo(rx, ry); ag.lineTo(rx - 2, ry + 14 * AK); ag.stroke(); }
-    // the door post: one scene pixel, the wall's own dark
-    ag.fillStyle = '#0a0718'; ag.fillRect(0, topAt(0) * AK, AK, (botAt(0) - topAt(0)) * AK);
     ag.restore();
     // the threshold and the wet pavement before the door, painted at scene pixels (build_arcade_sill.py): the stone sill seen
     // from above, its riser in its own shade, the sidewalk's wet tiles; then the room's light on them, as much as the room has
@@ -3058,105 +3049,96 @@
     }
     atex.needsUpdate = true;
   }
-  // ---- the fuses (2003, the last of three secrets hiding a date): the row's first cabinet, nearest the door (scene x
-  // 1438-1456, the room mirrored to the street's perspective: on 16:9 screens), is out of order, its screen dark but for a prompt in dim amber, FUSE
-  // stacked down the screen and a ? in turn (phones, 3:2 and 16:10 screens never see it: the grey fuse box on the
+  // ---- the fuses (2003, the last of three secrets hiding a date): the grey electrical box on the arcade's far wall (scene
+  // x 1377-1389, y 553-585, beside the claw machine, over the first cabinet: on 16:9 screens) has a little display on its
+  // vents, dark but for a prompt in dim amber, FUSE running across it and a ? in turn (phones, 3:2 and 16:10 screens never see it: the grey fuse box on the
   // Pokémon Center's corner pier and the terminal's hidden fusebox command open the same box). Click it: a fuse box,
   // eleven switches whose only live setting is a year in base 2,
   // the high bit on the left. Right: the box powers up and shuts; the street's power goes out and comes back as a wave
-  // from the arcade down the street, light after light catching like a tube, the far city last; the cabinets boot, this
-  // one shows its high scores, a silent shell goes up behind the cherry tree; 'fuses' is found. Replayable (a win resets
-  // the box). Reduced motion: no blackout, no wave; the high scores in the box and, still, on its screen ----
-  // the year; the cabinet's screen, seen at an angle: a slanted band, its rows y 165-189 in the room texture, each row's
-  // first and last x (read off the painting, smoothed)
-  const FZ_CODE = 2003, FZS = { y: 165, q: [[93, 99], [93, 99], [92, 99], [92, 98], [91, 98], [91, 98], [90, 98], [90, 98], [89, 97], [89, 97], [88, 96], [88, 96], [87, 96],
-    [87, 95], [87, 95], [86, 94], [86, 94], [85, 94], [85, 93], [85, 93], [84, 93], [84, 93], [84, 92], [83, 92], [83, 92]] };
+  // from the arcade down the street, light after light catching like a tube, the far city last; the cabinets boot, its
+  // display shows the high scores, a silent shell goes up behind the cherry tree; 'fuses' is found. Replayable (a win resets
+  // the box). Reduced motion: no blackout, no wave; the high scores in the box and, still, on its display ----
+  // the year; the box's display (ARC_PINS.disp: a quad on the far wall, a whole number of columns wide, its rows following
+  // the wall's slant)
+  const FZ_CODE = 2003, FZS = ARC_PINS.disp, FZW = FZS[1][0] - FZS[0][0], FZH = Math.round(FZS[3][1] - FZS[0][1]);
   const FZ = { sw: new Array(11).fill(false), won: false, state: 'dead', boot: -1, live: 0 };   // its screen: dead, boot, live
-  // a 3x5 pixel font (rows top to bottom), one room pixel a dot: the prompt and the high scores
+  // a 3x5 pixel font (rows top to bottom), one scene pixel a dot: the prompt and the high scores
   const PXF = { F: '111100110100100', U: '101101101101111', S: '111100111001111', E: '111100110100111', '?': '111001011000010',
     H: '101101111101101', I: '111010010010111', T: '111010010010010', M: '101111111101101',
     '0': '111101101101111', '1': '010110010010111', '3': '111001111001111', '6': '111100111101111' };
-  function fzPx(x, y, w, h) {                  // room texture px onto the arcade's canvas, through the wall's perspective
-    const c = x + w / 2, y0 = roomY(c, y), y1 = roomY(c, y + h); ag.fillRect(x * AK, y0 * AK, w * AK, (y1 - y0) * AK);
-  }
-  // on the slanted screen: its outline as the current path (a staircase along its rows), the box around it (room x 83-100,
-  // the room mirrored; its 25 rows), a glyph down it (each glyph upright, set on its rows' middle)
-  function fzClip() {
-    const Q = FZS.q, P = (x, y) => ag.lineTo(x * AK, roomY(x, y) * AK); ag.beginPath();
-    for (let v = 0; v < 25; v++) { P(Q[v][0], FZS.y + v); P(Q[v][0], FZS.y + v + 1); }
-    for (let v = 24; v >= 0; v--) { P(Q[v][1] + 1, FZS.y + v + 1); P(Q[v][1] + 1, FZS.y + v); }
-    ag.closePath();
-  }
-  const fzBox = (v0, n) => fzPx(83, FZS.y + v0, 17, n);
-  function fzGlyph(ch, v0) {
+  function fzPx(x, y, w, h) { ag.fillRect(x * AK, y * AK, w * AK, h * AK); }   // scene px (from ARC.x, ARC.y) onto the canvas
+  // the display, column u (0 .. FZW - 1): its top row; its outline as the current path; a band across it (u0 px from its
+  // left, n wide); a row of it (v from its top); a glyph on it (its left at u0, on its middle rows)
+  const fzTop = (u) => Math.round(FZS[0][1] + (u + 0.5) / FZW * (FZS[1][1] - FZS[0][1]));
+  function fzClip() { ag.beginPath(); for (let u = 0; u < FZW; u++) ag.rect((FZS[0][0] + u) * AK, fzTop(u) * AK, AK, FZH * AK); }
+  function fzBox(u0, n) { for (let u = Math.max(0, Math.round(u0)); u < Math.min(FZW, Math.round(u0 + n)); u++) fzPx(FZS[0][0] + u, fzTop(u), 1, FZH); }
+  function fzRow(u0, n, v) { for (let u = Math.max(0, u0); u < Math.min(FZW, u0 + n); u++) fzPx(FZS[0][0] + u, fzTop(u) + v, 1, 1); }
+  function fzGlyph(ch, u0) {
     const g = PXF[ch]; if (!g) return;
-    const m = FZS.q[Math.max(0, Math.min(24, v0 + 2))], x = Math.round((m[0] + m[1]) / 2 - 1);
-    for (let k = 0; k < 15; k++) { const v = v0 + ((k / 3) | 0); if (g[k] === '1' && v >= 0 && v < 25) fzPx(x + k % 3, FZS.y + v, 1, 1); }
+    const v0 = (FZH - 5) >> 1;
+    for (let k = 0; k < 15; k++) { const u = u0 + k % 3; if (g[k] === '1' && u >= 0 && u < FZW) fzPx(FZS[0][0] + u, fzTop(u) + v0 + ((k / 3) | 0), 1, 1); }
   }
-  const FZ_TICK = 'HI 1ST MTF 160303   ';   // the high scores, down the screen: one glyph per 6 rows
-  function drawFuseScreen(pw) {                // the fuse cabinet's screen, over the painted one
+  const FZ_TICK = 'HI 1ST MTF 160303   ';   // the high scores, across the display: one glyph per 4 px
+  function drawFuseScreen(pw) {                // the box's display
     ag.save(); fzClip(); ag.clip(); fzScreen(pw); ag.restore();
   }
   function fzScreen(pw) {
-    const tt = arcS.t, b = FZ.boot;
-    const gl = ag.createLinearGradient(0, roomY(92, FZS.y) * AK, 0, roomY(92, FZS.y + 25) * AK);
-    gl.addColorStop(0, '#16121f'); gl.addColorStop(1, '#08060e'); ag.fillStyle = gl; fzBox(0, 25);   // the glass, dark
+    const tt = arcS.t, b = FZ.boot, mid = (n) => (FZW - (4 * n - 1)) >> 1;
+    const gl = ag.createLinearGradient(0, fzTop(0) * AK, 0, (fzTop(0) + FZH) * AK);
+    gl.addColorStop(0, '#16121f'); gl.addColorStop(1, '#08060e'); ag.fillStyle = gl; fzBox(0, FZW);   // the glass, dark
     if (pw < 0.5) return;
-    const glow = (col, a) => { ag.globalCompositeOperation = 'lighter'; ag.globalAlpha = a * pw; ag.fillStyle = col; fzBox(0, 25); ag.globalCompositeOperation = 'source-over'; ag.globalAlpha = 1; };
-    if (FZ.state === 'dead') {                                                       // the prompt: FUSE, then a ?, in turn
-      const ph = tt % 2.4;
-      if (ph < 1.6) { ag.fillStyle = '#b5772f'; ['F', 'U', 'S', 'E'].forEach((c, i) => fzGlyph(c, 1 + i * 6)); glow('#e39b45', 0.05); }
-      else if (ph < 2.1) { ag.fillStyle = '#e39b45'; fzGlyph('?', 10); glow('#e39b45', 0.04); }
+    const glow = (col, a) => { ag.globalCompositeOperation = 'lighter'; ag.globalAlpha = a * pw; ag.fillStyle = col; fzBox(0, FZW); ag.globalCompositeOperation = 'source-over'; ag.globalAlpha = 1; };
+    if (FZ.state === 'dead') {                 // the prompt: FUSE (across, if the display is narrower than its four glyphs), then a ?, in turn
+      const fit = FZW >= 15, run = fit ? 1.6 : (16 + FZW) / 12, ph = tt % (run + 0.8);
+      if (ph < run) {
+        ag.fillStyle = '#b5772f';
+        ['F', 'U', 'S', 'E'].forEach((c, i) => fzGlyph(c, fit ? mid(4) + i * 4 : FZW - Math.floor(ph * 12) + i * 4)); glow('#e39b45', 0.05);
+      } else if (ph < run + 0.5) { ag.fillStyle = '#e39b45'; fzGlyph('?', mid(1)); glow('#e39b45', 0.04); }
       return;
     }
     if (FZ.state === 'boot') {                                                       // a flash, the test bars, the memory check
-      if (b < 0.12) { ag.fillStyle = '#eaf6ff'; ag.globalAlpha = 1 - b / 0.12 * 0.5; fzBox(0, 25); ag.globalAlpha = 1; }
-      else if (b < 0.5) ['#ff5a8a', '#ffd36b', '#6dff9b', '#6ad5ff'].forEach((c, k) => { ag.fillStyle = c; fzBox(k * 6.25, 6.25); });
-      else for (let v = 0; v < 25; v += 2) { const [a, c] = FZS.q[v]; ag.fillStyle = Math.random() < 0.5 ? '#26346a' : '#9ff6ff'; fzPx(a + ((Math.random() * 3) | 0), FZS.y + v, 2 + ((Math.random() * (c - a - 1)) | 0), 1); }
+      if (b < 0.12) { ag.fillStyle = '#eaf6ff'; ag.globalAlpha = 1 - b / 0.12 * 0.5; fzBox(0, FZW); ag.globalAlpha = 1; }
+      else if (b < 0.5) ['#ff5a8a', '#ffd36b', '#6dff9b', '#6ad5ff'].forEach((c, k) => { ag.fillStyle = c; fzBox(k * FZW / 4, FZW / 4); });
+      else for (let v = 0; v < FZH; v += 2) { ag.fillStyle = Math.random() < 0.5 ? '#26346a' : '#9ff6ff'; fzRow((Math.random() * 3) | 0, 2 + ((Math.random() * (FZW - 4)) | 0), v); }
       return;
     }
-    // live: its high scores rolling up the screen (still, on MTF, if reduced)
-    ag.fillStyle = '#0b0d26'; fzBox(0, 25);
-    if (reduced) { ag.fillStyle = '#9ff6ff'; ['M', 'T', 'F'].forEach((c, i) => fzGlyph(c, 4 + i * 6)); }
+    // live: its high scores running across the display (still, on MTF, if reduced)
+    ag.fillStyle = '#0b0d26'; fzBox(0, FZW);
+    if (reduced) { ag.fillStyle = '#9ff6ff'; ['M', 'T', 'F'].forEach((c, i) => fzGlyph(c, mid(3) + i * 4)); }
     else {
-      const n = FZ_TICK.length * 6, o = Math.floor((tt - FZ.live) * 8) % n;
+      const n = FZ_TICK.length * 4, o = Math.floor((tt - FZ.live) * 8) % n;
       for (let i = 0; i < FZ_TICK.length; i++) for (const w of [0, n]) {
-        const v0 = i * 6 - o + w; if (v0 < -5 || v0 > 24) continue;
-        ag.fillStyle = i < 6 ? '#ffd36b' : i < 10 ? '#9ff6ff' : '#e6f6ff'; fzGlyph(FZ_TICK[i], v0);
+        const u0 = i * 4 - o + w + FZW; if (u0 < -3 || u0 >= FZW) continue;
+        ag.fillStyle = i < 6 ? '#ffd36b' : i < 10 ? '#9ff6ff' : '#e6f6ff'; fzGlyph(FZ_TICK[i], u0);
       }
     }
     glow('#9ff6ff', 0.08);
   }
-  // the row's three screens, seen at an angle: their corners in the room texture (px)
-  const ARC_ROW = [[[98, 166], [93, 165], [84, 189], [92, 189]], [[82, 161], [80, 161], [71, 184], [73, 184]], [[63, 165], [57, 165], [52, 183], [59, 183]]];
-  function rowPath(q) {                        // a screen's quad, through the wall's perspective, as the current path
-    ag.beginPath(); q.forEach(([qx, qy], k) => { const X = qx * AK, Y = roomY(qx, qy) * AK; if (k) ag.lineTo(X, Y); else ag.moveTo(X, Y); }); ag.closePath();
-  }
-  // the other cabinets, after the fuse one: the row's second and third, the one at the end of the aisle (facing the street)
-  const BOOT_Q = [[ARC_ROW[1], ARC_SCREENS[1][4]], [ARC_ROW[2], ARC_SCREENS[2][4]], [[[40, 159], [25, 159], [25, 175], [40, 175]], '#bfe8ff']];
+  // the cabinets that boot after the box's display, one after the other down the row, each on its own glass: [screen, light]
+  const BOOT_Q = ARC_PINS.scr.map((q, i) => [q, ARC_SCREENS[i][1]]);
   function drawBoot() {                        // the cabinets boot one after the other: flash, bars, check, attract
     if (FZ.boot < 0) return;
-    for (let i = 0; i < 3; i++) {
-      const b = FZ.boot - 0.18 * (i + 1), [q, col] = BOOT_Q[i];
+    for (let i = 0; i < BOOT_Q.length; i++) {
+      const b = FZ.boot - 0.18 * (i + 1), [q, col] = BOOT_Q[i], h = Math.round(q[3][1] - q[0][1]);
       if (b < 0 || b > 2.6) continue;
-      const xs = q.map((p) => p[0]), x = Math.min(...xs), w = Math.max(...xs) - x, y = Math.min(q[0][1], q[1][1]), h = q[2][1] - y;
-      ag.save(); rowPath(q); ag.clip();             // on its own glass only
-      if (b < 0.12) { ag.globalAlpha = 0.85; ag.fillStyle = '#eaf6ff'; fzPx(x, y, w, h); }
-      else if (b < 0.5) ['#ff5a8a', '#ffd36b', '#6dff9b', '#6ad5ff'].forEach((c, k) => { ag.globalAlpha = 0.75; ag.fillStyle = c; fzPx(x, y + k * h / 4, w, h / 4); });
-      else if (b < 0.85) for (let r = 0; r < h; r += 2) { ag.globalAlpha = 0.75; ag.fillStyle = Math.random() < 0.5 ? '#203060' : col; fzPx(x, y + r, w, 1); }
+      if (b < 0.12) { ag.globalAlpha = 0.85; ag.fillStyle = '#eaf6ff'; arcQuad(q); }
+      else if (b < 0.5) ['#ff5a8a', '#ffd36b', '#6dff9b', '#6ad5ff'].forEach((c, k) => { ag.globalAlpha = 0.75; ag.fillStyle = c; arcQuad(q, 0, 1, k / 4, (k + 1) / 4); });
+      else if (b < 0.85) for (let r = 0; r < h; r += 2) { ag.globalAlpha = 0.75; ag.fillStyle = Math.random() < 0.5 ? '#203060' : col; arcQuad(q, 0, 1, r / h, (r + 1) / h); }
       else {                                   // attract mode: bright, a band rolling down, fading back into the room's own
         ag.globalCompositeOperation = 'lighter'; ag.globalAlpha = Math.min(1, (2.6 - b) / 0.8) * 0.3;
-        ag.fillStyle = col; fzPx(x, y, w, h); ag.fillStyle = '#ffffff'; fzPx(x, y + (b * 10) % h, w, 1.5);
+        ag.fillStyle = col; arcQuad(q); const r = Math.floor((b * 10) % h); ag.fillStyle = '#ffffff'; arcQuad(q, 0, 1, r / h, (r + 1) / h);
+        ag.globalCompositeOperation = 'source-over';
       }
-      ag.restore();
+      ag.globalAlpha = 1;
     }
   }
   const FZG = [863, 601, 13, 26];             // the grey box on the Pokémon Center's corner pier: its pixels and 2 px (scene)
-  function overFuse(ev) {                      // the fuse cabinet: its top, screen and controls (room x 82-100, y 150-198); the grey box
+  function overFuse(ev) {                      // the electrical box on the arcade's far wall (ARC_PINS.box, and 2 px); the grey box
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top)), lx = x - ARC.x, ly = y - ARC.y;
     if (x >= FZG[0] && x <= FZG[0] + FZG[2] && y >= FZG[1] && y <= FZG[1] + FZG[3]) return true;
-    return lx >= 82 && lx <= 100 && ly >= roomY(lx, 150) && ly <= roomY(lx, 198);
+    const [bx, by, bw, bh] = ARC_PINS.box;
+    return lx >= bx - 2 && lx <= bx + bw + 2 && ly >= by - 2 && ly <= by + bh + 2;
   }
   // the fuse box: a pixel panel in MATHIS-PC's look, eleven switches (real buttons: Tab, Space, a tap), a LED over each,
   // the main LED dead (a short try at each wrong setting); Esc, x or a click outside closes it
