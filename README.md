@@ -41,6 +41,7 @@ tools/tabako_window.py   la fenêtre du tabac (mur de face) : une petite cabine 
 tools/interieur.py       (un module) une pièce vue par une ouverture d'une façade de côté : son fond de face (chaque rayon de la peinture redressé en horizontale, ses bords suivis, ses pixels gardés), le haut et le bas au grain de la peinture
 tools/ichiraku_interior.py Ichiraku : derrière ses portes vitrées, la boutique de face (les bandes de lumière du comptoir et les étagères horizontales), dans layer_city_off, street_unlit, shop_off.webp et le masque ramen_glass.webp
 tools/oden_window.py     la fenêtre de l'oden : la boutique de face derrière ses deux vitres, le plafond en coin au-dessus ; le comptoir et la marmite (d'où part la vapeur) à leur place
+tools/red_sheet.py       les silhouettes de Red à la porte du balcon (assets/red_sil.webp), découpées de la planche du propriétaire (tools/src/red_sheet.webp) : une seule échelle, un seul sol, la marche de profil le pied posé immobile, l'arrêt, l'attente, le lancer (la Poké Ball ôtée, son vol dans ZRB), le demi-tour ; il remet à jour ZR, ZRC et ZRB dans street.js
 cv.pdf                  CV
 favicon.png, og.png     icône et image de partage
 ```
