@@ -166,7 +166,9 @@ CASE_SH = (0.75, 0.8)                # l'ombre du chambranle : sur la vitre à s
 SILL_SH = (0.55, 0.8)                 # l'ombre de l'appui sur les planches, rangée par rangée
 OFF_Z, OFF_K = (-2.0, 0.8), 0.14     # éteinte : la clarté de la pièce (en écarts, bornée) et sa part dans le verre
 GLOW_MIN = 6                         # (sa lumière où les feuilles s'ouvrent sur tant de pixels ensemble, au moins)
-UP, UP_V = 'win_z7_up', 3            # sa lumière : le comp de la petite fenêtre, sa version
+UP, UP_V = 'win_z7_up', 5            # sa lumière : le comp de la petite fenêtre, sa version
+SCR_PX = (231, 321, 268, 344)        # (x0, y0, x1, y1, dans la scène) : la face de l'écran ; son bord de deux pixels en haut,
+                                     # à droite et en bas (à gauche, le meneau le cache), net et sans trou
 LEAF = 45                            # (une feuille : plus sombre que ça, là où le changement de l'arbre a mis un pixel)
 LUM = np.array([0.299, 0.587, 0.114])
 
@@ -538,6 +540,16 @@ def main():
     for (y, x) in lit: spr[y, x] = [*(ON[y, x] * MUL[y, x, 1] * DEP[y, x, 1]), 255]
     for (y, x) in edge: spr[y, x] = [*sill, 255]
 
+    # le bord de l'écran : ses lignes projetées laissaient des trous (le mur passait entre deux), un cadre de deux pixels
+    # de sa teinte la plus sombre en haut, à droite et en bas, allumé comme éteint
+    x0_, y0_, x1_, y1_ = SCR_PX
+    ring = [(y, x) for y in (y0_ - 2, y0_ - 1, y1_, y1_ + 1) for x in range(x0_, x1_ + 2)] + \
+           [(y, x) for y in range(y0_ - 2, y1_ + 2) for x in (x1_, x1_ + 1)]
+    for arr in (spr, L[0], L[1]):
+        band = arr[y0_ - 1, x0_:x1_ + 2, :3]; dark = band[band.sum(1) <= np.percentile(band.sum(1), 50)]
+        tone = np.median(dark, 0)
+        for (y, x) in set(ring):
+            if (y, x) in lit and (y, x) not in edge: arr[y, x, :3] = tone          # (la pièce seule, pas l'appui ni le cadre)
     for (n, m), l in zip(names, L): save(l, n, m)
     ys, xs = np.where(spr[..., 3] > 0)
     bx, by, bw, bh = int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)
