@@ -81,7 +81,7 @@
   const COMP_KIND = { win_dojo: 'home', win_z1_violet: 'tv', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name === 'z5_spill' || name === 'win_z4_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
-    const kind = COMP_KIND[name] || (name.startsWith('win') || name === 'shop_r' ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
+    const kind = COMP_KIND[name] || (name.startsWith('win') ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
     const shop = name === 'win_z4_shop';             // the Pokémon Center's shop: its opening hours (open as the page opens)
     p.userData = { name, kind, shop, seed: Math.random() * 100, next: shop ? 30 + Math.random() * 60 : kind === 'shop' || kind === 'vend' ? 20 + Math.random() * 50 : 3 + Math.random() * 8, burst: 0, on: true, stut: 0 };
     if (kind === 'home') {                           // a home's window: on a long while, off a while
@@ -5460,7 +5460,7 @@
   const wlMesh = new THREE.Mesh(new THREE.PlaneGeometry(WL.w, WL.h), new THREE.MeshBasicMaterial({ map: wlTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
   wlMesh.position.set(WL.x + WL.w / 2, -(WL.y + WL.h / 2), 0.45); scene.add(wlMesh);
   const wlPane = [];                            // per pane: its warm light, already cut to its glass
-  // the glass is window_panes.webp (red = pane number x 50, alpha = glass); the light on it is window_lit.webp (build_lit.py): a lamp's pool
+  // the glass is window_panes.webp (red = pane number x 50, alpha = glass); the light on it is window_lit_ukki.webp (build_lit.py): a lamp's pool
   // brightest at the third pane in four value steps, the eave's and the frames' shadows, faint frosted streaks and a clustered grain at
   // scene-pixel scale like the painted windows'. The panes' flicker (WIN2.I), the power cut and the red night scale and grade it as before
   const wlMask = new Image(), wlLit = new Image();
@@ -6319,9 +6319,8 @@
   // ---- a nod to Hunter x Hunter: Killua sits on the front roof's edge near its far end, his legs over the street, looking
   // at the tower and the Fuji. Baked by build_zzzchar_killua.py from the owner's own image, lit by the sunset
   // (terracotta on what faces the far end of the street, violet on what faces the zenith), at the scale of the house
-  // under him (~78 px/m); the eave nearer the viewer hides the back of his seat. (His skateboard, which stood on its tail
-  // on the roof's slope against his hair, is gone.) Three layers whose frames are picked by texture offset (no canvas
-  // work while he sits): the body (breathing, the shirt's hem in the gust), the legs (posed by the rig, rig_killua.py: the shin's swing from
+  // under him (~78 px/m); the eave nearer the viewer hides the back of his seat. Three layers whose frames are picked by
+  // texture offset (no canvas work while he sits): the body (breathing, the shirt's hem in the gust), the legs (posed by the rig, rig_killua.py: the shin's swing from
   // the knee, the foot's lag), the head (its pitch, the wind in his hair, breathing). He breathes, his hair and his hem
   // move in the gusts, his legs swing from the knee after a little kick now and then, he looks down at the passing bus,
   // up at the Battle Bus or the fireworks, nods off now and then and comes to with a start.
