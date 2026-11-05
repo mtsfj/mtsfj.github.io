@@ -3359,7 +3359,7 @@
     for (const c of comps) add(() => c, c.position.x);
     for (const E of DRIPS) add(() => E.pw, E.px);   // the eaves' drips: their eave's power (a stand-in each)
     add(() => lcCone, 882); add(() => lcPool, 882); add(() => lcRain, 882); add(() => wlMesh, 1228); add(() => neonMesh, 1196); add(() => rlMesh, 1190);
-    add(() => luffyScr, 1139); add(() => lbGlow, 1139); add(() => z1Cur.mesh, 1096); add(() => z1Door.mesh, 984);
+    add(() => z1Cur.mesh, 1096); add(() => z1Door.mesh, 984);
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
     add(() => ODOOR.mesh, 442); add(() => lanMesh, 413);
     try { for (const o of OBST) for (const m of o.m) add(() => m, -1); } catch (e) {}
@@ -3977,7 +3977,7 @@
     // the street wakes: the finale over and the morning in (20 s into the dawn), the power comes back as the fuses' wave brings
     // it (from the arcade down the street; at once under reduced motion); then over three minutes the places' clock runs on to
     // nine (CLOCK.wake: the sky keeps its morning): the tobacco kiosk, the balcony, the dagashi-ya, the far signs, the arcade,
-    // Luffy's board, Ichiraku, the lantern, the oden, the dojo open one after another; Mathis back at his desk
+    // Ichiraku, the lantern, the oden, the dojo open one after another; Mathis back at his desk
     if (!FIN.woke && FINS.t < 0 && t >= 20) {
       FIN.woke = true; FIN.wakeT = 0;
       if (PW.on && PW.ext === finDieStep) {
@@ -5868,17 +5868,51 @@
   }
   try { FIN.api.on('stand', nfStart); FIN.api.on('dying', nfDying); FIN.api.on('dawn', nfDawn); FIN.api.on('end', nfEnd); } catch (e) {}
 
-  // ---- Luffy on the ramen shop's menu board (its face, in the facade's perspective) ----
+  // ---- Luffy on the ramen shop's menu board: the owner's WANTED posters, paper pasted in its painted frame (its face LB,
+  // in the facade's perspective). tools/luffy_wanted.py draws each straight into that quad at scene pixels
+  // (perspective-correct, each pixel the area of the poster under it, 16 colours and the hat's red band, hard edges:
+  // assets/luffy_wanted.webp), drawn 1:1, nearest: crisp at any zoom. Paper, not a screen: its picture in the dusk alone
+  // (the power cut's), graded as the wall round it (the hour, the red night), and Ichiraku's light on it added (the left
+  // lantern just above it, the door's glass: the lit picture less the other) by their light (the lantern's level and the
+  // kitchen's, the zone's power; half drowned by day; red in the red night, as the street's painted light on its facade). No
+  // glow round it. The classic poster; the Gear 5 one for the street's big events (the finale while it plays, the firework
+  // shows, the red night) and a few seconds when Luffy is clicked (the four heroes). The swap: one frame of the paper
+  // lifting (its foot up), then the other poster ----
   const LB = [[1130.6, 585.9], [1148.5, 584.7], [1148.5, 639.3], [1130.6, 638.4]];   // top-left, top-right, bottom-right, bottom-left
-  const lbGeo = new THREE.BufferGeometry();
-  lbGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(LB.flatMap(p => [p[0], -p[1], 0])), 3));
-  lbGeo.setAttribute('uv', new THREE.BufferAttribute(new Float32Array([0, 1, 1, 1, 1, 0, 0, 0]), 2));
-  lbGeo.setIndex([0, 3, 1, 1, 3, 2]);
-  const luffyTex = loader.load('assets/luffy_board.webp?v=1'); luffyTex.magFilter = luffyTex.minFilter = THREE.LinearFilter; luffyTex.generateMipmaps = false; luffyTex.repeat.set(1 / 12, 1);
-  const luffyScr = new THREE.Mesh(lbGeo, new THREE.MeshBasicMaterial({ map: luffyTex, transparent: true, depthWrite: false }));
-  luffyScr.position.z = 0.5; scene.add(luffyScr);
-  // the screen's light on its own frame and 2-3 px of wall, two stippled steps (droite-04: no ellipse), at 0.9 of the screen's level
-  const lbGlow = plane('assets/luffy_glow.webp?v=1', 1113, 566, 52, 92, 0.48, { opacity: 0, blending: THREE.AdditiveBlending });
+  const LWP = {"box":[1130,584,19,56],"cols":4,"star":[1146,598]};   // (tools/luffy_wanted.py: its box, the atlas's columns, the four heroes' star by his hat)
+  const LWS = { cur: 0, want: 0, cell: -1, flip: -1, g5: 0, dead: false, graded: false };   // the poster up (0 classic, 1 Gear 5), the one asked, the frame drawn, the swap's clock, the click's Gear 5 (s)
+  const lwTex = crisp('assets/luffy_wanted.webp?v=1', null, () => { LWS.dead = true; });
+  const LWM = [0, 1].map((r) => {                // its picture in the dusk, then Ichiraku's light on it
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(LWP.box[2], LWP.box[3]), new THREE.MeshBasicMaterial({ map: lwTex, transparent: true, depthWrite: false, opacity: 1 - r,
+      blending: r ? THREE.AdditiveBlending : THREE.NormalBlending }));
+    m.position.set(LWP.box[0] + LWP.box[2] / 2, -(LWP.box[1] + LWP.box[3] / 2), 0.5 + 0.0002 * r); scene.add(m); return m;
+  });
+  function lwUV(m, c, r) {                       // a mesh's quad onto its atlas cell (column c, row r)
+    const a = m.geometry.attributes.uv, u0 = c / LWP.cols, u1 = (c + 1) / LWP.cols, v0 = 1 - r / 2, v1 = 1 - (r + 1) / 2;
+    a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
+  }
+  function lwIn(p, m) {                          // a scene point on the poster's quad (m px of slack)
+    for (let i = 0; i < 4; i++) { const a = LB[i], b = LB[(i + 1) % 4], ex = b[0] - a[0], ey = b[1] - a[1];
+      if ((ex * (p[1] - a[1]) - ey * (p[0] - a[0])) / Math.hypot(ex, ey) < -m) return false; }
+    return true;
+  }
+  function lwWant() {                            // Gear 5: the finale, a firework show, the red night (as it reaches the board), a click
+    if (LWS.g5 > 0 || FINS.t >= 0 || FWK.active) return 1;
+    return (REDN.wave ? twAt(1139, 0)[0] : nightSys() ? CLOCK.rouge : REDN.k) > 0.5 ? 1 : 0;
+  }
+  function stepLuffy(dt) {
+    if (LWS.dead) { for (const m of LWM) m.visible = false; return; }
+    if (!LWS.graded) { LWS.graded = true; gradeSprite(LWM[0].material, 'street'); gradeSprite(LWM[1].material, 'self'); }
+    LWS.g5 = Math.max(0, LWS.g5 - dt);
+    const w = lwWant();
+    if (w !== LWS.want) { LWS.want = w; LWS.flip = reduced || w === LWS.cur || LWS.cell < 0 ? -1 : 0; if (LWS.flip < 0) LWS.cur = w; }   // (the first frame: at once)
+    if (LWS.flip >= 0 && (LWS.flip += dt) >= 0.08) { LWS.flip = -1; LWS.cur = LWS.want; }
+    const c = LWS.flip >= 0 ? 2 + LWS.want : LWS.cur;   // (the lifting frame: the incoming poster, its foot up)
+    if (c !== LWS.cell) { LWS.cell = c; LWM.forEach((m, r) => lwUV(m, c, r)); }
+    let k = 1;
+    try { k = (0.7 * IRL[0].lv + 0.3 * SHOP.k) * irPow() * SKYF.dayL; } catch (e) {}
+    LWM[1].material.opacity = k; LWM[1].visible = k > 0.004;
+  }
 
   // ---- life in the ramen shop: steam from the kitchen vent, and behind the lit glass under the noren the light
   // breathes, the cook moves about, a customer leans over his bowl, the bowls steam ----
@@ -6772,16 +6806,16 @@
     gsMesh.visible = true;
   }
   // ---- the four heroes (the secret 'killua': its id and its line in the list kept). Kirua on his roof, Naruto behind
-  // the balcony's lit glass, Red at the balcony door above the shop, Luffy on the ramen shop's board: each clicked (or
+  // the balcony's lit glass, Red at the balcony door above the shop, Luffy on his poster by the ramen shop: each clicked (or
   // tapped) once while he is there, in any order. Each answers at once, a second at most, in the scene's own light: the
   // same small star (pixel steps, its light added) and the same soft chime for all four, and a touch of his own: Kirua's
   // lightning crackles on him; a shadow clone pops beside Naruto in a puff (his hand seal too if he faces the glass: a
-  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy's picture stretches on his board, rubber,
-  // and snaps back. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
+  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy's poster turns to his Gear 5 for four
+  // seconds. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
   // then the list's line keeps a ✧ a hero. Clicked again: a faint star only. Kept in this browser ('mtsfj-four'). No
   // cursor, no hint. Reduced motion: no animation, a still star a second ----
   const HEROK = ['kirua', 'naruto', 'red', 'luffy'];
-  const HERO = { stars: [], kil: 0, luf: 0, graded: false };
+  const HERO = { stars: [], kil: 0, graded: false };
   if (FOUR.at) XI_AT.killua = FOUR.at;
   // the star: seven frames of 7 x 7 px (a point, a cross, the star, its glints, fading), drawn once
   const HSTAR = { w: 7, n: 7, dur: [0.05, 0.05, 0.14, 0.14, 0.14, 0.1, 0.1] };
@@ -6813,13 +6847,12 @@
     const f = F.fig, c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
     return heroClip(700 + ZR.x * s - c[4] * k, 615 - ZR.kf * s - c[5] * k, c[1] * k, c[2] * k, z1Door.box);
   }
-  const HERO_LUF = [1130, 584, 19, 56];          // Luffy's board (LB's box)
   function overNaruto(ev) { const b = heroNar(); return !!b && heroIn(heroPt(ev), b, 2); }
   function overRedHero(ev) { const b = heroRed(); return !!b && heroIn(heroPt(ev), b, 2); }
-  function overLuffy(ev) { return luffyScr.visible && luffyScr.material.opacity > 0.25 && heroIn(heroPt(ev), HERO_LUF, 2); }
+  function overLuffy(ev) { return !LWS.dead && lwIn(heroPt(ev), 2); }   // (his poster's quad: paper, always there)
   function heroAt(k) {                           // where his star shows: by his head
     if (k === 'kirua') return [331, 134];
-    if (k === 'luffy') return [1147, 589];
+    if (k === 'luffy') return LWP.star;
     const b = k === 'naruto' ? heroNar() : heroRed();
     return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
   }
@@ -6849,7 +6882,7 @@
         const f = NAR.fig; if (f) { const away = nU(f.s - 1.1) >= WL.x + 12; NAR.puffs.push({ s: f.s + (away ? -1.1 : 1.1), t: 0, h: 1.3 }); if (f.row === 'look' || f.row === 'seal') NAR.rx = 0.55; }
       }
       else if (k === 'red') heroToss();
-      else HERO.luf = 0.7;
+      else LWS.g5 = 4;
     }
     paintSecrets(false);
     if (all) { XI_AT.killua = FOUR.at; foundSecret('killua'); }
@@ -6888,12 +6921,6 @@
         if (HERO.kil > 0) { ghost(cx, cy, 1, 0.2 * I, 4); crackle(1 + Math.round(4 * I), I); }
         gsMesh.visible = HERO.kil > 0; gsTex.needsUpdate = true;
       }
-    }
-    if (HERO.luf > 0) {                          // Luffy: his picture stretched across his board, rubber, and back (its own frame only)
-      HERO.luf = Math.max(0, HERO.luf - dt);
-      const u = 1 - HERO.luf / 0.7, S = 1 + 0.4 * Math.exp(-4 * u) * Math.abs(Math.sin(3 * Math.PI * u));
-      luffyTex.repeat.x = 1 / 12 / S; luffyTex.offset.x += (1 / 12) * (1 - 1 / S) / 2;
-      if (HERO.luf <= 0) luffyTex.repeat.x = 1 / 12;
     }
   }
   // ---- a cat in the gap of zone 9's sliding door (the right leaf open a little: x 832-836, the threshold at y 634-635;
@@ -8759,13 +8786,13 @@
   // vending machines and the street lamp stay on. At 0:55-1:25 the last train crosses the valley, once. The finale's dawn
   // (CLOCK.push): most lights out, the rain thinning. Hours as the visitor's local ones (past midnight as 24+) ----
   const NHOURS = { center: [0, 24], dagashi: [8.5, 21.5], tabako: [8, 22], emblem: [0, 24], lantern9: [8.5, 24.5], ramen: [8.5, 26],   // (the Center: never shut)
-    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25], luffy: [8.5, 26] };
+    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25] };
   const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', win_z7_kiosk: 'tabako', z4_emblem: 'emblem', win_z9_lantern: 'lantern9' };
   const NHOME = [[0, 1], [10, 1], [11, 0.9], [12, 0.75], [13, 0.52], [14, 0.32], [15, 0.2], [16, 0.13], [17, 0.15], [18, 0.3], [19, 0.55], [20.5, 1], [24, 1]];   // [hours since noon, the share of homes that may be lit]
   const NCARS = [[0, 1], [10, 1], [12, 0.6], [14, 0.3], [16, 0.25], [18, 0.6], [20.5, 1], [24, 1]];                                             // the far road's cars
   const NIGHT = { home: 1, busy: 0, farX: 0, cars: 1, signs: 1, rain: 1, snap: false, init: false };
   // the finale's morning: the places open one after another as the street wakes (their opening hour a little later each)
-  const WAKE_JIT = { tabako: 0, balcony: 0.06, dagashi: 0.1, farSigns: 0.14, arcade: 0.18, luffy: 0.22, ramen: 0.26, lantern9: 0.3, oden: 0.34, dojo: 0.4 };
+  const WAKE_JIT = { tabako: 0, balcony: 0.06, dagashi: 0.1, farSigns: 0.14, arcade: 0.18, ramen: 0.26, lantern9: 0.3, oden: 0.34, dojo: 0.4 };
   const nOpen0 = (k) => NHOURS[k][0] + (CLOCK.wake > 0 ? WAKE_JIT[k] || 0 : 0);
   const nOpenAt = (h, k) => { const a = nOpen0(k), b = NHOURS[k][1]; return (h >= a && h < b) || (h + 24 >= a && h + 24 < b); };
   const nightOpen = (k) => nOpenAt(CLOCK.h + CLOCK.wake, k);
@@ -8773,7 +8800,7 @@
   // its opening and at its closing time (NHOURS), so a driven hour (setTimeOverride, the finale's dawn) shuts the places one by one,
   // and the live clock over those minutes. The hour only: the power cut (pw) and the red night are not in it. Names: 'dojo', 'oden',
   // 'arcade', 'ramen', 'center' (the Pokémon Center never shuts, as in the games: always 1), 'dagashi', 'tabako', 'emblem',
-  // 'lantern9', 'study', 'balcony', 'luffy'; an unknown name: 1. Read by the street's lights, the ground's lights,
+  // 'lantern9', 'study', 'balcony'; an unknown name: 1. Read by the street's lights, the ground's lights,
   // Ichiraku's closing and Gengar's visit ----
   const OPEN_EASE = 0.1;                         // hours (6 min)
   const nRamp = (h, a, b) => Math.min(nSmooth(a, a + OPEN_EASE, h), 1 - nSmooth(b - OPEN_EASE, b, h));
@@ -9182,8 +9209,7 @@
     stepBBus(dt, t); stepGlide(dt);
     stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
     stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
-    luffyTex.offset.x = Math.floor(t * 2.5) % 12 / 12; luffyScr.material.opacity = lightLife(t, 2.4, 0.035) * (0.3 + 0.7 * openK('luffy'));   // (standby once Ichiraku is shut: above overLuffy's 0.25)
-    lbGlow.material.opacity = 0.9 * luffyScr.material.opacity;
+    stepLuffy(dt);                                   // Luffy's poster: which one, its light
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
     stepSwitch();                                    // the switch box by the Center: its toggles, its light
     // Konami fireworks: launch the queued shells on time, step every burst, stop when the sky is clear again
@@ -9225,7 +9251,6 @@
     }
     // moon station: slow warm pulse
     station.material.opacity = (0.06 + 0.3 * Math.pow(0.5 + 0.5 * Math.sin(t * 1.1), 3)) * SKYF.up;   // (set with the moon)
-    // Luffy billboard: 12 frames at 10 fps, faint screen flicker
     // the bus
     stepBus(dt);
     stepBusLights(dt);                               // its headlights in the rain and on the wet road (lumieres-08)
