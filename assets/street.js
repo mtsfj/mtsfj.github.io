@@ -4034,20 +4034,22 @@
   // ---- drips from the eaves (v2, patch_drips2.py): water runs off them. At their low points, corners, the eave's lowest
   // end and each trough of corrugated sheet or tile channel (read off the painted relief: the Center's red awning, its two
   // front corners; the oden's eave, its far end; zone 9's pent roof, its channels in the tiles' rhythm; the kiosk
-  // lean-to's sheet, its troughs and near corner), a thin trickle: a broken string of 1 px drops, near-continuous, in
+  // lean-to's sheet, its troughs and near corner; the downpipe's shoe at the foot of Kirua's gutter, pouring on that sheet,
+  // and the wet streak down its corrugations from it), a thin trickle: a broken string of 1 px drops, near-continuous, in
   // irregular pulses, spaced by their fall; elsewhere along an edge, little bursts (a bead runs down to the lip, hangs,
-  // swells, lets go, 1-3 more follow). A trickle's landing: a 1-2 px crown flickering, and rings as the rain's (its lilac,
+  // swells, lets go, 1-3 more follow: the end of Kirua's gutter onto the low roof, the lip of the slab over Naruto's window onto
+  // the top rail of the balcony under it, zone 9's pent roof but where the Expedition's banner hangs over it). A trickle's landing: a 1-2 px crown flickering, and rings as the rain's (its lilac,
   // 1.1 s, its size at that depth; fuller in a puddle). They go with the rain (gusts, NIGHT.rain), the light around them
   // (the water's pass: dim in the dark, the power cut, the red night: red at their own luminance) and their eave's power
   // (a stand-in each in pwList). GPU-driven: a particle's life is computed in the vertex shader from its birth time, in
   // whole scene pixels (point sprites stamped per scene px); two draws (the near eaves over the water's sheet, zone 9's
   // behind the bus). None under reduced motion; the water does not mirror them ----
-  const DRIPS = [{"n":"awning","i":0,"z":1.155,"px":860,"py":550,"k":0.85,"vis":1.6,"rr":0.8,"c":[1.0,0.86,0.78],"bi":[1.4,4.5],"st":[[845,553,659.66,347.8,0.333,0.0,14.0,-2,5],[872,542,667.98,412.5,0.395,0.0,16.0,-2,5]],"bu":[[847,552,660.28,352.6,0.338,0.0,0,-2,5],[850,551,661.2,359.8,0.345,0.0,0,-2,5],[852,551,661.82,364.6,0.349,0.0,0,-2,5],[855,549,662.74,371.8,0.356,0.0,0,-2,5],[858,548,663.66,379.0,0.363,0.0,0,-2,5],[861,547,664.59,386.2,0.37,0.0,0,-2,5],[864,545,665.51,393.4,0.377,0.0,0,-2,5],[867,544,666.44,400.6,0.384,0.0,0,-2,5]]},{"n":"oden","i":1,"z":1.155,"px":470,"py":550,"k":0.9,"vis":2.0,"rr":0.9,"c":[1.0,0.82,0.62],"bi":[1.8,5.0],"st":[[508,556,667.59,409.5,0.392,0.0,20.0,16,7]],"bu":[[468,538,678.54,494.8,0.474,0.0,0,8,4],[474,541,676.9,482.0,0.462,0.0,0,8,4],[479,543,675.53,471.3,0.452,0.0,0,8,4],[485,546,673.89,458.5,0.439,0.0,0,8,4],[490,548,672.52,447.8,0.429,0.0,0,8,4],[495,550,671.15,437.2,0.419,0.0,0,8,4],[499,552,670.05,428.7,0.411,0.0,0,8,4]]},{"n":"zone9","i":2,"z":0.61,"px":815,"py":563,"k":0.55,"vis":0.8,"rr":0.35,"c":[0.78,0.76,0.95],"bi":[3,9],"st":[[778,563,642,206.9,0.3,0.0,8.56,0,11],[788,563,642,206.9,0.3,0.0,9.2,0,11],[797,563,642,206.9,0.3,0.0,5.91,0,11],[806,563,642,206.9,0.3,0.0,9.99,0,11],[816,563,642,206.9,0.3,0.0,5.97,0,11],[825,563,642,206.9,0.3,0.0,8.35,0,11],[835,563,642,206.9,0.3,0.0,5.46,0,11],[853,563,642,206.9,0.3,0.0,8.79,0,11],[863,563,642,206.9,0.3,0.0,5.76,0,11]],"bu":[]},{"n":"kiosk","i":3,"z":1.155,"px":318,"py":520,"k":1.0,"vis":2.0,"rr":0.45,"c":[0.72,0.86,1.0],"bi":[2,6],"st":[[305,512,728.13,880.7,0.844,0.0,20.0,9,9],[311,514,726.41,867.3,0.831,0.0,11.65,9,9],[319,516,724.12,849.5,0.814,0.0,11.8,9,9],[327,518,721.83,831.6,0.797,0.0,12.13,8,8],[335,520,719.54,813.8,0.78,0.0,9.53,8,8],[342,522,717.53,798.2,0.765,0.0,12.93,8,8],[349,524,715.53,782.6,0.75,0.0,13.9,8,8],[355,526,713.81,769.2,0.737,0.0,6.92,8,8],[362,528,711.8,753.6,0.722,0.0,10.14,8,8],[368,529,710.08,740.2,0.709,0.0,13.67,8,8],[374,531,708.37,726.8,0.696,0.0,11.91,7,7],[380,532,706.65,713.5,0.684,0.0,9.55,7,7]],"bu":[]}];   // per eave: n, i, z its layer, px py (the blackout's), k its brightness at its depth, vis the visible part of a fall, rr a trickle's rings /s, c its light (no water's pass), bi bursts' interval (s), st trickles and bu burst points: [x, lip row, landing row, g px/s2, ring scale, puddle, rate /s, slide dx, dy]
+  const DRIPS = [{"n":"awning","i":0,"z":1.155,"px":860,"py":550,"k":0.85,"vis":1.6,"rr":0.8,"c":[1.0,0.86,0.78],"bi":[1.4,4.5],"st":[[845,553,659.66,347.8,0.333,0.0,14.0,-2,5],[872,542,667.98,412.5,0.395,0.0,16.0,-2,5]],"bu":[[847,552,660.28,352.6,0.338,0.0,0,-2,5],[850,551,661.2,359.8,0.345,0.0,0,-2,5],[852,551,661.82,364.6,0.349,0.0,0,-2,5],[855,549,662.74,371.8,0.356,0.0,0,-2,5],[858,548,663.66,379.0,0.363,0.0,0,-2,5],[861,547,664.59,386.2,0.37,0.0,0,-2,5],[864,545,665.51,393.4,0.377,0.0,0,-2,5],[867,544,666.44,400.6,0.384,0.0,0,-2,5]]},{"n":"oden","i":1,"z":1.155,"px":470,"py":550,"k":0.9,"vis":2.0,"rr":0.9,"c":[1.0,0.82,0.62],"bi":[1.8,5.0],"st":[[508,556,667.59,409.5,0.392,0.0,20.0,16,7]],"bu":[[468,538,678.54,494.8,0.474,0.0,0,8,4],[474,541,676.9,482.0,0.462,0.0,0,8,4],[479,543,675.53,471.3,0.452,0.0,0,8,4],[485,546,673.89,458.5,0.439,0.0,0,8,4],[490,548,672.52,447.8,0.429,0.0,0,8,4],[495,550,671.15,437.2,0.419,0.0,0,8,4],[499,552,670.05,428.7,0.411,0.0,0,8,4]]},{"n":"zone9","i":2,"z":0.61,"px":815,"py":563,"k":0.55,"vis":0.8,"rr":0.35,"c":[0.78,0.76,0.95],"bi":[3,9],"st":[[797,563,642,206.9,0.3,0.0,5.91,0,11],[806,563,642,206.9,0.3,0.0,9.99,0,11],[816,563,642,206.9,0.3,0.0,5.97,0,11],[825,563,642,206.9,0.3,0.0,8.35,0,11],[835,563,642,206.9,0.3,0.0,5.46,0,11],[853,563,642,206.9,0.3,0.0,8.79,0,11],[863,563,642,206.9,0.3,0.0,5.76,0,11]],"bu":[]},{"n":"kiosk","i":3,"z":1.155,"px":318,"py":520,"k":1.0,"vis":2.0,"rr":0.45,"c":[0.72,0.86,1.0],"bi":[2,6],"st":[[305,512,728.13,880.7,0.844,0.0,20.0,9,9],[311,514,726.41,867.3,0.831,0.0,11.65,9,9],[319,516,724.12,849.5,0.814,0.0,11.8,9,9],[327,518,721.83,831.6,0.797,0.0,12.13,8,8],[335,520,719.54,813.8,0.78,0.0,9.53,8,8],[342,522,717.53,798.2,0.765,0.0,12.93,8,8],[349,524,715.53,782.6,0.75,0.0,13.9,8,8],[355,526,713.81,769.2,0.737,0.0,6.92,8,8],[362,528,711.8,753.6,0.722,0.0,10.14,8,8],[368,529,710.08,740.2,0.709,0.0,13.67,8,8],[374,531,708.37,726.8,0.696,0.0,11.91,7,7],[380,532,706.65,713.5,0.684,0.0,9.55,7,7]],"bu":[]},{"n":"kirua","i":4,"z":1.155,"px":345,"py":235,"k":0.8,"vis":1.0,"rr":0.0,"c":[0.84,0.76,0.9],"bi":[3,8],"st":[],"bu":[[345,235,481.0,764.0,0.735,0.0,0,0,2],[343,232,478.0,764.0,0.735,0.0,0,0,2]]},{"n":"shoe","i":5,"z":1.155,"px":325,"py":458,"k":0.9,"vis":1.0,"rr":0.0,"c":[0.72,0.8,0.98],"bi":[0.8,2.4],"st":[[324,459,460.0,764.0,0.735,0.0,22.0,0,0]],"bu":[[330,470,471.0,764.0,0.735,0.0,0,5,9]]},{"n":"slab","i":6,"z":1.155,"px":1228,"py":200,"k":0.75,"vis":1.0,"rr":0.0,"c":[0.95,0.84,0.7],"bi":[2,6],"st":[],"bu":[[1160,169,281.0,394.7,0.12,0.0,0,0,6],[1166,161,275.0,408.2,0.12,0.0,0,0,6],[1173,152,268.0,424.1,0.12,0.0,0,0,6],[1180,143,262.0,439.9,0.12,0.0,0,0,6],[1187,133,255.0,455.7,0.12,0.0,0,0,6],[1194,126,248.0,471.5,0.12,0.0,0,0,6],[1201,118,241.0,487.4,0.12,0.0,0,0,6],[1208,108,235.0,503.2,0.12,0.0,0,0,6],[1215,99,228.0,519.0,0.12,0.0,0,0,6],[1222,91,221.0,534.8,0.12,0.0,0,0,6],[1229,82,214.0,550.7,0.12,0.0,0,0,6]]}];   // per eave: n, i, z its layer, px py (the blackout's), k its brightness at its depth, vis the visible part of a fall, rr a trickle's rings /s, c its light (no water's pass), bi bursts' interval (s), st trickles and bu burst points: [x, lip row, landing row, g px/s2, ring scale (its depth's: the wind's drift too), puddle, rate /s, slide dx, dy]; no rings where rr is 0 (no water under it)
   const DRIP2 = { t: 0, wind: 40, pools: [] };
   (function () {
     const VS = `attribute vec4 aA, aB, aC, aD;   // the lip (x, row: px centres), the landing row, g | birth, slide, hang (s), drift (px/s) | slide (px), brightness, eave | kind (0 a drop, 1 a ring), crown (1 left, 2 right, 3 both), the visible part of the fall, ring scale
-      uniform float uDripT, uDripPx, uDripWet; uniform vec4 uDripPow, uDripCam; uniform vec3 uDripC0, uDripC1, uDripC2, uDripC3; uniform sampler2D tDripLit;
-      uniform vec2 uRainPow; uniform vec3 uRainC;   // the rain's own particles (eave index 4: the road's rings, the lamp's crowns): the street's power at their x (the fuses' wave: front, ambient), their light without the water's pass
+      uniform float uDripT, uDripPx, uDripWet; uniform vec4 uDripPow, uDripPow2, uDripCam; uniform vec3 uDripC0, uDripC1, uDripC2, uDripC3, uDripC4, uDripC5, uDripC6; uniform sampler2D tDripLit;
+      uniform vec2 uRainPow; uniform vec3 uRainC;   // the rain's own particles (eave index 8: the road's rings, the lamp's crowns): the street's power at their x (the fuses' wave: front, ambient), their light without the water's pass
       varying vec3 vCol; varying vec4 vS;
       vec3 dripLit(vec2 p) { vec2 uv = vec2((p.x - uDripCam.x) / (uDripCam.y - uDripCam.x), (uDripCam.w - p.y) / (uDripCam.w - uDripCam.z)); return texture2D(tDripLit, clamp(uv, 0.001, 0.999)).rgb; }
       void main() {
@@ -4062,15 +4064,15 @@
         } else if (age >= 0.0 && age < 1.1) {    // a ring: 1.1 s, growing, fading; seen as the water sees it: its height over its width is (row - 615) / F (0.09 at row 700, 0.18 at 790), a line when under half a pixel
           float k = age / 1.1; p1 = 0.4375 * (4.0 + 14.0 * k) * aD.w; p2 = p1 * clamp((aA.y - 615.0) / 959.5, 0.0, 1.0); b = aC.z * (1.0 - k); m = 4.0; S = 2.0 * floor(p1 + 0.5) + 3.0;
         }
-        vec4 we = vec4(equal(vec4(floor(aC.w + 0.5)), vec4(0.0, 1.0, 2.0, 3.0)));
-        bool rainP = aC.w > 3.5;                 // the rain's own (index 4): the street's power at its x, as the rain's streaks (a 4 % floor: the water still moves in the dark)
-        b *= rainP ? mix(0.04, 1.0, uRainPow.y * smoothstep(uRainPow.x - 60.0, uRainPow.x + 60.0, p.x)) : dot(uDripPow, we);
+        vec4 we = vec4(equal(vec4(floor(aC.w + 0.5)), vec4(0.0, 1.0, 2.0, 3.0))), we2 = vec4(equal(vec4(floor(aC.w + 0.5)), vec4(4.0, 5.0, 6.0, 7.0)));   // (its eave)
+        bool rainP = aC.w > 7.5;                 // the rain's own (index 8): the street's power at its x, as the rain's streaks (a 4 % floor: the water still moves in the dark)
+        b *= rainP ? mix(0.04, 1.0, uRainPow.y * smoothstep(uRainPow.x - 60.0, uRainPow.x + 60.0, p.x)) : dot(uDripPow, we) + dot(uDripPow2, we2);
         vec2 c = floor(p) + 0.5;
         vCol = vec3(0.0); vS = vec4(1.0, 0.0, 0.0, 0.0);
         if (b < 0.004) { gl_Position = vec4(0.0, 0.0, 2.0, 1.0); gl_PointSize = 1.0; }
         else {
           gl_Position = projectionMatrix * modelViewMatrix * vec4(c.x, -c.y, 0.0, 1.0); gl_PointSize = S * uDripPx;
-          vec3 L = rainP ? uRainC : uDripC0 * we.x + uDripC1 * we.y + uDripC2 * we.z + uDripC3 * we.w;
+          vec3 L = rainP ? uRainC : uDripC0 * we.x + uDripC1 * we.y + uDripC2 * we.z + uDripC3 * we.w + uDripC4 * we2.x + uDripC5 * we2.y + uDripC6 * we2.z;
           if (uDripWet > 0.5) {                  // the light around it, as the street is lit now
             vec2 q = m > 3.5 ? c - vec2(0.0, 6.0) : c;
             vec3 h = max(max(dripLit(q + vec2(4.0, 0.0)), dripLit(q - vec2(4.0, 0.0))), max(dripLit(q + vec2(0.0, 4.0)), dripLit(q - vec2(0.0, 4.0))));
@@ -4103,10 +4105,11 @@
       g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
       for (const k of ['aA', 'aB', 'aC', 'aD']) { A[k] = new THREE.BufferAttribute(new Float32Array(n * 4), 4).setUsage(THREE.DynamicDrawUsage); g.setAttribute(k, A[k]); }
       for (let i = 0; i < n; i++) A.aB.array[i * 4] = -1e4;
-      const pw = new THREE.Vector4(1, 1, 1, 1), col = (i) => new THREE.Vector3().fromArray(DRIPS[i].c);
-      const U = { uDripT: { value: 0 }, uDripPx: { value: 1 }, uDripC0: { value: col(0) }, uDripC1: { value: col(1) }, uDripC2: { value: col(2) }, uDripC3: { value: col(3) },
+      const pw = new THREE.Vector4(1, 1, 1, 1), pw2 = new THREE.Vector4(1, 1, 1, 1), col = (i) => new THREE.Vector3().fromArray(DRIPS[i].c);
+      const U = { uDripT: { value: 0 }, uDripPx: { value: 1 }, uDripC0: { value: col(0) }, uDripC1: { value: col(1) }, uDripC2: { value: col(2) }, uDripC3: { value: col(3) }, uDripC4: { value: col(4) }, uDripC5: { value: col(5) }, uDripC6: { value: col(6) },
         uRainPow: { value: new THREE.Vector2(-1e4, 1) }, uRainC: { value: new THREE.Vector3(0.5, 0.47, 0.62) },   // (the rain's particles: set each frame in stepDrips; a mid lilac light without the water's pass)
         uDripPow: { get value() { for (let k = 0; k < 4; k++) pw.setComponent(k, DRIPS[k].pw.material.opacity); return pw; } },   // (the fuses' stand-ins)
+        uDripPow2: { get value() { for (let k = 4; k < 8; k++) pw2.setComponent(k - 4, k < DRIPS.length ? DRIPS[k].pw.material.opacity : 1); return pw2; } },
         tDripLit: { get value() { try { return WET.on && WET.rt ? WET.rt.texture : null; } catch (e) { return null; } } },
         uDripCam: { get value() { try { return WET.mesh.material.uniforms.uCam.value; } catch (e) { return cam0; } } },
         uDripWet: { get value() { try { return WET.on && WET.loaded >= 2 ? 1 : 0; } catch (e) { return 0; } } } };
@@ -4140,7 +4143,7 @@
   }
   // the rain's rings on the road (meteo-01, sol-03): the drips' ring particle, at the rain's rate (RR.rate a second, x the rain's
   // factor), where the drops land (ringAt: half in zone 10's puddles, brighter there), sized by depth (as before: at least 0.3), in
-  // the near pool; their power the street's wave (index 4). The old ten sprites (an antialiased ellipse scaled under the pixel, a
+  // the near pool; their power the street's wave (index 8). The old ten sprites (an antialiased ellipse scaled under the pixel, a
   // fixed rate and colour, drawn over everything at z 2.5) are gone
   const RR = { rate: 10, acc: 0 };
   function stepRings(dt, rk) {
@@ -4151,12 +4154,12 @@
     while (RR.acc >= 1) {
       RR.acc -= 0.7 + 0.6 * Math.random();
       const a = ringAt(), x = Math.floor(a[0]) + 0.5, y = Math.floor(a[1]) + 0.5, sc = Math.max(0.3, (a[1] - 615) / 150);
-      dripPut(q, [x, y, 0, 0], [D.t - Math.random() * dt, 0, 0, 0], [0, 0, a[2] ? 0.85 : 0.7, 4], [1, 0, 0, sc], D.t + 1.1);   // (its brightness: about twice the old sprites' peak, which the eye never caught)
+      dripPut(q, [x, y, 0, 0], [D.t - Math.random() * dt, 0, 0, 0], [0, 0, a[2] ? 0.85 : 0.7, 8], [1, 0, 0, sc], D.t + 1.1);   // (its brightness: about twice the old sprites' peak, which the eye never caught)
     }
   }
   // the drops that hit the street lamp's head (meteo-14): a 1 px crown on its hood's top edge (a shallow dome, row 143 at its middle
   // to 148 at its sides over x 861-901, as measured), its sparks the row above, against the sky, leaning with the wind; the drips' crown
-  // particle (index 4: the street's power at x 880), lit by the lamp through the water's pass, red in the red night, none when the lamp
+  // particle (index 8: the street's power at x 880), lit by the lamp through the water's pass, red in the red night, none when the lamp
   // is out (its glass's level); LCR.rate a second x the rain's factor
   const LCR = { rate: 4, acc: 0 };
   function stepCrowns(dt, rk) {
@@ -4166,7 +4169,7 @@
       LCR.acc -= 0.6 + 0.8 * Math.random();
       const x = 861 + Math.floor(Math.random() * 41), top = 143 + Math.round(Math.pow((x - 881) / 22, 2) * 6), r = Math.random(), w = Math.min(1, Math.max(0, gust.k));
       const kind = r < 0.35 + 0.35 * w ? 1 : r < 0.75 + 0.2 * w ? 3 : 2;   // its sparks: left (with the wind, the more the stronger it blows), both, right
-      dripPut(DRIP2.pools[0], [x + 0.5, top - 0.5, top + 0.5, 400], [DRIP2.t - Math.random() * dt, 0, 0, 0], [0, 0, 0.9 * k, 4], [0, kind, 1, 0], DRIP2.t + 0.3);
+      dripPut(DRIP2.pools[0], [x + 0.5, top - 0.5, top + 0.5, 400], [DRIP2.t - Math.random() * dt, 0, 0, 0], [0, 0, 0.9 * k, 8], [0, kind, 1, 0], DRIP2.t + 0.3);
     }
   }
   function stepDrips(dt) {
@@ -4190,7 +4193,7 @@
       if (E.bu.length && (E.next -= dt * rkd) < 0) {   // elsewhere: a little burst, 2-4 drops in quick succession
         E.next = E.bi[0] + Math.random() * (E.bi[1] - E.bi[0]);
         const p = E.bu[(Math.random() * E.bu.length) | 0], n = 2 + ((Math.random() * 3) | 0), ts = Math.random() < 0.6 ? 0.4 + Math.random() * 0.6 : 0, tf = 0.25 + Math.random() * 0.5;
-        for (let j = 0, t0 = D.t; j < n; j++) { dripDrop(E, p, t0, j ? 0 : ts, j ? 0.02 + Math.random() * 0.08 : tf, j ? 0.8 : 1, Math.random() < 0.7 ? 1 : 0); t0 += (j ? 0 : ts + tf) + 0.07 + Math.random() * 0.17; }
+        for (let j = 0, t0 = D.t; j < n; j++) { dripDrop(E, p, t0, j ? 0 : ts, j ? 0.02 + Math.random() * 0.08 : tf, j ? 0.8 : 1, E.rr > 0 && Math.random() < 0.7 ? 1 : 0); t0 += (j ? 0 : ts + tf) + 0.07 + Math.random() * 0.17; }
       }
     }
     for (const q of D.pools) { q.U.uDripT.value = D.t; if (q.dirty) { q.dirty = false; for (const k in q.A) q.A[k].needsUpdate = true; } }
