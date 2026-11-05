@@ -53,7 +53,7 @@ FALL = 0.22                          # allumée : le bas de la cabine plus sombr
 GLASS_DIM = 0.93                     # allumée : derrière le verre
 SHEEN = ((0.5, 4.0, 3.0), (0.56, 1.5, 6.0))   # le reflet en biais : (sa pente (x par rangée), sa largeur, son ajout)
 SHEEN_AT = (247, 600)                # (le point où passent leurs milieux)
-UP = 'win_z7_kiosk'; UP_POS = (227, 575); UP_V = 6   # le comp de la fenêtre (sa place au commit BEFORE), sa version
+UP = 'win_z7_kiosk'; UP_POS = (227, 575); UP_V = 7   # le comp de la fenêtre (sa place au commit BEFORE), sa version
 LUM = np.array([0.299, 0.587, 0.114])
 
 
