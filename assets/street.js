@@ -1882,13 +1882,13 @@
     plankRow: 36, roofRow: 10, near: [38.8, 40.6], far: 42.6, take: 34,
     T: { leap: [0.1, 0.1, 0.08, 0.1, 0.1, 0.14, 0.14, 0.2], jump: [0.2, 0.1, 0.16, 0.16, 0.16, 0.2], plank: [0.55, 0.4, 0.3, 0.3, 0.2, 0.25], fall: [0.1, 0.28, 0.46, 0.64, 0.84] } };
   const zSum = (T, t) => { let k = 0, s = T[0]; while (k < T.length - 1 && t >= s) s += T[++k]; return k; };   // (the frame at t of a timed act)
-  const zTex = crispLate('assets/bus_zombies.webp?v=4', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
+  const zTex = crispLate('assets/bus_zombies.webp?v=5', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
       const c = document.createElement('canvas'); c.width = BZ.W; c.height = BZ.H; const g = c.getContext('2d'); g.drawImage(zTex.image, 0, 0);
       const d = g.getImageData(0, 0, BZ.W, BZ.H).data, a = new Uint8Array(BZ.W * BZ.H); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3]; ZG.alpha = a;
     } catch (e) {}
   });
-  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=3', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=4', 'bus');
+  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=4', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=5', 'bus');
   function zMesh(tex, glow) {                      // a zombie's layer: its own cell of the sheets (uCell), hidden behind the near buildings
     const u = { value: new THREE.Vector4(0, 0, 1, 1) }, fl = { value: 0 };
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial(glow ? { map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }
@@ -1915,7 +1915,7 @@
   }
   const ZS = { pls: [], ctx: null, stop: 0, win: false, roof: false };   // the loose planks (one a barricade, nailed on each pass); the bus where it is
   for (let i = 0; i < 4; i++) {
-    const m = busPart('assets/bus_plank.webp?v=2', BZ.pl[2], BZ.pl[2], 0.6524, { alphaTest: 0.5 }, 1, BZ.pl[3]);
+    const m = busPart('assets/bus_plank.webp?v=3', BZ.pl[2], BZ.pl[2], 0.6524, { alphaTest: 0.5 }, 1, BZ.pl[3]);
     BUS.list.splice(BUS.list.indexOf(m), 1);       // (a plank outlives the bus: it lies on the road)
     ZS.pls.push({ m, st: 'none', col: 0, x: 0, y: 0, vx: 0, vy: 0, a: 0, w: 0, life: 0, hits: 0, z: null });
   }
@@ -2378,7 +2378,7 @@
     const SRC = { dempsey: ['assets/crew_dempsey.webp?v=4', 'assets/crew_dempsey_flash.webp?v=4'], nikolai: ['assets/crew_nikolai.webp?v=4', 'assets/crew_nikolai_flash.webp?v=4'],
       takeo: ['assets/crew_takeo.webp?v=4', 'assets/crew_takeo_flash.webp?v=4'], richtofen: ['assets/crew_richtofen.webp?v=4', 'assets/crew_richtofen_flash.webp?v=4'] };
     for (const h of Object.keys(CRW.heroes)) { T.crew[h] = crisp(SRC[h][0], on); T.flash[h] = crisp(SRC[h][1], on); CREW.need += 2; }
-    for (const src of ['assets/horde_L0.webp?v=3', 'assets/horde_L1.webp?v=4', 'assets/horde_L2.webp?v=4', 'assets/horde_L3.webp?v=4', 'assets/horde_L4.webp?v=3']) { T.L.push(crisp(src, on)); CREW.need++; }
+    for (const src of ['assets/horde_L0.webp?v=4', 'assets/horde_L1.webp?v=5', 'assets/horde_L2.webp?v=5', 'assets/horde_L3.webp?v=5', 'assets/horde_L4.webp?v=4']) { T.L.push(crisp(src, on)); CREW.need++; }
     T.door = crisp('assets/bus_door.webp?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.webp?v=1', on); CREW.need += 2;
   }
   function crewTextCovers() {                              // the page's title over the spots? (then no event: never under the text)
