@@ -46,6 +46,46 @@
     return t;
   }
   function lateImg(img, src) { LATE.q.push(() => { img.src = src; }); }
+  // ---- a silhouette on the scene's grid (a figure pixel is a scene pixel, at whole positions, never smoothed): a sheet's cell
+  // taken to k scene px a sheet px by majority (each scene pixel opaque when most of its footprint is, ZRM's rule for the
+  // horde), its floor point (ax, ay) on a scene pixel's corner; k rounded to a whole height of ref sheet px, so a figure coming
+  // nearer grows a pixel at a time and nothing shimmers between; each cell at each height made once. edge: the alphas
+  // (0-255) of the silhouette's own edge pixels and of the ring just outside it (a softness of two ordered steps, for a shape
+  // behind frosted glass), or none: fully opaque or empty. Returns { c, x, y }: its canvas and where its corner goes from the
+  // floor point, in whole px ----
+  function majSheet(img) {                       // a sheet's coverage, once (more than half: in)
+    const w = img.naturalWidth, h = img.naturalHeight, c = document.createElement('canvas'); c.width = w; c.height = h;
+    const g = c.getContext('2d'); g.drawImage(img, 0, 0); const d = g.getImageData(0, 0, w, h).data, a = new Uint8Array(w * h);
+    for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3] >= 128 ? 1 : 0;
+    return { w, a, memo: new Map() };
+  }
+  function majCell(S, sx, sy, cw, ch, ax, ay, k, ref, edge) {
+    const n = Math.max(1, Math.round(k * ref)), kq = n / ref, key = sx + ',' + sy + ',' + n;
+    let r = S.memo.get(key); if (r) return r;
+    const f = 1 / kq, x0 = Math.floor(-ax * kq) - 1, y0 = Math.floor(-ay * kq) - 1, W = Math.ceil((cw - ax) * kq) + 1 - x0, H = Math.ceil((ch - ay) * kq) + 1 - y0;
+    const m = new Uint8Array(W * H);
+    for (let Y = 0; Y < H; Y++) {
+      const b0 = ay + (Y + y0) * f, b1 = b0 + f, j0 = Math.max(0, Math.floor(b0)), j1 = Math.min(ch, Math.ceil(b1));
+      for (let X = 0; X < W; X++) {
+        const a0 = ax + (X + x0) * f, a1 = a0 + f, i0 = Math.max(0, Math.floor(a0)), i1 = Math.min(cw, Math.ceil(a1));
+        let cov = 0;
+        for (let j = j0; j < j1; j++) {
+          const oy = Math.min(j + 1, b1) - Math.max(j, b0), row = (sy + j) * S.w + sx;
+          for (let i = i0; i < i1; i++) if (S.a[row + i]) cov += oy * (Math.min(i + 1, a1) - Math.max(i, a0));
+        }
+        m[Y * W + X] = cov * 2 >= f * f ? 1 : 0;
+      }
+    }
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d'), im = g.createImageData(W, H), d = im.data;
+    for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
+      const i = Y * W + X, nb = (X > 0 && m[i - 1]) + (X < W - 1 && m[i + 1]) + (Y > 0 && m[i - W]) + (Y < H - 1 && m[i + W]);
+      d[i * 4 + 3] = m[i] ? (edge && nb < 4 ? edge[0] : 255) : (edge && nb ? edge[1] : 0);
+    }
+    g.putImageData(im, 0, 0); r = { c, x: x0, y: y0 };
+    S.memo.set(key, r); if (S.memo.size > 600) S.memo.delete(S.memo.keys().next().value);
+    return r;
+  }
   // ---- the features' hooks: each feature (its own marked block near the end) adds its step to FEAT (called every frame
   // with dt and the scene's clock, after the street's own systems, before the render) and its click test to CLICKS (asked
   // first on a click on the street: true when it took the click) ----
@@ -5640,7 +5680,9 @@
   // at a root moving at the gait's own speed (walk: 0.85 m a cycle, 0.98 m/s; run: 1.57 m, 2.85 m/s) where it was at
   // phase i/n, so a foot in stance stays put. He walks past, does the Naruto run, or stops in front of the glass (hands
   // behind his head, or looking down at the street) and goes on or turns back; rarely, the shadow-clone jutsu: the
-  // seal, two puffs, a clone beside him and one beyond, gone in a puff ----
+  // seal, two puffs, a clone beside him and one beyond, gone in a puff. His head brought to the street's proportions
+  // (all above his neck at 0.8, set back on it) and his edges made whole by tools/naruto_sil.py; drawn on the scene's grid
+  // (majCell: his cell by majority at his height there, at whole px) ----
   const NG = { vx: 810, vy: 615, uzn: 1293.936, kzn: 74.8, zn: 18.7166, ppm: 75, walkD: 0.847, runD: 1.5674, walkV: 0.985, runV: 2.85, xa0: 0.223, xr0: -0.211 };
   const NC = { walkT: [0, 50, 125, 16, 24, 119], walkA: [125, 50, 125, 16, 26, 118], runT: [250, 58, 125, 12, 29, 118], runA: [375, 58, 118, 12, 29, 111], settleT: [493, 50, 126, 6, 21, 122], settleA: [743, 50, 125, 6, 29, 116], startT: [619, 50, 124, 4, 21, 120], startA: [868, 50, 125, 4, 29, 118], turn: [993, 46, 124, 9, 23, 119], look: [1117, 55, 123, 4, 27, 118], seal: [1240, 46, 123, 3, 27, 118] };   // the sheet's rows: top, cell w, h, frames, the floor point under his pelvis in the cell
   const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_sil.webp?v=2');   // (late: he is never due before 26 s)
@@ -5715,10 +5757,11 @@
     const nf = NAR.fig && NAR.rx > 0 && (NAR.fig.row === 'look' || NAR.fig.row === 'seal') ? { row: 'seal', i: 1, s: NAR.fig.s } : NAR.fig;   // (the four heroes: his seal)
     const figs = (nf ? [nf] : []).concat(NAR.figs);
     if ((!figs.length && !NAR.puffs.length) || !nSheet.complete || !nSheet.naturalWidth) return false;
-    silg.imageSmoothingEnabled = true; silg.fillStyle = '#000';
-    for (const f of figs) {
-      const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm;
-      silg.drawImage(nSheet, f.i * c[1], c[0], c[1], c[2], u - WL.x - c[4] * k, nV(u) - (f.lift || 0) * nK(u) - WL.y - c[5] * k, c[1] * k, c[2] * k);
+    silg.imageSmoothingEnabled = false; silg.fillStyle = '#000';
+    const S = NAR.maj || (NAR.maj = majSheet(nSheet));
+    for (const f of figs) {                     // (on the scene's grid: his cell by majority at his height there, at whole px)
+      const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm, M = majCell(S, f.i * c[1], c[0], c[1], c[2], c[4], c[5], k, NG.ppm * 1.54);
+      silg.drawImage(M.c, Math.round(u - WL.x) + M.x, Math.round(nV(u) - (f.lift || 0) * nK(u) - WL.y) + M.y);
     }
     for (const p of NAR.puffs) {                // a puff of smoke: a few billows swelling fast, thinning out
       if (p.t < 0) continue;
@@ -6275,13 +6318,14 @@
     lanOff.material.opacity = 1 - lit; lanOff.visible = lit < 0.996;
   }
   // what lives behind the glass: a small canvas over a box of the shop, drawn at 2x and masked to its glass; the
-  // painting's grain is cut out of what is drawn (one fixed pattern, a scene pixel per grain, as for the ramen shadows)
+  // painting's grain is cut out of what is drawn (one fixed pattern, a scene pixel per grain, as for the ramen shadows).
+  // crisp: a figure's silhouette (Red), drawn at 1x on the scene's grid and shown pixel for pixel (no smoothing anywhere)
   const odenGr = document.createElement('canvas'); odenGr.width = 64; odenGr.height = 80;
   (function () { const g = odenGr.getContext('2d'), im = g.createImageData(64, 80), d = im.data;
     for (let i = 0; i < d.length; i += 4) d[i + 3] = Math.random() < 0.5 ? 12 + Math.random() * 38 : 0; g.putImageData(im, 0, 0); })();
-  function odenGlass(box, maskSrc) {
-    const K = 2, c = document.createElement('canvas'); c.width = box[2] * K; c.height = box[3] * K;
-    const tex = new THREE.CanvasTexture(c); tex.magFilter = tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
+  function odenGlass(box, maskSrc, crisp) {
+    const K = crisp ? 1 : 2, c = document.createElement('canvas'); c.width = box[2] * K; c.height = box[3] * K;
+    const tex = new THREE.CanvasTexture(c); tex.magFilter = tex.minFilter = crisp ? THREE.NearestFilter : THREE.LinearFilter; tex.generateMipmaps = false;
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(box[2], box[3]), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
     mesh.position.set(box[0] + box[2] / 2, -(box[1] + box[3] / 2), 0.04); scene.add(mesh);
     const mask = new Image(); mask.src = maskSrc;
@@ -6413,9 +6457,9 @@
   // against the lit room and its curtains, the rail in front. Shadows only, the ramen shop's way, over the windows' lit comps (z 1.12) and only while their light is on;
   // the same glass helpers as the oden shop's ----
   const Z1 = { warm: comps.find((c) => c.userData.name === 'win_z1_warm'), top: comps.find((c) => c.userData.name === 'win_z1_top') };
-  const z1Glass = (box, mask) => { const G = odenGlass(box, mask); G.mesh.position.z = 1.12; G.mesh.visible = false;
+  const z1Glass = (box, mask, crisp) => { const G = odenGlass(box, mask, crisp); G.mesh.position.z = 1.12; G.mesh.visible = false;
     G.sh = document.createElement('canvas'); G.sh.width = box[2]; G.sh.height = box[3]; G.shg = G.sh.getContext('2d'); return G; };
-  const z1Cur = z1Glass([1081, 288, 30, 136], 'assets/z1_warm_mask.webp?v=1'), z1Door = z1Glass([963, 226, 43, 137], 'assets/z1_top_glaze.webp?v=2'); z1Door.gk = 0.5;   // (Red: half the grain)
+  const z1Cur = z1Glass([1081, 288, 30, 136], 'assets/z1_warm_mask.webp?v=1'), z1Door = z1Glass([963, 226, 43, 137], 'assets/z1_top_glaze.webp?v=2', true); z1Door.gk = 0.5;   // (Red: half the grain, crisp)
   // a person in metres (the top of the head at 0, the body's axis at 0), at (cx, top) with s px per metre, squeezed
   // across by fs and sheared along the facade's lines (slope sl); sw swings the arms
   function z1Person(g, cx, top, s, fs, sl, sw, head) {
@@ -6429,32 +6473,41 @@
   }
   // Red, Pokémon's trainer, Pikachu on his shoulder (the balcony door's visitor): one sheet of silhouettes (red_sil.webp,
   // cut by tools/red_sheet.py from the owner's sprite sheet, tools/src/red_sheet.webp: the cap and its visor, the vest's
-  // popped collar, the backpack, Pikachu's ears and tail), every frame at one scale (ZR.ppm px a metre, 1.6 m tall) on
-  // one ground line, the floor point under his root at (ZRC[row][4], [5]) in its cell. He walks along the street, his
+  // popped collar, the backpack, Pikachu's ears and tail; his head, Pikachu and his legs brought to the street's proportions,
+  // 6.5 heads tall), every frame at one scale (ZR.ppm px a metre, ZR.h tall: 1.65 m, in this model's metres) on one
+  // ground line, the floor point under his root at (ZRC[row][4], [5]) in its cell. He walks along the street, his
   // path 0.37 m behind the glass (X 6.72 m across the street, the room's floor 6.03 m over our eyes), seen side on: in,
   // to the right (walkT), out, to the left (walkA, its mirror). w metres toward us from his stop, his scale is
   // s = 1400 / (ZS - w) px per metre and his path's floor point (700 + 6.72 s, 615 - 6.03 s); along it, at the scale of
   // each place, the floor point moves zrU(w1) - zrU(w0) px of the sheet: a step is ZR.D of them (the walk rows' four
   // frames, the planted foot moving back by a quarter of it at each), and a walk frame i is drawn where the root was at
   // phase i/n, so a planted foot stays put. The stop: the last half step, his head turned to us first, then all of him;
-  // the Poké Ball tossed and caught twice; the turn to his left; the first step out
-  const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 33.4129, ppm: 88, w0: -5.54, D: 42.8, v: 71.3, xa0: -0.2837, xr0: -0.4119 };   // (D: px of the sheet a step; v: px of the sheet a second)
-  const ZRC = { walkT: [0, 91, 147, 4, 50, 144], walkA: [147, 91, 147, 4, 41, 144], settle: [294, 75, 149, 2, 39, 147], idle: [443, 83, 150, 4, 32, 148], toss: [593, 88, 152, 8, 46, 149], turn: [745, 73, 148, 3, 33, 146] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
-  const ZRB = [[1,0.3,10.6,57.7],[2,0.15,10.3,57.7],[3,0.0479,12.9,48.6],[3,0.0479,12.7,39.4],[3,0.0479,12.6,32.1],[3,0.0479,12.4,26.9],[4,0.0479,12.3,23.6],[4,0.0479,12.1,22.2],[4,0.0479,11.9,22.9],[4,0.0479,11.8,25.6],[5,0.0479,11.6,30.2],[5,0.0479,11.5,36.8],[5,0.0479,11.3,45.4],[6,0.25,11.3,53.3],[7,0.3,12.2,59.0]];   // one toss: [its toss cell, s, the Poké Ball's centre in the cell (px)], every 0.05 s while it flies (a parabola, g = 9.81)
+  // the Poké Ball tossed and caught twice; the turn to his left; the first step out. Drawn on the scene's grid: his cell by
+  // majority at his height there (majCell), at whole px, one dark colour, its edge in two ordered steps (ZR_EDGE), the
+  // glass's grain cut out of it, nothing smoothed
+  const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 32.83, ppm: 88, h: 1.9643, w0: -6.79, D: 52.35, v: 87.2, xa0: -0.352, xr0: -0.5074 };   // (D: px of the sheet a step; v: px of the sheet a second)
+  const ZRC = { walkT: [0, 111, 196, 4, 61, 193], walkA: [196, 111, 196, 4, 50, 193], settle: [392, 77, 197, 2, 38, 195], idle: [589, 86, 201, 4, 38, 198], toss: [790, 98, 203, 8, 56, 200], turn: [993, 77, 197, 3, 39, 195] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
+  const ZRB = [[1,0.3,13.0,69.6],[2,0.15,12.6,69.6],[3,0.0474,15.7,58.6],[3,0.0474,15.5,51.3],[3,0.0474,15.3,45.9],[4,0.0474,15.0,42.5],[4,0.0474,14.8,41.0],[4,0.0474,14.5,41.5],[5,0.0474,14.3,43.9],[5,0.0474,14.1,48.3],[5,0.0474,13.8,54.6],[6,0.25,13.7,64.3],[7,0.3,14.9,71.1]];   // one toss: [its toss cell, s, the Poké Ball's centre in the cell (px)], every 0.05 s while it flies (a parabola, g = 9.81)
   const zrU = (w) => -ZR.x * ZR.ppm * Math.log(ZR.zs - w), zrW = (u) => ZR.zs - Math.exp(-u / (ZR.x * ZR.ppm));   // w <-> his floor point along his path (px of the sheet)
   const zrToss = (k) => ZRB.map(([i, dt, x, y]) => ['toss', i, dt * k, 0, [x, y]]);   // a toss at k times its pace (the ball in each step)
   const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=4');   // (late; his visit already waits for the sheet)
-  z1Door.sh.width = z1Door.box[2] * z1Door.K; z1Door.sh.height = z1Door.box[3] * z1Door.K;   // (his shadow drawn at the glass's 2x: the sheet is too)
-  function z1Red(g, ox, oy, f) {                  // his frame f = { row, i, w } into the door's canvas (its box at ox, oy)
-    const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
-    g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
-    g.drawImage(zrSheet, f.i * c[1], c[0], c[1], c[2], 700 + ZR.x * s - c[4] * k - ox, 615 - ZR.kf * s - c[5] * k - oy, c[1] * k, c[2] * k);
+  z1Door.sh.width = z1Door.box[2] * z1Door.K; z1Door.sh.height = z1Door.box[3] * z1Door.K;   // (his shadow drawn at the glass's 1x)
+  const ZR_EDGE = [168, 64];                      // (his edge pixels, the ring outside them: alphas, the frosted glass's softness)
+  let zrMaj = null;
+  function zrAt(f, ox, oy) {                      // his frame f = { row, i, w }: his floor point at whole px in a box at (ox, oy), his scale
+    const s = ZR.f / (ZR.zs - f.w);               // (k: as majCell takes it, his height a whole number of px)
+    return { X: Math.round(700 + ZR.x * s - ox), Y: Math.round(615 - ZR.kf * s - oy), s, k: Math.round(s * ZR.h) / (ZR.ppm * ZR.h) };
+  }
+  function z1Red(g, ox, oy, f) {                  // his frame into the door's canvas (its box at ox, oy)
+    const c = ZRC[f.row], P = zrAt(f, ox, oy), S = zrMaj || (zrMaj = majSheet(zrSheet));
+    const M = majCell(S, f.i * c[1], c[0], c[1], c[2], c[4], c[5], P.s / ZR.ppm, ZR.ppm * ZR.h, ZR_EDGE);
+    g.imageSmoothingEnabled = false; g.drawImage(M.c, P.X + M.x, P.Y + M.y);
     g.globalCompositeOperation = 'source-in'; g.fillRect(0, 0, g.canvas.width, g.canvas.height); g.globalCompositeOperation = 'source-over';
   }
-  function z1Ball(G, f) {                         // the Poké Ball: crisp over the blurred glass (2 x 2 px, dark, its top lit by the room),
-    if (!f || !f.b) return;                       // masked by the glazing like him; the blur would eat a 7-cm ball at 1x
-    const c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm, [bx, by] = f.b, K = G.K, g = G.g, [, , w, h] = G.box;
-    const x = Math.round(700 + ZR.x * s - c[4] * k + bx * k - G.box[0] - 1), y = Math.round(615 - ZR.kf * s - c[5] * k + by * k - G.box[1] - 1);
+  function z1Ball(G, f) {                         // the Poké Ball: 2 x 2 px, dark, its top lit by the room, masked by the glazing like him
+    if (!f || !f.b) return;
+    const c = ZRC[f.row], P = zrAt(f, G.box[0], G.box[1]), [bx, by] = f.b, K = G.K, g = G.g, [, , w, h] = G.box;
+    const x = P.X + Math.round((bx - c[4]) * P.k) - 1, y = P.Y + Math.round((by - c[5]) * P.k) - 1;
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 0.85;
     g.fillStyle = '#200c12'; g.fillRect(x * K, y * K, 2 * K, 2 * K); g.fillStyle = '#5a2e38'; g.fillRect(x * K, y * K, K, K);
     g.globalAlpha = 1;
@@ -6488,10 +6541,10 @@
     }
     return true;
   }
-  function z1Draw(G, light, alpha, blur, draw) {   // into its glass: one dark colour, enlarged, blurred, grain cut out
+  function z1Draw(G, light, alpha, blur, draw) {   // into its glass: one dark colour, blurred (blur 0: as drawn, crisp), grain cut out
     const [, , w, h] = G.box, g = G.shg, q = G.sh.width / w; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, G.sh.width, G.sh.height);
     g.setTransform(q, 0, 0, q, 0, 0); g.fillStyle = '#200c12'; draw(g);   // (in the box's px, whatever the canvas's size)
-    const gg = G.g; gg.clearRect(0, 0, G.c.width, G.c.height); gg.imageSmoothingEnabled = true; gg.filter = 'blur(' + blur + 'px)';
+    const gg = G.g; gg.clearRect(0, 0, G.c.width, G.c.height); gg.imageSmoothingEnabled = blur > 0; gg.filter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
     gg.globalAlpha = alpha; gg.drawImage(G.sh, 0, 0, w * G.K, h * G.K); gg.filter = 'none'; gg.globalAlpha = 1;
     odenFinish(G); G.mesh.material.opacity = light;
   }
@@ -6550,7 +6603,7 @@
         if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 30 + Math.random() * 45; z1Door.mesh.visible = false; STAGE.done('red'); }
         else if ((Z1F.acc += dt) >= 1 / 20 && odenSeen(z1Door.box) && zrSheet.complete && zrSheet.naturalWidth) {
           Z1F.acc = 0;
-          z1Draw(z1Door, light, 0.78, 0.7, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig)); z1Ball(z1Door, F.fig);
+          z1Draw(z1Door, light, 0.78, 0, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig)); z1Ball(z1Door, F.fig);
         } else z1Door.mesh.material.opacity = light;
       }
     }
@@ -8525,45 +8578,56 @@
   }
   // ---- droite-07: a Gengar in the Pokémon Center at night. The Center never shuts (lumieres-11); in its night mode (1 h-6 h), once in a
   // long while (the street director's 'gengar'), Gengar floats in behind the door glass in front of its PC and reads as himself:
-  // his silhouette (the round body, the two tall pointed ears, the spiky fringe down his back, the stubby arms; 26 px, 0.75 m;
-  // gengar_shadow.webp v2, antialiased), dark against the dim room of the night mode, his ears rising beside the screen and his
-  // head cutting into its light; that light wraps round his edges near the screen, soft and broken (fixed clumps that move with
+  // his silhouette (the round body, the two tall pointed ears, the spiky fringe down his back, the stubby arms; gengar_shadow.webp
+  // v2 taken by majority to GG.k on the scene's grid, at whole px: 36 px, 1 m, his ears' tips at the door glass's sides, the
+  // widest he fits in it whole: the glass is 32 px wide, 0.9 m; at his 1.5 m, 54 px, it would show only his middle), dark
+  // against the dim room of the night mode, his ears rising beside the screen and his head cutting into its light; that light wraps round his edges near the screen, soft and broken (fixed clumps that move with
   // him: never a lit frame, never a line); two red eyes once, a blink; then he sinks away, fading, and the screen stutters twice
   // (a ghost and electronics). Seen only through the glass: the door's frames and mullions stay in front of him (the shop's
   // comp's own glass, read at run time). Nothing to hover, no cursor. Reduced motion: he never comes; nor in a power cut ----
-  const GG = { on: false, t: 0, next: 30 + Math.random() * 90, img: new Image(), c: document.createElement('canvas'), acc: 0, sil: null, edge: null, nz: null, mask: null };
-  lateImg(GG.img, 'assets/gengar_shadow.webp?v=2'); GG.c.width = 88; GG.c.height = 96;   // (the canvas: x 860-904, y 580-628, 2 px per scene px)
-  const ggg = GG.c.getContext('2d', { willReadFrequently: true }), ggD = ggg.createImageData(88, 96);
+  const GG = { on: false, t: 0, next: 30 + Math.random() * 90, img: new Image(), c: document.createElement('canvas'), acc: 0, sil: null, edge: null, nz: null, mask: null,
+    box: [868, 572, 40, 76], k: 0.75, at: [887.5, 613.5] };   // (his canvas over the door's glass, 1 px a scene px; his scale, scene px a sheet px; where his eyes' middle (sheet 32, 31) goes: his head's top cutting into the screen's light from below, his ears' tips at the glass's sides)
+  lateImg(GG.img, 'assets/gengar_shadow.webp?v=2'); GG.c.width = GG.box[2]; GG.c.height = GG.box[3];
+  const ggg = GG.c.getContext('2d', { willReadFrequently: true }), ggD = ggg.createImageData(GG.box[2], GG.box[3]);
   const ggTex = new THREE.CanvasTexture(GG.c); ggTex.magFilter = ggTex.minFilter = THREE.NearestFilter; ggTex.generateMipmaps = false;
-  const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(44, 48), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
-  ggMesh.position.set(882, -604, 1.1009); ggMesh.visible = false; scene.add(ggMesh);   // (in front of the PC's screen and glow, 1.1007-1.1008)
-  function ggRead() {                            // his sheet, once: the silhouette's coverage, its inner edge, a clumped noise; the glass
+  const ggMesh = new THREE.Mesh(new THREE.PlaneGeometry(GG.box[2], GG.box[3]), new THREE.MeshBasicMaterial({ map: ggTex, transparent: true, depthWrite: false }));
+  ggMesh.position.set(GG.box[0] + GG.box[2] / 2, -(GG.box[1] + GG.box[3] / 2), 1.1009); ggMesh.visible = false; scene.add(ggMesh);   // (in front of the PC's screen and glow, 1.1007-1.1008)
+  function ggRead() {                            // his sheet, once: his silhouette on the scene's grid (majority at GG.k), its edge, a clumped noise; the glass
     const c = document.createElement('canvas'); c.width = 64; c.height = 64; const g = c.getContext('2d'); g.drawImage(GG.img, 0, 0);
-    const d = g.getImageData(0, 0, 64, 64).data, S = new Float32Array(4096), E = new Float32Array(4096), N = new Float32Array(4096), M = new Uint8Array(88 * 96);
-    for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) S[y * 64 + x] = d[(y * 64 + x) * 4 + 3] / 255;
-    for (let y = 0; y < 64; y++) for (let x = 0; x < 64; x++) {
-      let mn = 1; for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) { const yy = y + j, xx = x + i; mn = Math.min(mn, yy < 0 || xx < 0 || yy > 63 || xx > 63 ? 0 : S[yy * 64 + xx]); }
-      E[y * 64 + x] = Math.max(0, S[y * 64 + x] - mn);
-      const h1 = Math.sin((x >> 2) * 12.9898 + (y >> 2) * 78.233) * 43758.5453, h2 = Math.sin(x * 39.35 + y * 11.13) * 9631.17;   // clumps of 2 scene px, a finer grain
-      N[y * 64 + x] = 0.35 + 0.45 * (h1 - Math.floor(h1)) + 0.2 * (h2 - Math.floor(h2));
+    const d = g.getImageData(0, 0, 64, 64).data, A = new Uint8Array(4096);
+    for (let i = 0; i < 4096; i++) A[i] = d[i * 4 + 3] >= 128 ? 1 : 0;
+    const k = GG.k, W = Math.ceil(64 * k), f = 1 / k, S = new Uint8Array(W * W), E = new Float32Array(W * W), N = new Float32Array(W * W);
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {   // (each scene pixel: opaque when most of its footprint in the sheet is)
+      let cov = 0;
+      for (let j = Math.floor(y * f); j < Math.min(64, Math.ceil((y + 1) * f)); j++) for (let i = Math.floor(x * f); i < Math.min(64, Math.ceil((x + 1) * f)); i++)
+        if (A[j * 64 + i]) cov += (Math.min(j + 1, (y + 1) * f) - Math.max(j, y * f)) * (Math.min(i + 1, (x + 1) * f) - Math.max(i, x * f));
+      S[y * W + x] = cov * 2 >= f * f ? 1 : 0;
+    }
+    const at = (x, y) => (x < 0 || y < 0 || x >= W || y >= W ? 0 : S[y * W + x]);
+    for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {   // his edge: 1 on his outer pixels, 0.5 the ones just inside
+      const i = y * W + x, out1 = !(at(x - 1, y) && at(x + 1, y) && at(x, y - 1) && at(x, y + 1));
+      const out2 = !(at(x - 2, y) && at(x + 2, y) && at(x, y - 2) && at(x, y + 2) && at(x - 1, y - 1) && at(x + 1, y - 1) && at(x - 1, y + 1) && at(x + 1, y + 1));
+      E[i] = S[i] ? (out1 ? 1 : out2 ? 0.5 : 0) : 0;
+      const h1 = Math.sin((x >> 1) * 12.9898 + (y >> 1) * 78.233) * 43758.5453, h2 = Math.sin(x * 39.35 + y * 11.13) * 9631.17;   // clumps of 2 scene px, a finer grain
+      N[i] = 0.35 + 0.45 * (h1 - Math.floor(h1)) + 0.2 * (h2 - Math.floor(h2));
     }
     // the door's glass: where the shop's comp shows the room (its alpha), not its mullions (its dark columns); else (its image
     // unreadable) all of it but the three mullions
-    const sh = PKS.shop, si = sh && sh.material.map && sh.material.map.image;
+    const [bx, by, bw, bh] = GG.box, M = new Uint8Array(bw * bh), sh = PKS.shop, si = sh && sh.material.map && sh.material.map.image;
     let cd = null, cw = 0, cx0 = 0, cy0 = 0;
     try {
       if (si && (si.naturalWidth || si.width)) {
         const p = sh.geometry.parameters; cw = p.width; cx0 = sh.position.x - p.width / 2; cy0 = -sh.position.y - p.height / 2;
-        const k = document.createElement('canvas'); k.width = p.width; k.height = p.height; const kg = k.getContext('2d');
+        const q = document.createElement('canvas'); q.width = p.width; q.height = p.height; const kg = q.getContext('2d');
         kg.drawImage(si, 0, 0, p.width, p.height); cd = kg.getImageData(0, 0, p.width, p.height).data;
       }
     } catch (e) { cd = null; }
-    for (let y = 0; y < 96; y++) for (let x = 0; x < 88; x++) {
-      const sx = Math.floor(860 + x / 2), sy = Math.floor(580 + y / 2);
-      if (cd) { const qx = sx - cx0, qy = sy - cy0, o = (qy * cw + qx) * 4; M[y * 88 + x] = qx >= 0 && qy >= 0 && qx < cw && cd[o + 3] > 20 && 0.299 * cd[o] + 0.587 * cd[o + 1] + 0.114 * cd[o + 2] > 40 ? 1 : 0; }
-      else M[y * 88 + x] = sx >= 873 && sx <= 902 && sx !== 878 && sx !== 884 && sx !== 890 ? 1 : 0;
+    for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
+      const sx = bx + x, sy = by + y;
+      if (cd) { const qx = sx - cx0, qy = sy - cy0, o = (qy * cw + qx) * 4; M[y * bw + x] = qx >= 0 && qy >= 0 && qx < cw && cd[o + 3] > 20 && 0.299 * cd[o] + 0.587 * cd[o + 1] + 0.114 * cd[o + 2] > 40 ? 1 : 0; }
+      else M[y * bw + x] = sx >= 873 && sx <= 902 && sx !== 878 && sx !== 884 && sx !== 890 && sy >= 578 && sy <= 633 ? 1 : 0;
     }
-    Object.assign(GG, { sil: S, edge: E, nz: N, mask: M });
+    Object.assign(GG, { sil: S, edge: E, nz: N, mask: M, W });
   }
   function stepGengar(dt) {
     if (reduced || PKS.dead) return;
@@ -8571,7 +8635,7 @@
       if (openK('centerNight') < 0.5 || PW.on) return;                          // (the Center's night mode, 1 h-6 h)
       if ((GG.next -= dt) > 0) return;
       if (!(GG.img.complete && GG.img.naturalWidth)) { GG.next = 2; return; }   // (its sheet not in yet)
-      if (!STAGE.ask('gengar', 10, { area: [[860, 580, 904, 628]] })) { GG.next = 3 + Math.random() * 4; return; }   // (his place: the door's glass, his canvas)
+      if (!STAGE.ask('gengar', 10, { area: [[GG.box[0], GG.box[1], GG.box[0] + GG.box[2], GG.box[1] + GG.box[3]]] })) { GG.next = 3 + Math.random() * 4; return; }   // (his place: the door's glass, his canvas)
       if (!GG.sil) ggRead();
       Object.assign(GG, { on: true, t: 0 }); ggMesh.visible = true;
     }
@@ -8584,20 +8648,19 @@
     // 2.6-3.6 s (a blink); from 4.2 s he sinks away, fading
     const ein = Math.min(1, t / 2.2), dx = 18 * (1 - ein) * (1 - ein) * (1 - ein);
     const sink = t > 4.2 ? Math.min(1, (t - 4.2) / 3) : 0, dy = 0.5 * Math.round(1.6 * Math.sin(t * 2.2)) + 12 * sink * sink;
-    const al = Math.min(1, t / 0.8, (T - t) / 1.8), lv = Math.max(0, Math.min(1, PKS.lv));
-    const ox = Math.round((873.5 + dx - 860) * 2), oy = Math.round((595 + dy - 580) * 2);
-    const S = GG.sil, E = GG.edge, N = GG.nz, M = GG.mask, D = ggD.data, eyes = t > 2.6 && t < 3.6 && !(t > 3.05 && t < 3.15);
-    for (let y = 0; y < 96; y++) for (let x = 0; x < 88; x++) {
-      const o = (y * 88 + x) * 4, sx = x - ox, sy = y - oy;
-      if (!M[y * 88 + x] || sx < 0 || sy < 0 || sx > 63 || sy > 63) { D[o + 3] = 0; continue; }
-      const k = sy * 64 + sx, s = S[k];
-      if (s < 0.02) { D[o + 3] = 0; continue; }
-      const px = 860 + (x + 0.5) / 2, py = 580 + (y + 0.5) / 2;               // the screen's light round his edge (within 5 px of it)
+    const al = Math.min(1, t / 0.8, (T - t) / 1.8), lv = Math.max(0, Math.min(1, PKS.lv)), k = GG.k, [bx, by, bw, bh] = GG.box;
+    const ox = Math.round(GG.at[0] + dx - 32 * k) - bx, oy = Math.round(GG.at[1] + dy - 31 * k) - by;   // (his corner, whole px)
+    const S = GG.sil, E = GG.edge, N = GG.nz, M = GG.mask, W = GG.W, D = ggD.data, eyes = t > 2.6 && t < 3.6 && !(t > 3.05 && t < 3.15);
+    const ey0 = Math.floor(30 * k), ey1 = Math.ceil(32 * k), ex = [[Math.floor(24 * k), Math.ceil(28 * k)], [Math.floor(36 * k), Math.ceil(40 * k)]];
+    for (let y = 0; y < bh; y++) for (let x = 0; x < bw; x++) {
+      const o = (y * bw + x) * 4, sx = x - ox, sy = y - oy;
+      if (!M[y * bw + x] || sx < 0 || sy < 0 || sx >= W || sy >= W || !S[sy * W + sx]) { D[o + 3] = 0; continue; }
+      const q = sy * W + sx, px = bx + x + 0.5, py = by + y + 0.5;               // the screen's light round his edge (within 5 px of it)
       const dist = Math.hypot(Math.max(877 - px, 0, px - 889), Math.max(601 - py, 0, py - 610));
-      const rim = Math.min(1, E[k] * 1.6) * Math.max(0, 1 - dist / 5) * N[k] * lv * 0.8;
+      const rim = Math.min(1, E[q] * 1.6) * Math.max(0, 1 - dist / 5) * N[q] * lv * 0.8;
       let r = 18 + 132 * rim, g = 10 + 212 * rim, b = 28 + 227 * rim;
-      if (eyes && sy >= 30 && sy < 32 && ((sx >= 24 && sx < 28) || (sx >= 36 && sx < 40))) { r = 226; g = 52; b = 64; }   // two red eyes
-      D[o] = r; D[o + 1] = g; D[o + 2] = b; D[o + 3] = Math.round(255 * Math.min(1, s * 0.92) * al);
+      if (eyes && sy >= ey0 && sy < ey1 && ex.some(([a, c]) => sx >= a && sx < c)) { r = 226; g = 52; b = 64; }   // two red eyes
+      D[o] = r; D[o + 1] = g; D[o + 2] = b; D[o + 3] = Math.round(255 * 0.92 * al);
     }
     ggg.putImageData(ggD, 0, 0); ggTex.needsUpdate = true;
   }
