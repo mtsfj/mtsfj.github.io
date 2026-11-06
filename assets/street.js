@@ -6759,7 +6759,7 @@
   // back. Drawn a scene pixel at a time (crisp), on the glass only (its lattice and the window's mullion before him), the
   // leaf's wooden half before his legs; the street's night multiply on him as on the room. Reduced motion: he never comes
   const OMF = {"A":{"stand":[0,0,16,60,6,59],"w1":[17,0,33,59,14,58],"w2":[51,0,20,59,11,58],"w3":[72,0,27,59,11,58],"w4":[100,0,33,59,15,58],"w5":[134,0,18,59,9,58],"w6":[153,0,35,59,15,58],"laugh":[189,0,33,22,16,60],"offer":[223,0,30,22,14,60],"happy":[0,61,32,21,15,59],"idle":[33,61,33,21,16,59],"ladle":[67,61,33,21,17,59],"lift":[101,61,33,21,16,59],"pick":[135,61,33,21,17,59],"serve":[169,61,33,21,17,59],"wipe":[203,61,35,21,18,59],"wipe2":[0,83,31,21,14,59],"nod":[32,83,33,20,16,58],"z":47.1,"floor":659.59,"from":411.97,"at":473.42,"v":29.72},"D":{"stand2":[66,83,39,75,14,74],"grab":[106,83,34,74,8,73],"stand":[141,83,20,74,8,73],"stand_m":[162,83,20,74,11,73],"w1":[183,83,40,73,17,72],"w1_m":[0,159,40,73,22,72],"w2":[41,159,25,73,14,72],"w2_m":[67,159,25,73,10,72],"w3":[93,159,34,73,14,72],"w3_m":[128,159,34,73,19,72],"w4":[163,159,41,73,19,72],"w4_m":[205,159,41,73,21,72],"w5":[0,233,23,73,12,72],"w5_m":[24,233,23,73,10,72],"w6":[48,233,43,73,19,72],"w6_m":[92,233,43,73,23,72],"z":38.2,"floor":669.97,"from":391.12,"at":431.46,"look":445.29,"v":36.65},"step":0.17,"walk":["w1","w2","w3","w4","w5","w6"]};
-  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=2'; OMI.src = 'assets/oden_master.webp?v=4';
+  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=2'; OMI.src = 'assets/oden_master.webp?v=5';
   const ODOOR = (function () {                   // (drawn in one canvas over ODM.box, shown by two: the door's, the window's)
     const mk = (b, show) => {
       const c = document.createElement('canvas'); c.width = b[2]; c.height = b[3];
@@ -10883,7 +10883,7 @@
     x: 0, flip: false, next: '', stick: false, path: null, pi: 0, then: null, trip: 60 + Math.random() * 90, hk0: -1, sig: '',
     shop: comps.find((c) => c.userData.name === 'win_z7_shop'), pe: null };
   const OBA_AT = [[140, 560, 228, 680]];                                     // (her place while she is up, STAGE: the glass, the stick into the opening)
-  OBA.img.src = 'assets/dagashi_obaachan.webp?v=4';
+  OBA.img.src = 'assets/dagashi_obaachan.webp?v=5';
   (function () {
     const V = DGO.V || [0, 0, 1, 1, 0, 0], W = V[2], H = V[3];
     const mk = (z, kind) => {
