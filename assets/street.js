@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (function () {
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=70", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=3", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=3", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=7", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=71", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=3", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=3", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=7", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -3459,7 +3459,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=49', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=50', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6304,7 +6304,7 @@
   const ODM = {"box":[420,556,82,121],"shut":[0,0],"open":[82,0],"room":[165,0,16,90,443,580],"pan":{"box":[421,580,40,91],"cells":[[0,122],[41,122],[82,122],[0,214],[41,214],[82,214],[0,306],[41,306],[82,306],[0,398],[41,398],[82,398],[0,490],[41,490],[82,490],[0,582],[41,582]],"x":[459,458,457,456,455,454,453,452,451,450,449,448,447,446,445,444,443]},"pot":[459.4,480.6,626.2,30.17]};
   // the pot simmers: its steam rises from it, one wisp after another from along its width, each swelling, taller than wide,
   // the column swaying more as it rises; seen above the window's sill only (the pot itself is lower), in front of the master
-  const OWIN = odenGlass(ODEN.window, 'assets/oden_window.webp?v=1'), OST = { acc: 0, w: [] };
+  const OWIN = odenGlass(ODEN.window, 'assets/oden_window.webp?v=2'), OST = { acc: 0, w: [] };
   const ostNew = (w) => Object.assign(w, { x: ODM.pot[0] + 2 + Math.random() * (ODM.pot[1] - ODM.pot[0] - 4), ph: Math.random() * 6.3, a: 0.6 + Math.random() * 0.4, h: (0.6 + Math.random() * 0.25) * ODM.pot[3] });
   for (let i = 0; i < 9; i++) OST.w.push(ostNew({ t: i * 0.4 + Math.random() * 0.15 }));
   function stepOdenSteam(dt, t) {
@@ -6333,7 +6333,7 @@
   // goes back. Drawn a scene pixel at a time (crisp), on the glass only (its lattice and the window's mullion before him), the
   // leaf's wooden half before his legs; the street's night multiply on him as on the room. Reduced motion: he never comes
   const OMF = {"A":{"stand":[0,0,21,51,11,50],"w1":[22,0,27,51,13,50],"w2":[50,0,34,51,17,50],"w3":[85,0,30,51,16,50],"w4":[116,0,21,51,11,50],"happy":[138,0,23,15,10,50],"idle":[162,0,24,15,11,50],"ladle":[187,0,30,15,17,50],"laugh":[218,0,24,15,10,50],"lift":[0,52,29,15,15,50],"nod":[30,52,25,15,12,50],"offer":[56,52,26,15,13,50],"pick":[83,52,28,15,16,50],"serve":[112,52,27,15,14,50],"wipe":[140,52,27,15,16,50],"wipe2":[168,52,29,15,19,50],"z":47.1,"floor":659.59,"from":411.97,"at":473.42,"v":29.72},"D":{"w1":[198,52,34,63,17,62],"w3":[0,116,37,63,20,62],"w4":[38,116,25,63,13,62],"grab":[64,116,26,62,14,61],"stand":[91,116,26,62,14,61],"stand2":[118,116,26,62,13,61],"w2":[145,116,42,62,21,61],"z":38.2,"floor":669.97,"from":403.87,"at":445.29,"v":36.65},"step":0.17};
-  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=1'; OMI.src = 'assets/oden_master.webp?v=1';
+  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=2'; OMI.src = 'assets/oden_master.webp?v=1';
   const ODOOR = (function () {                   // (drawn in one canvas over ODM.box, shown by two: the door's, the window's left pane's)
     const mk = (b, show) => {
       const c = document.createElement('canvas'); c.width = b[2]; c.height = b[3];
