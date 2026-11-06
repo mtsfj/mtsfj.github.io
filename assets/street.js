@@ -3149,6 +3149,10 @@
   // its lights: the screens (their power only: they stay on when it shuts), the neon sign and the claw machine's glass (with
   // its hours): [quad, light, screen?]
   const ARC_SCREENS = [[ARC_PINS.scr[0], '#7fe0d8', 1], [ARC_PINS.scr[1], '#e890d8', 1], [ARC_PINS.scr[2], '#7fe0d8', 1], [ARC_PINS.sign, '#ff86d6', 0], [ARC_PINS.claw, '#ff9ad0', 0]];
+  // the machines' games (assets/arcade.js, below: arcPlay): the one being played (0-2 the cabinets, 3 the claw machine; -1 none),
+  // its light in ARC_SCREENS (its screen, the claw machine's glass) a little brighter while its game is open; the script asked
+  // (0 not yet, 1 loading, 2 in) and the machine last asked for while it loads
+  const ARCG = { on: -1, lit: [0, 1, 2, 4], js: 0, want: null };
   function arcQuad(q, ua, ub, va, vb) {        // a part of a pinned quad (fractions across, down), whole scene pixels, column by column
     ua = ua || 0; ub = ub === undefined ? 1 : ub; va = va || 0; vb = vb === undefined ? 1 : vb;
     const L = q[0][0], R = q[1][0], x0 = Math.round(L + ua * (R - L)), x1 = Math.round(L + ub * (R - L));
@@ -3174,8 +3178,8 @@
     // marquees (arcS.chase, a third of each in turn)
     ag.globalCompositeOperation = 'lighter';
     ARC_SCREENS.forEach(([q, col, scr], i) => {
-      const cb = arcS.cab[i % arcS.cab.length];
-      ag.globalAlpha = (0.05 + 0.05 * (cb.c % 2) + 0.03 * (cb.c === 3)) * (scr ? pwr : pw); ag.fillStyle = col; arcQuad(q);
+      const cb = arcS.cab[i % arcS.cab.length], play = ARCG.on >= 0 && ARCG.lit[ARCG.on] === i;
+      ag.globalAlpha = (play ? 0.2 : 0.05 + 0.05 * (cb.c % 2) + 0.03 * (cb.c === 3)) * (scr ? pwr : pw); ag.fillStyle = col; arcQuad(q);
     });
     ag.globalAlpha = 0.07 * pw; ag.fillStyle = '#ffd0f0';
     for (const q of ARC_PINS.marq) arcQuad(q, arcS.chase / 3, (arcS.chase + 1) / 3);
@@ -3297,6 +3301,47 @@
     const [bx, by, bw, bh] = ARC_PINS.box;
     return lx >= bx - 2 && lx <= bx + bw + 2 && ly >= by - 2 && ly <= by + bh + 2;
   }
+  // ---- the machines' games: a click on a cabinet (its screen and its body around it in the room's picture) or on what the far
+  // post leaves of the claw machine opens that machine's game (assets/arcade.js and arcade.css, loaded at the first open: the
+  // page's first load stays as it was), its own dialog; never the fuse box's spot (overFuse's, the same box and 2 px), never in
+  // the power cut. Not a secret (not in SECRETS: the eleven's count stays). No pointer cursor over them (the street's rule).
+  // ARC_MACH: each machine in the room's canvas (local px: x0, y0, x1, y1): the three cabinets, marquee to floor with their
+  // flank toward us (the third cut by the picture's edge), the claw machine between the far post and the fuse box (its lit
+  // top, its glass, its base); a finger's box grown to 44 CSS px, a mouse's to 24 (the nearest machine when two meet) ----
+  const ARC_MACH = [[19, 164, 51, 300], [51, 164, 83, 300], [83, 164, 100, 300], [7, 122, 19, 302]];
+  function arcAt(ev) {
+    if (PW.on) return -1;
+    const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
+    const lx = camera.left + u * (camera.right - camera.left) - ARC.x, ly = -(camera.top + v * (camera.bottom - camera.top)) - ARC.y;
+    const [bx, by, bw, bh] = ARC_PINS.box;
+    if (lx >= bx - 2 && lx <= bx + bw + 2 && ly >= by - 2 && ly <= by + bh + 2) return -1;   // (the fuse box's)
+    const finger = ev.pointerType === 'touch' || ev.pointerType === 'pen' || (!ev.pointerType && coarse), m = (finger ? 22 : 12) * (camera.right - camera.left) / r.width;
+    let best = -1, bd = 1e9;
+    ARC_MACH.forEach(([x0, y0, x1, y1], i) => {
+      const gx = Math.max(0, m - (x1 - x0) / 2), gy = Math.max(0, m - (y1 - y0) / 2);
+      if (lx < x0 - gx || lx > x1 + gx || ly < y0 - gy || ly > y1 + gy) return;
+      const d = Math.abs(lx - (x0 + x1) / 2); if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+  function arcPlay(i, kb) {                    // the game's dialog; its script and styles the first time (the last machine asked wins)
+    if (PW.on) return;
+    ARCG.want = [i, !!kb];
+    if (window.ARCADE) { window.ARCADE.open(i, { kb: !!kb, onPlay: (n) => { ARCG.on = n; drawArcade(); } }); return; }
+    if (ARCG.js) return;
+    ARCG.js = 1;
+    let n = 0;
+    const done = () => { if (++n < 2) return; ARCG.js = 2; if (window.ARCADE) arcPlay(ARCG.want[0], ARCG.want[1]); else ARCG.js = 0; };
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'assets/arcade.css?v=1'; l.dataset.arcade = '1'; l.onload = l.onerror = done; document.head.appendChild(l);
+    const sc = document.createElement('script'); sc.src = 'assets/arcade.js?v=1'; sc.onload = done; sc.onerror = () => { ARCG.js = 0; }; document.head.appendChild(sc);
+  }
+  // a keyboard's way in: a button in the street, shown when it takes the focus (as the camera screen's), the first cabinet;
+  // the dialog's own keys go from machine to machine
+  const ARC_KB = { fr: "Jouer à l'arcade", en: 'Play the arcade' };
+  const arcKb = document.createElement('button'); arcKb.type = 'button'; arcKb.className = 'r6-kb arc-kb';
+  arcKb.addEventListener('click', () => arcPlay(0, true)); hero.appendChild(arcKb);
+  const arcKbLang = () => { arcKb.textContent = ARC_KB[document.documentElement.lang === 'en' ? 'en' : 'fr']; };
+  arcKbLang(); new MutationObserver(arcKbLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   // the fuse box: a pixel panel in MATHIS-PC's look, eleven switches (real buttons: Tab, Space, a tap), a LED over each,
   // the main LED dead (a short try at each wrong setting); Esc, x or a click outside closes it
   const FZ_TXT = {
@@ -7939,7 +7984,7 @@
     }
     hanaDraw();
   }
-  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
+  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the sky by the hour (package 1: ciel-01..12, meteo-13). skyHours, from stepNight each frame: the far planes' night
   // and dawn (NRU's uNT, uDW, uDP, uSun: the layers' shaders paint them from their own lightness), the street's far pixels'
