@@ -49,6 +49,13 @@ Le chemin, pour chaque zombie :
   la figure ; sa place et son angle par image (le centre, l'axe) donnent la trace que suit la planche du code
   (assets/bus_plank.webp) : clouée, dans ses mains, lancée, c'est toujours la même.
 
+- Les pieds (pieds au sol, pas de glissement) : la marche de dos, image par image, ses deux pieds au bas de l'image (leur
+  point au sol, la colonne entre eux), le pied d'appui de chaque image (deux suites d'images par cycle, une par pied :
+  appuis), la rangée où les jambes commencent (les hanches ; l'ourlet de la robe de 04) ; chaque jambe étiquetée dans
+  l'alpha (254, 253), pour que street.js plie chaque jambe vers le point de la rue où son pied est posé ; la course de
+  profil posée sur sa ligne de base (en l'air, ses pieds au-dessus du sol) et, d'une image à la suivante, l'avance qui garde
+  le pied posé à son point (foulees) ; l'élan du saut sur le toit, son pied posé, et son pied accroupi en haut.
+
 Ce qui est écrit :
 - la horde : horde_L0..L4.webp, à ses cinq tailles d'avant (64, 100, 150, 290 et 42 px pour 1,76 m), et la ligne ZH (les
   images de chaque silhouette par taille : [x, y, l, h, ax, ay], l'ancre sur la semelle) ;
@@ -438,6 +445,90 @@ def mains(m, hs):
     return (xs[sel].min() + xs[sel].max() + 1) / 2, float(t)
 
 
+# ---- les pieds (le sol de chaque rangée : la ligne de base commune de ses images, le bord sous la semelle la plus basse)
+def pieds_dos(m, base, hs):
+    """de dos : les deux pieds au bas de l'image (la bande de 14 % de la taille au-dessus du sol) ; leur séparation (la
+    colonne la plus creuse du milieu de la bande), et pour chacun sa semelle (le bord sous son pixel le plus bas) et son
+    point de contact (la moyenne des colonnes de ses rangées les plus basses). base : la rangée du sol (le bord)"""
+    band = m.copy()
+    band[:max(0, int(base - 0.14 * hs))] = False
+    cols = band.sum(0)
+    xs = np.nonzero(cols)[0]
+    a, b = int(xs.min()), int(xs.max())
+    lo, hi = a + int(0.25 * (b - a)), a + int(0.75 * (b - a))
+    split = lo + int(np.argmin(cols[lo:hi + 1]))
+    feet = []
+    for c0, c1 in ((a, split), (split + 1, b + 1)):
+        ys, xx = np.nonzero(band[:, c0:c1])
+        sole = int(ys.max()) + 1
+        sel = ys >= sole - 1 - max(1.0, 0.012 * hs)
+        feet.append((float(xx[sel].mean()) + 0.5 + c0, float(sole)))
+    return feet, split + 0.5
+
+
+def appuis(lifts):
+    """le pied d'appui de chaque image d'un cycle de marche (0 : celui de gauche, 1 : celui de droite) : deux suites d'images
+    d'un seul tenant, de 3 à 5 images chacune, qui prennent le plus de levées de l'autre pied. lifts : par image, (levée du
+    pied gauche, levée du droit), en px au-dessus du sol. (Sur ces planches le pied droit ne se lève presque jamais : de 0 à
+    3 px sur les huit images, pour les cinq ; dans la moitié du cycle où le gauche est posé, le droit glisse au sol, traîné.)"""
+    n = len(lifts)
+    ev = [l[1] - l[0] for l in lifts]                 # (> 0 : le droit levé, appui à gauche)
+    best = None
+    for s0 in range(n):
+        for L in range(3, n - 2):
+            side = [1] * n
+            for j in range(L):
+                side[(s0 + j) % n] = 0
+            sc = sum(ev[i] if side[i] == 0 else -ev[i] for i in range(n)) - 0.01 * abs(L - n / 2)
+            if best is None or sc > best[0] + 1e-9:
+                best = (sc, side)
+    return best[1]
+
+
+def touches(m, base, hs, tol=0.012):
+    """de profil : les pieds qui touchent le sol (à tol x la taille de la ligne de base ; le talon et la pointe d'une même
+    semelle, à 5 % de la taille l'un de l'autre, un seul) : le milieu de leur semelle"""
+    r0 = int(base - max(2, tol * hs))
+    band = np.zeros_like(m)
+    band[max(0, r0):int(base)] = m[max(0, r0):int(base)]
+    lab, n = nd.label(nd.binary_dilation(band, structure=np.ones((1, max(3, int(0.05 * hs)) | 1))), structure=np.ones((3, 3)))
+    lab = np.where(band, lab, 0)
+    out = []
+    for i in range(1, n + 1):
+        ys, xs = np.nonzero(lab == i)
+        if len(xs) < 4:
+            continue
+        sel = ys >= ys.max() - 1
+        out.append(float(xs[sel].mean()) + 0.5)
+    return sorted(out)
+
+
+def foulees(fr, base, axs, e, hs):
+    """la course de profil, image par image : de combien le corps avance d'une image à la suivante pour que le pied posé
+    garde son point au sol. Le pied posé : une tache au sol dans l'image k qui se retrouve dans l'image k + 1, reculée sous
+    les hanches d'au plus 0,45 m (ou avancée de 3 cm au plus : le même pied) ; s'il y en a plusieurs, celle qui recule le
+    plus (le pied qui vient de se poser ; l'autre n'est que la pointe d'un pied qui part). Sinon (en l'air, l'autre pied qui
+    se pose) : la moyenne des autres. Jamais moins de 0,05 fois la moyenne (une image dure toujours un peu). Rend, par
+    passage k -> k + 1 : l'avance (px de la planche), et le pied tenu ([x dans k, x dans k + 1], px de la planche) ou None."""
+    n = len(fr)
+    t = [[c - axs[k] for c in touches(fr[k]['m'], base[k], hs)] for k in range(n)]
+    adv, held = [None] * n, [None] * n
+    for k in range(n):
+        best = None
+        for c0 in t[k]:
+            for c1 in t[(k + 1) % n]:
+                d = c0 - c1
+                if -0.03 * e <= d <= 0.45 * e and (best is None or d > best[0]):
+                    best = (d, c0, c1)
+        if best:
+            adv[k] = max(0.0, best[0])
+            held[k] = [best[1] + axs[k], best[2] + axs[(k + 1) % n]]
+    known = [a for a in adv if a is not None]
+    mean = float(np.mean(known)) if known else 0.25 * e
+    adv = [max(0.05 * mean, a if a is not None else mean) for a in adv]
+    return adv, held
+
+
 # ---- la planche dans les mains (zombie_NN_toit_fenetre, rangée 2)
 BOIS = dict(h=(40.0, 80.0), c=0.03, l=0.38, dens=0.45)   # (le bois des planches : sa teinte OKLab (degrés), sa saturation, sa
                                                           #  clarté ; et sa densité sur 9 x 9 px : la planche, pas des grains)
@@ -686,8 +777,70 @@ HSTRAY = 15                                           # (un bout détaché de 15
 MOVES_H = ['walk'] * 8 + ['hit', 'hit', 'fall', 'fall', 'fall', 'down']
 
 
+def entre_jambes(m, base, hs):
+    """la colonne entre les deux jambes à hauteur des genoux (la plus creuse du milieu de la bande de 20 à 30 % au-dessus du sol)"""
+    band = m[max(0, int(base - 0.30 * hs)):int(base - 0.20 * hs)]
+    cols = band.sum(0)
+    xs = np.nonzero(cols)[0]
+    a, b = int(xs.min()), int(xs.max())
+    lo, hi = a + int(0.3 * (b - a)), a + int(0.7 * (b - a))
+    return lo + int(np.argmin(cols[lo:hi + 1])) + 0.5
+
+
+JAMBES = {'04': 0.22}                                 # (où les jambes commencent, au-dessus du sol (x la taille) : les
+                                                      #  hanches, 0,50 ; sous la robe de 04, l'ourlet)
+
+
+def pieds_horde(n, f0, e, hs, cells, sc):
+    """la marche de dos, ses pieds dans chaque cellule : [pied d'appui (0 gauche, 1 droit), x et y de son point au sol, x et y
+    de l'autre (levé ou traîné), la colonne qui les sépare aux chevilles, la rangée des hanches (où la jambe commence), celle
+    des chevilles, la colonne entre les genoux, celle de l'entrejambe (les hanches)] (px de la cellule, depuis son coin haut
+    gauche)"""
+    base = max(f['box'][1] + bas(f['m']) for f in f0)  # (la ligne de base commune de la rangée)
+    raw = [pieds_dos(f['m'], base - f['box'][1], hs) for f in f0]
+    side = appuis([((base - f['box'][1]) - ft[0][1], (base - f['box'][1]) - ft[1][1]) for f, (ft, _) in zip(f0, raw)])
+    out = []
+    for k, (f, (ft, split)) in enumerate(zip(f0, raw)):
+        b = base - f['box'][1]
+        st, sw = ft[side[k]], ft[1 - side[k]]
+        P = [vers(f, st, sc, cells[k]), vers(f, sw, sc, cells[k]), vers(f, (split, b - JAMBES.get(n, 0.50) * hs), sc, cells[k]),
+             vers(f, (split, b - 0.07 * hs), sc, cells[k]), vers(f, (entre_jambes(f['m'], b, hs), 0), sc, cells[k]),
+             vers(f, (f['a'][0], 0), sc, cells[k])]
+        out.append([side[k], P[0][0], P[0][1], P[1][0], P[1][1], P[2][0], P[2][1], P[3][1], P[4][0], P[5][0]])
+    return out
+
+
+def etiquette_jambes(cell, fd):
+    """les jambes d'une image de la marche, chacune à son pied : sous les hanches, chaque pixel plein va au pied le plus proche
+    en passant par la figure (une croissance depuis les deux chaussures, pixel par pixel) ; écrit dans l'alpha (254 : la
+    jambe gauche, 253 : la droite, 255 : le reste ; tous pleins), que le shader lit pour plier chaque jambe vers son pied"""
+    a = cell[..., 3] > 0
+    H, W = a.shape
+    hip = int(round(fd[6]))
+    lab = np.zeros((H, W), np.int8)
+    yy, xx = np.mgrid[0:H, 0:W]
+    feet = [(fd[1], fd[2]), (fd[3], fd[4])]
+    side = [int(fd[0]), 1 - int(fd[0])]              # (le pied d'appui, l'autre : 0 gauche, 1 droit)
+    r = max(1.5, 0.045 * H)
+    for (fx, fy), sd in zip(feet, side):
+        box = a & (yy >= fy - 0.07 * H) & (yy < fy) & (np.abs(xx + 0.5 - fx) <= r)
+        lab[box & (lab == 0)] = sd + 1
+    zone = a & (yy >= hip)
+    lab[~zone] = 0
+    while True:                                       # (chacune gagne ses voisins libres, à tour de rôle ; jamais au-dessus des hanches)
+        grew = False
+        for v in (1, 2):
+            g = nd.binary_dilation(lab == v, structure=[[0, 1, 0], [1, 1, 1], [0, 1, 0]]) & zone & (lab == 0)
+            if g.any():
+                lab[g] = v
+                grew = True
+        if not grew:
+            break
+    cell[..., 3] = np.where(a, np.where(lab == 1, 254, np.where(lab == 2, 253, 255)), 0)
+
+
 def cuire_horde(rep=False):
-    looks, base = [], {}
+    looks, base, feet = [], {}, {}
     for n in ZN:                                      # (chaque zombie à ses cinq tailles, par majorité, depuis sa planche)
         e = echelles(n)
         f0, hs, _ = coupe(n, 'horde', 0, e)
@@ -695,6 +848,7 @@ def cuire_horde(rep=False):
         fr = f0 + f1
         C = familles_vote(fr)
         base[n] = [reduit(fr, C, (h / HN) / e['horde']) for h in NIVEAUX]
+        feet[n] = [pieds_horde(n, f0, e, hs, base[n][li][:8], (h / HN) / e['horde']) for li, h in enumerate(NIVEAUX)]
         looks.append((n, base[n]))
     for src, nom, regles in VARIANTES:                # (les variantes : ses images recolorées)
         looks.append((nom, [[dict(c, img=recolore(c['img'], regles)) for c in lv] for lv in base[src]]))
@@ -722,10 +876,17 @@ def cuire_horde(rep=False):
                 items.append(dict(a=sheets[li], box=F[:4], anchor=(F[4], F[5]), seq=('L%d' % li, k),
                                   stray=max(1, round(HSTRAY * (h / 290.0) ** 2))))
         infos.append(RG.regrain_group(items, RG.params('horde', stray=HSTRAY), 'horde ' + nom))
+    for b, (nom, _) in enumerate(looks):              # (les jambes de la marche étiquetées, dans l'alpha)
+        for li in range(len(NIVEAUX)):
+            for k in range(8):
+                x, y, w, h = frames[li][b][k][:4]
+                etiquette_jambes(sheets[li][y:y + h, x:x + w], feet[nom[:2]][li][k])
     for li in range(len(NIVEAUX)):
         save(sheets[li], 'horde_L%d.webp' % li)
-    ZH = {'levels': NIVEAUX, 'bodies': [nom for nom, _ in looks], 'stride': 0.9,
-          'L': [{'h': h, 'moves': MOVES_H, 'frames': frames[li], 'size': [sheets[li].shape[1], sheets[li].shape[0]]} for li, h in enumerate(NIVEAUX)]}
+    src = [nom[:2] for nom, _ in looks]               # (une variante : les pieds de son zombie)
+    ZH = {'levels': NIVEAUX, 'bodies': [nom for nom, _ in looks],
+          'L': [{'h': h, 'moves': MOVES_H, 'frames': frames[li], 'size': [sheets[li].shape[1], sheets[li].shape[0]],
+                 'feet': [feet[n][li] for n in src]} for li, h in enumerate(NIVEAUX)]}
     for i in infos:
         print('%-14s %2d familles, pente %.3f, %d px détachés ôtés' % (i['name'], i['families'], i['slope'], i['strays']))
     return ZH, sheets
@@ -741,14 +902,6 @@ MOVES_B = [('run', 'course', 0), ('leap', 'course', 1), ('jump', 'course', 2), (
            ('fall', 'horde', 1)]
 YEUX = {'run': range(8), 'leap': range(8), 'roof': range(8), 'plank': [7]}   # (les images où l'on voit son visage, de profil)
 PLANK = dict(L=22, E=3)                               # (la planche du code : 22 px (0,94 m) sur 3, en travers d'une fenêtre de 20 px)
-
-
-def foulee(fr, hs, e):
-    """la foulée de la course (m par cycle de 8 images) : le pied posé recule sous les hanches pendant l'appui (la somme de
-    ses reculs d'une image à l'autre, mesurée sur la planche) ; l'appui fait la moitié du cycle : la foulée, deux fois ce recul"""
-    cs = [(contact(f['m'], hs, 0.02) - f['a'][0]) / e for f in fr]
-    d = np.diff(cs + cs[:1])
-    return round(float(2 * -d[d < 0].sum()), 3)
 
 
 def lumiere(img):
@@ -816,6 +969,15 @@ def cuire_bus():
         rows = {}
         for mv, kind, r in MOVES_B:
             fr, hs, tr = coupe(n, kind, r, e, plank=(mv == 'plank'))
+            if mv == 'run':                           # (la course posée sur sa ligne de base : en l'air, ses pieds au-dessus du sol)
+                base = max(f['box'][1] + bas(f['m']) for f in fr)
+                for f in fr:
+                    b = base - f['box'][1]
+                    pad = b - f['m'].shape[0]
+                    if pad > 0:
+                        f['m'] = np.vstack([f['m'], np.zeros((pad, f['m'].shape[1]), bool)])
+                        f['rgb'] = np.vstack([f['rgb'], np.zeros((pad,) + f['rgb'].shape[1:], f['rgb'].dtype)])
+                    f['a'] = (f['a'][0], float(b))
             rows[mv] = (fr, hs, tr, kind)
         C = familles_vote([f for fr, _, _, _ in rows.values() for f in fr])
         md = {'cells': {}, 'pts': {}, 'eyes': {}}
@@ -831,8 +993,29 @@ def cuire_bus():
                 md['plank'] = [[t[0], round((t[1] - f['a'][0]) * sc, 2), round((t[2] - f['a'][1]) * sc, 2), round(t[3], 3)] if t[0] else [0, 0, 0, 0]
                                for f, t in zip(fr, tr)]
                 md['plankL'] = [round(t[4] * sc, 1) for t in tr if t[0] == 1]
-            if mv == 'run':
-                md['stride'] = foulee(fr, hs, e[kind])
+            if mv == 'run':                           # (ses avances d'une image à la suivante : le pied posé tenu)
+                adv, held = foulees(fr, [f['a'][1] for f in fr], [f['a'][0] for f in fr], e[kind], hs)
+                md['run'] = {'a': [round(v * sc, 2) for v in adv],
+                             'h': [[round(vers(f, (h[0], 0), sc, c)[0], 2), round(vers(fr[(k + 1) % 8], (h[1], 0), sc, cs[(k + 1) % 8])[0], 2)] if h else 0
+                                   for k, (f, c, h) in enumerate(zip(fr, cs, held))]}
+                md['stride'] = round(sum(adv) / e[kind], 3)
+            if mv == 'leap':                          # (l'élan : le pied posé des premières images ; accroupi en haut, son pied)
+                base = max(f['box'][1] + bas(f['m']) for f in fr)
+                axs = [f['a'][0] for f in fr]
+                t = [touches(f['m'], base - f['box'][1], hs) for f in fr]
+                lc = [0] * 8
+                if t[0]:
+                    k0 = min(t[0], key=lambda c: abs(c - axs[0]))
+                    lc[0] = round(vers(fr[0], (k0, 0), sc, cs[0])[0], 2)
+                    for k in (1, 2):                  # (le même pied : à 3 cm près, ou reculé sous les hanches)
+                        cand = [c for c in t[k] if -0.03 * e[kind] <= (k0 - axs[k - 1]) - (c - axs[k]) <= 0.45 * e[kind]]
+                        if not cand:
+                            break
+                        k0 = min(cand, key=lambda c: abs((k0 - axs[k - 1]) - (c - axs[k])))
+                        lc[k] = round(vers(fr[k], (k0, 0), sc, cs[k])[0], 2)
+                top = touches(fr[7]['m'], bas(fr[7]['m']), hs)
+                lc[7] = round(vers(fr[7], (min(top, key=lambda c: abs(c - axs[7])), 0), sc, cs[7])[0], 2) if top else 0
+                md['leapc'] = lc
         flat = [c['img'] for mv, *_ in MOVES_B for c in md['cells'][mv]]   # (la nuit, toutes ses images ensemble)
         g = iter(nuit(flat, NUIT['bus']))
         for mv, *_ in MOVES_B:
@@ -879,7 +1062,8 @@ def cuire_bus():
     save(planche_sprite(), 'bus_plank.webp')
     BZ = {'W': a.shape[1], 'H': a.shape[0], 'ppm': round(BUS_PPM, 2), 'Z': Z,
           'P': [md['pts'] for md in meta], 'E': [md['eyes'] for md in meta], 'K': [md['plank'] for md in meta],
-          'S': [md['stride'] for md in meta], 'pl': [PLANK['L'], PLANK['E'], 25, 17]}
+          'S': [md['stride'] for md in meta], 'R': [md['run'] for md in meta], 'LC': [md['leapc'] for md in meta],
+          'pl': [PLANK['L'], PLANK['E'], 25, 17]}
     for i in infos:
         print('%-10s %2d familles, pente %.3f, %d px détachés ôtés' % (i['name'], i['families'], i['slope'], i['strays']))
     print('foulées (m par cycle) :', BZ['S'], ' planches tenues (px) :', [md['plankL'] for md in meta])
