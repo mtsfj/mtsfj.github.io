@@ -10638,14 +10638,16 @@
   FEAT.push(stepRoof);
   // ==== end of ROOF ====
 
-  // ---- the dagashi-ya's obaa-chan (tools/dagashi_obaachan.py, from the owner's sheet), in the shop of tools/dagashi_interior.py (a
-  // small 3D model seen by the street's eye): behind her counter, at her depth (Z 26.45 m: 53 px a metre, 79 px standing), the
-  // counter's top cutting her at her forearms, the left door's stile and the far post in front of her, her elbow seen through the
-  // left door's glass (DGO.V: what of her shows at her depth, from the model; the glass, its sheen, as on the room behind it).
+  // ---- the dagashi-ya's obaa-chan (tools/dagashi_obaachan.py, from the owner's two sheets), in the shop of tools/dagashi_interior.py
+  // (a small 3D model seen by the street's eye): behind her counter, at her depth (Z 26.45 m: 53 px a metre of the model), at her
+  // true size (1.45 m, 91 px standing, her head 14 px: 6.5 heads), the counter's top cutting her under her forearms (36 px of her
+  // seated), between the left door's stile and the far post; at the shelf, seen through the left door's glass, its rail across
+  // her (DGO.V: what of her shows at her depth, from the model; the glass, its sheen, as on the room behind it).
   // DGO: her atlas cells [sx, sy, w, h, ax, ay] (ay: the counter's row seated, the soles' standing; the dark row DGO.dark below,
-  // her in the shop's dark), her seat (x, the counter's row), her standing row, her walk (w0..w5 and the steps that keep a planted
-  // foot on its pixel), her trip to the shelf (its first frame and how many: the same frames there and back, so she comes back to
-  // her very pixel), the shelf's x, how much higher she stands than she sits. She is there while the shop is open (openK); as it
+  // her in the shop's dark), her seat (x, the counter's row), her standing row, her walk (its six frames in their order, the steps
+  // that keep a planted foot on its pixel, how long each frame lasts: her body at an even pace, two steps in 1.1 s), her trip to
+  // the shelf (its first frame and how many: the same frames there and back, so she comes back to her very pixel), the shelf's x,
+  // how much higher she stands than she sits. She is there while the shop is open (openK); as it
   // shuts she gets up and walks off to the back of the house, left, past the glass; in the morning she comes back the same way (a
   // driven hour, the first frame, reduced motion: there or gone at once). Her day, timed in code: seated, she looks at the street
   // (s0), now and then smiles, her eyes closed (s1), breathes (a pixel, every 4 s or so); now and then she fans herself (s2, the
@@ -10654,11 +10656,11 @@
   // through the glass, turns her back (b0) and reaches up to it (r0), or stands there with her long stick (k0), and comes back
   // (STAGE: her place while she is up). Lit by the shop (the comp's level and its power; red in the red night, as its light), in
   // its dark in a power cut. Reduced motion: seated, still ----
-  const DGO = {"cells":{"s0":[0,0,46,50,21,47],"s1":[47,0,46,50,21,47],"s2":[94,0,47,50,20,47],"s3":[142,0,46,46,22,43],"a0":[189,0,47,50,24,47],"a1":[237,0,48,50,24,47],"c0":[286,0,44,49,20,46],"l0":[331,0,47,48,22,45],"b0":[379,0,42,81,21,81],"r0":[422,0,42,83,17,83],"k0":[465,0,45,81,22,81],"w0":[511,0,41,80,17,80],"w1":[553,0,41,78,17,78],"w2":[595,0,42,77,17,77],"w3":[638,0,46,77,20,77],"w4":[685,0,46,78,20,78],"w5":[732,0,44,78,19,78],"s2b":[777,0,47,50,20,47]},"dark":84,"V":[825,0,82,220,146,525],"seat":[192,655],"stand":676,"shelf":164,"trip":[0,7],"walk":["w0","w1","w2","w3","w4","w5"],"step":[4,8,2,6,4,0],"rise":12,"z":26.45,"ppm":52.93};   // (tools/dagashi_obaachan.py)
+  const DGO = {"cells":{"s0":[0,0,40,41,20,38],"s1":[41,0,40,41,20,38],"s2":[82,0,42,41,21,38],"s3":[125,0,37,38,18,35],"a0":[163,0,42,40,21,37],"a1":[206,0,41,40,20,37],"c0":[248,0,38,41,18,38],"l0":[287,0,38,40,19,37],"b0":[326,0,38,93,19,93],"r0":[365,0,44,106,17,106],"k0":[410,0,42,111,19,111],"w0":[453,0,35,86,16,86],"w1":[489,0,36,85,16,85],"w2":[526,0,41,85,17,85],"w3":[568,0,40,85,19,85],"w4":[609,0,37,85,17,85],"w5":[647,0,39,85,19,85],"s2b":[687,0,42,41,21,38]},"dark":112,"V":[730,0,82,220,146,525],"seat":[204,655],"stand":676,"shelf":170,"trip":[0,6],"walk":["w0","w1","w2","w3","w5","w4"],"step":[5,11,2,5,9,2],"tf":[0.155,0.294,0.098,0.155,0.28,0.098],"rise":27,"z":26.45,"ppm":52.93};   // (tools/dagashi_obaachan.py)
   const OBA = { img: new Image(), A: null, V: null, st: 'gone', act: 'idle', t: 0, dur: 6, f: 's0', ft: 0, ab: false, look: 0, br: 0, brT: 3,
     x: 0, flip: false, next: '', stick: false, path: null, pi: 0, then: null, trip: 60 + Math.random() * 90, hk0: -1, sig: '',
     shop: comps.find((c) => c.userData.name === 'win_z7_shop'), pe: null };
-  const OBA_AT = [[140, 555, 222, 680]];                                     // (her place while she is up, STAGE: the glass, the stick into the opening)
+  const OBA_AT = [[140, 560, 228, 680]];                                     // (her place while she is up, STAGE: the glass, the stick into the opening)
   OBA.img.src = 'assets/dagashi_obaachan.webp';
   (function () {
     const V = DGO.V || [0, 0, 1, 1, 0, 0], W = V[2], H = V[3];
@@ -10699,7 +10701,7 @@
       OBA.out[k].g.putImageData(OBA.out[k].id, 0, 0); OBA.out[k].tex.needsUpdate = true;
     }
   }
-  const OBA_STEP = 0.15, OBA_UP = 0.4;                                       // (a frame of her walk, s: about 0.5 m/s, an old lady's ; standing up, sitting down)
+  const OBA_STEP = 0.2, OBA_UP = 0.7;                                        // (a frame of her walk when DGO.tf is missing, s ; standing up, sitting down: slowly)
   function obaPath(x, fi, dir, n, xEnd) {     // her walk from (x, frame fi) on, dir -1 left (mirrored) or +1 right: n frames, or until
     const P = [[DGO.walk[fi], x]], L = DGO.walk.length;   // past xEnd; each frame the body moves by the step that keeps the planted foot
     for (let k = 0; k < (n || 99); k++) {
@@ -10767,7 +10769,8 @@
       else if (k >= 1 && O.next === 'leave') obaWalk(obaPath(sx, DGO.trip[0], -1, 0, 120), true, () => { O.st = 'gone'; STAGE.done('obaachan'); });
       else if (k >= 1) obaWalk(obaPath(sx, DGO.trip[0], -1, DGO.trip[1]), true, () => { O.st = 'reach'; O.t = 0; O.stick = Math.random() < 0.4; O.dur = 2.6 + Math.random() * 1.8; });
     } else if (O.st === 'walk') {
-      if (O.t >= OBA_STEP) { O.t -= OBA_STEP; O.pi++; if (O.pi >= O.path.length) { O.pi = O.path.length - 1; O.then(); } }
+      const tf = DGO.tf ? DGO.tf[DGO.walk.indexOf(O.path[O.pi][0])] : OBA_STEP;   // (each frame of her walk lasts its step: her body at an even pace)
+      if (O.t >= tf) { O.t -= tf; O.pi++; if (O.pi >= O.path.length) { O.pi = O.path.length - 1; O.then(); } }
       if (O.st === 'walk') { [O.f, O.x] = O.path[O.pi]; obaDraw(O.f, O.x, DGO.stand, O.flip); }
     } else if (O.st === 'reach') {               // (at the shelf: she turns her back to us, reaches up to it, or stands there with her long stick)
       obaDraw(O.t < 0.45 || O.t > O.dur - 0.5 ? 'b0' : O.stick ? 'k0' : 'r0', O.x, DGO.stand, false);
