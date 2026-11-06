@@ -480,52 +480,8 @@ HSTRAY = 15                                                          # (la horde
 
 
 def do_horde(HRD, rep):
-    sheets = [load('horde_L%d.webp' % i) for i in range(len(HRD['L']))]
-    top = int(np.argmax([L['h'] for L in HRD['L']]))                # (le niveau de 290 px : ce qui y est une partie l'est partout)
-    T = HRD['L'][top]
-    if rep:
-        for li, L in enumerate(HRD['L']):
-            report(sheets[li], [F[:4] for fr in L['frames'] for F in fr], 'horde_L%d (%d px) avant' % (li, L['h']))
-    ref = {}                                                         # (les parties détachées réelles du niveau du haut, par image)
-    for b, fr in enumerate(T['frames']):
-        for k, F in enumerate(fr):
-            x, y, w, h = F[:4]
-            al = sheets[top][y:y + h, x:x + w, 3] > 0
-            lab, n = nd.label(al, structure=np.ones((3, 3)))
-            sz = np.bincount(lab.ravel())
-            sz[0] = 0
-            real = np.isin(lab, np.nonzero(sz > HSTRAY)[0])
-            ref[(b, k)] = (nd.binary_dilation(real, iterations=2), F)
-
-    def keep(comp, it):                                              # (une partie : ses pixels tombent sur une partie du niveau du haut)
-        li, b, k = it['lvl']
-        if li == top:
-            return False
-        R, FT = ref[(b, k)]
-        F = it['frame']
-        sc = T['h'] / HRD['L'][li]['h']
-        ys, xs = np.nonzero(comp)
-        u = np.round(FT[4] + (xs + 0.5 - F[4]) * sc).astype(int)
-        v = np.round(FT[5] + (ys + 0.5 - F[5]) * sc).astype(int)
-        ok = (u >= 0) & (v >= 0) & (u < R.shape[1]) & (v < R.shape[0])
-        hit = np.zeros(len(u), bool)
-        hit[ok] = R[v[ok], u[ok]]
-        return hit.mean() >= 0.5
-    out = []
-    for b in range(len(HRD['bodies'])):                              # (un personnage : un corps, ses cinq niveaux, ses 18 images)
-        items = []
-        for li, L in enumerate(HRD['L']):
-            sc = L['h'] / T['h']
-            for k, F in enumerate(L['frames'][b]):
-                items.append(dict(a=sheets[li], box=F[:4], anchor=(F[4], F[5]), seq=('L%d' % li, k), keep=keep, lvl=(li, b, k), frame=F,
-                                  stray=max(1, round(HSTRAY * sc * sc))))
-        P = params('horde', stray=HSTRAY)
-        out.append(regrain_group(items, P, 'horde corps %s' % HRD['bodies'][b]))
-    for li in range(len(HRD['L'])):
-        save(sheets[li], 'horde_L%d.webp' % li)
-        if rep:
-            report(sheets[li], [F[:4] for fr in HRD['L'][li]['frames'] for F in fr], 'horde_L%d (%d px) après' % (li, HRD['L'][li]['h']))
-    return out
+    print('la horde : tools/zombie_sheets.py (les planches du propriétaire), plus ce mode ; rien d\'écrit')
+    return []
 
 
 def do_bus(BZ, rep):
