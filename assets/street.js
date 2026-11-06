@@ -2380,8 +2380,8 @@
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
     // (every asset a literal URL: sync_assets.py finds them by that pattern)
-    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=5', 'assets/crew_dempsey_flash.webp?v=5'], nikolai: ['assets/crew_nikolai.webp?v=6', 'assets/crew_nikolai_flash.webp?v=6'],
-      takeo: ['assets/crew_takeo.webp?v=6', 'assets/crew_takeo_flash.webp?v=6'], richtofen: ['assets/crew_richtofen.webp?v=6', 'assets/crew_richtofen_flash.webp?v=6'] };
+    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=6', 'assets/crew_dempsey_flash.webp?v=6'], nikolai: ['assets/crew_nikolai.webp?v=7', 'assets/crew_nikolai_flash.webp?v=7'],
+      takeo: ['assets/crew_takeo.webp?v=7', 'assets/crew_takeo_flash.webp?v=7'], richtofen: ['assets/crew_richtofen.webp?v=7', 'assets/crew_richtofen_flash.webp?v=7'] };
     for (const h of Object.keys(CRW.heroes)) { T.crew[h] = crisp(SRC[h][0], on); T.flash[h] = crisp(SRC[h][1], on); CREW.need += 2; }
     for (const src of ['assets/horde_L0.webp?v=4', 'assets/horde_L1.webp?v=5', 'assets/horde_L2.webp?v=5', 'assets/horde_L3.webp?v=5', 'assets/horde_L4.webp?v=4']) { T.L.push(crisp(src, on)); CREW.need++; }
     T.door = crisp('assets/bus_door.webp?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.webp?v=1', on); CREW.need += 2;
