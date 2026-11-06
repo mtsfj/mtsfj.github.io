@@ -10670,7 +10670,7 @@
     x: 0, flip: false, next: '', stick: false, path: null, pi: 0, then: null, trip: 60 + Math.random() * 90, hk0: -1, sig: '',
     shop: comps.find((c) => c.userData.name === 'win_z7_shop'), pe: null };
   const OBA_AT = [[140, 560, 228, 680]];                                     // (her place while she is up, STAGE: the glass, the stick into the opening)
-  OBA.img.src = 'assets/dagashi_obaachan.webp?v=3';
+  OBA.img.src = 'assets/dagashi_obaachan.webp?v=4';
   (function () {
     const V = DGO.V || [0, 0, 1, 1, 0, 0], W = V[2], H = V[3];
     const mk = (z, kind) => {
