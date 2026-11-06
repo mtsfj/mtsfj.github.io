@@ -6,7 +6,7 @@ tools/src/ichiraku_regular_sheet.webp : l'habitué en costume), dans l'un de tro
     python3 tools/ichiraku_figures.py                       (après tools/ichiraku_interior.py ; réécrit assets/ramen_figures.webp
                                                              et, dans assets/street.js, la ligne IRF : on peut le relancer, il
                                                              écrit la même chose)
-    python3 tools/ichiraku_figures.py --style couleur       (le style : ombre (A, par défaut), couleur (B), liseré (C))
+    python3 tools/ichiraku_figures.py --style couleur       (le style : ombre (A), couleur (B), liseré (C, par défaut))
     python3 tools/ichiraku_figures.py --preview dossier     (des aperçus seulement : l'atlas, la ligne IRF en json)
 
 Les styles (STYLE, ou --style) :
@@ -81,7 +81,7 @@ SHEETS = {'teuchi': os.path.join(ROOT, 'tools', 'src', 'ichiraku_teuchi_sheet.we
           'regular': os.path.join(ROOT, 'tools', 'src', 'ichiraku_regular_sheet.webp')}
 F, VX, VY, EYE = R.F, R.VX, R.VY, R.EYE
 STYLES = {'a': 'ombre', 'b': 'couleur', 'c': 'liseré', 'ombre': 'ombre', 'couleur': 'couleur', 'liseré': 'liseré', 'lisere': 'liseré'}
-STYLE = 'ombre'                              # le style écrit (A) ; --style le change
+STYLE = 'liseré'                             # le style écrit (C, choisi par le propriétaire) ; --style le change
 
 # ---- les profondeurs (m, le long de la rue) et les échelles (px par mètre : F / Z)
 Z_T = R.Z_C + R.CTR_D + R.AISLE / 2          # Teuchi, au milieu de son allée
