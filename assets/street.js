@@ -6,6 +6,16 @@
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
+  // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
+  // gestures are cancelled, and so is a two-finger touch's move and a double tap (touch-action on the page: one-finger pans
+  // only); on a desktop, ctrl/cmd + wheel (a trackpad's pinch) and ctrl/cmd + +, -, 0. Scrolling, one-finger touches and the
+  // games' own touches stay as they were ----
+  document.documentElement.style.touchAction = 'pan-x pan-y';
+  for (const g of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(g, (ev) => ev.preventDefault(), { passive: false });
+  document.addEventListener('touchmove', (ev) => { if (ev.touches.length > 1) ev.preventDefault(); }, { passive: false });
+  window.addEventListener('wheel', (ev) => { if (ev.ctrlKey || ev.metaKey) ev.preventDefault(); }, { passive: false });
+  window.addEventListener('keydown', (ev) => { if ((ev.ctrlKey || ev.metaKey) && ['+', '=', '-', '_', '0'].includes(ev.key)) ev.preventDefault(); });
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });   // (transparent while the street loads: below)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
