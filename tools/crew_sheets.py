@@ -44,11 +44,15 @@ Le chemin, image par image :
 - L'éclair sur le tireur (crew_<héros>_flash.webp, la même grille ; ajouté par street.js en mélange additif, seulement dans
   la visée, le temps de l'éclair) : pour chaque image de visée, la lumière de la bouche du canon (muz) sur ses pixels, le
   visage, les mains, l'arme et le devant du buste, en 1 / (1 + (d / R)^2), chaude, prise tache par tache (regrain).
-- La marche : CRW.heroes.<h>.wfps (images par seconde), la cadence que donne l'ampleur du pas du dessin (deux pas par cycle)
-  à 1,17 m/s (street.js), bornée à un pas d'homme (8 à 10 images/s). Les planches dessinent la marche sur place : le pied
-  d'appui n'y recule que de 4 à 14 px par cycle sous le corps (Takeo et Richtofen marchent presque de face), le corps en
-  fait 23 à 26 ; les pieds glissent d'autant (ni la cadence ni la vitesse ne le rattrapent sans l'une absurde : 16 à 50
-  images/s, ou 0,2 à 0,6 m/s).
+- La marche, le pied posé sur son pixel (comme celle de l'obaa-chan) : sur chaque image de marche à la taille de la scène,
+  ses pieds au sol (leur talon, leur pointe) ; d'une image à la suivante le corps avance de wstep px entiers, le moins qui
+  pose un pied au sol de l'une sur un pied au sol de l'autre (à un pixel près, jamais en arrière ; aucun pied commun : l'autre
+  se pose plus loin, le corps reste) ; chaque image dure wtf s, son pas à la vitesse que le dessin donne à CADENCE (deux pas
+  par seconde), bornée à TF : le corps va d'un pas régulier. street.js fait marcher chacun image par image sur ces pas (et à
+  reculons, les mêmes à l'envers). Les planches dessinent la marche presque sur place : 9 px le cycle pour Dempsey, 20 pour
+  Nikolai (sa marche v2), 4 pour Takeo et 3 pour Richtofen, qui vont presque de face ; ils marchent donc à 0,37, 0,82, 0,16
+  et 0,12 m/s. Leur chemin longe une rangée (de la porte à leur place, une rangée de différence au plus) : le sol est le bas
+  de l'image, le pas se mesure en x.
 
 Il faut Pillow, numpy, scipy.
 """
@@ -83,9 +87,9 @@ EXPOSE = 0.37               # (la nuit : les couleurs des planches, peintes en p
                             #  de Richtofen, comme dessinés ; regrain ne comprime plus les clairs, déjà sous la cible)
 FLOOR = 9                   # (le plancher du bus au-dessus de la chaussée, à la porte : DOOR.floor 78, BUS.ground 87)
 PPM = 24.3                  # (CRW.ppm : px par mètre à la rangée 649 ; gardé)
-SPEED = 1.17                # (m/s : la marche de street.js)
 FLASH = dict(rgb=(255, 196, 128), peak=0.26, R=5.5, floor=0.02)     # (la lumière de l'éclair : couleur, force au canon, rayon, seuil)
-WFPS = (8.0, 10.0)          # (la cadence de la marche, bornée à un pas d'homme : un cycle de huit images en 0,8 à 1 s)
+CADENCE = 2.0               # (la marche : deux pas par seconde, le haut d'un pas d'homme (1,6 à 2) : un cycle de deux pas en 1 s)
+TF = (0.08, 0.3)            # (une image de la marche dure entre tant et tant de s)
 KICKS = [0.0, 0.3]          # (la visée, le recul : H.kick au-dessus de 0,3 dans street.js)
 
 # Les choix, héros par héros. ver : la version de chaque rangée. Une image : (rangée, colonne) ; dans down et rise,
@@ -109,13 +113,14 @@ HEROES = {
         kneel=[('stand', 0), ('step', 2), ('kneel', 0)],
         aims=[(0, 0, 1), (55, 2, 3), (70, 4, 5), (85, 6, 7)], muz={0: [(82, 68), (93, 60)]},
         reload=list(range(8)), drop=2, idle=[0, 1, 2, 3]),
-    # Nikolai : v1 partout. La bouteille à sa hanche droite (à notre gauche) sur les deux planches v1 ; en v2 combat elle
+    # Nikolai : v1 partout, sauf la marche (v2 : son pied d'appui recule vraiment sous lui, 20 px le cycle contre 6 ; la
+    # bouteille du même côté). La bouteille à sa hanche droite (à notre gauche) sur les deux planches v1 ; en v2 combat elle
     # change de côté d'une image à l'autre, et en v2 la joie (il boit) perd la PPSh. Sa visée : deux directions vers notre
     # gauche, deux vers notre droite ; les quatre images de « recul » de la planche sont toutes la même arme relevée vers
     # la droite : elles servent de recul aux deux de droite ; à gauche, pas de recul (l'image visée reste). Pas de visée
     # droit sur nous : son trois-quarts droit (4) en tient lieu (la horde vient sur notre droite de lui).
     'nikolai': dict(
-        H=44, K=31, ver=dict(walk='v1', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
+        H=44, K=31, ver=dict(walk='v2', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
         walk=list(range(8)),
         down=[('stand', 0, FLOOR, True), ('step', 0, FLOOR, True), ('step', 1, 5, False), ('step', 2, 0, False), ('step', 3, 0, False)],
         rise=[('step', 4, 0, False), ('step', 5, 0, False), ('step', 6, 5, True), ('step', 7, FLOOR, True)],
@@ -130,18 +135,20 @@ HEROES = {
     'takeo': dict(
         H=42, K=29, ver=dict(walk='v2', step='v2', stand='v2', aim='v2', reload='v2', kneel='v2'),
         walk=list(range(8)),
-        down=[('stand', 0, FLOOR, True), ('walk', 2, FLOOR, True), ('walk', 4, 4, False), ('stand', 1, 0, False)],
+        down=[('stand', 0, FLOOR, True), ('walk', 1, FLOOR, True), ('walk', 2, 7, False), ('walk', 3, 5, False), ('walk', 4, 3, False),
+              ('walk', 5, 1, False), ('stand', 1, 0, False)],
         rise=[('step', 4, 0, False), ('step', 5, 0, False), ('step', 6, 5, True), ('step', 7, FLOOR, True)],
         stand=[0, 1], cheer=[2, 3, 4, 5],
         kneel=[('stand', 0), ('kneel', 0)],
         aims=[(-60, 2, 3), (0, 0, 1), (60, 4, 5)], muz={1: [(77, 65), (74, 62)]},
         reload=list(range(8)), drop=2, idle=[0, 1, 2, 3]),
-    # Richtofen : v1 partout. En v2 la huitième image de la marche est coupée par le bord de la planche (l'épaule, le
-    # manteau, l'arme : plusieurs pixels de la scène) et la sacoche passe de l'autre côté en combat ; v1 marche presque de
-    # face, entière, la sacoche et les taches du manteau aux mêmes places sur ses deux planches.
+    # Richtofen : v1 partout (la sacoche et les taches du manteau aux mêmes places sur ses deux planches ; en v2 combat la
+    # sacoche passe de l'autre côté), sauf la marche : v2, de trois quarts vers la droite (v1 marche de face, en allant à
+    # droite il semble glisser de côté), sur ses sept premières images (la huitième est coupée par le bord de la planche :
+    # l'épaule, le manteau, l'arme ; le cycle se referme de la septième à la première, pieds joints).
     'richtofen': dict(
-        H=44, K=31, ver=dict(walk='v1', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
-        walk=list(range(8)),
+        H=44, K=31, ver=dict(walk='v2', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
+        walk=list(range(7)),
         down=[('stand', 0, FLOOR, True), ('step', 0, FLOOR, True), ('step', 1, 5, False), ('step', 2, 0, False), ('step', 3, 0, False)],
         rise=[('step', 4, 0, False), ('step', 5, 0, False), ('step', 6, 5, True), ('step', 7, FLOOR, True)],
         stand=[0, 1], cheer=[2, 3, 4, 5],
@@ -492,15 +499,41 @@ def build(hero, log=print):
     return dict(hero=hero, F=F, cw=cw, ch=ch, ax=ax, ay=ay, S=S)
 
 
-def stride(cells, ay):
-    """la marche : le pas du dessin, l'écart des pieds (les 4 rangées du bas) à son plus large moins à son plus serré, en px
-    de la scène ; le corps avance de deux pas par cycle. (Les planches dessinent la marche sur place, le pied d'appui ne
-    recule presque pas sous le corps : c'est l'ampleur du pas qui donne la cadence.)"""
-    sp = []
-    for c in cells:
-        xs = np.nonzero((c[ay - 4:ay, :, 3] > 0).any(0))[0]
-        sp.append(float(xs.max() - xs.min() + 1) if len(xs) else 0.0)
-    return 2 * (max(sp) - min(sp)), sp
+def ground_feet(c, ay):
+    """les pieds au sol d'une image de marche (sa cellule, à la taille de la scène) : les morceaux de ses trois dernières
+    rangées qui touchent l'une des deux dernières ; leur talon et leur pointe (colonnes)"""
+    a = c[..., 3] > 0
+    lab, n = nd.label(a[ay - 3:ay].any(0))
+    out = []
+    for k in range(1, n + 1):
+        cols = np.nonzero(lab == k)[0]
+        if a[ay - 2:ay, cols].any():
+            out.append((int(cols.min()), int(cols.max())))
+    return out
+
+
+def walk_steps(cells, ay):
+    """d'une image de la marche à la suivante (la dernière à la première), de combien le corps avance (px entiers de la
+    scène) : le moins, jamais en arrière, qui pose un pied au sol de l'une sur un pied au sol de l'autre (sa pointe sur sa
+    pointe, ou son talon sur son talon, à un pixel près) ; s'ils n'ont aucun pied commun (l'autre se pose plus loin), le
+    corps ne bouge pas. Rend les pas et, pour chacun, de combien ce pied glisse encore (px)"""
+    ft = [ground_feet(c, ay) for c in cells]
+    step, slip = [], []
+    for i in range(len(ft)):
+        d = [a[e] - b[e] for a in ft[i] for b in ft[(i + 1) % len(ft)] for e in (0, 1) if a[e] - b[e] >= -1]
+        st = max(0, min(d)) if d else 0
+        step.append(int(st))
+        slip.append(min(abs(x - st) for x in d) if d else 0)
+    return step, slip
+
+
+def walk_times(step, v):
+    """combien de temps dure chaque image de la marche : son pas à la vitesse v (px/s), bornée à TF, le cycle gardé"""
+    T = sum(step) / v
+    tf = np.clip(np.array(step, float) / v, *TF)
+    for _ in range(20):
+        tf = np.clip(tf * T / tf.sum(), *TF)
+    return tf
 
 
 def light(cell, X, Y):
@@ -546,11 +579,15 @@ def assemble(B, log=print):
             FL[y:y + ch, x:x + cw] = light(q['cell'], mc + 0.5, mr + 0.5)
         items.append(dict(a=A, box=q['box'], anchor=(ax, ay), seq=(q['mv'], q['k']), **{'with': [FL]}))
     info = RG.regrain_group(items, RG.params('crew'), 'crew_' + hero)
-    # la marche : sa cadence
+    # la marche : le pas de chaque image (le pied posé ne bouge pas), la vitesse que le dessin donne à CADENCE, la durée de
+    # chaque image (le corps à un pas régulier)
     walk = [q for q in F if q['mv'] == 'walk']
-    D, xs = stride([A[q['box'][1]:q['box'][1] + ch, q['box'][0]:q['box'][0] + cw] for q in walk], ay)
-    v = SPEED * PPM
-    wfps = round(min(WFPS[1], max(WFPS[0], len(walk) * v / D if D > 0 else WFPS[1])), 2)
+    step, slip = walk_steps([A[q['box'][1]:q['box'][1] + ch, q['box'][0]:q['box'][0] + cw] for q in walk], ay)
+    D = sum(step)
+    if D <= 0:
+        sys.exit('%s : sa marche ne mène nulle part (aucun pas)' % hero)
+    v = D * CADENCE / 2                                                # (px/s : deux pas par cycle)
+    tf = walk_times(step, v)
     mv = {}
     for q in F:
         e = dict(cell=q['n'])
@@ -567,11 +604,11 @@ def assemble(B, log=print):
             e['u'] = x['u']
         mv.setdefault(q['mv'], []).append(e)
     order = ['down', 'walk', 'rise', 'stand', 'kneel', 'aim', 'reload', 'cheer', 'idle']
-    J = dict(cw=cw, ch=ch, ax=ax, ay=ay, cols=cols, n=n, size=[A.shape[1], A.shape[0]], wfps=wfps,
+    J = dict(cw=cw, ch=ch, ax=ax, ay=ay, cols=cols, n=n, size=[A.shape[1], A.shape[0]], wstep=step, wtf=[round(float(x), 3) for x in tf],
              dirs=[d for d, _, _ in Hc['aims']], moves={k: mv[k] for k in order})
-    log('%-9s %2d images, cellule %dx%d (ancre %d,%d), échelles %s, la marche : %.1f px par cycle -> %.2f images/s, %d familles, pente %.3f, %d px détachés'
-        % (hero, n, cw, ch, ax, ay, ', '.join('%s %s %s %.4f' % (k[0][:4], k[1], ROWS[k[0]][k[2]], v_) for k, v_ in sorted(B['S'].items())), D, wfps,
-           info['families'], info['slope'], info['strays']))
+    log('%-9s %2d images, cellule %dx%d (ancre %d,%d), %d familles, pente %.3f, %d px détachés ; la marche : pas %s (%d px le cycle, le pied posé à %d px '
+        'près), %.1f px/s (%.2f m/s), durées %s' % (hero, n, cw, ch, ax, ay, info['families'], info['slope'], info['strays'], step, D, max(slip), v, v / PPM,
+                                                  [round(float(x), 3) for x in tf]))
     return A, FL, J, info
 
 
