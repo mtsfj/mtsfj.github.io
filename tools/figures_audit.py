@@ -195,7 +195,7 @@ def crew_cell(who, move, i=0):
     return [(n % C['cols']) * C['cw'], (n // C['cols']) * C['ch'], C['cw'], C['ch']]
 
 
-Z_T = float(IRF['T']['z'])
+Z_T = float(IRF['T']['z'] if 'z' in IRF['T'] else IRF['Tz'])   # (la ligne IRF d'avant ou d'après tools/ichiraku_figures.py)
 Z_S = float(IRF['W']['from'][1])
 Z_E = float(IRF['W']['to'][1])
 Z_OA = float(OMF['A']['z'])
@@ -204,9 +204,9 @@ GGK = jsnum(r'box: \[[\d, ]+\], k: ([\d.]+)') or 0.5      # (Gengar : px de la s
 CHARS = [
     dict(id='oden_d', nom="maître de l'oden, à la porte", outil='tools/oden_master.py (oden_door.webp : tools/oden_interior.py)',
          asset='oden_master.webp', js='OMF, ODM, stepOdenDoor', modele='A', H=1.70, tete=7.0,
-         ref=OMF['D']['stand'], head=15, places=[('dans l\'embrasure, Z %.1f m (A ; seuil %.0f)' % (OMF['D']['z'], OMF['D']['floor']), 1.0, 1400 / OMF['D']['z'] * FIX_A, None)]),
+         ref=OMF['D']['stand'], head=11, places=[('dans l\'embrasure, Z %.1f m (A ; seuil %.0f)' % (OMF['D']['z'], OMF['D']['floor']), 1.0, 1400 / OMF['D']['z'] * FIX_A, None)]),
     dict(id='oden_a', nom="maître de l'oden, à la marmite", outil='tools/oden_master.py', asset='oden_master.webp', js='OMF.A', modele='A',
-         H=1.70, tete=7.0, ref=OMF['A']['stand'], head=13, places=[('allée, Z %.1f m (A)' % Z_OA, 1.0, 1400 / Z_OA * FIX_A, None)]),
+         H=1.70, tete=7.0, ref=OMF['A']['stand'], head=9, places=[('allée, Z %.1f m (A)' % Z_OA, 1.0, 1400 / Z_OA * FIX_A, None)]),
     dict(id='obaa', nom='obaa-chan du dagashi-ya', outil='tools/dagashi_obaachan.py', asset='dagashi_obaachan.webp', js='DGO, OBA, stepOba',
          modele='A', H=1.45, tete=6.5, ref=DGO['cells']['b0'], head=21,
          places=[('derrière le comptoir, Z %.2f m (A)' % DGO['z'], 1.0, DGO['ppm'] * FIX_A, None)]),
@@ -220,7 +220,7 @@ CHARS = [
          js='KM, KIL, stepKillua', modele='la maison (~78 px/m), = B', H=1.58, tete=6.5, ref=None, head=19, seated=58,
          places=[('assis, au bord du toit', 1.0, 78.0, None)]),
     dict(id='teuchi', nom='Teuchi (Ichiraku) — en cours', outil='tools/ichiraku_figures.py', asset='ramen_figures.webp', js='IRF.T, TCH, stepTeuchi',
-         modele='A', H=1.78, tete=7.0, ref=IRF['T']['cells'][0], head=11, full=1.753 * 1400 / Z_T,
+         modele='A', H=1.78, tete=7.0, ref=(IRF['T']['cells'] if 'cells' in IRF['T'] else IRF['T']['idle'])[0], head=11, full=1.753 * 1400 / Z_T,
          places=[('au comptoir, Z %.2f m (A) ; le comptoir le coupe' % Z_T, 1.0, 1400 / Z_T * FIX_A, None)]),
     dict(id='regular', nom='le client (Ichiraku) qui sort — en cours', outil='tools/ichiraku_figures.py', asset='ramen_figures.webp', js='IRF.W, REG, regWalk',
          modele='A', H=1.82, tete=7.0, ref=IRF['W']['cells'][-1][0], head=14,
