@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Le grain des figures : un atlas de sprites ramené au grain de la peinture (des familles de tons, un grain fin dans chacune).
 
-    python3 tools/regrain.py                        (les sprites de la rue : l'équipe, la horde, les zombies du bus ; lit les
-                                                     originaux de tools/src/regrain_orig/, réécrit assets/crew_*.webp,
-                                                     horde_L0..L4.webp, bus_zombies.webp et bus_zombies_spill.webp ; on peut
-                                                     le relancer, il repart des originaux et écrit la même chose)
-    python3 tools/regrain.py --only crew,horde      (une partie seulement)
+    python3 tools/regrain.py                        (les sprites de la rue : la horde, les zombies du bus ; lit les originaux
+                                                     de tools/src/regrain_orig/, réécrit assets/horde_L0..L4.webp,
+                                                     bus_zombies.webp et bus_zombies_spill.webp ; on peut le relancer, il
+                                                     repart des originaux et écrit la même chose. L'équipe n'est plus ici :
+                                                     tools/crew_sheets.py la tire des planches du propriétaire, image par
+                                                     image, et passe par regrain_group et ses réglages 'crew')
+    python3 tools/regrain.py --only horde           (une partie seulement)
     python3 tools/regrain.py --report               (en plus : le grain de chaque feuille avant et après, cellule par cellule)
 
     python3 tools/regrain.py sheet IN.webp OUT.webp [--grid CWxCH | --cells cells.json] [--group all|rows]
@@ -13,7 +15,7 @@
                                                     (n'importe quel atlas RGBA : une nouvelle planche passe par le même
                                                      chemin ; sans --grid ni --cells, les cellules sont trouvées seules)
 
-Les figures en 3D réduites (l'équipe, la horde, les zombies du bus) ont des centaines de couleurs, des taches de 2 à 9 px,
+Les figures en 3D réduites (la horde, les zombies du bus ; l'équipe avant ses planches) ont des centaines de couleurs, des taches de 2 à 9 px,
 moitié de pixels isolés, des dégradés lisses : de la bouillie à côté de la peinture, qui a 7 à 27 familles de tons (à 8
 niveaux près) sur 90 % d'un objet, un grain fin de 1 à 3 niveaux dans chaque famille, des taches de 60 à 500 px, des
 bords nets, pas de contour noir (tools/figures_audit.py, ses mesures ; les règles du grain de la maison). Pour chaque
@@ -40,12 +42,12 @@ personnage (toutes ses images ensemble : ses familles ne changent pas d'une imag
   (GRAIN_K), plus un tramage ordonné (Bayer 4 x 4, ancré au pied de la figure : il la suit, et le webp sans perte reprend
   son motif), arrondi et borné à 1, 2 ou 3 niveaux selon la luminance de la famille (1 dans les noirs). Le même décalage
   sur les trois canaux : la teinte reste.
-- Les calques liés aux pixels de la figure (la lumière de l'éclair de l'équipe, la lumière de la rue sur les zombies du
-  bus) prennent, tache par tache (une famille, d'un seul tenant, dans une image), leur moyenne : la lumière éclaire une
+- Les calques liés aux pixels de la figure (la lumière de l'éclair de l'équipe, par tools/crew_sheets.py ; la lumière de
+  la rue sur les zombies du bus) prennent, tache par tache (une famille, d'un seul tenant, dans une image), leur moyenne : la lumière éclaire une
   tache entière, elle ne refait pas de dégradé. L'éclair n'est pas étalonné (sa propre lumière) ; la lueur des zombies du
   bus (bus_zombies_glow.webp, un calque de lumière) n'est pas touchée.
 
-Les cellules : pour la rue, lues dans assets/street.js (CRW, HRD, BZ ; des données, rien n'y est écrit) ; pour une planche,
+Les cellules : pour la rue, lues dans assets/street.js (HRD, BZ ; des données, rien n'y est écrit) ; pour une planche,
 une grille (--grid), une liste (--cells : {"groupes": {"nom": [[x, y, w, h], ...]}}, ou une liste de boîtes), ou
 trouvées seules (les taches de l'alpha, rapprochées de --gap px, rangées ligne par ligne). --group : all (un personnage
 par planche), rows (un personnage par rangée de cellules). Il faut Pillow, numpy, scipy.
@@ -473,27 +475,6 @@ def params(kind, **kw):
     return P
 
 
-def do_crew(CRW, rep):
-    out = []
-    for who, C in CRW['heroes'].items():
-        a, f = load('crew_%s.webp' % who), load('crew_%s_flash.webp' % who)
-        boxes = [[(n % C['cols']) * C['cw'], (n // C['cols']) * C['ch'], C['cw'], C['ch']] for n in range(C['n'])]
-        if rep:
-            report(a, boxes, 'crew_%s avant' % who)
-        seq = {}
-        for mv, fr in C['moves'].items():
-            for k, F in enumerate(fr):
-                seq.setdefault(F['cell'], (mv, k))
-        items = [dict(a=a, box=b, anchor=(C['ax'], C['ay']), seq=seq.get(n), **{'with': [f]}) for n, b in enumerate(boxes)]
-        info = regrain_group(items, params('crew'), 'crew_' + who)
-        save(a, 'crew_%s.webp' % who)
-        save(f, 'crew_%s_flash.webp' % who)
-        if rep:
-            report(a, boxes, 'crew_%s après' % who)
-        out.append(info)
-    return out
-
-
 HSTRAY = 15                                                          # (la horde : un bout détaché de 15 px au plus sur le niveau de 290 px,
                                                                      #  à l'aire près sur les autres : 4 px à 150, 2 à 100, 1 à 64 et 42)
 
@@ -571,10 +552,10 @@ def do_bus(BZ, rep):
 
 def street(o):
     CRW, HRD, BZ = street_data()
-    only = o.only.split(',') if o.only else ['crew', 'horde', 'bus']
-    infos = []
+    only = o.only.split(',') if o.only else ['horde', 'bus']
     if 'crew' in only:
-        infos += do_crew(CRW, o.report)
+        sys.exit('l\'équipe : python3 tools/crew_sheets.py (ses planches, image par image ; ses originaux rigués ne sont plus là)')
+    infos = []
     if 'horde' in only:
         infos += do_horde(HRD, o.report)
     if 'bus' in only:
@@ -634,7 +615,7 @@ def sheet(o):
 def main():
     ap = argparse.ArgumentParser(description='le grain des figures (voir la docstring)')
     sub = ap.add_subparsers(dest='cmd')
-    ap.add_argument('--only', default=None, help='crew,horde,bus')
+    ap.add_argument('--only', default=None, help='horde,bus')
     ap.add_argument('--report', action='store_true')
     sp = sub.add_parser('sheet', help='un atlas quelconque')
     sp.add_argument('src')
