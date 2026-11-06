@@ -195,7 +195,7 @@ def crew_cell(who, move, i=0):
     return [(n % C['cols']) * C['cw'], (n // C['cols']) * C['ch'], C['cw'], C['ch']]
 
 
-Z_T = float(IRF['T']['z'])
+Z_T = float(IRF['Tz'] if 'Tz' in IRF else IRF['T']['z'])
 Z_S = float(IRF['W']['from'][1])
 Z_E = float(IRF['W']['to'][1])
 Z_OA = float(OMF['A']['z'])
@@ -208,7 +208,7 @@ CHARS = [
     dict(id='oden_a', nom="maître de l'oden, à la marmite", outil='tools/oden_master.py', asset='oden_master.webp', js='OMF.A', modele='A',
          H=1.70, tete=7.0, ref=OMF['A']['stand'], head=13, places=[('allée, Z %.1f m (A)' % Z_OA, 1.0, 1400 / Z_OA * FIX_A, None)]),
     dict(id='obaa', nom='obaa-chan du dagashi-ya', outil='tools/dagashi_obaachan.py', asset='dagashi_obaachan.webp', js='DGO, OBA, stepOba',
-         modele='A', H=1.45, tete=6.5, ref=DGO['cells']['b0'], head=21,
+         modele='A', H=1.45, tete=6.5, ref=DGO['cells']['b0'], head=14,
          places=[('derrière le comptoir, Z %.2f m (A)' % DGO['z'], 1.0, DGO['ppm'] * FIX_A, None)]),
     dict(id='red', nom='Red au balcon (zone 1)', outil='tools/red_sheet.py', asset='red_sil.webp', js='ZR, ZRC, ZRB, z1Red', modele='A',
          H=1.65, tete=6.5, ref=[0, ZRC['idle'][0], ZRC['idle'][1], ZRC['idle'][2]], head=27,
@@ -220,7 +220,7 @@ CHARS = [
          js='KM, KIL, stepKillua', modele='la maison (~78 px/m), = B', H=1.58, tete=6.5, ref=None, head=19, seated=58,
          places=[('assis, au bord du toit', 1.0, 78.0, None)]),
     dict(id='teuchi', nom='Teuchi (Ichiraku) — en cours', outil='tools/ichiraku_figures.py', asset='ramen_figures.webp', js='IRF.T, TCH, stepTeuchi',
-         modele='A', H=1.78, tete=7.0, ref=IRF['T']['cells'][0], head=11, full=1.753 * 1400 / Z_T,
+         modele='A', H=1.78, tete=7.0, ref=IRF['T']['idle'][0] if 'idle' in IRF['T'] else IRF['T']['cells'][0], head=11, full=1.753 * 1400 / Z_T,
          places=[('au comptoir, Z %.2f m (A) ; le comptoir le coupe' % Z_T, 1.0, 1400 / Z_T * FIX_A, None)]),
     dict(id='regular', nom='le client (Ichiraku) qui sort — en cours', outil='tools/ichiraku_figures.py', asset='ramen_figures.webp', js='IRF.W, REG, regWalk',
          modele='A', H=1.82, tete=7.0, ref=IRF['W']['cells'][-1][0], head=14,
@@ -349,9 +349,9 @@ def sheet_b(res, path, ppm=80.0):
 SHOTS = {
     'oden_d': ('p1_a.png', (414, 590, 470, 682), (466, 600, 522, 692)),
     'oden_a': ('p1_c.png', (440, 556, 500, 640), None),
-    'obaa': ('p2_up.png', (140, 585, 215, 680), (200, 585, 275, 680)),
-    'obaa_assise': ('p2_base.png', (160, 600, 215, 660), None),
-    'obaa_etagere': ('p2_reach.png', (140, 585, 215, 680), None),
+    'obaa': ('p2_up.png', (140, 575, 225, 680), (225, 585, 300, 680)),
+    'obaa_assise': ('p2_base.png', (172, 605, 228, 660), None),
+    'obaa_etagere': ('p2_reach.png', (140, 565, 200, 680), None),
     'red': ('p1_a.png', (955, 260, 1012, 366), None),
     'naruto_win': ('p1_a.png', (1180, 120, 1275, 300), None),
     'killua': ('p1_a.png', (282, 128, 362, 232), (230, 150, 290, 232)),

@@ -1,42 +1,62 @@
 #!/usr/bin/env python3
-"""Le dagashi-ya : son obaa-chan, assise derrière son comptoir dans la maquette de tools/dagashi_interior.py, tirée de la planche
-du propriétaire.
+"""Le dagashi-ya : son obaa-chan, assise derrière son comptoir dans la maquette de tools/dagashi_interior.py, à sa vraie taille,
+découpée dans les deux planches du propriétaire.
 
     python3 tools/dagashi_obaachan.py                  (après tools/dagashi_interior.py ; réécrit assets/dagashi_obaachan.webp
                                                          et, dans assets/street.js, la ligne DGO : on peut le relancer, il écrit
                                                          la même chose)
-    python3 tools/dagashi_obaachan.py --preview dossier (des aperçus seulement)
+    python3 tools/dagashi_obaachan.py --preview dossier (des aperçus seulement : l'atlas x4 et en numpy, la ligne DGO en json)
 
-La planche (SHEET, tools/src/dagashi_obaachan_sheet_c.webp : le chignon gris et son épingle rouge, les lunettes rondes, le gilet
-de laine rouge sombre sur un kimono bleu nuit à fleurs roses, le tablier beige ; le style et les proportions des gens d'Ichiraku),
-sur fond blanc : derrière un comptoir bas, à mi-corps, au repos (s0), souriante les yeux fermés (s1), l'éventail (s2), assoupie
-le menton dans la main (s3) ; les boules du boulier qu'elle fait glisser (a0, a1), le bonbon tendu (c0), le rire, les mains
-jointes (l0) ; de dos, debout (b0), le bras levé vers l'étagère (r0), sa longue baguette à la main (k0) ; la marche de profil,
-voûtée, les mains dans le dos (w0..w5). FRAMES les repère chacune par un point : une autre planche, ces points seuls.
+Les planches (SHEETS, tools/src/planches/, chacune en deux versions sur fond blanc ; la v1 des deux retenue) : le chignon gris et
+son épingle à boule rouge, les lunettes rondes, le gilet de laine rouge sombre à torsades, le kimono bleu nuit à fleurs de
+cerisier, le tablier beige noué dans le dos, les tabi blancs et les zori. obaa_1_assise : derrière un comptoir bas, à mi-corps,
+au repos (s0), souriante les yeux fermés (s1), l'éventail (s2), assoupie la joue dans la main (s3), le boulier (a0, a1), le
+bonbon tendu (c0), le rire, les mains jointes (l0). obaa_2_debout : de dos, debout (b0), le bras levé vers l'étagère (r0), sa
+longue baguette à la main (k0) ; la marche de profil, voûtée, les mains dans le dos (w0..w5). La v1 plutôt que la v2 : debout,
+ses trois vues de dos de la même taille (la v2 : 2,7 % plus petite le bras levé), une vraie marche à deux pas (le pied qui
+quitte le sol derrière, passe, se tend devant et se pose ; la v2 traîne le même pied derrière trois images de suite, ses tabi
+gris puis blancs), l'épingle du même côté qu'assise (à sa gauche ; dans la v2 de dos, à sa droite) ; assise, un visage plus
+net (de grands yeux, moins de rides qui deviennent une bouillie à cette taille), les tailles d'une image à l'autre aussi
+régulières que dans la v2. FRAMES repère chaque image par un point de sa planche ; WALK : l'ordre de la marche (les images 5 et 6
+de la planche échangées : le pied d'appui ne recule jamais ainsi).
 
-- Découpe : la figure est ce qui s'écarte du blanc, d'un seul morceau avec ce qu'elle tient (l'éventail, le boulier, le bonbon, la
-  baguette ; les petits traits de mouvement dessinés autour d'elle ôtés) ; derrière le comptoir, tout ce qui est sous son haut
-  (sa première rangée qui couvre toute la largeur de la figure) ôté : la maquette a son propre comptoir, qui la cache. Seuls ses
-  pixels intérieurs (le masque érodé d'un pixel) donnent la couleur : pas de liseré blanc.
-- Une seule taille : debout, du haut du chignon à la semelle, TALL = 1,5 m (la vue de dos droite, HEAD_REF ; voûtée en marchant,
-  un peu moins) ; les images derrière le comptoir sont dessinées plus grandes (1,64 fois : la largeur de leur tête, rangée par
-  rangée, posée sur celle de la vue de dos) et ramenées à la même échelle. Dans la maquette elle est à Z_O = 26,45 m (53 px par
-  mètre : 79 px debout) : assise, sa tête à 1,6 m, le haut du comptoir la coupe (la maquette sait où) ; debout sur le plancher
-  surélevé, sa semelle à 0,35 m (rangée 676), la tête à 1,85 m.
-- Réduction : chaque pixel de la scène est le bloc de la planche qu'il couvre ; plein si la figure en couvre au moins la
-  moitié ; sa couleur, la moyenne de ses pixels intérieurs les plus proches de leur médiane (un bord ne mêle pas deux
-  matières), un trait fin sur le visage ou une main gardé (INK : les lunettes, les yeux, la bouche, les doigts) ; toutes ses
-  images ramenées à une palette commune (PAL couleurs : ni grain ni scintillement d'une image à l'autre).
-- Lumière : allumée, la lumière de la boutique (l'étalonnage de la maquette, sous la lampe un peu plus claire : LAMP) ; éteinte
-  (la coupure de courant, boutique ouverte), le sombre de la pièce éteinte selon sa clarté, à sa palette.
-- La marche : les pieds mesurés sur chaque image réduite (les morceaux de ses dernières rangées) ; d'une image à la suivante le
-  corps avance de dx pixels entiers, le moins qui garde un pied posé sur son pixel (jamais en arrière) : 24 px le pas.
+- Découpe : la figure est ce qui s'écarte du blanc (les tabi, le papier de l'éventail en sont : WHITE), d'un seul morceau avec
+  ce qu'elle tient ; un blanc pur enfermé (entre deux jambes) est du fond, un reflet enfermé (moins de HOLE px) reste à elle ;
+  derrière le comptoir, tout ce qui est sous son haut (sa première rangée qui couvre toute la largeur de la figure) ôté : la
+  maquette a son propre comptoir, qui la cache.
+- Sa vraie taille : 1,45 m chignon compris (H_REAL), à SCALE_B = 1,19 mètre de la maquette pour un vrai (l'œil de la maquette à
+  1,5 m, celui de la peinture à 1,26 m) : 1,73 m de maquette. Les planches la dessinent à 5,2 têtes (du haut du crâne à la
+  nuque de dos, au menton de face et de profil : HEAD, mesurées à l'œil sur s0, b0, w0) ; chaque image est redressée à HEADS =
+  6,5 têtes : la tête seule ramenée (de 0,77, ce qu'il faut à b0) autour de la ligne du cou (sur sa largeur, et en douceur vers
+  les épaules et ce qui la touche : WARP ; la baguette, le bras levé, l'éventail restent à la taille du corps), le corps tel quel. Debout, du haut du
+  chignon à la semelle, la vue de dos b0 fait sa taille ; derrière le comptoir, les images sont dessinées plus grandes (la
+  largeur de ses cheveux posée sur celle de la vue de dos) et ramenées à la même échelle. Dans la maquette elle est à Z_O =
+  26,45 m (52,9 px par mètre de maquette : 91 px debout, la tête 14 px) ; assise, le haut du comptoir la coupe sous les avant-
+  bras (on voit 36 px d'elle, sa tête 14 px du crâne au menton, 16 avec le chignon : le haut de sa tête à 1,42 m de maquette,
+  sur une chaise ; le comptoir n'a que 0,75 m) ; debout sur le plancher surélevé, sa semelle à 0,35 m (rangée 676), le haut de
+  sa tête à 2,08 m, 27 px plus haut qu'assise.
+- Réduction : chaque pixel de la scène est le bloc de la planche qu'il couvre ; plein si la figure en couvre au moins la moitié,
+  vide sinon (jamais à demi) ; sa couleur, la moyenne de ses pixels intérieurs les plus proches de leur médiane (un bord ne mêle
+  pas deux matières). Pas de trait sombre repris de la planche : ni contour, ni lunettes, ni bouche ; à 14 px de tête, ses yeux
+  sont un pixel chacun (EYES : au centre des verres de ses lunettes, sombre ouverts, plus doux fermés : SHUT).
+- Lumière et grain : allumée, la lumière de la boutique (sa lampe à incandescence, plus chaude que le jour des planches : LAMP ;
+  puis l'étalonnage de la maquette, celui de la pièce) ; ses clairs ramenés sous la pièce
+  autour d'elle + 15 % (P95 : le p95 de la clarté de la pièce allumée là où elle passe) ; puis, toutes ses images ensemble
+  (tools/regrain.py : ses fonctions), FAMILIES familles de tons fixes d'une image à l'autre, chaque pixel à la sienne contre ses
+  quatre voisins (peu de pixels seuls), un grain fin baké de 1 à 3 niveaux (Bayer 4 x 4, ancré à elle) ; ses yeux gardés.
+  Éteinte (la coupure de courant, boutique ouverte) : chaque famille au sombre de la pièce éteinte selon sa clarté, à sa
+  palette, le même grain plus léger.
+- La marche : d'une image à la suivante le corps avance de dx pixels entiers, ceux qui gardent le pied posé sur son pixel (les
+  pointes des semelles au sol de l'une sur celles de l'autre, jamais en arrière : 34 px les deux pas) ; chaque image dure le temps de son
+  pas à SPEED (0,5 m/s, une vieille dame voûtée : 1,1 s les deux pas ; chaque image entre 0,1 et 0,3 s : TF) : le corps avance
+  d'un pas régulier, le pied d'appui ne glisse pas.
 - La place : le milieu de son buste assise à X_SEAT, son ancre sur la rangée du haut du comptoir derrière elle ; debout, sa
-  semelle sur le plancher surélevé ; devant l'étagère, vue par la vitre de la porte de gauche, au plus près de SHELF_AT : d'une
-  image aux pieds joints à une autre, par les mêmes images à l'aller et au retour (elle revient juste à sa place). Ce qui est
-  devant elle dans la maquette (le comptoir, le poteau, le montant et le cadre de la porte, le panneau de bois sous la vitre) la
-  cache : V, le masque de la devanture à sa profondeur (alpha : ce qu'on voit d'elle, la majorité des rayons du pixel passant
-  derrière elle ; rouge : la vitre ; vert : le reflet de la vitre, x 40).
+  semelle sur le plancher surélevé ; devant l'étagère, vue par la vitre de la porte de gauche, au plus près de SHELF_AT : de
+  REST (les pieds joints) à REST, par les mêmes images à l'aller et au retour (elle revient juste à sa place). Ce qui est devant
+  elle dans la maquette (le comptoir, le poteau, le montant et le cadre de la porte, la traverse et le panneau de bois sous la
+  vitre) la cache : V, le masque de la devanture à sa profondeur (alpha : ce qu'on voit d'elle, la majorité des rayons du pixel
+  passant derrière elle ; rouge : la vitre ; vert : le reflet de la vitre, x 40). Il ne dépend que de sa profondeur : plus
+  grande, elle reste cachée là où il faut.
 
 assets/dagashi_obaachan.webp : une rangée par état (allumée, éteinte), ses images côte à côte, chacune sa boîte et son ancre
 (le milieu du buste ; assise, la rangée du haut du comptoir, debout, la semelle), s2b (l'éventail qui bat : s2, l'éventail
@@ -55,89 +75,149 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import interieur as I
 import dagashi_interior as D
+import regrain as RG
 
 ROOT = D.ROOT
-SHEET = os.path.join(ROOT, 'tools', 'src', 'dagashi_obaachan_sheet_c.webp')
+SHEETS = {'assise': os.path.join(ROOT, 'tools', 'src', 'planches', 'obaa_1_assise_v1.png'),
+          'debout': os.path.join(ROOT, 'tools', 'src', 'planches', 'obaa_2_debout_v1.png')}
 OUT = 'dagashi_obaachan.webp'
 JS = os.path.join(ROOT, 'assets', 'street.js')
-TALL = 1.5                           # m, debout, du haut du chignon à la semelle
-HEAD_REF = ('b0', ('s0', 's1', 'a0'))   # (l'échelle des images derrière le comptoir : la largeur de leur tête, rangée par rangée, posée
-                                     # sur celle de cette vue de dos debout, de face elle aussi)
+H_REAL, SCALE_B = 1.45, 1.19         # m, debout, du haut du chignon à la semelle ; mètres de la maquette pour un vrai
+HEADS = 6.5                          # (sa taille en têtes, une fois la tête redressée)
 Z_O = 26.45                          # sa profondeur (m) : entre le comptoir et le mur du bout
-X_SEAT = 192                         # le milieu de son buste, assise
-SHELF_AT = 162                       # (devant l'étagère, vue par la vitre : à peu près là)
-PAL = 32
-FRAMES = {                           # chaque image : un point de la planche sur elle (x, y), sa sorte (derrière le comptoir, debout) ;
-                                     # sa boîte est celle de la figure qui passe par ce point (une autre planche : ces points seuls)
-    's0': ((128, 130), 'seat'), 's1': ((384, 130), 'seat'), 's2': ((640, 130), 'seat'), 's3': ((890, 130), 'seat'),
-    'a0': ((128, 390), 'seat'), 'a1': ((384, 390), 'seat'), 'c0': ((640, 390), 'seat'), 'l0': ((890, 390), 'seat'),
-    'b0': ((129, 640), 'stand'), 'r0': ((398, 640), 'stand'), 'k0': ((646, 640), 'stand'),
-    'w0': ((111, 890), 'stand'), 'w1': ((369, 890), 'stand'), 'w2': ((629, 890), 'stand'), 'w3': ((889, 890), 'stand'),
-    'w4': ((1146, 890), 'stand'), 'w5': ((1408, 890), 'stand')}
-FAN = ('s2', (-1, 1))                # (l'éventail qui bat : s2 et sa copie, l'éventail décalé de tant)
+X_SEAT = 204                         # le milieu de son buste, assise (dans l'ouverture, entre le montant de la porte et le poteau)
+SHELF_AT = 170                       # (devant l'étagère, vue par la vitre, sa baguette et sa main levée dans l'ouverture : à peu près là)
+FRAMES = {                           # chaque image : sa planche, un point sur elle (x, y), sa sorte (derrière le comptoir, de dos, de
+                                     # profil) ; sa boîte est celle de la figure qui passe par ce point (une autre planche : ces points)
+    's0': ('assise', (192, 300), 'seat'), 's1': ('assise', (576, 300), 'seat'), 's2': ('assise', (960, 300), 'seat'),
+    's3': ('assise', (1344, 320), 'seat'), 'a0': ('assise', (192, 810), 'seat'), 'a1': ('assise', (576, 810), 'seat'),
+    'c0': ('assise', (960, 810), 'seat'), 'l0': ('assise', (1344, 810), 'seat'),
+    'b0': ('debout', (400, 300), 'back'), 'r0': ('debout', (757, 300), 'back'), 'k0': ('debout', (1085, 300), 'back'),
+    'w0': ('debout', (130, 800), 'side'), 'w1': ('debout', (385, 800), 'side'), 'w2': ('debout', (632, 800), 'side'),
+    'w3': ('debout', (878, 800), 'side'), 'w4': ('debout', (1136, 800), 'side'), 'w5': ('debout', (1385, 800), 'side')}
+WALK = ('w0', 'w1', 'w2', 'w3', 'w5', 'w4')   # (l'ordre de la marche : pieds joints, le pied de derrière qui se lève, qui se tend
+                                     # devant, posé (grand écart), l'autre qui se lève derrière, qui passe ; pieds joints)
+REST = ('w0',)                       # (les images aux deux pieds posés côte à côte : elle s'y lève, s'y arrête, s'y rassied)
+HEAD = {'seat': 182, 'back': 80, 'side': 81}   # la tête dessinée (px de la planche) : du haut du chignon au menton (de face), du
+                                     # haut du crâne à la nuque (de dos), au menton (de profil)
+WARP = (0.6, 0.3)                    # (autour de la tête : la marge où sa taille rejoint celle du corps, en largeurs de demi-tête ;
+                                     # sous la ligne du cou, en hauteurs de tête)
+WHITE, HOLE = 244, 40                # (la figure : un canal sous tant, ou une teinte ; un blanc enfermé de moins de tant de px)
 COVER = 0.5
-INK = (80, 0.16, 0.3)                # (un trait fin de la planche (plus sombre que tant) qui tient tant de son bloc sur le visage ou une
-                                     # main (tant de peau) : le pixel prend sa couleur : les lunettes, les yeux, la bouche, les doigts)
-LAMP = 1.1                           # (sous la lampe, juste au-dessus du comptoir : un peu plus claire que le mur)
+EYES = (0.50, 0.82, 80, 0.15, 0.62)  # (les yeux : la bande de la tête où ils sont, du haut ; plus sombre que tant : les verres et
+                                     # les yeux ; de face, de tant à tant de demi-largeurs de tête du nez)
+EYE_RGB, SHUT = (38.0, 22.0, 18.0), ('s1', 's3', 'l0')   # (ouverts ; fermés, à mi-chemin de la peau)
+LAMP = np.array([1.0, 0.93, 0.80])   # (sous la lampe à incandescence, juste au-dessus du comptoir : plus chaude que le jour des planches)
+P95 = 1.15                           # (ses clairs : sous le p95 de la pièce allumée autour d'elle, + 15 %)
+FAMILIES = 24
+GRAIN = dict(scale=0.04, cap=2.5, iters=6, tempo=2.0, tempo_de=0.02, grain_k=0.2, dither=1.6, merge=0.015, knee=60.0)
+SPEED, TF = 0.5, (0.1, 0.3)          # (sa marche, m/s ; une image dure entre tant et tant de s)
+FAN = ('s2', (-1, 1))                # (l'éventail qui bat : s2 et sa copie, l'éventail décalé de tant)
+LOCAL = (146, 560, 225, 676)         # (la pièce allumée autour d'elle, pour son p95 : la vitre et l'ouverture, à sa hauteur)
 
 
-def boxes(sheet):
-    """la boîte de chaque image de FRAMES : la figure (ce qui s'écarte du blanc) qui passe par son point (ou la plus proche), et ce
-    qui est dans sa boîte sans être à une autre"""
-    m = sheet.min(2) < 225
-    lab, n = nd.label(m); sl = nd.find_objects(lab); sz = nd.sum(m, lab, range(1, n + 1))
-    big = [i for i in range(n) if sz[i] >= 40]
-    own = {}
-    for k, ((x, y), _) in FRAMES.items():
-        i = lab[y, x] - 1
-        if i < 0 or sz[i] < 2000:
-            mid = lambda j: ((sl[j][1].start + sl[j][1].stop) / 2, (sl[j][0].start + sl[j][0].stop) / 2)
-            i = min((j for j in big if sz[j] >= 2000), key=lambda j: np.hypot(mid(j)[0] - x, mid(j)[1] - y))
-        own[k] = i
-    out = {}
-    for k, i in own.items():
-        y0, y1, x0, x1 = sl[i][0].start, sl[i][0].stop, sl[i][1].start, sl[i][1].stop
-        for j in big:                                                        # (un éventail, un bonbon détachés : dans sa boîte)
-            if j in own.values() and j != i: continue
-            if sl[j][1].start >= x0 - 6 and sl[j][1].stop <= x1 + 6 and sl[j][0].start >= y0 - 6 and sl[j][0].stop <= y1 + 6:
-                y0, y1, x0, x1 = min(y0, sl[j][0].start), max(y1, sl[j][0].stop), min(x0, sl[j][1].start), max(x1, sl[j][1].stop)
-        out[k] = (x0, y0, x1, y1)
-    return out
-
-
-def frame(sheet, box, kind):
-    """une image : ses couleurs (RGB), son masque, son ancre (x : le milieu du buste ; y : le haut du comptoir ou la semelle)"""
-    x0, y0, x1, y1 = box
-    rgb = sheet[y0 - 3:y1 + 3, x0 - 3:x1 + 3].astype(float); m = rgb.min(2) < 225
-    if kind == 'seat':                                                     # (le comptoir : en bas, les rangées qui couvrent toute la
-        top = m.shape[0] - 4                                               # largeur de la figure ; la première d'entre elles)
-        while top > 0 and m[top - 1, 3:-3].mean() >= 0.97: top -= 1
-        m[top:] = False
+def components(sheet):
+    """les figures d'une planche : ce qui s'écarte du blanc, en morceaux (et leur taille)"""
+    m = (sheet.min(2) < WHITE) | (np.ptp(sheet, 2) > 12)
     lab, n = nd.label(m)
-    if n > 1:                                                              # (les poussières, les traits de mouvement dessinés autour
-        sz = nd.sum(m, lab, range(1, n + 1)); m &= np.isin(lab, 1 + np.nonzero(sz >= 0.15 * sz.max())[0])   # d'elle : dehors)
+    return m, lab, nd.find_objects(lab), nd.sum(m, lab, range(1, n + 1))
+
+
+def cut(sheet, comp, point, kind):
+    """une image : ses couleurs (RGB), son masque, son ancre (x : le milieu du buste ; y : le haut du comptoir ou la semelle)"""
+    m0, lab, sl, sz = comp
+    x, y = point
+    i = lab[y, x] - 1
+    if i < 0 or sz[i] < 2000:
+        big = [j for j in range(len(sz)) if sz[j] >= 2000]
+        mid = lambda j: ((sl[j][1].start + sl[j][1].stop) / 2, (sl[j][0].start + sl[j][0].stop) / 2)
+        i = min(big, key=lambda j: np.hypot(mid(j)[0] - x, mid(j)[1] - y))
+    y0, y1, x0, x1 = sl[i][0].start, sl[i][0].stop, sl[i][1].start, sl[i][1].stop
+    for j in range(len(sz)):                                               # (ce qu'elle tient de détaché : dans sa boîte)
+        if j != i and sz[j] >= 40 and sl[j][1].start >= x0 - 6 and sl[j][1].stop <= x1 + 6 and sl[j][0].start >= y0 - 6 and sl[j][0].stop <= y1 + 6:
+            y0, y1, x0, x1 = min(y0, sl[j][0].start), max(y1, sl[j][0].stop), min(x0, sl[j][1].start), max(x1, sl[j][1].stop)
+    rgb = sheet[y0 - 4:y1 + 4, x0 - 4:x1 + 4].astype(float)
+    m = m0[y0 - 4:y1 + 4, x0 - 4:x1 + 4].copy()
+    holes = nd.binary_fill_holes(m) & ~m                                   # (un blanc enfermé : un reflet à elle, ou le fond entre
+    hl, hn = nd.label(holes)                                               #  deux jambes)
+    if hn:
+        hs = nd.sum(holes, hl, range(1, hn + 1))
+        m |= np.isin(hl, 1 + np.nonzero(hs < HOLE)[0])
+    if kind == 'seat':                                                     # (le comptoir : en bas, les rangées qui couvrent toute la
+        top = m.shape[0] - 5                                               # largeur de la figure ; la première d'entre elles)
+        while top > 0 and m[top - 1, 5:-5].mean() >= 0.97: top -= 1
+        m[top:] = False
+    l2, n2 = nd.label(m)
+    if n2 > 1:                                                             # (les poussières : dehors)
+        s2 = nd.sum(m, l2, range(1, n2 + 1)); m &= np.isin(l2, 1 + np.nonzero(s2 >= 0.15 * s2.max())[0])
     ys, xs = np.nonzero(m)
-    if kind == 'seat': ay = top
-    else: ay = ys.max() + 1
-    H = ay - ys.min()
-    band = (ys > ys.min() + 0.45 * H) & (ys < ys.min() + 0.75 * H)          # (le buste : sa colonne médiane)
-    return dict(rgb=rgb, m=m, ax=float(np.median(xs[band])) + 0.5, ay=float(ay), top=int(ys.min()), org=(x0 - 3, y0 - 3), kind=kind)
+    ay = top if kind == 'seat' else ys.max() + 1
+    return dict(rgb=rgb, m=m, ay=float(ay), org=(x0 - 4, y0 - 4), kind=kind)
 
 
-def head_ratio(F):
-    """de combien les images derrière le comptoir sont dessinées plus grandes que celles debout : la largeur de la figure rangée par
-    rangée du haut de sa tête, posée au mieux sur celle de la vue de dos HEAD_REF (sa tête et son cou), la médiane"""
-    def prof(f, n):
-        m = f['m']; t = f['top']
-        return np.array([np.ptp(np.nonzero(m[t + y])[0]) + 1 if m[t + y].any() else 0 for y in range(n)], float)
-    ref, seats = HEAD_REF
-    hb = int(0.22 * (F[ref]['ay'] - F[ref]['top'])); wb = prof(F[ref], hb)
-    out = []
-    for k in seats:
-        ws = prof(F[k], 3 * hb)
-        err = lambda r: np.abs(np.interp(np.arange(hb) * r, np.arange(3 * hb), ws) / r - wb)[hb // 10:].mean()
-        out.append(min(np.arange(0.8, 2.5, 0.005), key=err))
-    return float(np.median(out))
+def bust(f):
+    """le milieu du buste : la colonne médiane de la figure entre 45 et 75 % de sa hauteur"""
+    ys, xs = np.nonzero(f['m'])
+    H = f['ay'] - ys.min()
+    band = (ys > ys.min() + 0.45 * H) & (ys < ys.min() + 0.75 * H)
+    return float(np.median(xs[band])) + 0.5
+
+
+def hair(f, hh):
+    """sa tête : le haut du crâne (la première rangée d'au moins 10 px de cheveux gris), le milieu et la demi-largeur des cheveux
+    sur la hauteur de sa tête"""
+    c, m = f['rgb'], f['m']
+    g = m & (np.abs(c[..., 0] - c[..., 1]) < 16) & (np.abs(c[..., 1] - c[..., 2]) < 18) & (c[..., 0] > 100) & (c[..., 0] < 225)
+    rows = np.nonzero(g.sum(1) >= 10)[0]
+    crown = int(rows.min())
+    ys, xs = np.nonzero(g[crown:crown + int(0.8 * hh)])
+    spans = [np.ptp(np.nonzero(r)[0]) + 1 for r in g[crown:crown + int(0.8 * hh)] if r.sum() >= 6]
+    return crown, float(np.median(xs)) + 0.5, 0.5 * float(max(spans))
+
+
+def reproportion(f, kh, hh):
+    """la tête ramenée de kh autour de la ligne du cou (le haut du crâne + hh), sur sa largeur ; autour, sa taille rejoint en
+    douceur celle du corps (WARP) ; ce qui est loin d'elle (la baguette, le bras levé) ne bouge pas. Chaque pixel de l'image
+    prend celui de la planche qui tombe dessous (la planche est bien plus fine que la scène)"""
+    crown, hx, R = hair(f, hh)
+    neck = crown + hh
+    H, W = f['m'].shape
+    yy, xx = np.mgrid[0:H, 0:W].astype(float)
+    dx, dy = xx + 0.5 - hx, yy + 0.5 - neck
+    sm = lambda t: np.clip(t, 0, 1) ** 2 * (3 - 2 * np.clip(t, 0, 1))
+    Rh, M, T = R * kh, WARP[0] * R, WARP[1] * hh
+    w = np.where(dy <= 0, 1.0, sm(1 - dy / T)) * np.where(np.abs(dx) <= Rh, 1.0, sm(1 - (np.abs(dx) - Rh) / M))
+    s = 1 + (1 / kh - 1) * w
+    sx = np.floor(hx + dx * s).astype(int); sy = np.floor(neck + dy * s).astype(int)
+    ok = (sx >= 0) & (sx < W) & (sy >= 0) & (sy < H)
+    sx, sy = np.clip(sx, 0, W - 1), np.clip(sy, 0, H - 1)
+    g = dict(f)
+    g['rgb'] = f['rgb'][sy, sx]; g['m'] = f['m'][sy, sx] & ok
+    g['head'] = dict(crown=neck - kh * hh, neck=neck, hx=hx, R=Rh)
+    g['src'] = (sx, sy)                                                    # (pour chaque pixel, d'où il vient dans la planche)
+    ys, _ = np.nonzero(g['m'])
+    g['top'] = int(ys.min()); g['ax'] = bust(g)
+    return g
+
+
+def eyes(f, hh_out):
+    """ses yeux (de face : deux ; de profil : un) : au centre de ses verres, le poids des sombres de la bande des yeux (les verres,
+    leurs montures, les yeux ouverts ou fermés ; plus sombre, plus lourd) de part et d'autre du nez, ou tout devant le profil"""
+    c, m, h = f['rgb'], f['m'], f['head']
+    L = c @ I.LUM
+    y0, y1 = int(h['crown'] + EYES[0] * hh_out), int(h['crown'] + EYES[1] * hh_out)
+    dark = np.zeros(m.shape, bool); dark[y0:y1] = m[y0:y1] & (L[y0:y1] < EYES[2])
+    ys, xs = np.nonzero(dark)
+    dx = xs + 0.5 - h['hx']
+    wt = EYES[2] - L[ys, xs]
+    if f['kind'] == 'seat':
+        out = []
+        for side in ((dx < -EYES[3] * h['R']) & (dx > -EYES[4] * h['R']), (dx > EYES[3] * h['R']) & (dx < EYES[4] * h['R'])):
+            if side.sum() >= 5: out.append((float(np.average(xs[side], weights=wt[side])) + 0.5, float(np.average(ys[side], weights=wt[side])) + 0.5))
+        return out
+    front = (dx > 0) & (xs >= np.percentile(xs[dx > 0], 70)) if (dx > 0).sum() >= 10 else None   # (de profil : le verre, tout devant)
+    if front is None: return []
+    return [(float(np.average(xs[front], weights=wt[front])) + 0.5, float(np.average(ys[front], weights=wt[front])) + 0.5)]
 
 
 def reduce(f, s, AX, AY, W, H):
@@ -162,30 +242,107 @@ def reduce(f, s, AX, AY, W, H):
             ii = mm & (wgt > 0.2)
             if not ii.any(): ii = mm
             px = rgb[r0:r1, c0:c1][ii]
-            ink = px.max(1) < INK[0]; skin = (px[:, 0] > 170) & (px[:, 1] > 110) & (px[:, 0] - px[:, 2] > 40)
-            if ink.mean() >= INK[1] and skin.mean() >= INK[2]: px = px[ink]     # (un trait fin sur le visage, les mains : gardé)
             med = np.median(px, 0); dd = np.abs(px - med).sum(1)
             out[i, j, :3] = px[dd <= np.median(dd)].mean(0) if len(px) > 3 else px.mean(0); out[i, j, 3] = 1
     return out
 
 
-def feet(c):
-    """les pieds d'une image de marche réduite : les morceaux de ses deux dernières rangées pleines (leurs colonnes)"""
-    a = c[..., 3] > 0; rows = np.nonzero(a.any(1))[0]; b = rows.max()
-    lab, n = nd.label(a[b - 2:b + 1].any(0))
-    return sorted((float(np.nonzero(lab == k)[0].mean()), int((lab == k).sum())) for k in range(1, n + 1))
+def to_cell(f, x, y, s, AX, AY):
+    """un point de l'image (px de la planche) dans sa case réduite"""
+    return int(np.floor(AX + (x - f['ax']) * s)), int(np.floor(AY + (y - f['ay']) * s))
+
+
+def soles(f):
+    """ses semelles posées (les zori, leur bois brun, à moins de 5 px du sol de l'image) : le bout de chacune (elle va vers la
+    droite de la planche ; le talon d'un pied peut être caché par l'autre, jamais sa pointe), par rapport au buste (px de la
+    planche)"""
+    c, m = f['rgb'], f['m']
+    ys, _ = np.nonzero(m); g = ys.max()
+    s = m & (c[..., 0] > 110) & (c[..., 0] < 210) & (c[..., 1] > 60) & (c[..., 1] < 140) & (c[..., 2] < 100) & (c[..., 0] - c[..., 2] > 60)
+    s[:int(g - 0.12 * (g - ys.min()))] = False
+    lab, n = nd.label(nd.binary_closing(s, iterations=2))
+    out = []
+    for j in range(1, n + 1):
+        yy, xx = np.nonzero(lab == j)
+        if len(yy) >= 40 and g - yy.max() <= 5: out.append(float(xx.max()) + 1 - f['ax'])
+    return out
+
+
+def walk_steps(F, s):
+    """d'une image de la marche à la suivante, de combien le corps avance (px entiers de la scène) : le moins, jamais en arrière,
+    qui pose une semelle posée de l'une sur une semelle posée de l'autre (le pied d'appui ne bouge pas)"""
+    out = []
+    for k0, k1 in zip(WALK, WALK[1:] + WALK[:1]):
+        d = [a - b for a in soles(F[k0]) for b in soles(F[k1]) if a - b >= -1]
+        out.append(max(0, int(round(min(d) * s))) if d else 0)
+    return out
+
+
+def regrain(cells, locks, goal):
+    """toutes ses images, allumées, ensemble : les clairs sous goal (au-dessus de GRAIN['knee'], chaque couleur sur sa teinte),
+    FAMILIES familles (OKLab), chaque pixel à la sienne contre ses voisins (Potts, l'image d'avant du même mouvement en mémoire),
+    un grain fin baké (Bayer, ancré à l'ancre de l'image) ; ses yeux gardés. Rend les images et, pour chacune, sa famille par
+    pixel ; et les familles"""
+    P = GRAIN
+    keys = list(cells)
+    M = {k: cells[k][0][..., 3] > 0 for k in keys}
+    rgb = {k: cells[k][0][..., :3] for k in keys}
+    def stat(sv):
+        return max(np.percentile(RG.luma(RG.tone(rgb[k][M[k]], P['knee'], sv)), 95) for k in keys)
+    s = 1.0
+    if stat(1.0) > goal - 2:
+        lo, hi = 0.0, 1.0
+        for _ in range(30):
+            mid = (lo + hi) / 2
+            lo, hi = (mid, hi) if stat(mid) <= goal - 2 else (lo, mid)
+        s = lo
+    G = {k: RG.tone(rgb[k], P['knee'], s) for k in keys}
+    X = {k: RG.oklab(np.clip(G[k], 0, 255)) * RG.SW for k in keys}
+    C = RG.families(np.concatenate([X[k][M[k]] for k in keys]), FAMILIES, P['merge'])
+    base = np.clip(np.round(RG.from_oklab(C / RG.SW)), 0, 255)
+    Lb = RG.luma(base); A = RG.amp(Lb)
+    seq = {}
+    for k in keys:
+        seq.setdefault(cells[k][3], []).append(k)
+    out, labs, prev = {}, {}, {}
+    for k in keys:
+        c, AX, AY, mv = cells[k]
+        prior = prior_ok = None
+        if mv in prev:                                                     # (l'image d'avant du même mouvement, ancre sur ancre)
+            pk = prev[mv]; pc, pAX, pAY, _ = cells[pk]
+            pr = dict(X=X[pk], lab=labs[pk][0], M=M[pk], anchor=(pAX, pAY))
+            pX, plab, pM = RG.align(pr, dict(M=M[k]), (AX, AY))
+            prior, prior_ok = plab, pM & M[k] & (np.sqrt(((X[k] - pX) ** 2).sum(-1)) < P['tempo_de'])
+        lab = RG.assign(X[k], M[k], C, P['scale'], P['iters'], prior, prior_ok, P['tempo'], P['cap'], locks[k])
+        prev[mv] = k
+        h, w = M[k].shape
+        d = RG.bayer(h, w, AX, AY)
+        g = np.clip(np.round(P['grain_k'] * (RG.luma(G[k]) - Lb[lab]) + (d - 0.5) * P['dither']), -A[lab], A[lab])
+        g[locks[k]] = 0
+        o = np.zeros(c.shape)
+        o[..., :3] = np.clip(base[lab] + g[..., None], 0, 255); o[..., 3] = np.where(M[k], 255.0, 0.0)
+        o[~M[k]] = 0
+        out[k], labs[k] = o, (lab, g)
+    return out, labs, base, s
 
 
 def main():
     prev = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else None
-    sheet = np.asarray(Image.open(SHEET).convert('RGB'))
-    B = boxes(sheet)
-    F = {k: frame(sheet, B[k], kind) for k, (_, kind) in FRAMES.items()}
-    s_scene = D.F / Z_O                                                    # (px de la scène par mètre, à sa profondeur)
-    ref = F[HEAD_REF[0]]; s_w = s_scene * TALL / (ref['ay'] - ref['top'])  # (px de la scène par px de la planche : debout, d'après la
-                                                                           # vue de dos droite ; voûtée en marchant, moins haute)
-    head = head_ratio(F); s_s = s_w / head
-    cells = {}
+    sheets = {k: np.asarray(Image.open(p).convert('RGB')).astype(int) for k, p in sorted(SHEETS.items())}
+    comps = {k: components(v) for k, v in sheets.items()}
+    F0 = {k: cut(sheets[sh], comps[sh], pt, kind) for k, (sh, pt, kind) in FRAMES.items()}
+    # la tête ramenée : de combien pour que b0 fasse HEADS têtes ; assise, dessinée zoom fois plus grande (ses cheveux)
+    b = F0['b0']; crown_b = hair(b, HEAD['back'])[0]
+    kh = (b['ay'] - crown_b - HEAD['back']) / (HEADS - 1) / HEAD['back']
+    zoom = float(np.median([2 * hair(F0[k], HEAD['seat'])[2] for k in F0 if F0[k]['kind'] == 'seat'])) / (2 * hair(b, HEAD['back'])[2])
+    F = {k: reproportion(f, kh, HEAD[f['kind']]) for k, f in F0.items()}
+    s_scene = D.F / Z_O                                                    # (px de la scène par mètre de la maquette, à sa profondeur)
+    tall = s_scene * H_REAL * SCALE_B
+    s_w = tall / (F['b0']['ay'] - F['b0']['top']); s_s = s_w / zoom
+    print('la tête ramenée de %.3f (b0 : %d px de la planche, %.1f têtes) ; assise dessinée %.2f fois plus grande ; debout %.1f px '
+          '(%.3f px de la scène par px de la planche)' % (kh, F['b0']['ay'] - F['b0']['top'], (F['b0']['ay'] - F['b0']['top']) /
+                                                           (kh * HEAD['back']), zoom, tall, s_w))
+    cells, locks, info = {}, {}, {}
     for k, f in F.items():
         s = s_s if f['kind'] == 'seat' else s_w
         ys, xs = np.nonzero(f['m'])
@@ -194,59 +351,74 @@ def main():
         c = reduce(f, s, AX, AY, W, H)
         if f['kind'] == 'seat':                                             # (sous le haut du comptoir : sa dernière rangée, trois fois,
             for r in range(AY, H): c[r] = c[AY - 1]                         # que son souffle ne découvre rien)
-        cells[k] = [c, AX, AY]
-        print('%s : %d x %d, ancre (%d, %d), %.3f px de la scène par px de la planche' % (k, W, H, AX, AY, s))
-    print('assise : dessinée %.2f fois plus grande que debout' % head)
-    # l'éventail qui bat : une copie de s2, l'éventail (ses pixels clairs, son cercle rouge, ses nervures) décalé ; ce qu'il
-    # découvre repris de s0 (la même pose, sans lui)
-    k, (dx, dy) = FAN
-    c, AX, AY = cells[k]; c0_, AX0, AY0 = cells['s0']
-    fan = np.zeros(c.shape[:2], bool)
-    rgbf = c[..., :3]; a = c[..., 3] > 0
-    pale = a & (rgbf.min(2) > 175) & (np.ptp(rgbf, 2) < 60)
+        lk = np.zeros(c.shape[:2], bool)
+        hh_out = HEAD[f['kind']] * kh
+        for ex, ey in (eyes(f, hh_out) if f['kind'] != 'back' else []):    # (un pixel par œil)
+            j, i = to_cell(f, ex, ey, s, AX, AY)
+            if 0 <= i < c.shape[0] and 0 <= j < c.shape[1] and c[i, j, 3] > 0:
+                c[i, j, :3] = 0.5 * np.array(EYE_RGB) + 0.5 * c[i, j, :3] if k in SHUT else EYE_RGB; lk[i, j] = True
+        mv = 'seat' if f['kind'] == 'seat' else f['kind']
+        cells[k] = [c, AX, AY, mv]; locks[k] = lk
+        info[k] = dict(h=int(np.ptp(np.nonzero(c[..., 3].any(1))[0]) + 1), head=round(hh_out * s, 1), eyes=int(lk.sum()))
+        print('%s : %d x %d, ancre (%d, %d), %.3f px de la scène par px de la planche, la tête %.1f px, %d yeux' % (k, W, H, AX, AY, s, hh_out * s, lk.sum()))
+    order = list(F)                                                        # (la marche dans son ordre : la mémoire d'une image à l'autre)
+    cells = {k: cells[k] for k in [k for k in order if k not in WALK] + list(WALK)}
+    # l'éventail qui bat : ses pixels (les plus pâles, d'un seul tenant, pleins) dans s2, avant la lumière
+    fk, (fdx, fdy) = FAN
+    c = cells[fk][0]
+    pale = (c[..., 3] > 0) & (c[..., :3].min(2) > 175) & (np.ptp(c[..., :3], 2) < 70)
     lab_, n_ = nd.label(nd.binary_closing(pale, iterations=2))
-    big = 1 + int(np.argmax(nd.sum(pale, lab_, range(1, n_ + 1))))
-    disk = nd.binary_fill_holes(lab_ == big)
-    fan = disk & a
-    b = c.copy()
-    for y, x in zip(*np.nonzero(fan)):                                     # (d'abord ce qu'il découvre : s0 là)
-        yy, xx = y - AY + AY0, x - AX + AX0
-        b[y, x] = c0_[yy, xx] if 0 <= yy < c0_.shape[0] and 0 <= xx < c0_.shape[1] else 0
-    for y, x in zip(*np.nonzero(fan)):
-        if 0 <= y + dy < b.shape[0] and 0 <= x + dx < b.shape[1]: b[y + dy, x + dx] = c[y, x]
-    cells['s2b'] = [b, AX, AY]
+    fan = nd.binary_fill_holes(lab_ == 1 + int(np.argmax(nd.sum(pale, lab_, range(1, n_ + 1)))))
+    fan &= c[..., 3] > 0
+    print('l\'éventail : %d px' % fan.sum())
 
-    # la lumière de la boutique (l'étalonnage de la maquette), une palette commune ; éteinte, le sombre de la pièce éteinte
+    # la lumière de la boutique ; ses clairs sous la pièce autour d'elle + 15 % ; ses familles, son grain
     R = D.cut()
     lo, hi, dpal = R['dark_ramp']
-    lit_px = np.concatenate([D.grade(c[c[..., 3] > 0][:, :3] * LAMP) for c, _, _ in cells.values()])
-    pal = D.palette(lit_px, PAL)
-    LIT, DARK = {}, {}
-    for k, (c, AX, AY) in cells.items():
+    x0, y0, x1, y1 = LOCAL
+    near = (R['pix'][:, 0] >= x0) & (R['pix'][:, 0] < x1) & (R['pix'][:, 1] >= y0) & (R['pix'][:, 1] < y1) & (R['surf'] != 0)
+    local = np.percentile(R['lit'][near] @ RG.LUM, [5, 50, 95])
+    goal = P95 * local[2]
+    lit = {}
+    for k, (c, AX, AY, mv) in cells.items():
         a = c[..., 3] > 0
-        L = np.zeros(c.shape); Dk = np.zeros(c.shape)
-        q = pal[D.nearest(D.grade(c[a][:, :3] * LAMP), pal)]
-        L[a] = np.concatenate([q, np.full((len(q), 1), 255.0)], 1)
-        t = np.clip((q @ I.LUM - 25) / 175, 0, 1) ** 0.85
-        dq = dpal[D.nearest(lo + (hi - lo) * t[:, None], dpal)]
-        Dk[a] = np.concatenate([dq, np.full((len(dq), 1), 255.0)], 1)
-        LIT[k], DARK[k] = L, Dk
+        L = np.zeros(c.shape); L[a, :3] = D.grade(c[a][:, :3] * LAMP); L[a, 3] = 1
+        lit[k] = [L, AX, AY, mv]
+    LIT, LAB, base, slope = regrain(lit, locks, goal)
+    # éteinte : chaque famille au sombre de la pièce éteinte selon sa clarté (sa palette), le même grain, plus léger
+    t = np.clip((base @ I.LUM - 25) / 175, 0, 1) ** 0.85
+    dbase = dpal[D.nearest(lo + (hi - lo) * t[:, None], dpal)]
+    DARK = {}
+    for k in LIT:
+        lab, g = LAB[k]; a = LIT[k][..., 3] > 0
+        Dk = np.zeros(LIT[k].shape)
+        Dk[..., :3] = np.clip(dbase[lab] + np.clip(np.round(g / 2), -1, 1)[..., None], 0, 255); Dk[..., 3] = np.where(a, 255.0, 0.0)
+        Dk[~a] = 0
+        DARK[k] = Dk
+    # s2b : l'éventail décalé ; ce qu'il découvre repris de s0 (la même pose, sans lui)
+    _, AX, AY, _ = cells[fk]; _, AX0, AY0, _ = cells['s0']
+    for ST in (LIT, DARK):
+        c, c0_ = ST[fk], ST['s0']
+        bb = c.copy()
+        for y, x in zip(*np.nonzero(fan)):
+            yy, xx = y - AY + AY0, x - AX + AX0
+            bb[y, x] = c0_[yy, xx] if 0 <= yy < c0_.shape[0] and 0 <= xx < c0_.shape[1] else 0
+        for y, x in zip(*np.nonzero(fan)):
+            if 0 <= y + fdy < bb.shape[0] and 0 <= x + fdx < bb.shape[1]: bb[y + fdy, x + fdx] = c[y, x]
+        ST['s2b'] = bb
+    cells['s2b'] = [None, AX, AY, 'seat']
 
-    # la marche : les pieds de chaque image (par rapport à l'ancre) ; d'une image à la suivante le corps avance du moins qui garde un
-    # pied posé sur son pixel (jamais en arrière) ; le trajet jusqu'à l'étagère : d'une image aux pieds joints à une autre, au plus
-    # près de SHELF_AT, par les mêmes images à l'aller et au retour (il revient juste à sa place)
-    cyc = [k for k in FRAMES if k[0] == 'w']; L = len(cyc)
-    ft = {k: [x - cells[k][1] for x, n in feet(cells[k][0])] for k in cyc}
-    step = []
-    for k0, k1 in zip(cyc, cyc[1:] + cyc[:1]):
-        d = [f - g for f in ft[k0] for g in ft[k1] if f - g >= -1]
-        step.append(max(0, int(round(min(d)))) if d else 0)
-    joined = [i for i, k in enumerate(cyc) if len(ft[k]) == 1]
-    trip = min(((i, n) for i in joined for n in range(1, 3 * L) if (i + n) % L in joined),
-               key=lambda q: abs(X_SEAT - sum(step[(q[0] + j) % L] for j in range(q[1])) - SHELF_AT) + 0.5 * q[1])
-    shelf = X_SEAT - sum(step[(trip[0] + j) % L] for j in range(trip[1]))
-    print('pieds', {k: [round(x, 1) for x in v] for k, v in ft.items()}, '| pas', step, '| foulée', sum(step), 'px | vers l\'étagère',
-          trip, '->', shelf)
+    # la marche : de combien le corps avance d'une image à la suivante ; combien de temps chacune dure ; le trajet jusqu'à
+    # l'étagère : de REST à REST, au plus près de SHELF_AT, par les mêmes images à l'aller et au retour
+    Lw = len(WALK)
+    step = walk_steps(F, s_w)
+    v = SPEED * SCALE_B * s_scene                                           # (px de la scène par s)
+    tf = np.clip(np.array(step, float) / v, *TF); tf *= sum(step) / v / tf.sum()
+    i0 = WALK.index(REST[0])
+    n = min(range(1, 3 * Lw + 1), key=lambda q: (WALK[(i0 + q) % Lw] not in REST, abs(X_SEAT - sum(step[(i0 + j) % Lw] for j in range(q)) - SHELF_AT) + 0.5 * q))
+    shelf = X_SEAT - sum(step[(i0 + j) % Lw] for j in range(n))
+    print('pas', step, '| foulée', sum(step), 'px, %.2f s (%.0f pas par minute) | durées' % (sum(step) / v, 120 * v / sum(step)),
+          [round(float(x), 3) for x in tf], '| vers l\'étagère', (i0, n), '->', shelf)
 
     # le masque de la devanture à sa profondeur : ce qu'on voit d'elle (la majorité des rayons du pixel passent derrière elle),
     # la vitre, son reflet
@@ -256,7 +428,7 @@ def main():
         if (z > Z_O).mean() >= 0.5: V[y - zy0, x - zx0] = (255 * gl, 40 * sh, 0, 255)
 
     # l'atlas : la rangée allumée, la rangée éteinte sous elle, le masque à leur droite
-    keys = list(cells)
+    keys = [k for k in FRAMES] + ['s2b']
     Wl = sum(LIT[k].shape[1] + 1 for k in keys); Hl = max(LIT[k].shape[0] for k in keys)
     A = np.zeros((max(2 * Hl + 1, V.shape[0]), Wl + V.shape[1], 4))
     x = 0; out = {}
@@ -267,17 +439,21 @@ def main():
     A[:V.shape[0], Wl:] = V
     y_seat = int(round(D.VY + (D.EYE - D.CTR['h']) * D.F / (D.CTR['z'] + D.CTR['d'])))   # (la rangée du haut du comptoir derrière
     y_stand = int(round(D.VY + (D.EYE - D.PLAT) * D.F / Z_O))                      # elle ; celle de ses semelles, debout)
-    rise = (y_seat - out['s0'][5]) - (y_stand - out[cyc[trip[0]]][5])     # (debout, sa tête plus haut qu'assise de tant)
+    rise = (y_seat - out['s0'][5]) - (y_stand - out[WALK[i0]][5])     # (debout, sa tête plus haut qu'assise de tant)
     DGO = {'cells': out, 'dark': Hl + 1, 'V': [Wl, 0, V.shape[1], V.shape[0], zx0, zy0],
-           'seat': [X_SEAT, y_seat], 'stand': y_stand, 'shelf': shelf, 'trip': list(trip), 'walk': cyc, 'step': step, 'rise': rise,
-           'z': Z_O, 'ppm': round(D.F / Z_O, 2)}
-    print('Z_O %.2f m (%.1f px/m) : assise, le comptoir à la rangée %d ; debout, la semelle à %d (%d px plus haut) | atlas %d x %d, '
-          'palette %d couleurs' % (Z_O, D.F / Z_O, y_seat, y_stand, rise, A.shape[1], A.shape[0], len(pal)))
+           'seat': [X_SEAT, y_seat], 'stand': y_stand, 'shelf': shelf, 'trip': [i0, n], 'walk': list(WALK), 'step': step,
+           'tf': [round(float(x), 3) for x in tf], 'rise': rise, 'z': Z_O, 'ppm': round(D.F / Z_O, 2)}
+    lv = np.concatenate([LIT[k][LIT[k][..., 3] > 0][:, :3] for k in keys]) @ RG.LUM
+    print('Z_O %.2f m (%.1f px/m) : assise, le comptoir à la rangée %d ; debout, la semelle à %d (%d px plus haut) | la pièce autour '
+          'd\'elle L %d/%d/%d, ses clairs sous %.0f (pente %.3f) : elle %d/%d/%d | %d familles | atlas %d x %d'
+          % (Z_O, D.F / Z_O, y_seat, y_stand, rise, *local, goal, slope, *np.percentile(lv, [5, 50, 95]), len(base), A.shape[1], A.shape[0]))
     if prev:
+        os.makedirs(prev, exist_ok=True)
         bg = np.full(A.shape[:2] + (3,), 128.0); al = A[..., 3:] / 255
         im = Image.fromarray(np.clip(bg * (1 - al) + A[..., :3] * al, 0, 255).astype(np.uint8))
         im.resize((A.shape[1] * 4, A.shape[0] * 4), Image.NEAREST).save(os.path.join(prev, 'atlas_x4.png'))
         json.dump(DGO, open(os.path.join(prev, 'dgo.json'), 'w'))
+        json.dump(info, open(os.path.join(prev, 'info.json'), 'w'))
         np.save(os.path.join(prev, 'atlas.npy'), A)
         return
     Image.fromarray(np.clip(np.round(A), 0, 255).astype(np.uint8), 'RGBA').save(I.A(OUT), 'WEBP', lossless=True, quality=100, method=6, exact=True)
