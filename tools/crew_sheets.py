@@ -44,15 +44,18 @@ Le chemin, image par image :
 - L'éclair sur le tireur (crew_<héros>_flash.webp, la même grille ; ajouté par street.js en mélange additif, seulement dans
   la visée, le temps de l'éclair) : pour chaque image de visée, la lumière de la bouche du canon (muz) sur ses pixels, le
   visage, les mains, l'arme et le devant du buste, en 1 / (1 + (d / R)^2), chaude, prise tache par tache (regrain).
-- La marche, le pied posé sur son pixel (comme celle de l'obaa-chan) : sur chaque image de marche à la taille de la scène,
-  ses pieds au sol (leur talon, leur pointe) ; d'une image à la suivante le corps avance de wstep px entiers, le moins qui
-  pose un pied au sol de l'une sur un pied au sol de l'autre (à un pixel près, jamais en arrière ; aucun pied commun : l'autre
-  se pose plus loin, le corps reste) ; chaque image dure wtf s, son pas à la vitesse que le dessin donne à CADENCE (deux pas
-  par seconde), bornée à TF : le corps va d'un pas régulier. street.js fait marcher chacun image par image sur ces pas (et à
-  reculons, les mêmes à l'envers). Les planches dessinent la marche presque sur place : 9 px le cycle pour Dempsey, 20 pour
-  Nikolai (sa marche v2), 4 pour Takeo et 3 pour Richtofen, qui vont presque de face ; ils marchent donc à 0,37, 0,82, 0,16
-  et 0,12 m/s. Leur chemin longe une rangée (de la porte à leur place, une rangée de différence au plus) : le sol est le bas
-  de l'image, le pas se mesure en x.
+- Les tailles (LEVELS) : chaque image cuite à x 1 (à la porte du bus, 43 px debout), x 1,1 et x 1,22 (52 px, à 33 m), ensemble
+  dans un atlas, une bande par taille, une seule famille de tons pour toutes (regrain) ; street.js prend la plus petite au
+  moins aussi grande que lui là où il est et la ramène à sa taille en pixels entiers, par majorité (ZRM) : il grandit d'un
+  pixel à la fois en venant vers nous, le même grain à toutes les tailles.
+- La marche vers nous, le pied posé sur son pixel (comme celle de l'obaa-chan) : les planches dessinent la marche de face ou de
+  trois quarts vers nous, presque sur place ; ils marchent donc vers nous, comme dessinés. Sur chaque image de marche, à chaque
+  taille, ses pieds au sol (talon, pointe) ; d'une image à la suivante le corps va de côté de lv.ws px entiers (le moins qui
+  pose un pied au sol de l'une sur un pied au sol de l'autre, à un pixel près, jamais en arrière ; sans pied commun l'autre se
+  pose plus loin et le corps reste) ; le reste de WALK_V (1,2 m/s) vers nous (vz) ; chaque image dure la longueur de son pas
+  sur le sol, deux pas par seconde (CADENCE), bornée à TF (wtf). Dempsey vient à 18° de droit sur nous, Nikolai (sa marche
+  v2) à 43°, Takeo à 8° (vers notre gauche : son miroir), Richtofen à 6°. Un pas vers nous, à 33 à 40 m, fait moins d'un
+  pixel : le pied posé descend d'un pixel au plus.
 
 Il faut Pillow, numpy, scipy.
 """
@@ -89,6 +92,9 @@ FLOOR = 9                   # (le plancher du bus au-dessus de la chaussée, à 
 PPM = 24.3                  # (CRW.ppm : px par mètre à la rangée 649 ; gardé)
 FLASH = dict(rgb=(255, 196, 128), peak=0.26, R=5.5, floor=0.02)     # (la lumière de l'éclair : couleur, force au canon, rayon, seuil)
 CADENCE = 2.0               # (la marche : deux pas par seconde, le haut d'un pas d'homme (1,6 à 2) : un cycle de deux pas en 1 s)
+WALK_V = 1.2                # (m/s : leur pas, vers nous ; le pas de côté que le dessin donne, le reste vers nous)
+LEVELS = (1.0, 1.1, 1.22)   # (les tailles cuites : x 1 à la porte (43 px debout), jusqu'à x 1,22 (52 px, 33 m) ; street.js prend la plus
+                            #  petite au moins aussi grande que lui là où il est et la ramène à sa taille, en px entiers, par majorité)
 TF = (0.08, 0.3)            # (une image de la marche dure entre tant et tant de s)
 KICKS = [0.0, 0.3]          # (la visée, le recul : H.kick au-dessus de 0,3 dans street.js)
 
@@ -465,23 +471,24 @@ def muzzle(f, deg, given):
     return (float(x) + (1.0 if deg > 0 else 0.0), float(yy.mean()) + 0.5)
 
 
-def build(hero, log=print):
+def build(hero, kl=1.0, pal=None):
     Hc = HEROES[hero]
-    S = scales(hero)
+    S = {key: v * kl for key, v in scales(hero).items()}
     U = uses(hero)
     F = []
     for (mv, k, ref, regm, lift, extra) in U:
         f = frame(hero, *ref)
         s = S[(f['kind'], f['ver'], f['row'])]
         rx = reg_head(f['m']) if regm == 'head' else reg_feet(f['m'])
-        F.append(dict(mv=mv, k=k, f=f, s=s, rx=rx, ry=float(f['m'].shape[0]), lift=float(lift), extra=extra))
+        F.append(dict(mv=mv, k=k, f=f, s=s, rx=rx, ry=float(f['m'].shape[0]), lift=float(lift) * kl, extra=extra))
     # la cellule : assez pour toutes
     ax = int(np.ceil(max(q['rx'] * q['s'] - 0.5 for q in F))) + 1
     cw = ax + int(np.ceil(max(0.5 + (q['f']['m'].shape[1] - q['rx']) * q['s'] for q in F))) + 1
     ay = int(np.ceil(max(q['lift'] + q['ry'] * q['s'] for q in F))) + 1
     ch = ay + 1
     # la majorité
-    pal = hero_palette([q['f'] for q in F])
+    if pal is None:
+        pal = hero_palette([q['f'] for q in F])
     labs = {}
     for q in F:
         key = (q['f']['kind'], q['f']['ver'], q['f']['row'], q['f']['col'])
@@ -496,7 +503,13 @@ def build(hero, log=print):
                 break
             ry -= 1 / q['s']
         q['cell'] = c
-    return dict(hero=hero, F=F, cw=cw, ch=ch, ax=ax, ay=ay, S=S)
+    return dict(hero=hero, F=F, cw=cw, ch=ch, ax=ax, ay=ay, S=S, kl=kl, pal=pal)
+
+
+def build_levels(hero):
+    """le héros à chacune des tailles LEVELS : les mêmes images, la même palette de majorité"""
+    B0 = build(hero, LEVELS[0])
+    return [B0] + [build(hero, k, B0['pal']) for k in LEVELS[1:]]
 
 
 def ground_feet(c, ay):
@@ -527,13 +540,20 @@ def walk_steps(cells, ay):
     return step, slip
 
 
-def walk_times(step, v):
-    """combien de temps dure chaque image de la marche : son pas à la vitesse v (px/s), bornée à TF, le cycle gardé"""
-    T = sum(step) / v
-    tf = np.clip(np.array(step, float) / v, *TF)
+def walk_times(step):
+    """sa marche vers nous : le pas de côté du dessin (step, px à la taille x 1, PPM px/m) en un cycle de deux pas à CADENCE,
+    le reste de WALK_V vers nous (vz, m/s) ; chaque image dure la longueur de son pas sur le sol (son pas de côté et sa part
+    du pas vers nous), bornée à TF : le corps va d'un pas régulier"""
+    L = len(step)
+    T = 2.0 / CADENCE
+    lat = np.array(step, float) / PPM
+    vlat = lat.sum() / T
+    vz = float(np.sqrt(max(0.0, WALK_V ** 2 - vlat ** 2)))
+    w = np.hypot(lat, vz * T / L)
+    tf = np.clip(w * T / w.sum(), *TF)
     for _ in range(20):
         tf = np.clip(tf * T / tf.sum(), *TF)
-    return tf
+    return tf, vz, vlat
 
 
 def light(cell, X, Y):
@@ -550,46 +570,50 @@ def light(cell, X, Y):
     return out
 
 
-def assemble(B, log=print):
-    hero, F = B['hero'], B['F']
-    cw, ch, ax, ay = B['cw'], B['ch'], B['ax'], B['ay']
+def assemble(BL, log=print):
+    """les tailles d'un héros (BL : build_levels) dans un atlas, une taille par bande ; une seule famille de tons pour toutes"""
+    hero = BL[0]['hero']
     Hc = HEROES[hero]
-    n = len(F)
-    cols = max(1, min(n, 1024 // cw, 12))
+    n = len(BL[0]['F'])
+    cols = 12
     rows = (n + cols - 1) // cols
-    A = np.zeros((rows * ch, cols * cw, 4), np.uint8)
+    W = max(cols * B['cw'] for B in BL)
+    bands, y = [], 0
+    for B in BL:
+        bands.append(y)
+        y += rows * B['ch']
+    A = np.zeros((y, W, 4), np.uint8)
     FL = np.zeros_like(A)
-    items = []
-    for i, q in enumerate(F):
-        x, y = (i % cols) * cw, (i // cols) * ch
-        A[y:y + ch, x:x + cw] = q['cell']
-        q['n'] = i
-        q['box'] = [x, y, cw, ch]
-        if q['mv'] == 'aim':
-            deg = q['extra']['deg']
-            given = Hc['muz'].get(q['k'] // 2)
-            mz = muzzle(q['f'], deg, given[q['k'] % 2] if given else None)
-            if mz is None:
-                sys.exit('%s : la bouche du canon de %s (visée %d°) n\'est pas donnée (HEROES.muz)' % (hero, q['f']['name'], deg))
-            s = q['s']
-            ry = q['ry'] + q['lift'] / s
-            X, Y = ax + 0.5 + (mz[0] - q['rx']) * s, ay + (mz[1] - ry) * s
-            mc, mr = int(np.floor(X)), int(np.floor(Y))               # (le pixel de la bouche : street.js y centre l'éclair)
-            q['muz'] = [mc - ax, mr - ay]
-            FL[y:y + ch, x:x + cw] = light(q['cell'], mc + 0.5, mr + 0.5)
-        items.append(dict(a=A, box=q['box'], anchor=(ax, ay), seq=(q['mv'], q['k']), **{'with': [FL]}))
+    items, muz0 = [], {}
+    for li, B in enumerate(BL):
+        cw, ch, ax, ay = B['cw'], B['ch'], B['ax'], B['ay']
+        for i, q in enumerate(B['F']):
+            x, y = (i % cols) * cw, bands[li] + (i // cols) * ch
+            A[y:y + ch, x:x + cw] = q['cell']
+            q['n'] = i
+            q['box'] = [x, y, cw, ch]
+            if q['mv'] == 'aim':
+                deg = q['extra']['deg']
+                given = Hc['muz'].get(q['k'] // 2)
+                mz = muzzle(q['f'], deg, given[q['k'] % 2] if given else None)
+                if mz is None:
+                    sys.exit('%s : la bouche du canon de %s (visée %d°) n\'est pas donnée (HEROES.muz)' % (hero, q['f']['name'], deg))
+                s = q['s']
+                ry = q['ry'] + q['lift'] / s
+                X, Y = ax + 0.5 + (mz[0] - q['rx']) * s, ay + (mz[1] - ry) * s
+                mc, mr = int(np.floor(X)), int(np.floor(Y))           # (le pixel de la bouche : street.js y centre l'éclair)
+                if li == 0:
+                    muz0[i] = [mc - ax, mr - ay]
+                FL[y:y + ch, x:x + cw] = light(q['cell'], mc + 0.5, mr + 0.5)
+            items.append(dict(a=A, box=q['box'], anchor=(ax, ay), seq=(li, q['mv'], q['k']), **{'with': [FL]}))
     info = RG.regrain_group(items, RG.params('crew'), 'crew_' + hero)
-    # la marche : le pas de chaque image (le pied posé ne bouge pas), la vitesse que le dessin donne à CADENCE, la durée de
-    # chaque image (le corps à un pas régulier)
-    walk = [q for q in F if q['mv'] == 'walk']
-    step, slip = walk_steps([A[q['box'][1]:q['box'][1] + ch, q['box'][0]:q['box'][0] + cw] for q in walk], ay)
-    D = sum(step)
-    if D <= 0:
-        sys.exit('%s : sa marche ne mène nulle part (aucun pas)' % hero)
-    v = D * CADENCE / 2                                                # (px/s : deux pas par cycle)
-    tf = walk_times(step, v)
+    # la marche (sur la taille x 1) : le pas de côté de chaque image, le pied posé sur son pixel ; la durée de chaque image
+    B0 = BL[0]
+    walk = [q for q in B0['F'] if q['mv'] == 'walk']
+    step, slip = walk_steps([A[q['box'][1]:q['box'][1] + B0['ch'], q['box'][0]:q['box'][0] + B0['cw']] for q in walk], B0['ay'])
+    tf, vz, vlat = walk_times(step)
     mv = {}
-    for q in F:
+    for q in B0['F']:
         e = dict(cell=q['n'])
         x = q['extra']
         if q['mv'] in ('down', 'rise'):
@@ -597,18 +621,24 @@ def assemble(B, log=print):
         if q['mv'] == 'kneel':
             e['kn'] = bool(x['kn'])
         if q['mv'] == 'aim':
-            e['muz'] = q['muz']
+            e['muz'] = muz0[q['n']]
         if q['mv'] == 'reload':
             e['drop'] = bool(x['drop'])
         if 'u' in x:
             e['u'] = x['u']
         mv.setdefault(q['mv'], []).append(e)
     order = ['down', 'walk', 'rise', 'stand', 'kneel', 'aim', 'reload', 'cheer', 'idle']
-    J = dict(cw=cw, ch=ch, ax=ax, ay=ay, cols=cols, n=n, size=[A.shape[1], A.shape[0]], wstep=step, wtf=[round(float(x), 3) for x in tf],
+    ws = []                                                            # (le pas de chaque image à chaque taille : à x 1,22 un pied n'est pas
+    for B in BL:                                                       #  toujours le pied de x 1 agrandi, sa pointe ou son talon bouge d'un px)
+        wq = [q for q in B['F'] if q['mv'] == 'walk']
+        ws.append(walk_steps([A[q['box'][1]:q['box'][1] + B['ch'], q['box'][0]:q['box'][0] + B['cw']] for q in wq], B['ay'])[0])
+    J = dict(lv=[dict(k=B['kl'], y=bands[li], cw=B['cw'], ch=B['ch'], ax=B['ax'], ay=B['ay'], ws=ws[li]) for li, B in enumerate(BL)],
+             cols=cols, n=n, size=[A.shape[1], A.shape[0]], wtf=[round(float(t), 3) for t in tf], vz=round(vz, 3),
              dirs=[d for d, _, _ in Hc['aims']], moves={k: mv[k] for k in order})
-    log('%-9s %2d images, cellule %dx%d (ancre %d,%d), %d familles, pente %.3f, %d px détachés ; la marche : pas %s (%d px le cycle, le pied posé à %d px '
-        'près), %.1f px/s (%.2f m/s), durées %s' % (hero, n, cw, ch, ax, ay, info['families'], info['slope'], info['strays'], step, D, max(slip), v, v / PPM,
-                                                  [round(float(x), 3) for x in tf]))
+    log('%-9s %d tailles de %d images (%s), %d familles, pente %.3f, %d px détachés ; la marche : pas de côté %s (%d px le cycle, le pied '
+        'posé à %d px près ; aux autres tailles %s), %.2f m/s de côté, %.2f vers nous (%.0f° de droit sur nous), durées %s'
+        % (hero, len(BL), n, ', '.join('%dx%d' % (B['cw'], B['ch']) for B in BL), info['families'], info['slope'], info['strays'], step, sum(step),
+           max(slip), ws[1:], vlat, vz, np.degrees(np.arctan2(vlat, vz)), [round(float(t), 3) for t in tf]))
     return A, FL, J, info
 
 
@@ -637,7 +667,7 @@ def main():
     who = o.only.split(',') if o.only else ORDER
     out = {}
     for h in who:
-        B = build(h)
+        B = build_levels(h)
         A, FL, J, info = assemble(B)
         out[h] = J
         if not o.dry:
@@ -649,25 +679,29 @@ def main():
         write_crw(out)
 
 
-def preview(B, A, FL, J, d):
+def preview(BL, A, FL, J, d):
+    """chaque image coupée x4, à chacune de ses tailles (une bande par taille : son mouvement, son image de la planche,
+    l'ancre en rouge, la bouche du canon) ; et l'atlas éclairé par l'éclair"""
     os.makedirs(d, exist_ok=True)
-    h, z = B['hero'], 4
-    bg = (96, 100, 108, 255)
-    can = Image.new('RGBA', (A.shape[1], A.shape[0]), bg)
+    h, z = BL[0]['hero'], 4
+    can = Image.new('RGBA', (A.shape[1], A.shape[0]), (96, 100, 108, 255))
     can.alpha_composite(Image.fromarray(A, 'RGBA'))
     dr = ImageDraw.Draw(can)
-    for q in B['F']:
-        x, y, w, hh = q['box']
-        dr.point((x + J['ax'], y + J['ay']), fill=(255, 60, 60, 255))
+    for li, B in enumerate(BL):
+        for q in B['F']:
+            x, y, w, hh = q['box']
+            dr.point((x + B['ax'], y + B['ay']), fill=(255, 60, 60, 255))
     can = can.resize((can.width * z, can.height * z), Image.NEAREST)
     dr = ImageDraw.Draw(can)
-    for q in B['F']:
-        x, y, w, hh = q['box']
-        dr.rectangle([x * z, y * z, (x + w) * z - 1, (y + hh) * z - 1], outline=(70, 76, 90, 255))
-        dr.text((x * z + 3, y * z + 2), '%s%d %s' % (q['mv'], q['k'], q['f']['name']), fill=(240, 220, 120, 255))
-        if 'muz' in q:
-            mx, my = x + J['ax'] + 0.5 + q['muz'][0], y + J['ay'] + 0.5 + q['muz'][1]
-            dr.ellipse([mx * z - 3, my * z - 3, mx * z + 3, my * z + 3], outline=(255, 80, 200, 255))
+    for li, B in enumerate(BL):
+        for q in B['F']:
+            x, y, w, hh = q['box']
+            dr.rectangle([x * z, y * z, (x + w) * z - 1, (y + hh) * z - 1], outline=(70, 76, 90, 255))
+            dr.text((x * z + 3, y * z + 2), 'x%.2f %s%d %s' % (B['kl'], q['mv'], q['k'], q['f']['name']), fill=(240, 220, 120, 255))
+            if q['mv'] == 'aim':
+                mz = [e for e in J['moves']['aim'] if e['cell'] == q['n']][0]['muz']
+                mx, my = x + B['ax'] + (mz[0] + 0.5) * B['kl'], y + B['ay'] + (mz[1] + 0.5) * B['kl']
+                dr.ellipse([mx * z - 3, my * z - 3, mx * z + 3, my * z + 3], outline=(255, 80, 200, 255))
     can.convert('RGB').save(os.path.join(d, 'cells_%s_x4.png' % h))
     fl = Image.new('RGBA', (A.shape[1], A.shape[0]), (0, 0, 0, 255))
     lit = A.astype(int)
