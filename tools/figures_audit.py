@@ -204,9 +204,9 @@ GGK = jsnum(r'box: \[[\d, ]+\], k: ([\d.]+)') or 0.5      # (Gengar : px de la s
 CHARS = [
     dict(id='oden_d', nom="maître de l'oden, à la porte", outil='tools/oden_master.py (oden_door.webp : tools/oden_interior.py)',
          asset='oden_master.webp', js='OMF, ODM, stepOdenDoor', modele='A', H=1.70, tete=7.0,
-         ref=OMF['D']['stand'], head=15, places=[('dans l\'embrasure, Z %.1f m (A ; seuil %.0f)' % (OMF['D']['z'], OMF['D']['floor']), 1.0, 1400 / OMF['D']['z'] * FIX_A, None)]),
+         ref=OMF['D']['stand'], head=11, places=[('dans l\'embrasure, Z %.1f m (A ; seuil %.0f)' % (OMF['D']['z'], OMF['D']['floor']), 1.0, 1400 / OMF['D']['z'] * FIX_A, None)]),
     dict(id='oden_a', nom="maître de l'oden, à la marmite", outil='tools/oden_master.py', asset='oden_master.webp', js='OMF.A', modele='A',
-         H=1.70, tete=7.0, ref=OMF['A']['stand'], head=13, places=[('allée, Z %.1f m (A)' % Z_OA, 1.0, 1400 / Z_OA * FIX_A, None)]),
+         H=1.70, tete=7.0, ref=OMF['A']['stand'], head=9, places=[('allée, Z %.1f m (A)' % Z_OA, 1.0, 1400 / Z_OA * FIX_A, None)]),
     dict(id='obaa', nom='obaa-chan du dagashi-ya', outil='tools/dagashi_obaachan.py', asset='dagashi_obaachan.webp', js='DGO, OBA, stepOba',
          modele='A', H=1.45, tete=6.5, ref=DGO['cells']['b0'], head=14,
          places=[('derrière le comptoir, Z %.2f m (A)' % DGO['z'], 1.0, DGO['ppm'] * FIX_A, None)]),
