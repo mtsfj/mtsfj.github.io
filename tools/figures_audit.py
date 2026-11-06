@@ -193,7 +193,8 @@ sB_road = lambda y: (y - HZ) / (EYE_B + 0.15)    # B, debout sur la chaussée
 def crew_cell(who, move, i=0):
     C = CRW['heroes'][who]
     n = C['moves'][move][i]['cell']
-    return [(n % C['cols']) * C['cw'], (n // C['cols']) * C['ch'], C['cw'], C['ch']]
+    L = C['lv'][0]                                   # (sa taille à la porte, x 1 ; plus près, la même, plus grande)
+    return [(n % C['cols']) * L['cw'], L['y'] + (n // C['cols']) * L['ch'], L['cw'], L['ch']]
 
 
 Z_T = float(IRF['Tz'] if 'Tz' in IRF else IRF['T']['z'])
