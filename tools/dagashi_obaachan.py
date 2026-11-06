@@ -37,20 +37,27 @@ de la planche échangées : le pied d'appui ne recule jamais ainsi).
   sa tête à 2,08 m, 27 px plus haut qu'assise.
 - Réduction : chaque pixel de la scène est le bloc de la planche qu'il couvre ; plein si la figure en couvre au moins la moitié,
   vide sinon (jamais à demi) ; sa couleur, la moyenne de ses pixels intérieurs les plus proches de leur médiane (un bord ne mêle
-  pas deux matières). Pas de trait sombre repris de la planche : ni contour, ni lunettes, ni bouche ; à 14 px de tête, ses yeux
-  sont un pixel chacun (EYES : au centre des verres de ses lunettes, sombre ouverts, plus doux fermés : SHUT).
+  pas deux matières). Pas de trait sombre repris de la planche (ni contour) : ses traits sont posés pixel par pixel là où la
+  planche les dessine (FACE ; le propriétaire voulait un peu plus de détail de face qu'un pixel par œil) : de face, ses yeux au
+  centre des verres de ses lunettes (EYES ; un pixel ouverts, deux fermés : SHUT), la monture de part et d'autre de chaque œil
+  et le pont plus clair entre eux, l'ombre de ses cheveux sur le haut du visage, celle du nez du côté opposé à la lampe, le
+  rose des joues, la bouche entre les yeux et sous eux (MOUTH : deux pixels de lèvres ; un pixel sombre un peu ouverte, deux
+  ouverte, sur deux rangées grande ouverte) ; le même visage dessiné deux fois (SAME_FACE : le repos et le sourire, le
+  boulier) a ses traits aux mêmes pixels ; de profil, l'œil à deux pixels du bout du visage, la branche des lunettes derrière
+  lui (SIDE). Ces pixels gardent leur famille, sans grain.
 - Lumière et grain : allumée, la lumière de la boutique (sa lampe à incandescence, plus chaude que le jour des planches : LAMP ;
   puis l'étalonnage de la maquette, celui de la pièce) ; ses clairs ramenés sous la pièce
   autour d'elle + 15 % (P95 : le p95 de la clarté de la pièce allumée là où elle passe) ; puis, toutes ses images ensemble
   (tools/regrain.py : ses fonctions), FAMILIES familles de tons fixes d'une image à l'autre, chaque pixel à la sienne contre ses
-  quatre voisins (peu de pixels seuls), un grain fin baké de 1 à 3 niveaux (Bayer 4 x 4, ancré à elle) ; ses yeux gardés.
+  quatre voisins (peu de pixels seuls), un grain fin baké de 1 à 3 niveaux (Bayer 4 x 4, ancré à elle) ; ses traits gardés.
   Éteinte (la coupure de courant, boutique ouverte) : chaque famille au sombre de la pièce éteinte selon sa clarté, à sa
   palette, le même grain plus léger.
 - La marche : d'une image à la suivante le corps avance de dx pixels entiers, ceux qui gardent le pied posé sur son pixel (les
   pointes des semelles au sol de l'une sur celles de l'autre, jamais en arrière : 34 px les deux pas) ; chaque image dure le temps de son
   pas à SPEED (0,5 m/s, une vieille dame voûtée : 1,1 s les deux pas ; chaque image entre 0,1 et 0,3 s : TF) : le corps avance
   d'un pas régulier, le pied d'appui ne glisse pas.
-- La place : le milieu de son buste assise à X_SEAT, son ancre sur la rangée du haut du comptoir derrière elle ; debout, sa
+- La place : assise, chaque image posée par le comptoir que la planche dessine sous elle (le milieu du buste de SEAT_REF à X_SEAT :
+  le visage ne saute pas d'une pose à l'autre), son ancre sur la rangée du haut du comptoir derrière elle ; debout, sa
   semelle sur le plancher surélevé ; devant l'étagère, vue par la vitre de la porte de gauche, au plus près de SHELF_AT : de
   REST (les pieds joints) à REST, par les mêmes images à l'aller et au retour (elle revient juste à sa place). Ce qui est devant
   elle dans la maquette (le comptoir, le poteau, le montant et le cadre de la porte, la traverse et le panneau de bois sous la
@@ -106,7 +113,18 @@ WHITE, HOLE = 244, 40                # (la figure : un canal sous tant, ou une t
 COVER = 0.5
 EYES = (0.50, 0.82, 80, 0.15, 0.62)  # (les yeux : la bande de la tête où ils sont, du haut ; plus sombre que tant : les verres et
                                      # les yeux ; de face, de tant à tant de demi-largeurs de tête du nez)
-EYE_RGB, SHUT = (38.0, 22.0, 18.0), ('s1', 's3', 'l0')   # (ouverts ; fermés, à mi-chemin de la peau)
+EYES_SIDE = (0.50, 0.72, 95)         # (de profil : la bande, le sombre ; la monture y est plus claire)
+EYE_RGB, SHUT = (38.0, 22.0, 18.0), ('s1', 's3', 'l0')   # (ouverts ; les images aux yeux fermés)
+SEAT_REF = 's0'                      # (assise : les images posées par leur comptoir dessiné, le buste de celle-ci au milieu)
+FACE = dict(rim=(128.0, 84.0, 64.0), shut=(72.0, 42.0, 34.0), lip=(198.0, 84.0, 78.0), open=(100.0, 36.0, 34.0),
+            cheek=(236.0, 142.0, 128.0), shade=0.9)   # (de face, à la demande du propriétaire : la monture des lunettes, les yeux
+                                     # fermés, les lèvres, la bouche ouverte, le rose des joues ; l'ombre sur la peau (le nez, sous
+                                     # les cheveux), de tant)
+MOUTH = (0.12, 0.98, 15, 40, 70)     # (la bouche dessinée : de tant de hauteurs de tête sous les yeux à tant du haut de la tête,
+                                     # entre les yeux ; un peu ouverte (un pixel sombre), ouverte (deux), grande ouverte (deux, sur
+                                     # deux rangées) dès tant de px sombres de la planche)
+SIDE = (2, 2)                        # (de profil : l'œil à tant de pixels du bout du visage ; la branche des lunettes, tant de px)
+SAME_FACE = (('s0', 's1'), ('a0', 'a1'))   # (le même visage dessiné deux fois : ses traits aux mêmes pixels)
 LAMP = np.array([1.0, 0.93, 0.80])   # (sous la lampe à incandescence, juste au-dessus du comptoir : plus chaude que le jour des planches)
 P95 = 1.15                           # (ses clairs : sous le p95 de la pièce allumée autour d'elle, + 15 %)
 FAMILIES = 24
@@ -146,13 +164,14 @@ def cut(sheet, comp, point, kind):
     if kind == 'seat':                                                     # (le comptoir : en bas, les rangées qui couvrent toute la
         top = m.shape[0] - 5                                               # largeur de la figure ; la première d'entre elles)
         while top > 0 and m[top - 1, 5:-5].mean() >= 0.97: top -= 1
+        cols = np.nonzero(m[top])[0]; cx = (cols.min() + cols.max() + 1) / 2   # (le milieu du comptoir dessiné)
         m[top:] = False
     l2, n2 = nd.label(m)
     if n2 > 1:                                                             # (les poussières : dehors)
         s2 = nd.sum(m, l2, range(1, n2 + 1)); m &= np.isin(l2, 1 + np.nonzero(s2 >= 0.15 * s2.max())[0])
     ys, xs = np.nonzero(m)
     ay = top if kind == 'seat' else ys.max() + 1
-    return dict(rgb=rgb, m=m, ay=float(ay), org=(x0 - 4, y0 - 4), kind=kind)
+    return dict(rgb=rgb, m=m, ay=float(ay), org=(x0 - 4, y0 - 4), kind=kind, cx=cx if kind == 'seat' else None)
 
 
 def bust(f):
@@ -205,11 +224,12 @@ def eyes(f, hh_out):
     leurs montures, les yeux ouverts ou fermés ; plus sombre, plus lourd) de part et d'autre du nez, ou tout devant le profil"""
     c, m, h = f['rgb'], f['m'], f['head']
     L = c @ I.LUM
-    y0, y1 = int(h['crown'] + EYES[0] * hh_out), int(h['crown'] + EYES[1] * hh_out)
-    dark = np.zeros(m.shape, bool); dark[y0:y1] = m[y0:y1] & (L[y0:y1] < EYES[2])
+    Y0, Y1, Lm = EYES[:3] if f['kind'] == 'seat' else EYES_SIDE
+    y0, y1 = int(h['crown'] + Y0 * hh_out), int(h['crown'] + Y1 * hh_out)
+    dark = np.zeros(m.shape, bool); dark[y0:y1] = m[y0:y1] & (L[y0:y1] < Lm)
     ys, xs = np.nonzero(dark)
     dx = xs + 0.5 - h['hx']
-    wt = EYES[2] - L[ys, xs]
+    wt = Lm - L[ys, xs]
     if f['kind'] == 'seat':
         out = []
         for side in ((dx < -EYES[3] * h['R']) & (dx > -EYES[4] * h['R']), (dx > EYES[3] * h['R']) & (dx < EYES[4] * h['R'])):
@@ -218,6 +238,75 @@ def eyes(f, hh_out):
     front = (dx > 0) & (xs >= np.percentile(xs[dx > 0], 70)) if (dx > 0).sum() >= 10 else None   # (de profil : le verre, tout devant)
     if front is None: return []
     return [(float(np.average(xs[front], weights=wt[front])) + 0.5, float(np.average(ys[front], weights=wt[front])) + 0.5)]
+
+
+def mouth(f, hh_out, E):
+    """sa bouche dessinée (de face) : sous ses yeux, entre eux (E : leurs centres, px de la planche ; pas la manche ni la main
+    contre sa joue), ce qui est rouge et plus sombre que la peau (les lèvres, la bouche ouverte) ; son milieu, sa largeur,
+    combien elle est ouverte (ses px sombres)"""
+    c, m, h = f['rgb'], f['m'], f['head']
+    L = c @ I.LUM
+    if len(E) != 2: return None
+    y0, y1 = int(max(E[0][1], E[1][1]) + MOUTH[0] * hh_out), int(h['crown'] + MOUTH[1] * hh_out)
+    x0, x1 = int(min(E[0][0], E[1][0])), int(max(E[0][0], E[1][0])) + 1
+    red = np.zeros(m.shape, bool)
+    red[y0:y1, x0:x1] = (m & (c[..., 0] - c[..., 1] > 45) & (L < 175))[y0:y1, x0:x1]
+    if red.sum() < 8: return None
+    ys, xs = np.nonzero(red)
+    return float(xs.mean()) + 0.5, float(ys.mean()) + 0.5, float(np.ptp(xs) + 1), int((red & (L < 95)).sum())
+
+
+def face(c, E, Mo, kind, shut):
+    """ses traits, au pixel près, là où la planche les dessine (E : ses yeux, Mo : sa bouche, dans la case) : de face, l'ombre de
+    ses cheveux sur le haut de son visage, ses lunettes (la monture de part et d'autre de chaque œil, le pont plus clair entre
+    eux), ses yeux (un pixel ouverts, deux fermés), l'ombre du nez du côté opposé à la lampe, le rose des joues, la bouche (deux
+    pixels de lèvres, sombre ouverte, sur deux rangées grande ouverte) ; de profil, l'œil et le verre devant lui. Rend les
+    pixels posés (gardés tels quels ensuite)"""
+    rgb, a = c[..., :3], c[..., 3] > 0
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    skin = a & (r > 150) & (r - b > 45) & (g - b > 15) & (r - g > 25)
+    grey = a & (np.abs(r - g) < 16) & (np.abs(g - b) < 18) & (r > 90) & (r < 225)
+    H, W = a.shape
+    lk = np.zeros((H, W), bool)
+    def put(j, i, col, need=skin):
+        if 0 <= i < H and 0 <= j < W and need[i, j] and not lk[i, j]:
+            rgb[i, j] = col; lk[i, j] = True
+    sh = lambda j, i: rgb[i, j] * FACE['shade'] if 0 <= i < H and 0 <= j < W else 0
+    mix = lambda j, i, col: 0.5 * rgb[i, j] + 0.5 * np.array(col) if 0 <= i < H and 0 <= j < W else 0
+    E = sorted(E)
+    if kind == 'side':                                                     # (de profil : l'œil à deux pixels du bout de son visage,
+        for _, ey in E:                                                    #  à la rangée du verre ; la branche des lunettes derrière)
+            js = np.nonzero(skin[ey])[0]
+            if not len(js): continue
+            ex = int(js.max()) - SIDE[0]
+            put(ex, ey, EYE_RGB)
+            for d in range(1, SIDE[1] + 1): put(ex - d, ey, FACE['rim'])
+        return lk
+    if len(E) != 2:
+        for ex, ey in E: put(ex, ey, FACE['shut'] if shut else EYE_RGB, a)
+        return lk
+    (j1, i1), (j2, i2) = E
+    for (ex, ey), side in zip(E, (-1, 1)):                                 # (les yeux)
+        if shut: put(ex, ey, FACE['shut']); put(ex - side, ey, FACE['shut'])
+        else: put(ex, ey, EYE_RGB, a)
+    for (ex, ey), side in zip(E, (-1, 1)):                                 # (la monture, le pont)
+        put(ex + side, ey, FACE['rim']); put(ex - side, ey, FACE['rim'])
+    if i1 == i2:
+        for j in range(j1 + 2, j2 - 1): put(j, i1, sh(j, i1))
+    top = min(i1, i2)
+    for i in range(1, top):                                                # (l'ombre des cheveux)
+        for j in range(j1 - 2, j2 + 3):
+            if 0 <= j < W and skin[i, j] and grey[i - 1, j]: put(j, i, sh(j, i))
+    if (Mo[1] if Mo else 99) - max(i1, i2) >= 3:                           # (le nez, du côté de l'ombre, s'il a sa rangée)
+        put((j1 + j2) // 2 + 1, max(i1, i2) + 2, sh((j1 + j2) // 2 + 1, max(i1, i2) + 2))
+    put(j1 - 1, i1 + 2, mix(j1 - 1, i1 + 2, FACE['cheek'])); put(j2 + 1, i2 + 2, mix(j2 + 1, i2 + 2, FACE['cheek']))
+    if Mo:                                                                 # (la bouche, au pixel du milieu dessiné et celui vers
+        mx, my, fx, dark = Mo                                              #  lequel il penche)
+        js = [mx] if MOUTH[2] <= dark < MOUTH[3] else [mx, mx + (1 if fx >= 0.5 else -1)]
+        for j in js: put(j, my, FACE['open'] if dark >= MOUTH[2] else FACE['lip'])
+        if dark >= MOUTH[4]:
+            for j in js: put(j, my + 1, FACE['lip'])
+    return lk
 
 
 def reduce(f, s, AX, AY, W, H):
@@ -336,13 +425,16 @@ def main():
     kh = (b['ay'] - crown_b - HEAD['back']) / (HEADS - 1) / HEAD['back']
     zoom = float(np.median([2 * hair(F0[k], HEAD['seat'])[2] for k in F0 if F0[k]['kind'] == 'seat'])) / (2 * hair(b, HEAD['back'])[2])
     F = {k: reproportion(f, kh, HEAD[f['kind']]) for k, f in F0.items()}
+    dx_seat = bust(F0[SEAT_REF]) - F0[SEAT_REF]['cx']                     # (assise : chaque image posée par son comptoir, tel que
+    for f in F.values():                                                   #  dessiné ; le milieu du buste de s0 à X_SEAT)
+        if f['kind'] == 'seat': f['ax'] = f['cx'] + dx_seat
     s_scene = D.F / Z_O                                                    # (px de la scène par mètre de la maquette, à sa profondeur)
     tall = s_scene * H_REAL * SCALE_B
     s_w = tall / (F['b0']['ay'] - F['b0']['top']); s_s = s_w / zoom
     print('la tête ramenée de %.3f (b0 : %d px de la planche, %.1f têtes) ; assise dessinée %.2f fois plus grande ; debout %.1f px '
           '(%.3f px de la scène par px de la planche)' % (kh, F['b0']['ay'] - F['b0']['top'], (F['b0']['ay'] - F['b0']['top']) /
                                                            (kh * HEAD['back']), zoom, tall, s_w))
-    cells, locks, info = {}, {}, {}
+    cells, locks, info, feats = {}, {}, {}, {}
     for k, f in F.items():
         s = s_s if f['kind'] == 'seat' else s_w
         ys, xs = np.nonzero(f['m'])
@@ -351,16 +443,26 @@ def main():
         c = reduce(f, s, AX, AY, W, H)
         if f['kind'] == 'seat':                                             # (sous le haut du comptoir : sa dernière rangée, trois fois,
             for r in range(AY, H): c[r] = c[AY - 1]                         # que son souffle ne découvre rien)
-        lk = np.zeros(c.shape[:2], bool)
         hh_out = HEAD[f['kind']] * kh
-        for ex, ey in (eyes(f, hh_out) if f['kind'] != 'back' else []):    # (un pixel par œil)
-            j, i = to_cell(f, ex, ey, s, AX, AY)
-            if 0 <= i < c.shape[0] and 0 <= j < c.shape[1] and c[i, j, 3] > 0:
-                c[i, j, :3] = 0.5 * np.array(EYE_RGB) + 0.5 * c[i, j, :3] if k in SHUT else EYE_RGB; lk[i, j] = True
+        E = [to_cell(f, ex, ey, s, AX, AY) for ex, ey in (eyes(f, hh_out) if f['kind'] != 'back' else [])]
+        Mo = mouth(f, hh_out, eyes(f, hh_out)) if f['kind'] == 'seat' else None
+        if Mo: Mo = to_cell(f, Mo[0], Mo[1], s, AX, AY) + ((AX + (Mo[0] - f['ax']) * s) % 1, Mo[3])
+        feats[k] = [[(j - AX, i - AY) for j, i in E], (Mo[0] - AX, Mo[1] - AY) + Mo[2:] if Mo else None]
         mv = 'seat' if f['kind'] == 'seat' else f['kind']
-        cells[k] = [c, AX, AY, mv]; locks[k] = lk
-        info[k] = dict(h=int(np.ptp(np.nonzero(c[..., 3].any(1))[0]) + 1), head=round(hh_out * s, 1), eyes=int(lk.sum()))
-        print('%s : %d x %d, ancre (%d, %d), %.3f px de la scène par px de la planche, la tête %.1f px, %d yeux' % (k, W, H, AX, AY, s, hh_out * s, lk.sum()))
+        cells[k] = [c, AX, AY, mv]
+        info[k] = dict(h=int(np.ptp(np.nonzero(c[..., 3].any(1))[0]) + 1), head=round(hh_out * s, 1))
+        print('%s : %d x %d, ancre (%d, %d), %.3f px de la scène par px de la planche, la tête %.1f px' % (k, W, H, AX, AY, s, hh_out * s))
+    for a_, b_ in SAME_FACE:                                               # (le même visage : les traits de l'un sur l'autre, à un
+        Ea, Eb = feats[a_][0], feats[b_][0]                                #  pixel près)
+        if len(Ea) == len(Eb) and all(abs(p[0] - q[0]) <= 1 and abs(p[1] - q[1]) <= 1 for p, q in zip(sorted(Ea), sorted(Eb))):
+            feats[b_][0] = list(Ea)
+            if feats[a_][1] and feats[b_][1] and abs(feats[a_][1][0] - feats[b_][1][0]) <= 1 and abs(feats[a_][1][1] - feats[b_][1][1]) <= 1:
+                feats[b_][1] = feats[a_][1][:3] + feats[b_][1][3:]
+    for k, (c, AX, AY, mv) in cells.items():
+        E = [(x + AX, y + AY) for x, y in feats[k][0]]
+        Mo = feats[k][1]; Mo = (Mo[0] + AX, Mo[1] + AY) + Mo[2:] if Mo else None
+        locks[k] = face(c, E, Mo, F[k]['kind'], k in SHUT)
+        print('%s : les traits %s, la bouche %s, %d px posés' % (k, E, Mo and (Mo[0], Mo[1], round(Mo[2], 2), Mo[3]), locks[k].sum()))
     order = list(F)                                                        # (la marche dans son ordre : la mémoire d'une image à l'autre)
     cells = {k: cells[k] for k in [k for k in order if k not in WALK] + list(WALK)}
     # l'éventail qui bat : ses pixels (les plus pâles, d'un seul tenant, pleins) dans s2, avant la lumière
