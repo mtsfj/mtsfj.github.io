@@ -200,6 +200,7 @@ Z_S = float(IRF['W']['from'][1])
 Z_E = float(IRF['W']['to'][1])
 Z_OA = float(OMF['A']['z'])
 k_red = lambda w: (1400 / (ZR['zs'] - w)) / ZR['ppm']
+GGK = jsnum(r'box: \[[\d, ]+\], k: ([\d.]+)') or 0.5      # (Gengar : px de la scène par px de sa planche)
 CHARS = [
     dict(id='oden_d', nom="maître de l'oden, à la porte", outil='tools/oden_master.py (oden_door.webp : tools/oden_interior.py)',
          asset='oden_master.webp', js='OMF, ODM, stepOdenDoor', modele='A', H=1.70, tete=7.0,
@@ -210,10 +211,10 @@ CHARS = [
          modele='A', H=1.45, tete=6.5, ref=DGO['cells']['b0'], head=21,
          places=[('derrière le comptoir, Z %.2f m (A)' % DGO['z'], 1.0, DGO['ppm'] * FIX_A, None)]),
     dict(id='red', nom='Red au balcon (zone 1)', outil='tools/red_sheet.py', asset='red_sil.webp', js='ZR, ZRC, ZRB, z1Red', modele='A',
-         H=1.65, tete=6.5, ref=[0, ZRC['idle'][0], ZRC['idle'][1], ZRC['idle'][2]], head=44,
+         H=1.65, tete=6.5, ref=[0, ZRC['idle'][0], ZRC['idle'][1], ZRC['idle'][2]], head=27,
          places=[('à l\'arrêt (w 0)', k_red(0), 1400 / ZR['zs'] * FIX_A, None), ('entrée (w %.2f)' % ZR['w0'], k_red(ZR['w0']), 1400 / (ZR['zs'] - ZR['w0']) * FIX_A, None)]),
-    dict(id='naruto_win', nom='Naruto à la fenêtre du balcon', outil='build_zzzchar_naruto.py (hors du dépôt)', asset='naruto_sil.webp',
-         js='NG, NC, NAR, nDraw', modele='fenêtre peinte = 2,1 m', H=1.45, tete=5.75, ref=[NCL[1], NCL[0], NCL[1], NCL[2]], head=24,
+    dict(id='naruto_win', nom='Naruto à la fenêtre du balcon', outil='tools/naruto_sil.py (sa source : build_zzzchar_naruto.py, hors du dépôt)',
+         asset='naruto_sil.webp', js='NG, NC, NAR, nDraw', modele='fenêtre peinte = 2,1 m', H=1.45, tete=5.75, ref=[NCL[1], NCL[0], NCL[1], NCL[2]], head=19,
          places=[('devant la vitre (s -1,5)', nK(nU(-1.5)) / NG['ppm'], nK(nU(-1.5)), None), ('entrée (s -6,2)', nK(nU(-6.2)) / NG['ppm'], nK(nU(-6.2)), None)]),
     dict(id='killua', nom='Killua sur le toit', outil='build_zzzchar_killua.py (hors du dépôt)', asset='killua_body/legs/head.webp',
          js='KM, KIL, stepKillua', modele='la maison (~78 px/m), = B', H=1.58, tete=6.5, ref=None, head=19, seated=58,
@@ -240,8 +241,8 @@ CHARS = [
          modele='B', H=1.76, tete=7.5, ref=HRD['L'][1]['frames'][0][0][:4], head=13, sheet='horde_L1.webp',
          places=[('D 17,0 m (rangée %.0f)' % (615 + 959.5 * 1.41 / 17.0), 1.76 * 959.5 / 17.0 / HRD['L'][1]['h'], 959.5 / 17.0, None)]),
     dict(id='gengar', nom='Ectoplasma (Gengar) au Centre', outil='— (gengar_shadow.webp)', asset='gengar_shadow.webp', js='GG, stepGengar',
-         modele='B', H=1.50, tete=None, ref=[0, 0, 64, 64], head=None, full=26.0, note='Pokédex : 1,5 m ; le code : 0,75 m',
-         places=[('derrière la porte du Centre (seuil ~660)', 0.5, sB_floor(660), None)]),
+         modele='B', H=1.50, tete=None, ref=[0, 0, 64, 64], head=None, full=48 * GGK, note='Pokédex : 1,5 m ; la vitre de la porte : 32 px, 0,9 m',
+         places=[('derrière la porte du Centre (seuil ~660)', GGK, sB_floor(660), None)]),
     dict(id='climber', nom='le grimpeur du Fuji', outil='— (fuji_climber.webp, CLB)', asset='fuji_climber.webp', js='CLB, stepClimber',
          modele='symbole (le sommet du Fuji)', H=None, tete=None, ref=[(20 % 16) * 18, (20 // 16) * 14, 18, 14], head=None, places=[]),
 ]
