@@ -5685,7 +5685,7 @@
   // (majCell: his cell by majority at his height there, at whole px) ----
   const NG = { vx: 810, vy: 615, uzn: 1293.936, kzn: 74.8, zn: 18.7166, ppm: 75, walkD: 0.847, runD: 1.5674, walkV: 0.985, runV: 2.85, xa0: 0.223, xr0: -0.211 };
   const NC = { walkT: [0, 50, 125, 16, 24, 119], walkA: [125, 50, 125, 16, 26, 118], runT: [250, 58, 125, 12, 29, 118], runA: [375, 58, 118, 12, 29, 111], settleT: [493, 50, 126, 6, 21, 122], settleA: [743, 50, 125, 6, 29, 116], startT: [619, 50, 124, 4, 21, 120], startA: [868, 50, 125, 4, 29, 118], turn: [993, 46, 124, 9, 23, 119], look: [1117, 55, 123, 4, 27, 118], seal: [1240, 46, 123, 3, 27, 118] };   // the sheet's rows: top, cell w, h, frames, the floor point under his pelvis in the cell
-  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_sil.webp?v=2');   // (late: he is never due before 26 s)
+  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_sil.webp?v=3');   // (late: he is never due before 26 s)
   const nU = (s) => NG.vx + (NG.uzn - NG.vx) * NG.zn / (NG.zn - s);                 // s (m along the glass) -> scene x
   const nV = (u) => NG.vy + (260 - NG.vy) * (u - NG.vx) / (NG.uzn - NG.vx);          // the floor line under him at x
   const nK = (u) => NG.kzn * (u - NG.vx) / (NG.uzn - NG.vx);                          // px per metre there
@@ -6490,7 +6490,7 @@
   const ZRB = [[1,0.3,13.0,69.6],[2,0.15,12.6,69.6],[3,0.0474,15.7,58.6],[3,0.0474,15.5,51.3],[3,0.0474,15.3,45.9],[4,0.0474,15.0,42.5],[4,0.0474,14.8,41.0],[4,0.0474,14.5,41.5],[5,0.0474,14.3,43.9],[5,0.0474,14.1,48.3],[5,0.0474,13.8,54.6],[6,0.25,13.7,64.3],[7,0.3,14.9,71.1]];   // one toss: [its toss cell, s, the Poké Ball's centre in the cell (px)], every 0.05 s while it flies (a parabola, g = 9.81)
   const zrU = (w) => -ZR.x * ZR.ppm * Math.log(ZR.zs - w), zrW = (u) => ZR.zs - Math.exp(-u / (ZR.x * ZR.ppm));   // w <-> his floor point along his path (px of the sheet)
   const zrToss = (k) => ZRB.map(([i, dt, x, y]) => ['toss', i, dt * k, 0, [x, y]]);   // a toss at k times its pace (the ball in each step)
-  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=4');   // (late; his visit already waits for the sheet)
+  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=5');   // (late; his visit already waits for the sheet)
   z1Door.sh.width = z1Door.box[2] * z1Door.K; z1Door.sh.height = z1Door.box[3] * z1Door.K;   // (his shadow drawn at the glass's 1x)
   const ZR_EDGE = [168, 64];                      // (his edge pixels, the ring outside them: alphas, the frosted glass's softness)
   let zrMaj = null;
