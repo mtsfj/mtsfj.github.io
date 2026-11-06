@@ -20,6 +20,9 @@ ses rangées (laissés de côté) et une vue de dos sans parapluie (sautée). Po
   proche : un bord ne mêle pas deux matières, pas de bouillie), puis toutes les images d'un personnage ramenées à une
   palette commune (k-moyennes, 22 couleurs : ni grain ni scintillement d'une image à l'autre). Un pixel de bord (mêlé au
   blanc) prend la couleur du pixel intérieur le plus proche : une baleine, un doigt gardent leur couleur, sans blanc.
+- Le manteau sans moucheture : un pixel seul de sa couleur (aucun de ses quatre voisins ne l'a) dont deux voisins au moins
+  partagent une couleur proche de la sienne (SPECK, dans la palette) la prend ; l'écharpe, le visage, les bottes, loin des
+  tons du manteau, restent. Le masque ne bouge pas : l'alpha (le tour du Gommage) est le même.
 - Étalonnage : chaque planche ramenée à la même exposition (la luminance médiane de la figure), puis passée de son plein
   jour au crépuscule de ce trottoir comme l'ancien passant l'était (son manteau (19, 19, 34), son écharpe (84, 24, 40),
   sa peau (66, 50, 62)) : en linéaire, la luminance presque proportionnelle dans les sombres et les clairs retenus (un
@@ -51,6 +54,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CW, CH, AX, AY = 32, 48, 15, 45                 # la cellule, la colonne du buste, la rangée de la semelle
 PERSON = 36                                     # px, du haut du chapeau à la semelle (1,71 m à 21 px/m)
 PAL = 22
+SPECK = 0.09                                    # (le manteau sans moucheture : l'écart de couleur, sRGB 0-1, qu'un point seul franchit)
 CHARS = [
     # src, hauteur de la personne sur la planche (px), rangées : (rôle, nombre d'images, images sautées)
     dict(id='a', src='tools/src/e33_walker_sheet_24.webp', person=274,
@@ -211,6 +215,26 @@ def palette(cells, n=PAL, seed=7):
     return C
 
 
+def despeckle(lab, a, C, tol=SPECK, passes=3):  # les points seuls du manteau rendus à la couleur de leurs voisins (voir plus haut)
+    H, W = lab.shape
+    for _ in range(passes):
+        L = np.pad(np.where(a, lab, -1), 1, constant_values=-1)
+        nb = np.stack([L[:-2, 1:-1], L[2:, 1:-1], L[1:-1, :-2], L[1:-1, 2:]], -1)
+        alone = a & ~(nb == lab[..., None]).any(-1)
+        best, bn = lab.copy(), np.zeros((H, W), int)
+        for j in range(4):
+            k = nb[..., j]
+            n = (nb == k[..., None]).sum(-1)
+            near = (k >= 0) & (np.sqrt(((C[np.maximum(k, 0)] - C[lab]) ** 2).sum(-1)) <= tol)
+            take = near & (n > bn)
+            best, bn = np.where(take, k, best), np.where(take, n, bn)
+        new = np.where(alone & (bn >= 2), best, lab)
+        if (new == lab).all():
+            break
+        lab = new
+    return lab
+
+
 def order(a, seed):                             # le tour de chaque pixel dans le Gommage, 0 (le premier) .. 1
     d = ndimage.distance_transform_edt(a)
     rng = np.random.default_rng(seed)
@@ -242,7 +266,7 @@ def build():
         for i, c in enumerate(g):
             a = c[..., 3] > 0
             v = srgb(c[..., :3]) / 255
-            lab = ((v[..., None, :] - C[None, None]) ** 2).sum(3).argmin(2)
+            lab = despeckle(((v[..., None, :] - C[None, None]) ** 2).sum(3).argmin(2), a, C)
             q = np.round(C[lab] * 255).astype(np.uint8)
             o = order(a, 33 + 100 * ci + i)
             rgba = np.zeros((CH, CW, 4), np.uint8); rgba[..., :3] = np.where(a[..., None], q, 0)

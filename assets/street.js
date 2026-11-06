@@ -1615,19 +1615,7 @@
     if (!g.on && Math.abs(g.k) < 0.002) g.k = 0;
   }
 
-  // ---- actors (PixelLab sprites): feet-anchored, scaled by depth ----
   renderer.localClippingEnabled = true;
-  const SPR = {};                                                                                                        // { name: { src, frames, w, h } }
-  const personH = (y) => (y - 490) * 0.27;     // how tall a person looks at road depth y (px)
-  function actor(name, z) {
-    const s = SPR[name], tex = crisp(s.src);
-    tex.repeat.set(1 / s.frames, 1);
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(s.w, s.h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, alphaTest: 0.5 }));
-    m.position.z = z; m.visible = false; scene.add(m);
-    m.userData.set = (i) => { tex.offset.x = i / s.frames; };
-    m.userData.place = (x, feetY, scale, flip) => { m.scale.set(scale * (flip ? -1 : 1), scale, 1); m.position.x = x; m.position.y = -(feetY - (s.h / 2 - s.feet) * scale); };
-    return m;
-  }
   // ---- the TranZit bus (the owner's Meshy models, lit as the street lights it and finished at 1x by the bus/
   // scripts in the work folder, at the cross street's depth: ~41 m, 24 px/m): now and then it crawls across the far
   // intersection, left or right, heavy on its springs, on lane A (level, its wheels on row 648, its far side 0.3 m off
@@ -1881,13 +1869,13 @@
     has: { jugg: lsGet('mtsfj-tz-perk') === '1', speed: lsGet('mtsfj-tz-speed') === '1', tap: lsGet('mtsfj-tz-tap') === '1' }, dk: 'jugg', imgs: {},
     seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, due: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
     puller: null, alpha: null, hud: null, drink: -1, cv: null, img: null, lit: 1 };
-  const zTex = crispLate('assets/bus_zombies.webp?v=2', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
+  const zTex = crispLate('assets/bus_zombies.webp?v=3', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
       const c = document.createElement('canvas'); c.width = BZ.W; c.height = BZ.H; const g = c.getContext('2d'); g.drawImage(zTex.image, 0, 0);
       const d = g.getImageData(0, 0, BZ.W, BZ.H).data, a = new Uint8Array(BZ.W * BZ.H); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3]; ZG.alpha = a;
     } catch (e) {}
   });
-  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=2', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=2', 'bus');
+  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=2', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=3', 'bus');
   function zMesh(tex, glow) {                      // a zombie's layer: its own cell of the sheets (uCell), hidden behind the near buildings
     const u = { value: new THREE.Vector4(0, 0, 1, 1) };
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial(glow ? { map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }
@@ -2230,10 +2218,10 @@
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
     // (every asset a literal URL: sync_assets.py finds them by that pattern)
-    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=2', 'assets/crew_dempsey_flash.webp?v=2'], nikolai: ['assets/crew_nikolai.webp?v=2', 'assets/crew_nikolai_flash.webp?v=2'],
-      takeo: ['assets/crew_takeo.webp?v=2', 'assets/crew_takeo_flash.webp?v=2'], richtofen: ['assets/crew_richtofen.webp?v=2', 'assets/crew_richtofen_flash.webp?v=2'] };
+    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=3', 'assets/crew_dempsey_flash.webp?v=3'], nikolai: ['assets/crew_nikolai.webp?v=3', 'assets/crew_nikolai_flash.webp?v=3'],
+      takeo: ['assets/crew_takeo.webp?v=3', 'assets/crew_takeo_flash.webp?v=3'], richtofen: ['assets/crew_richtofen.webp?v=3', 'assets/crew_richtofen_flash.webp?v=3'] };
     for (const h of Object.keys(CRW.heroes)) { T.crew[h] = crisp(SRC[h][0], on); T.flash[h] = crisp(SRC[h][1], on); CREW.need += 2; }
-    for (const src of ['assets/horde_L0.webp?v=1', 'assets/horde_L1.webp?v=2', 'assets/horde_L2.webp?v=2', 'assets/horde_L3.webp?v=2', 'assets/horde_L4.webp?v=1']) { T.L.push(crisp(src, on)); CREW.need++; }
+    for (const src of ['assets/horde_L0.webp?v=2', 'assets/horde_L1.webp?v=3', 'assets/horde_L2.webp?v=3', 'assets/horde_L3.webp?v=3', 'assets/horde_L4.webp?v=2']) { T.L.push(crisp(src, on)); CREW.need++; }
     T.door = crisp('assets/bus_door.webp?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.webp?v=1', on); CREW.need += 2;
   }
   function crewTextCovers() {                              // the page's title over the spots? (then no event: never under the text)
@@ -10101,7 +10089,7 @@
   const WKP = { row: 640, x0: 486, stop: [640, 735], turn: 0.75, look: [2.5, 4.5] };
   const E33_AREA = [[484, 510, 772, 648], [726, 278, 822, 382]];   // (its place, STAGE: the sidewalk to the railing and the petals over it; the Monolith, its 33's flare)
   if (!reduced) {
-    const tex = crispLate('assets/e33_walkers.webp?v=1', 'e33', () => {   // each character's back's pixels read once, for its petals: each one's turn
+    const tex = crispLate('assets/e33_walkers.webp?v=2', 'e33', () => {   // each character's back's pixels read once, for its petals: each one's turn
       try {
         const im = tex.image, c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
         const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, 0, 0);
