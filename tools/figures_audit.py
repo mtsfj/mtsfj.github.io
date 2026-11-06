@@ -151,7 +151,7 @@ def grain(rgb, mask=None, tol=8):
 def edge(rgba):
     a = rgba[..., 3].astype(int)
     op = a >= 128
-    part = float(((a > 0) & (a < 255)).sum() / max(1, (a > 0).sum()))
+    part = float(((a > 0) & (a < 250)).sum() / max(1, (a > 0).sum()))   # (250-254 : pleins ; la horde y range ses jambes, tools/zombie_sheets.py)
     e1 = nd.binary_erosion(op)
     e2 = nd.binary_erosion(e1)
     L = rgba[..., :3].astype(float) @ LUM
