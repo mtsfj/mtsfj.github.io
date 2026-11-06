@@ -2337,7 +2337,8 @@
   if (reduced) rmBusNext(busS.next);                // (reduced motion: the first parked bus, after a pass's first wait)
   // ---- the crew (Dempsey, Nikolai, Takeo, Richtofen: the owner's sheets, drawn frame by frame, cut and brought to the
   // street's grain by tools/crew_sheets.py): now and then the TranZit pulls up at its stop heading right, its front door
-  // folds open and the four step down one by one, walk past its nose to their spots, kneel and fire toward us, at the horde
+  // folds open and the four step down one by one, walk past its nose to their spots (in their drawn steps: the planted foot
+  // on its pixel, each at his drawing's own pace, never through the one ahead), kneel and fire toward us, at the horde
   // coming up the right half of the street from our side, seen from behind (the owner's twelve, baked at four sizes and
   // drawn in the street's perspective: ~280 px at the bottom of the frame, ~60 px by the junction). The crew aims at the
   // one nearest them (the drawn direction nearest it); every shot its flash (a new shape each time), its light on the
@@ -2351,7 +2352,7 @@
   // on screen; due at 3 min, then after every 3rd stop heading right or 15 min at most, and after each 5th round won at
   // `jugg`: the next pass then heads right to its stop (its sheets late: still due, the pass after). CREW.api: the
   // finale's hooks ----
-  const CRW = {"ppm":24.3,"kicks":[0.0,0.3],"heroes":{"dempsey":{"cw":31,"ch":56,"ax":16,"ay":55,"cols":12,"n":46,"size":[372,224],"wfps":8.75,"dirs":[0,55,70,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[0,-21]},{"cell":23,"muz":[0,-22]},{"cell":24,"muz":[10,-19]},{"cell":25,"muz":[9,-22]},{"cell":26,"muz":[10,-19]},{"cell":27,"muz":[9,-22]},{"cell":28,"muz":[11,-20]},{"cell":29,"muz":[9,-23]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38},{"cell":39},{"cell":40},{"cell":41}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"nikolai":{"cw":28,"ch":55,"ax":13,"ay":54,"cols":12,"n":46,"size":[336,220],"wfps":10.0,"dirs":[-85,-55,30,80],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[-10,-21]},{"cell":23,"muz":[-10,-21]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[-8,-21]},{"cell":26,"muz":[9,-20]},{"cell":27,"muz":[9,-24]},{"cell":28,"muz":[13,-21]},{"cell":29,"muz":[11,-24]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38,"u":0},{"cell":39,"u":0.1},{"cell":40,"u":0.18},{"cell":41,"u":0.82}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"takeo":{"cw":27,"ch":53,"ax":15,"ay":52,"cols":12,"n":42,"size":[324,212],"wfps":10.0,"dirs":[-60,0,60],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false}],"walk":[{"cell":4},{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11}],"rise":[{"cell":12,"inside":false},{"cell":13,"inside":false},{"cell":14,"inside":true},{"cell":15,"inside":true}],"stand":[{"cell":16},{"cell":17}],"kneel":[{"cell":18,"kn":false},{"cell":19,"kn":true}],"aim":[{"cell":20,"muz":[-11,-19]},{"cell":21,"muz":[-8,-21]},{"cell":22,"muz":[0,-20]},{"cell":23,"muz":[0,-20]},{"cell":24,"muz":[9,-19]},{"cell":25,"muz":[9,-20]}],"reload":[{"cell":26,"drop":false},{"cell":27,"drop":false},{"cell":28,"drop":true},{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":false},{"cell":33,"drop":false}],"cheer":[{"cell":34},{"cell":35},{"cell":36},{"cell":37}],"idle":[{"cell":38,"u":0},{"cell":39,"u":0.18},{"cell":40,"u":0.5},{"cell":41,"u":0.82}]}},"richtofen":{"cw":27,"ch":56,"ax":12,"ay":55,"cols":12,"n":46,"size":[324,224],"wfps":10.0,"dirs":[0,45,65,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[1,-23]},{"cell":23,"muz":[-2,-25]},{"cell":24,"muz":[7,-22]},{"cell":25,"muz":[8,-25]},{"cell":26,"muz":[11,-22]},{"cell":27,"muz":[9,-24]},{"cell":28,"muz":[11,-23]},{"cell":29,"muz":[9,-26]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38},{"cell":39},{"cell":40},{"cell":41}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}}}}, DOOR = {"x0":201,"y0":22,"w":22,"h":58,"frames":4,"clip":[204,24,220,79],"step":[69,74],"floor":78,"W":268};
+  const CRW = {"ppm":24.3,"kicks":[0.0,0.3],"heroes":{"dempsey":{"cw":31,"ch":56,"ax":16,"ay":55,"cols":12,"n":46,"size":[372,224],"wstep":[1,5,0,0,0,3,0,0],"wtf":[0.094,0.253,0.08,0.08,0.08,0.253,0.08,0.08],"dirs":[0,55,70,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[0,-21]},{"cell":23,"muz":[0,-22]},{"cell":24,"muz":[10,-19]},{"cell":25,"muz":[9,-22]},{"cell":26,"muz":[10,-19]},{"cell":27,"muz":[9,-22]},{"cell":28,"muz":[11,-20]},{"cell":29,"muz":[9,-23]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38},{"cell":39},{"cell":40},{"cell":41}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"nikolai":{"cw":28,"ch":55,"ax":13,"ay":54,"cols":12,"n":46,"size":[336,220],"wstep":[4,1,4,0,4,2,1,4],"wtf":[0.169,0.08,0.169,0.08,0.169,0.084,0.08,0.169],"dirs":[-85,-55,30,80],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[-10,-21]},{"cell":23,"muz":[-10,-21]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[-8,-21]},{"cell":26,"muz":[9,-20]},{"cell":27,"muz":[9,-24]},{"cell":28,"muz":[13,-21]},{"cell":29,"muz":[11,-24]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38,"u":0},{"cell":39,"u":0.1},{"cell":40,"u":0.18},{"cell":41,"u":0.82}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"takeo":{"cw":27,"ch":53,"ax":15,"ay":52,"cols":12,"n":45,"size":[324,212],"wstep":[0,0,0,0,1,1,0,2],"wtf":[0.08,0.08,0.08,0.08,0.188,0.188,0.08,0.225],"dirs":[-60,0,60],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false},{"cell":5,"inside":false},{"cell":6,"inside":false}],"walk":[{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12},{"cell":13},{"cell":14}],"rise":[{"cell":15,"inside":false},{"cell":16,"inside":false},{"cell":17,"inside":true},{"cell":18,"inside":true}],"stand":[{"cell":19},{"cell":20}],"kneel":[{"cell":21,"kn":false},{"cell":22,"kn":true}],"aim":[{"cell":23,"muz":[-11,-19]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[0,-20]},{"cell":26,"muz":[0,-20]},{"cell":27,"muz":[9,-19]},{"cell":28,"muz":[9,-20]}],"reload":[{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":true},{"cell":32,"drop":false},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false}],"cheer":[{"cell":37},{"cell":38},{"cell":39},{"cell":40}],"idle":[{"cell":41,"u":0},{"cell":42,"u":0.18},{"cell":43,"u":0.5},{"cell":44,"u":0.82}]}},"richtofen":{"cw":29,"ch":56,"ax":14,"ay":55,"cols":12,"n":45,"size":[348,224],"wstep":[0,0,0,0,0,3,0],"wtf":[0.117,0.117,0.117,0.117,0.117,0.3,0.117],"dirs":[0,45,65,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11}],"rise":[{"cell":12,"inside":false},{"cell":13,"inside":false},{"cell":14,"inside":true},{"cell":15,"inside":true}],"stand":[{"cell":16},{"cell":17}],"kneel":[{"cell":18,"kn":false},{"cell":19,"kn":false},{"cell":20,"kn":true}],"aim":[{"cell":21,"muz":[1,-23]},{"cell":22,"muz":[-2,-25]},{"cell":23,"muz":[7,-22]},{"cell":24,"muz":[8,-25]},{"cell":25,"muz":[11,-22]},{"cell":26,"muz":[9,-24]},{"cell":27,"muz":[11,-23]},{"cell":28,"muz":[9,-26]}],"reload":[{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":true},{"cell":32,"drop":false},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false}],"cheer":[{"cell":37},{"cell":38},{"cell":39},{"cell":40}],"idle":[{"cell":41,"u":0},{"cell":42,"u":0.18},{"cell":43,"u":0.5},{"cell":44,"u":0.82}]}}}}, DOOR = {"x0":201,"y0":22,"w":22,"h":58,"frames":4,"clip":[204,24,220,79],"step":[69,74],"floor":78,"W":268};
   const CREW = { active: false, phase: '', t: 0, seen: lsGet('mtsfj-crew-seen') === '1', stops: Math.max(0, +lsGet('mtsfj-crew-stops') || 0), vis: 0,
     next: false, tex: null, loaded: 0, need: 0, made: false, heroes: [], zs: [], fx: [], tr: [], queue: [], killed: 0, spawned: 0, tier: 'desk', lone: 0, api: null, form: 'stop',
     clock: 0, bx0: 0, by0: 0, callForm: null, lastForm: 'stop', script: false, cheerOnly: false, plan: [], clearedAt: 0, goalX: 834, ev: {}, leftOK: false, cap: 10,
@@ -2375,8 +2376,8 @@
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
     // (every asset a literal URL: sync_assets.py finds them by that pattern)
-    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=4', 'assets/crew_dempsey_flash.webp?v=4'], nikolai: ['assets/crew_nikolai.webp?v=4', 'assets/crew_nikolai_flash.webp?v=4'],
-      takeo: ['assets/crew_takeo.webp?v=4', 'assets/crew_takeo_flash.webp?v=4'], richtofen: ['assets/crew_richtofen.webp?v=4', 'assets/crew_richtofen_flash.webp?v=4'] };
+    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=4', 'assets/crew_dempsey_flash.webp?v=4'], nikolai: ['assets/crew_nikolai.webp?v=5', 'assets/crew_nikolai_flash.webp?v=5'],
+      takeo: ['assets/crew_takeo.webp?v=5', 'assets/crew_takeo_flash.webp?v=5'], richtofen: ['assets/crew_richtofen.webp?v=5', 'assets/crew_richtofen_flash.webp?v=5'] };
     for (const h of Object.keys(CRW.heroes)) { T.crew[h] = crisp(SRC[h][0], on); T.flash[h] = crisp(SRC[h][1], on); CREW.need += 2; }
     for (const src of ['assets/horde_L0.webp?v=4', 'assets/horde_L1.webp?v=5', 'assets/horde_L2.webp?v=5', 'assets/horde_L3.webp?v=5', 'assets/horde_L4.webp?v=4']) { T.L.push(crisp(src, on)); CREW.need++; }
     T.door = crisp('assets/bus_door.webp?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.webp?v=1', on); CREW.need += 2;
@@ -2535,8 +2536,16 @@
     CSPOT[CREW.form].forEach(([who, sx, row], i) => {
       const H = CREW.heroes.find((h) => h.who === who);
       if (CREW.form === 'door') sx = X0 + 212.5 + sx;
-      Object.assign(H, { i, sx, row, door: X0 + 212.5, st: 'wait', t: 0, at: CREW.cheerOnly ? 0.15 + i * 0.12 : 0.55 + i * 1.0, kick: 0, left: CGUN[H.gun][2], nextShot: 0, burst: 0, tgt: null, f: 0, flash: 0, aim: crewFront(who), flip: false });
+      Object.assign(H, { i, sx, row, door: X0 + 212.5, st: 'wait', t: 0, at: CREW.cheerOnly ? 0.15 + i * 0.12 : 0.55 + i * 1.0, kick: 0, left: CGUN[H.gun][2], nextShot: 0, burst: 0, tgt: null, f: 0, flash: 0, aim: crewFront(who), flip: false, wk: null, wait: 0 });
     });
+    const hs = CSPOT[CREW.form].map(([who]) => CREW.heroes.find((h) => h.who === who));   // (each walks at his drawing's own pace: one never
+    for (let i = 1; i < hs.length; i++) {                                                //  walks through the one ahead of him, he waits his turn)
+      const L = hs[i - 1], F = hs[i], vL = crewSpeed(L.who), vF = crewSpeed(F.who), AL = Math.abs(L.sx - L.door), AF = Math.abs(F.sx - F.door), g = 12;
+      if (Math.sign(L.sx - L.door) !== Math.sign(F.sx - F.door)) continue;
+      let t = L.at + g / vL;                         // (off the step once the one ahead is a stride on; faster than him: not on him before he stops)
+      if (vF > vL) t = Math.max(t, AF <= AL - g ? L.at + (AF + g) / vL - AF / vF : L.at + AL / vL - (AL - g) / vF);
+      F.at = Math.max(F.at, t);
+    }
     const fg = [];                                     // the waves: four already mid-road, then from our side, one every ~1.6 s
     [[905, 16], [960, 21], [880, 12.5], [1000, 26]].forEach(([x, d], i) => fg.push({ t: 0, x, d, b: (i * 5) % 12 }));
     for (let i = 0; i < 14; i++) fg.push({ t: 1.2 + i * 1.6 + (i > 7 ? 2.5 : 0), x: 930 + ((i * 97) % 400), d: 6.1 + ((i * 37) % 13) / 10, b: (i * 7 + 3) % 12 });
@@ -2593,16 +2602,16 @@
       if (H.st === undefined) continue;
       H.t += dt;
       if (H.st === 'wait') { if (CREW.phase !== 'door' && CREW.t >= H.at) { H.st = 'down'; H.t = 0; } allSet = false; allIn = false; continue; }
-      if (H.st === 'down' && H.t >= 1 / CREW.fast) { H.st = 'walk'; H.t = 0; H.x = H.door; H.y = ROW_DOOR; }
-      if (H.st === 'walk') {                         // 1.17 m/s toward his spot, the row easing to his
-        const ppm = (H.row - CHZ) / CEYE, dx = H.sx - H.x, v = 1.17 * ppm * dt;
-        if (Math.abs(dx) <= v) { H.x = H.sx; H.y = H.row; H.st = CREW.cheerOnly ? 'cheer' : 'kneel'; H.t = 0; H.knelt = false; } else { H.x += Math.sign(dx) * v; H.y += (H.row - H.y) * Math.min(1, dt * 1.5); }   // (out only to cheer: at once)
+      if (H.st === 'down' && H.t >= 1 / CREW.fast) { H.st = 'walk'; H.t = 0; H.x = H.door; H.y = ROW_DOOR; H.wk = null; H.wait = 0; }
+      if ((H.st === 'walk' || H.st === 'back') && H.t >= (H.wait || 0)) {   // to his spot, back to the door (backing, still watching the street): his
+        if (!H.wk || H.wk.st !== H.st) H.wk = H.st === 'walk' ? crewPath(H, H.sx, H.row, true) : crewPath(H, H.door, ROW_DOOR, false);   // drawn steps
+        const W = H.wk; W.t += dt;
+        while (W.i < W.f.length && W.t >= W.d[W.i]) { W.t -= W.d[W.i]; W.i++; }
+        if (W.i < W.f.length) { H.x = W.x[W.i]; H.y = W.y[W.i]; }
+        else if (H.st === 'walk') { H.wk = null; H.x = H.sx; H.y = H.row; H.st = CREW.cheerOnly ? 'cheer' : 'kneel'; H.t = 0; H.knelt = false; }   // (out only to cheer: at once)
+        else { H.wk = null; H.st = 'board'; H.t = 0; }
       }
       if (H.st === 'kneel' && H.t >= 0.45) { H.st = CREW.cheerOnly ? 'cheer' : 'aim'; H.t = 0; H.calm = 0; H.knelt = true; H.nextShot = CREW.clock + 0.4 + Math.random() * 0.5; }
-      if (H.st === 'back') {                         // to the door (backing, still watching the street)
-        const ppm = (ROW_DOOR - CHZ) / CEYE, dx = H.door - H.x, v = 1.17 * ppm * dt;
-        if (Math.abs(dx) <= v) { H.st = 'board'; H.t = 0; } else { H.x += Math.sign(dx) * v; H.y += (ROW_DOOR - H.y) * Math.min(1, dt * 1.5); }
-      }
       if (H.st === 'board' && H.t >= 1 / CREW.fast) { H.st = 'in'; }
       if (H.st !== 'aim' && H.st !== 'reload' && H.st !== 'cheer' && H.st !== 'idle') allSet = false;
       if (H.st !== 'in') allIn = false;
@@ -2624,7 +2633,7 @@
         if (CREW.t > 70) for (const z of CREW.zs) if (z.on && z.st === 'walk') crewHit(z, 9);   // (no event outstays its welcome)
       }
     }
-    if (CREW.phase === 'cheer' && CREW.t > CREW.hold) { CREW.phase = 'back'; CREW.t = 0; for (const H of CREW.heroes) { H.st = 'back'; H.t = 0; } }
+    if (CREW.phase === 'cheer' && CREW.t > CREW.hold) { CREW.phase = 'back'; CREW.t = 0; for (const H of CREW.heroes) { H.st = 'back'; H.t = 0; } crewBackWaits(); }
     if (CREW.phase === 'back' && allIn) { CREW.phase = 'shut'; CREW.t = 0; }
     S.wait = Math.max(S.wait, 0.5);                    // the bus waits for them
   }
@@ -2720,6 +2729,34 @@
     if (H.left <= 0) { H.st = 'reload'; H.t = 0; H.burst = 0; H.nextShot = CREW.clock + 1.8; return; }
     H.nextShot = CREW.clock + (H.burst % G[0] === 0 ? G[3] * (0.8 + 0.4 * Math.random()) : G[1]);
   }
+  function crewSpeed(who) {                               // his walk's pace (px/s): his drawn steps over their times
+    const C = CRW.heroes[who];
+    return C.wstep.reduce((a, b) => a + b, 0) / C.wtf.reduce((a, b) => a + b, 0);
+  }
+  function crewPath(H, x1, y1, toEnd) {                    // his walk to x1 (row y1): each frame of his walk shown its time (C.wtf), then the body on
+    const C = CRW.heroes[H.who], S = C.wstep, T = C.wtf, L = S.length;   // by that frame's step (C.wstep, whole px: the planted foot stays on its
+    const x0 = Math.round(H.x), D = Math.round(x1) - x0, dir = D < 0 ? -1 : 1, A = Math.abs(D), y0 = H.y;   // pixel); backwards (to the left, or
+    const st = (p, j) => dir > 0 ? S[(p + j) % L] : S[(p - j - 1 + 64 * L) % L];   // backing to the door): the same steps, the frames in reverse
+    let b = null;                                    // (the phase and the number of frames that come nearest the distance; what is left over, under
+    for (let p = 0; p < L; p++) {                    //  half a step, at the start of the walk out (the pose changes there) and at the door on the way back)
+      let c = 0, n = 0;
+      while (c + st(p, n) / 2 < A && n < 4000) c += st(p, n++);
+      if (!b || Math.abs(A - c) < b.e) b = { p, n, c, e: Math.abs(A - c) };
+    }
+    const xs = toEnd ? Math.round(x1) - dir * b.c : x0, P = { st: H.st, f: [], x: [], y: [], d: [], i: 0, t: 0 };
+    for (let j = 0, x = xs; j <= b.n; j++) {
+      const k = dir > 0 ? (b.p + j) % L : (b.p - j + 64 * L) % L;
+      P.f.push(k); P.x.push(x); P.y.push(Math.round(y0 + (y1 - y0) * (b.c ? Math.abs(x - xs) / b.c : 1)));
+      P.d.push(dir > 0 ? T[k] : T[(k - 1 + L) % L]);
+      if (j < b.n) x += dir * st(b.p, j);
+    }
+    return P;
+  }
+  function crewBackWaits() {                               // back to the door, the nearest first: each waits so that he never walks through the one
+    const hs = CREW.heroes.filter((H) => H.st === 'back').sort((a, b) => Math.abs(a.x - a.door) - Math.abs(b.x - b.door));   // ahead, and comes
+    let prev = -1e9;                                       // to the door once he has climbed in
+    for (const H of hs) { const A = Math.abs(H.x - H.door), v = crewSpeed(H.who); H.wk = null; H.wait = Math.max(0, prev + 1 / CREW.fast - A / v); prev = H.wait + A / v; }
+  }
   function crewFront(who) {                               // his direction nearest straight at us (CRW dirs: degrees, + to our right)
     const D = CRW.heroes[who].dirs; let b = 0;
     D.forEach((d, i) => { if (Math.abs(d) < Math.abs(D[b])) b = i; });
@@ -2745,7 +2782,7 @@
     const C = CRW.heroes[H.who], M = C.moves, at = (F, T, t) => F[Math.max(0, Math.min(F.length - 1, Math.floor(t / T * F.length)))];   // (F's frames over T s)
     let fr, ax = H.x, ay = H.y;
     if (H.st === 'down' || H.st === 'board') { fr = at(H.st === 'board' ? M.rise : M.down, 1 / CREW.fast, H.t); ax = H.door; ay = ROW_DOOR; }   // (off the step facing us; up it from behind)
-    else if (H.st === 'walk' || H.st === 'back') { const n = M.walk.length, k = Math.floor(H.t * C.wfps) % n; fr = M.walk[H.st === 'back' ? n - 1 - k : k]; }   // (backing: his walk backwards)
+    else if (H.st === 'walk' || H.st === 'back') fr = H.wk ? M.walk[H.wk.f[Math.min(H.wk.i, H.wk.f.length - 1)]] : M.stand[Math.floor(H.t / 0.7) % M.stand.length];   // (his walk; waiting his turn: standing)
     else if (H.st === 'kneel') fr = at(M.kneel, 0.45, H.t);   // (down on one knee)
     else if (H.st === 'reload') fr = at(M.reload, 1.6, H.t);
     else if (H.st === 'idle') fr = crewIdleFrame(M.idle, H.t, H.it);
@@ -2894,7 +2931,7 @@
         if (H.st === undefined || H.st === 'in' || H.st === 'board') continue;
         if (H.st === 'wait') H.st = 'in'; else if (H.st === 'down') { H.st = 'board'; H.t = Math.max(0, 1 - H.t); } else { H.st = 'back'; H.t = 0; }
       }
-      return true;
+      crewBackWaits(); return true;
     },
     fellAll(o) {                                           // every zombie still standing goes down now (and none is left to come)
       for (const z of CREW.zs) if (z.on && (z.st === 'walk' || z.st === 'hit')) crewHit(z, 99);
