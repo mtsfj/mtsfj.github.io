@@ -11,10 +11,14 @@ aux images 3 et 4, puis le dos et le sac). Derrière le verre dépoli on ne voit
 
 Chaque image est découpée du blanc : sa couverture, pleine dedans (les blancs intérieurs aussi : le devant de la
 casquette, les semelles), le liseré d'anticrénelage du bord pris pour sa part de trait (un gris entre le trait noir et le
-blanc), rien autour (pas de halo ; les traits de vitesse, l'ombre au sol, les poussières laissés). Puis une seule
-échelle : PPM px par mètre, Red debout 1.6 m du haut de la casquette aux semelles, Pikachu compris, chaque rangée de la
-source ramenée à cette taille (elles ne sont pas dessinées à la même), la marche un peu plus basse (jambes écartées) ; un
-seul sol, le bas des semelles ; chaque pixel de la planche prend la part de la source qu'il couvre (une boîte exacte).
+blanc), rien autour (pas de halo ; les traits de vitesse, l'ombre au sol, les poussières laissés). Ses proportions de la rue
+(proportions() : la source le dessine en chibi, 3,3 têtes de haut ; ici 6,5) : sa tête et Pikachu ramenés au-dessus de son
+menton, ses jambes allongées. Puis une seule échelle : PPM px par mètre, Red debout TAILLE du haut de la casquette aux
+semelles (1,65 m, 1,96 m dans le modèle de la caméra de ZR), chaque rangée de la source ramenée à cette taille (elles ne
+sont pas dessinées à la même), la marche un peu plus basse (jambes écartées) ; un seul sol, le bas des semelles ; chaque
+pixel de la planche prend la part de la source qu'il couvre (une boîte exacte), puis plein ou vide (plus de la moitié :
+plein ; les miettes détachées de lui ôtées) : street.js le prend par majorité à sa taille à chaque endroit, sur la grille
+de la scène.
 
 La marche : la source dessine des jambes écartées qui ne reculent pas sous lui (son pied posé ne bouge presque pas d'une
 image à l'autre) ; un pas est pris de quatre de ses images (PAS : la pose du talon, le poids dessus, l'autre pied qui part,
@@ -48,9 +52,17 @@ ICI = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(ICI, 'src', 'red_sheet.webp')
 OUT = os.path.join(os.path.dirname(ICI), 'assets', 'red_sil.webp')
 PPM = 88.0                      # px de la planche par mètre
-TAILLE = 1.6                    # Red debout, du haut de la casquette aux semelles (m)
+TAILLE = 1.65 * 1.5 / 1.26      # Red debout, du haut de la casquette aux semelles : 1,65 m, en mètres de ce modèle (l'œil à 1,5 m
+                                # du trottoir ; la peinture le met à 1,26 m : tools/figures_audit.py), 1,96 m
+TETE = 0.6                      # ses proportions (la source le dessine en chibi, 3,3 têtes) : sa tête (au-dessus du menton) à 0,6,
+PIKA = 0.7                      # Pikachu (au-dessus du menton de Red) à 0,7, chacun reposé à sa place (proportions()) ;
+JAMBES = 1.3                    # ses jambes (des hanches aux chevilles) 1,3 fois plus longues ; les chaussures et le reste tels quels
+MENTON = {'marche': 56, 'attente': 59, 'lancer': 58, 'tour': 57}      # (le menton, en px de la source sous le haut de la casquette)
+HANCHE_H = {'marche': 94, 'attente': 106, 'lancer': 101, 'tour': 111}  # (le haut du jean au-dessus du sol, px de la source)
+CHEVILLE = 0.075                # (le haut des chaussures, en part de sa hauteur dans la source)
 RANGS = {'marche': 20, 'attente': 282, 'lancer': 568, 'tour': 844}   # le haut des quatre rangées de la source
-CAM = {'x': 6.72, 'zs': 33.4129}                                     # (street.js, ZR : sa ligne de marche, la distance de son arrêt)
+CAM = {'x': 6.72, 'zs': 32.83}                                       # (street.js, ZR : sa ligne de marche, la distance de son arrêt :
+                                                                     # 0,58 m plus près qu'avant, sa main qui lance (plus grande) dans la vitre)
 PORTE = 963                                                          # (le bord gauche de la boîte de la porte, z1Door)
 
 
@@ -76,6 +88,8 @@ def figures(rgb, d):
             h, w = comp.shape
             f = {'x0': x0, 'y0': y0, 'comp': comp, 'rgb': rgb[y0:y0 + h, x0:x0 + w], 'd': d[y0:y0 + h, x0:x0 + w]}
             f['A'] = alpha(f)
+            R_, G_, B_ = (f['rgb'][..., c] for c in range(3))      # (le jaune de Pikachu, pour lui faire ses proportions)
+            f['Y'] = (((R_ > 150) & (G_ > 110) & (B_ < 130) & (R_ - B_ > 70) & (G_ - B_ > 50)) * f['A']).astype(np.float32)
             fr[k].append(f)
     return fr
 
@@ -145,11 +159,17 @@ def cisaille(A, dx, y0, y1):
 
 # ---- les images de la planche ---------------------------------------------------------------------------------------
 class Fig:
-    """Une image : son alpha (px de la source), son échelle vers la planche, sa racine (x) et son sol (y) dans l'alpha."""
-    def __init__(self, A, f, rx, sol, nom):
-        self.A, self.f, self.rx, self.sol, self.nom = A, f, rx, sol, nom
+    """Une image : son alpha (px de la source), son échelle vers la planche, sa racine (x) et son sol (y) dans l'alpha ; sa
+    tête (tete : sa rangée de la source, le haut de la casquette, ses bords gauche et droit, le côté où est Pikachu)."""
+    def __init__(self, A, f, rx, sol, nom, tete=None, Y=None):
+        self.A, self.f, self.rx, self.sol, self.nom, self.tete, self.Y = A, f, rx, sol, nom, tete, Y
     def miroir(self):
-        return Fig(self.A[:, ::-1].copy(), self.f, self.A.shape[1] - self.rx, self.sol, self.nom + "'")
+        t = self.tete
+        if t:
+            w = self.A.shape[1]
+            t = dict(t, cg=w - 1 - t['cd'], cd=w - 1 - t['cg'], cote=-t['cote'])
+        return Fig(self.A[:, ::-1].copy(), self.f, self.A.shape[1] - self.rx, self.sol, self.nom + "'", t,
+                   None if self.Y is None else self.Y[:, ::-1].copy())
     def place(self, CW, CH, AX, AY):
         return boite(self.A, self.f, AX - self.f * self.rx, AY - self.f * self.sol, CW, CH)
 
@@ -209,6 +229,49 @@ def profil_pieds(g):
     return sorted([(c1 - g.rx) * g.f, (c2 - g.rx) * g.f])
 
 
+def proportions(g):
+    """Ses proportions de la rue : la source le dessine en chibi (3,3 têtes de haut, une tête de 0,42 m à sa taille). Au-dessus
+    de son menton (MENTON sous le haut de la casquette) : sa tête (ce qui y tient à sa casquette : les cheveux, le visage,
+    la visière) ramenée à TETE autour du milieu de son menton, et Pikachu (son jaune et son trait, et ce qui est au-delà du
+    bord de sa tête de son côté) à PIKA autour de ce bord : assis sur son épaule, il y reste, la tête de Red, plus petite,
+    s'en écarte un peu ; ses jambes, du haut du jean au haut des chaussures, JAMBES fois plus longues (le haut de son corps
+    monté d'autant, ses chaussures telles quelles) ; ce qui est ailleurs au-dessus du menton (la main qui lance) suit son
+    corps. Rend la nouvelle image, la balle (dans sa main) suivie, et sa carte (où va un point de son corps)."""
+    t, A = g.tete, g.A
+    k = t['k']; h, w = A.shape
+    yn = t['cap'] + MENTON[k]
+    hs = g.sol - t['cap']
+    hip, ank = g.sol - HANCHE_H[k], g.sol - CHEVILLE * hs
+    yy, xx = np.mgrid[0:h, 0:w]
+    jaune = nd.binary_fill_holes(nd.binary_dilation(g.Y > 0.3, iterations=2)) & (A > 0.02)   # (Pikachu : son jaune et son trait)
+    pk = (yy < yn) & (jaune | ((xx > t['cd'] + 1) if t['cote'] > 0 else (xx < t['cg'] - 3)))
+    lab, n = nd.label((A > 0.02) & (yy < yn) & ~pk, np.ones((3, 3)))   # (sa tête : ce qui au-dessus du menton tient à sa casquette)
+    hd = np.isin(lab, [l for l in np.unique(lab[:, t['cg']:t['cd'] + 1]) if l])
+    Hd, Pk, Bd = A * hd, A * pk, A * ~(hd | pk)
+    grow = (ank - hip) * (JAMBES - 1)
+    PAD = int(math.ceil(grow)) + 2
+    H2 = h + PAD
+    def y_out(y):                                # (un point de son corps : où il va, en y continu)
+        y = np.asarray(y, float)
+        return np.where(y >= ank, y + PAD, np.where(y >= hip, ank + PAD - (ank - y) * JAMBES, y + PAD - grow))
+    def y_src(Y):
+        Y = np.asarray(Y, float); a, b = ank + PAD, hip + PAD - grow
+        return np.where(Y >= a, Y - PAD, np.where(Y >= b, ank - (a - Y) / JAMBES, Y - PAD + grow))
+    ys = y_src(np.arange(H2) + 0.5) - 0.5
+    corps = nd.map_coordinates(Bd, [np.repeat(ys[:, None], w, 1), np.repeat(np.arange(w, dtype=float)[None, :], H2, 0)], order=1, cval=0)
+    yn2 = float(y_out(yn - 1e-6))                 # (le menton, là où il est maintenant)
+    bas = Hd[max(0, yn - 6):yn]                   # (le milieu de son menton)
+    xh = float((bas.sum(0) * (np.arange(w) + 0.5)).sum() / max(bas.sum(), 1e-6))
+    bord = t['cd'] + 1.5 if t['cote'] > 0 else t['cg'] - 2.5        # (le bord de sa tête du côté de Pikachu)
+    pose = lambda X, s, c0, c1: boite(X, s, c1 - s * c0, yn2 - s * yn, w, H2)   # (X à l'échelle s, son point (c0, yn) en (c1, yn2))
+    A2 = np.maximum(corps, np.maximum(pose(Hd, TETE, xh, xh), pose(Pk, PIKA, bord, bord)))
+    out = Fig(A2.astype(np.float32), g.f, g.rx, g.sol + PAD, g.nom)
+    out.carte = lambda x, y: (x, float(y_out(y)))
+    if hasattr(g, 'balle'):
+        out.balle = out.carte(*g.balle)
+    return out
+
+
 # ---- les réglages (indices des images de la source à partir de 1, rangée par rangée) --------------------------------
 POSTURE = 0.985                  # la marche, jambes écartées : la tête un peu plus bas que debout
 PAS = (2, 8, 6, 7)               # un pas, de profil : la pose (talon devant), le poids dessus, l'autre pied qui part, il passe
@@ -223,7 +286,7 @@ LANCER = (7, 1, 2, 3, 4, 5, 6, 8)   # le lancer : la main au gilet (la balle pri
 BALLE_MAIN = {1: (655.57, 32.4), 2: (655.57, 195.4), 6: (648.57, 853.4), 8: (657.57, 1182.4)}   # (le centre de la balle dans
 BALLE_AIR = {4: (581.57, 516.40), 5: (610.23, 680.76)}                                          # la source (y, x), trouvé par sa forme)
 PAUME = {3: (21, 79), 5: (21, 71)}   # (le lancer : la balle sur la paume ouverte, x et y dans les images 3 et 5)
-SOMMET = 0.3                     # (le lancer : la balle monte de 0.3 m au-dessus de la main)
+SOMMET = 0.2                     # (le lancer : la balle monte de 0.2 m au-dessus de la main, jusqu'à ses yeux)
 
 
 def build():
@@ -231,9 +294,11 @@ def build():
     F = figures(rgb, d)
     M = {k: [mesure(f) for f in F[k]] for k in F}
     H = {k: np.mean([m['sol'] - m['cap'] for m in M[k]]) for k in M}
+    H = {k: H[k] + (HANCHE_H[k] - CHEVILLE * H[k]) * (JAMBES - 1) - MENTON[k] * (1 - TETE) for k in H}   # (à ses proportions)
     ech = {k: TAILLE * PPM / H[k] for k in H}
     ech['marche'] = TAILLE * PPM * POSTURE / H['marche']
-    fig = lambda k, i, rx: Fig(F[k][i - 1]['A'], ech[k], rx, M[k][i - 1]['sol'], k[0] + str(i))
+    tete = lambda k, m, dx=0, cote=1: {'k': k, 'cap': m['cap'], 'cg': m['cg'] + dx, 'cd': m['cd'] + dx, 'cote': cote}
+    fig = lambda k, i, rx: Fig(F[k][i - 1]['A'], ech[k], rx, M[k][i - 1]['sol'], k[0] + str(i), tete(k, M[k][i - 1]), F[k][i - 1]['Y'])
 
     # la marche (de profil, vers la droite) : un pas en len(PAS) images ; le pied posé (S, celui de devant à la pose) recule
     # d'autant à chaque image sous la racine (l'arrière de la casquette + RACINE) : là où il ne le fait pas, les jambes
@@ -254,7 +319,7 @@ def build():
         dx = req[j] + d0
         f, m = F['marche'][w['i'] - 1], M['marche'][w['i'] - 1]
         A2, P = cisaille(f['A'], dx, m['sol'] - HANCHE, m['sol'])
-        walk.append(Fig(A2, fm, w['rx'] + P, m['sol'], 'w%d' % w['i']))
+        walk.append(Fig(A2, fm, w['rx'] + P, m['sol'], 'w%d' % w['i'], tete('marche', m, P, -1), cisaille(f['Y'], dx, m['sol'] - HANCHE, m['sol'])[0]))
         w['dx'] = dx
     print('marche : pas %.1f px de la source (%.1f px de la planche, %.3f m), %.2f px de la planche par image ; cisailles %s' % (
         pas, pas * fm, pas * fm / PPM, a * fm, [round(w['dx'], 1) for w in W]))
@@ -280,7 +345,8 @@ def build():
         coin = ((m['cg'], m['cap']), (m1['cg'], m1['cap']))
         A = greffe(A, I1['A'], s_ia, *coin, haut)
         A[bas] = np.minimum(A[bas], greffe(A, I1['A'], s_ia, *coin, bas)[bas])
-        g = Fig(A, ech['lancer'], racine('lancer', i), m['sol'], 'l%d' % i)
+        Y = greffe(np.minimum(f['Y'], A), I1['Y'], s_ia, *coin, haut)
+        g = Fig(A, ech['lancer'], racine('lancer', i), m['sol'], 'l%d' % i, tete('lancer', m), np.minimum(Y, A))
         toss.append(g)
         if i in balle: g.balle = balle[i]
 
@@ -297,7 +363,11 @@ def build():
     xx = np.mgrid[0:h, 0:w][1]
     haut, bande = yy < m2['cap'] + COU[0], (yy >= m2['cap'] + COU[0]) & (yy < m2['cap'] + COU[1])
     Ab = np.where(xx >= w - COU[2], A, 0)          # (dans la bande, Pikachu du trois-quarts (à gauche, en miroir) ôté)
-    synth = Fig(np.where(haut, T1, np.where(bande, np.maximum(T1, Ab), A)), ech['tour'], t2m.rx, m2['sol'], "t1+t2'")
+    l1 = (m1t['cd'] - m1t['cg']) / 2
+    TY = greffe(np.zeros_like(A), f1['Y'], 1.0, (c2, m2['cap']), ((m1t['cg'] + m1t['cd']) / 2, m1t['cap']), np.ones_like(A, bool))
+    synth = Fig(np.where(haut, T1, np.where(bande, np.maximum(T1, Ab), A)), ech['tour'], t2m.rx, m2['sol'], "t1+t2'",
+                {'k': 'tour', 'cap': m2['cap'], 'cg': int(round(c2 - l1)), 'cd': int(round(c2 + l1)), 'cote': 1},
+                np.where(haut, TY, np.where(bande, np.maximum(TY, np.where(xx >= w - COU[2], t2m.Y, 0)), t2m.Y)))
     settle = [turn[2].miroir(), synth, turn[0]]
 
     # où il est : l'arrêt pris là où le pied posé de la dernière image de marche reste posé (le centre des chaussures), les
@@ -315,7 +385,19 @@ def build():
     x_depart = pose[1] - centre(walk[0].miroir(), -1)
     print('arrêt : à %.2f px de la pose suivante ; départ : à %.2f px de sa place' % (x_arret, x_depart))
     walkA = [g.miroir() for g in walk]
-    return {'walkT': walk, 'walkA': walkA, 'settle': [t3m, synth], 'idle': idle, 'toss': toss, 'turn': turn}, ab, x_arret, x_depart, ech
+    R = {'walkT': walk, 'walkA': walkA, 'settle': [t3m, synth], 'idle': idle, 'toss': toss, 'turn': turn}
+    return {k: [proportions(g) for g in R[k]] for k in R}, ab, x_arret, x_depart, ech
+
+
+def net(c, mini=12):
+    """Une case pleine ou vide (plus de la moitié couverte : pleine), sans les miettes qui ne tiennent pas à lui (moins de
+    mini px de la planche, ce qui reste des bords de la balle ôtée)."""
+    m = c >= 0.5
+    lab, n = nd.label(m, np.ones((3, 3)))
+    if n > 1:
+        sz = nd.sum(m, lab, range(1, n + 1))
+        m &= np.isin(lab, [i + 1 for i in range(n) if sz[i] >= mini])
+    return m.astype(np.float32)
 
 
 # ---- la planche : une rangée par mouvement, chaque image posée sur son point au sol (le même dans toute la rangée) --------
@@ -332,7 +414,7 @@ def planche(R):
         AX = math.ceil(max(-e[0] for e in ext)) + 1; AY = math.ceil(max(-e[2] for e in ext)) + 1
         CW = AX + math.ceil(max(e[1] for e in ext)) + 1; CH = AY + math.ceil(max(e[3] for e in ext)) + 1
         ZRC[k] = [y, CW, CH, len(R[k]), AX, AY]
-        cases.append([g.place(CW, CH, AX, AY) for g in R[k]])
+        cases.append([net(g.place(CW, CH, AX, AY)) for g in R[k]])
         y += CH
     W = max(c[1] * c[3] for c in ZRC.values())
     S = np.zeros((y, W), np.float32)
@@ -350,7 +432,7 @@ def balle_vol(R, ZRC):
     c = ZRC['toss']; AX, AY = c[4], c[5]
     G = {g.nom: g for g in R['toss']}
     def case(g, x, y): return (AX + g.f * (x - g.rx), AY + g.f * (y - g.sol))
-    rel = case(G['l3'], *PAUME[3]); att = case(G['l5'], *PAUME[5]); sommet = (None, rel[1] - SOMMET * PPM)
+    rel = case(G['l3'], *G['l3'].carte(*PAUME[3])); att = case(G['l5'], *G['l5'].carte(*PAUME[5])); sommet = (None, rel[1] - SOMMET * PPM)
     hm = (rel[1] - sommet[1]) / PPM; hd = (att[1] - sommet[1]) / PPM
     tm, td = math.sqrt(2 * hm / 9.81), math.sqrt(2 * hd / 9.81); T = tm + td
     n = round(T / 0.05); dt = T / n
@@ -377,7 +459,7 @@ def main():
     R, ab, x_arret, x_depart, ech = build()
     S, ZRC = planche(R)
     seq, idx = balle_vol(R, ZRC)
-    rgba = np.zeros(S.shape + (4,), np.uint8); rgba[..., 3] = np.round(S * 255).astype(np.uint8)
+    rgba = np.zeros(S.shape + (4,), np.uint8); rgba[..., 3] = np.where(S >= 0.5, 255, 0)   # (plein ou vide : street.js le prend par majorité)
     Image.fromarray(rgba, 'RGBA').save(OUT, lossless=True, quality=100, method=6)
     n = ZRC['walkT'][3]
     D = ab * n                                   # (un pas : les n images de la rangée)
@@ -386,7 +468,7 @@ def main():
     ext = max(ZRC[k][1] - ZRC[k][4] for k in ('walkT', 'walkA'))   # (ce qui dépasse devant sa racine vers la droite, px de la planche)
     s0 = (PORTE - 1 - 700) / (CAM['x'] + ext / PPM)                  # il entre et sort tout entier à gauche de la porte : là, w0
     w0 = math.floor((CAM['zs'] - 1400 / s0) * 100) / 100
-    zr = {'ppm': PPM, 'w0': w0, 'D': round(float(D), 2), 'v': round(float(D) / CADENCE, 1), 'xa0': round(xa0, 4), 'xr0': round(xr0, 4)}
+    zr = {'zs': CAM['zs'], 'ppm': PPM, 'h': round(TAILLE, 4), 'w0': w0, 'D': round(float(D), 2), 'v': round(float(D) / CADENCE, 1), 'xa0': round(xa0, 4), 'xr0': round(xr0, 4)}
     zrc = '{ ' + ', '.join('%s: [%s]' % (k, ', '.join(str(v) for v in ZRC[k])) for k in ORDRE) + ' }'
     zrb = json.dumps([[i, round(float(dt), 4), float(x), float(y)] for i, dt, x, y in seq]).replace(' ', '')
     js = os.path.join(os.path.dirname(ICI), 'assets', 'street.js')   # (ses tables dans street.js, remises à jour)
@@ -394,8 +476,8 @@ def main():
     def remplace(t, motif, f):
         n = len(re.findall(motif, t)); assert n == 1, motif
         return re.sub(motif, f, t)
-    t = remplace(t, r'(const ZR = \{ f: 1400, kf: 6\.03, x: 6\.72, zs: 33\.4129, )ppm: [^,]+, w0: [^,]+, D: [^,]+, v: [^,]+, xa0: [^,]+, xr0: [^ ]+ \}',
-                 lambda m: m.group(1) + 'ppm: %g, w0: %g, D: %g, v: %g, xa0: %g, xr0: %g }' % tuple(zr[k] for k in ('ppm', 'w0', 'D', 'v', 'xa0', 'xr0')))
+    t = remplace(t, r'(const ZR = \{ f: 1400, kf: 6\.03, x: 6\.72, )zs: [^,]+, ppm: [^,]+, (?:h: [^,]+, )?w0: [^,]+, D: [^,]+, v: [^,]+, xa0: [^,]+, xr0: [^ ]+ \}',
+                 lambda m: m.group(1) + 'zs: %g, ppm: %g, h: %g, w0: %g, D: %g, v: %g, xa0: %g, xr0: %g }' % tuple(zr[k] for k in ('zs', 'ppm', 'h', 'w0', 'D', 'v', 'xa0', 'xr0')))
     t = remplace(t, r'const ZRC = [^;]*;', lambda m: 'const ZRC = ' + zrc + ';')
     t = remplace(t, r'const ZRB = [^;]*;', lambda m: 'const ZRB = ' + zrb + ';')
     open(js, 'w', encoding='utf-8').write(t)
