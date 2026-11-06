@@ -6532,18 +6532,22 @@
   }
   // now and then the oden master shows (the street director's 'oden'): the owner's sprite sheet cut to his size at each of his
   // places (tools/oden_master.py, assets/oden_master.webp; OMF: per place each frame [sx, sy, w, h, ax, ay], ay the row of his
-  // soles, his depth, the floor's row there, where he comes from and stops, his pace in px/s; the walk's step in s). 'A', at the
-  // pot: from the kitchen behind the back wall he walks along his aisle behind the counter (profile, seen through the door,
-  // hidden by the pier), turns to us at the pot (seen through the window: above its sill his towel and his eyes) and works it,
-  // two of his tasks (picking, lifting a daikon, a ladle of broth, serving, the plate held out; a nod and a laugh with a
-  // customer; wiping the counter), then goes back. 'D', at the door (the opening's beat, and one time in three): from inside
-  // he comes to the right leaf (profile), his hand on its pull slides it open to the left behind the other one (its lattice
-  // passing before him, his legs showing as its wooden lower half goes), looks at the rain from the doorway, slides it shut and
-  // goes back. Drawn a scene pixel at a time (crisp), on the glass only (its lattice and the window's mullion before him), the
+  // soles, his depth, the floor's row there, where he comes from and stops, his pace in px/s; the walk's step in s and its six
+  // frames; at the door the frames of his way back already mirrored, name + '_m', the street's light on them staying where it is).
+  // A man of 1.70 m (2.02 m of the shop's model, whose eye is at 1.5 m when the painting's is at 1.26 m), 6.7 heads tall: 74 px
+  // at the door, 60 at the pot. 'A', at the pot: from the kitchen behind the back wall he walks along his aisle behind the
+  // counter (profile, seen through the door, hidden by the pier), turns to us at the pot (seen through the window, both its
+  // panes: above its sill his head, his shoulders, what his hands lift) and works it, two of his tasks (picking, lifting a
+  // daikon, a ladle of broth, serving, the plate held out; a nod and a laugh with a customer; wiping the counter), then goes
+  // back. 'D', at the door (the opening's beat, and one time in three): from inside he comes to the right leaf (profile) and
+  // stops an arm's length behind it, his hand on its pull, slides it open to the left behind the other one (its lattice passing
+  // before him, his arm showing as its wooden lower half goes), steps into the doorway ('look'), looks at the rain there
+  // (standing, then leaning on the frame, three quarters, his face up, then standing), steps back, slides it shut and goes
+  // back. Drawn a scene pixel at a time (crisp), on the glass only (its lattice and the window's mullion before him), the
   // leaf's wooden half before his legs; the street's night multiply on him as on the room. Reduced motion: he never comes
-  const OMF = {"A":{"stand":[0,0,21,51,11,50],"w1":[22,0,27,51,13,50],"w2":[50,0,34,51,17,50],"w3":[85,0,30,51,16,50],"w4":[116,0,21,51,11,50],"happy":[138,0,23,15,10,50],"idle":[162,0,24,15,11,50],"ladle":[187,0,30,15,17,50],"laugh":[218,0,24,15,10,50],"lift":[0,52,29,15,15,50],"nod":[30,52,25,15,12,50],"offer":[56,52,26,15,13,50],"pick":[83,52,28,15,16,50],"serve":[112,52,27,15,14,50],"wipe":[140,52,27,15,16,50],"wipe2":[168,52,29,15,19,50],"z":47.1,"floor":659.59,"from":411.97,"at":473.42,"v":29.72},"D":{"w1":[198,52,34,63,17,62],"w3":[0,116,37,63,20,62],"w4":[38,116,25,63,13,62],"grab":[64,116,26,62,14,61],"stand":[91,116,26,62,14,61],"stand2":[118,116,26,62,13,61],"w2":[145,116,42,62,21,61],"z":38.2,"floor":669.97,"from":403.87,"at":445.29,"v":36.65},"step":0.17};
-  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=2'; OMI.src = 'assets/oden_master.webp?v=1';
-  const ODOOR = (function () {                   // (drawn in one canvas over ODM.box, shown by two: the door's, the window's left pane's)
+  const OMF = {"A":{"stand":[0,0,16,60,6,59],"w1":[17,0,33,59,14,58],"w2":[51,0,20,59,11,58],"w3":[72,0,27,59,11,58],"w4":[100,0,33,59,15,58],"w5":[134,0,18,59,9,58],"w6":[153,0,35,59,15,58],"laugh":[189,0,33,22,16,60],"offer":[223,0,30,22,14,60],"happy":[0,61,33,21,16,59],"idle":[34,61,33,21,16,59],"ladle":[68,61,33,21,17,59],"lift":[102,61,33,21,16,59],"pick":[136,61,33,21,17,59],"serve":[170,61,33,21,17,59],"wipe":[204,61,35,21,18,59],"wipe2":[0,83,31,21,14,59],"nod":[32,83,33,20,16,58],"z":47.1,"floor":659.59,"from":411.97,"at":473.42,"v":29.72},"D":{"stand2":[66,83,39,75,14,74],"grab":[106,83,34,74,8,73],"stand":[141,83,20,74,8,73],"stand_m":[162,83,20,74,11,73],"w1":[183,83,40,73,17,72],"w1_m":[0,159,40,73,22,72],"w2":[41,159,25,73,14,72],"w2_m":[67,159,25,73,10,72],"w3":[93,159,34,73,14,72],"w3_m":[128,159,34,73,19,72],"w4":[163,159,41,73,19,72],"w4_m":[205,159,41,73,21,72],"w5":[0,233,23,73,12,72],"w5_m":[24,233,23,73,10,72],"w6":[48,233,43,73,19,72],"w6_m":[92,233,43,73,23,72],"z":38.2,"floor":669.97,"from":391.12,"at":431.46,"look":445.29,"v":36.65},"step":0.17,"walk":["w1","w2","w3","w4","w5","w6"]};
+  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=2'; OMI.src = 'assets/oden_master.webp?v=2';
+  const ODOOR = (function () {                   // (drawn in one canvas over ODM.box, shown by two: the door's, the window's)
     const mk = (b, show) => {
       const c = document.createElement('canvas'); c.width = b[2]; c.height = b[3];
       const tex = new THREE.CanvasTexture(c); tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
@@ -6551,21 +6555,22 @@
       mesh.position.set(b[0] + b[2] / 2, -(b[1] + b[3] / 2), 0.0395); mesh.visible = false; if (show) scene.add(mesh);   // (under the steam, 0.04)
       return { box: b, c, g: c.getContext('2d'), tex, mesh };
     };
-    const all = mk(ODM.box, false), door = mk([420, 576, 44, ODM.box[1] + ODM.box[3] - 576], true), win = mk([462, 556, 22, 68], true);
+    const all = mk(ODM.box, false), door = mk([420, 576, 44, ODM.box[1] + ODM.box[3] - 576], true), win = mk(ODEN.window, true);
     return { box: ODM.box, c: all.c, g: all.g, parts: [door, win], mesh: door.mesh, win: win.mesh };
   })();
   const OIN = { acc: 0, who: null, next: 15 + Math.random() * 40, n: 0 };
   const OD_WORK = [[['idle', 0.6], ['pick', 0.7], ['lift', 0.8], ['serve', 0.7], ['offer', 1.0]], [['idle', 0.4], ['ladle', 1.2], ['pick', 0.6], ['lift', 0.7], ['happy', 0.6]],
     [['idle', 0.5], ['nod', 0.5], ['idle', 0.4], ['laugh', 0.9], ['happy', 0.7]], [['wipe', 0.45], ['wipe2', 0.45], ['wipe', 0.45], ['wipe2', 0.45], ['nod', 0.5]]];
   const OD_EASE = (u) => u * u * (3 - 2 * u);
-  const OD_AREA = { A: [[420, 576, 464, 677], [462, 556, 484, 624]], D: [[420, 576, 464, 677]] };   // (his place: the door down to its sill, and at the pot the window's left pane)
+  const OD_AREA = { A: [[420, 576, 464, 677], [462, 556, 502, 624]], D: [[420, 576, 464, 677]] };   // (his place: the door down to its sill, and at the pot the window)
   function odNew(flow) {                         // his visit: its steps, each [what, seconds, frame, mirrored] (walk in, work or the door, walk out)
-    const P = OMF[flow], walk = Math.abs(P.at - P.from) / P.v, steps = [['in', walk, null, false]];
+    const P = OMF[flow], walk = Math.abs(P.at - P.from) / P.v, steps = [['in', walk, null, false]], step = Math.abs((P.look || P.at) - P.at) / P.v;
     if (flow === 'A') {
       const a = (Math.random() * 4) | 0, b = (a + 1 + ((Math.random() * 3) | 0)) % 4;
       steps.push(['stand', 0.15, 'stand', false]);
       for (const s of OD_WORK[a].concat(OD_WORK[b])) steps.push(['work', s[1], s[0], false]);
-    } else steps.push(['grab', 0.35, 'grab', false], ['open', 1.2, 'grab', false], ['look', 2.8, 'stand', false], ['grab', 0.3, 'grab', false], ['shut', 1.2, 'grab', false]);
+    } else steps.push(['grab', 0.35, 'grab', false], ['open', 1.2, 'grab', false], ['fwd', step, null, false], ['look', 2.8, 'stand', false], ['back', step, null, false],
+      ['grab', 0.3, 'grab', false], ['shut', 1.2, 'grab', false]);
     steps.push(['stand', 0.15, 'stand', true], ['out', walk, null, true]);
     return { flow, steps, i: 0, t: 0, x: P.from, f: 'w1', flip: false, slide: 0, walk: 0 };
   }
@@ -6586,14 +6591,18 @@
     if (W.i >= W.steps.length) { odOff(); OIN.next = 25 + Math.random() * 45; return; }
     const [what, d, name, flip] = W.steps[W.i], u = Math.min(1, W.t / d);
     W.f = name; W.flip = flip;
+    const K = OMF.walk, kw = () => Math.floor(W.walk / OMF.step) % K.length;
     if (what === 'in' || what === 'out') {       // walking along at his pace, his steps by the time walked (his feet behind the counter or the doors' wooden half)
-      W.x = what === 'in' ? P.from + (P.at - P.from) * u : P.at + (P.from - P.at) * u; W.walk += dt;
-      W.f = ['w1', 'w2', 'w3', 'w4'][Math.floor(W.walk / OMF.step) % 4];
-    } else W.x = P.at;                           // (there, whatever the frame's step left of his walk)
+      W.x = what === 'in' ? P.from + (P.at - P.from) * u : P.at + (P.from - P.at) * u; W.walk += dt; W.f = K[kw()];
+    } else if (what === 'fwd' || what === 'back') {   // (a step into the doorway and back out of it, facing the street: the walk played backwards)
+      W.x = what === 'fwd' ? P.at + (P.look - P.at) * u : P.look + (P.at - P.look) * u; W.walk += dt; W.f = K[what === 'fwd' ? kw() : K.length - 1 - kw()];
+    } else W.x = what === 'look' ? P.look : P.at;   // (there, whatever the frame's step left of his walk)
     if (what === 'open' || what === 'shut') W.slide = what === 'open' ? OD_EASE(u) : 1 - OD_EASE(u);
-    else if (what === 'look') { W.f = Math.floor(W.t / 0.95) % 2 ? 'stand2' : 'stand'; W.slide = 1; }
+    else if (what === 'look') { W.f = Math.floor(W.t / 0.95) % 2 ? 'stand2' : 'stand'; W.slide = 1; }   // (standing, leaning on the frame, standing)
+    else if (what === 'fwd' || what === 'back') W.slide = 1;
     else if (what === 'stand') W.slide = 0;      // (the door shut behind him)
     if (!(W.f in P)) W.f = 'stand';
+    if (W.flip && (W.f + '_m') in P) { W.f += '_m'; W.flip = false; }   // (mirrored by the tool, its light where it was)
     OIN.acc += dt; if (OIN.acc < 1 / 20 || !odenSeen(ODOOR.box)) return; OIN.acc = 0;
     // the canvas: the room in the opening (once the leaf has moved), him, the leaf at its step; then the glass he can be seen on
     const g = ODOOR.g, [bx, by, bw, bh] = ODOOR.box, sl = W.flow === 'D' ? W.slide : 0, open = sl > 0.001;
