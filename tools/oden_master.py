@@ -33,11 +33,16 @@ qui penche ne le fait pas descendre). Ce qui est sous CUT de haut s'en va (le co
 le verre, 1,40 m au plus bas) ; ce qu'il tient reste (les baguettes, le daikon, la louche, l'assiette).
 
 L'image découpée : ce qui s'écarte du blanc (le halo clair du bord dehors), ses trous bouchés, la plus grande pièce ; sa
-couleur prise sur le dedans (deux pixels de la planche sous le bord : pas de liseré blanc). Le visage : sous 10 px de tête
-aucun trait, de 10 à 15 un pixel par œil (les règles du grain de la maison) ; tout ce qui n'est pas de la peau dans le visage
-(les yeux, les sourcils, la barbe jusqu'au bord du menton, la bouche) y est repeint de la peau voisine, et à la porte (sa tête
-de 11 px) un pixel sombre à la place de chaque œil (eyes_of). Les plis sombres des mains plus petits qu'un pixel de la rue (les
-doigts d'un poing) : repeints de leur peau (no_specks), ce seraient des trous.
+couleur prise sur le dedans (deux pixels de la planche sous le bord : pas de liseré blanc). Le visage : tout ce qui, dans la
+peau du visage, n'en est pas (les yeux, les sourcils, la barbe jusqu'au bord du menton, la bouche ; de face, les cheveux des
+tempes sous le bandeau, qui d'un seul côté se liraient comme un œil) est repeint de la peau voisine, puis chaque trait du dessin
+(traits : son œil, son sourcil, sa bouche, l'aile de son nez, la barbe de sa mâchoire) remis d'un ou deux pixels là où la planche
+le met (features), à la même place dans toutes les images d'une même pose (steady : de profil, sous le haut du visage et en
+retrait de son bout ; de face, de part et d'autre de son milieu), dans ses couleurs, un peu plus sombre que la peau où il tombe
+(TONE). À la porte (11 px de tête) : un pixel par œil, une courbe de deux s'il est content (appuyé au cadre, le nez levé), un
+pixel de sourcil sous le bandeau, la bouche (un sourire de deux pixels de trois quarts), l'ombre du nez de son côté sombre, un
+ou deux pixels de barbe sur la mâchoire ; à la marmite (9 px) seulement l'ombre des sourcils sous le bandeau. Les plis sombres
+des mains plus petits qu'un pixel de la rue (les doigts d'un poing) : repeints de leur peau (no_specks), ce seraient des trous.
 
 Réduction à la taille de chaque place (F / Z px par mètre) : chaque pixel prend la part de la planche qu'il couvre (une
 boîte exacte), plein dès la moitié couverte (ni halo ni bord flou) ; sa couleur, la moyenne des pixels de la planche les plus
@@ -100,7 +105,6 @@ ROWS = {'e': (((0, 550), ('stand', 'grab', 'stand2'), 1.0, 84.0),
 CUT = 1.3                             # (au comptoir : rien de lui sous tant de haut, le comptoir et ce qui est dessus ; la planche met
                                       #  son comptoir à 1,25 m, la maquette à 1 m)
 INK, HALO = 705, 740                  # (la somme R + G + B : sous INK, une image ; sous HALO, la figure ; au-dessus, le blanc et son halo)
-FACE_PX = (10, 15)                    # (une tête de moins de 10 px : aucun trait ; jusqu'à 15 : un pixel par œil)
 
 
 def classes(rgb):
@@ -135,7 +139,7 @@ def frames():
                 seed = nd.binary_dilation(lab[by0:by1, bx0:bx1] == l, iterations=2)
                 m = np.isin(ml, np.unique(ml[seed & m]))
                 m = nd.binary_fill_holes(m)
-                out[name] = dict(sheet=key, rgb=rgb[by0:by1, bx0:bx1].copy(), m=m, x0=bx0, y0=by0, rk=rk, head=head,
+                out[name] = dict(name=name, sheet=key, rgb=rgb[by0:by1, bx0:bx1].copy(), m=m, x0=bx0, y0=by0, rk=rk, head=head,
                                  row0=names[0], frontal=key == 'c')
     return out
 
@@ -183,30 +187,68 @@ def clean(F):
 
 
 def face(f):
-    """le visage sans traits : ce qui, dans la peau du visage, n'en est pas (les yeux, les sourcils, la barbe, la bouche) repeint
-    de la peau la plus proche ; les yeux notés (leurs centres, px de l'image) pour la porte"""
+    """le visage : ce qui, dans la peau du visage, n'en est pas (les yeux, les sourcils, la barbe, la bouche, de face les cheveux
+    des tempes sous le bandeau) repeint de la peau la plus proche ; chaque trait du dessin noté par sa sorte (traits : yeux,
+    sourcils, bouche, nez, mâchoire ; f['fk'] : son numéro sur chaque pixel, f['fkind'] : sa sorte), pour en poser un pixel à sa place"""
     rgb, m = f['rgb'], f['m']
     skin, navy, _ = classes(rgb)
     chin = int(round(f['chin'])) + 2
     hz = np.zeros_like(m); hz[:chin] = True
     sk = biggest(skin & m & hz & nd.binary_erosion(m, iterations=3))      # (la peau du visage : la plus grande pièce de peau sur le menton)
     zone = nd.binary_fill_holes(nd.binary_closing(sk, np.ones((7, 7)), iterations=2)) & m & hz
-    R, B = rgb[..., 0], rgb[..., 2]
-    beard = m & hz & ~skin & ~navy & (R - B > 18) & (rgb @ LUM < 150) & nd.binary_dilation(sk, iterations=4)   # (la barbe au bord du
-    feat = (zone & ~skin) | beard                                                                            #  menton, hors du visage)
+    R, G, B = (rgb[..., c] for c in range(3))
     L = rgb @ LUM
-    lab, n = nd.label(feat & (L < 110), np.ones((3, 3)))
-    eyes = []
-    for i in range(n):
-        c = lab == i + 1; k = int(c.sum())
-        if k < 12: continue
-        ys, xs = np.where(c)
-        eyes.append(dict(y=float(ys.mean()), x=float(xs.mean()), n=k, w=int(xs.max() - xs.min() + 1), h=int(ys.max() - ys.min() + 1),
-                         L=float(L[c].mean())))
-    f['feat'] = eyes
+    beard = m & hz & ~skin & ~navy & (R - B > 18) & (L < 150) & nd.binary_dilation(sk, iterations=4)   # (la barbe au bord du menton,
+    feat = (zone & ~skin) | beard                                                                       #  hors du visage)
+    if f['frontal']:                                                        # (de face, les cheveux des tempes sous le bandeau : à 9 px
+        band = m & hz & (np.abs(R - B) < 30) & (L > 150)                    #  de tête, un point sombre d'un seul côté se lit comme un œil)
+        low = np.where(band.any(0), band.shape[0] - np.argmax(band[::-1], 0), 0)[None, :]
+        xs = np.where(sk.any(0))[0]
+        side = np.zeros_like(m); side[:, max(0, xs.min() - 6):xs.max() + 7] = True
+        feat |= m & hz & side & (L < 110) & (np.abs(R - B) < 30) & (np.arange(m.shape[0])[:, None] >= low) & (low > 0)
+    feat &= ~nd.binary_dilation(navy, iterations=2)
+    f['fk'], f['fkind'] = traits(f, feat, zone, L)
     idx = nd.distance_transform_edt(~sk, return_distances=False, return_indices=True)
     rgb[feat] = rgb[idx[0][feat], idx[1][feat]]
     f['face'] = zone
+
+
+def traits(f, feat, zone, L):
+    """les traits du dessin, chacun d'un seul tenant, rangés par leur place dans le visage (rx de l'arrière ou de la gauche à
+    l'avant ou la droite, ry du haut sous le bandeau au menton ; n, leur taille ramenée à la planche en entier) : un œil, sombre,
+    petit, au milieu du haut ; son sourcil juste au-dessus ; la bouche, large et basse, devant (de profil, de trois quarts) ou au
+    milieu (de face) ; le nez de profil, au bout du visage entre l'œil et la bouche ; la mâchoire, la barbe du bas du visage"""
+    ys, xs = np.where(zone)
+    y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
+    lab, n = nd.label(feat, np.ones((3, 3)))
+    C = []
+    for i in range(n):
+        c = lab == i + 1
+        yy, xx = np.where(c)
+        C.append(dict(i=i + 1, rx=(xx.mean() - x0) / max(1, x1 - x0), ry=(yy.mean() - y0) / max(1, y1 - y0), n=c.sum() / f['rk'] ** 2,
+                      w=xx.max() - xx.min() + 1, h=yy.max() - yy.min() + 1, L=L[c].mean(), Lq=np.percentile(L[c], 20)))
+    ear = lambda c: c['h'] > 1.3 * c['w'] or (f['frontal'] and abs(c['rx'] - 0.5) > 0.36)
+    cand = [c for c in C if 0.15 <= c['ry'] <= 0.55 and 12 <= c['n'] <= 120 and not ear(c) and c['Lq'] < 95 and (f['frontal'] or c['rx'] > 0.45)]
+    under = lambda a, b: 0.06 < b['ry'] - a['ry'] < 0.3 and abs(b['rx'] - a['rx']) < 0.2          # (b sous a : a est son sourcil)
+    eyes = [c for c in cand if not any(under(c, d) for d in cand if d is not c)]
+    eyes = sorted(eyes, key=lambda c: -c['rx'])[:1] if not f['frontal'] and f['name'] != 'stand2' else sorted(eyes, key=lambda c: -c['n'])[:2]
+                                                                            # (de profil : un œil, le plus avancé ; de face, de trois quarts : deux)
+    kind = {}
+    for e in eyes:
+        kind[e['i']] = 'eye'
+        up = [c for c in C if c['i'] not in kind and under(c, e) and c['Lq'] < 90 and not ear(c)]
+        if up: kind[min(up, key=lambda c: e['ry'] - c['ry'])['i']] = 'brow'
+    fr = (lambda c: abs(c['rx'] - 0.5) < 0.22) if f['frontal'] else (lambda c: c['rx'] > 0.55)
+    mouth = [c for c in C if c['i'] not in kind and 0.45 <= c['ry'] <= 0.85 and c['w'] >= 1.6 * c['h'] and fr(c) and c['n'] >= 6]
+    if mouth: kind[max(mouth, key=lambda c: c['n'])['i']] = 'mouth'
+    if not f['frontal']:
+        nose = [c for c in C if c['i'] not in kind and c['rx'] > 0.88 and 0.45 <= c['ry'] <= 0.68]
+        if nose: kind[max(nose, key=lambda c: c['rx'])['i']] = 'nose'
+    jaw = [c for c in C if c['i'] not in kind and c['ry'] > 0.85 and not ear(c)]
+    if jaw: kind[max(jaw, key=lambda c: c['n'])['i']] = 'jaw'
+    fk = np.zeros(lab.shape, int)
+    for i in kind: fk[lab == i] = i
+    return fk, kind
 
 
 def head(f):
@@ -238,8 +280,8 @@ def head(f):
     f['top'] = chin - (chin - f['top']) * sh
     f['hd'] = (chin - f['top'])
     f['sh'], f['px'] = sh, px
-    for e in f['feat']:                                                     # (les traits notés, là où la tête les a mis)
-        if e['y'] < chin: e['y'], e['x'] = chin - (chin - e['y']) * sh, px + (e['x'] - px) * sh
+    fk = np.zeros_like(f['fk']); fk[:chin][hm] = f['fk'][sy[hm], sx[hm]]; fk[chin:] = f['fk'][chin:]   # (les traits, là où la tête les a mis)
+    f['fk'] = fk * f['m']
 
 
 def boite(A, f, ox, oy, W, H):
@@ -280,8 +322,8 @@ def cell(f, s):
         sel = px[d <= np.median(d)] if len(px) > 3 else px
         rgb[i, j] = sel.mean(0)
         fc[i, j] = f['face'][r0:r1, c0:c1].mean() >= 0.5
-    eyes = [(e['x'] * k + ox, e['y'] * k + oy, e) for e in f['feat']]
-    return np.concatenate([rgb, a[..., None] * 255.0], 2), AX, AY, fc, eyes
+    cov = {i: (kd, boite((f['fk'] == i).astype(float), k, ox, oy, W, H)) for i, kd in sorted(f['fkind'].items())}   # (la part de
+    return np.concatenate([rgb, a[..., None] * 255.0], 2), AX, AY, fc, cov                                            #  chaque trait)
 
 
 # ---- la lumière
@@ -351,36 +393,107 @@ FAMILIES = 16
 P95 = {'A': 128 * 1.15, 'D': 116 * 1.15}   # (la peinture voisine : le verre de la fenêtre allumé, la porte et sa façade ; son p95 + 15 %)
 
 
-def eyes_of(name, f, eyes):
-    """les yeux parmi les traits notés : de profil, le plus avancé des petits traits sombres (le sourcil au-dessus de lui, l'oreille
-    plus grande) ; de trois quarts, les deux petits qui n'ont pas un trait juste dessous (les sourcils)"""
-    small = [(x, y, e) for x, y, e in eyes if 15 <= e['n'] <= 50 and e['h'] <= 8 and e['L'] < 80]
-    small = [(x, y, e) for x, y, e in small if not any(0 < e2['y'] - e['y'] < 14 and abs(e2['x'] - e['x']) < 12 for _, _, e2 in small)]
-    if not small: return []
-    if name == 'stand2': return small[:2]
-    return [max(small, key=lambda t: t[2]['x'])]
+TRAITS = {'A': ('brow',), 'D': ('eye', 'brow', 'mouth', 'nose', 'jaw')}   # (à la marmite, 9 px de tête : l'ombre des sourcils sous le
+                                      #  bandeau ; à la porte, 11 px : les yeux, les sourcils, la bouche, l'ombre du nez, la mâchoire)
+CONTENT = ('stand2', 'happy')         # (content, le nez levé vers la pluie : les yeux plissés et le sourire, deux pixels chacun)
+TONE = {'A': {'brow': 0.8}, 'D': {'eye': 0.42, 'brow': 0.66, 'mouth': (0.72, 0.56, 0.54), 'nose': 0.82, 'jaw': 0.84}}   # (chaque
+                                      #  trait : la famille la plus proche de la couleur du pixel où il tombe, assombrie de tant)
+
+
+def features(f, place, cov, fc):
+    """ses traits à sa taille, chacun là où le dessin de la planche le met (le pixel qui en tient la plus grande part, dans le
+    visage) : un pixel par œil (de profil, pas sur le bord du nez), deux en une courbe s'il est content ; un pixel de sourcil sous le
+    bandeau ; la bouche, deux pixels pour un sourire ; l'ombre du nez (l'aile du nez du dessin) ; un ou deux pixels de barbe sur la
+    mâchoire. Rend [(sorte, x, y)], px de la cellule"""
+    want, content, out, taken = TRAITS[place], f['name'] in CONTENT, [], set()
+    H, W = fc.shape
+    def best(cv):
+        cv = np.where(fc, cv, 0.0)
+        for y, x in taken: cv[y, x] = 0
+        return np.unravel_index(int(np.argmax(cv)), cv.shape) if cv.max() > 0.02 else None
+    def put(kd, y, x):
+        out.append((kd, int(x), int(y))); taken.add((int(y), int(x)))
+    def pair(kd, cv, y, x, nb):                                           # (le second pixel d'une courbe : son voisin le plus couvert)
+        q = [(cv[y + dy, x + dx], y + dy, x + dx) for dy, dx in nb if 0 <= y + dy < H and 0 <= x + dx < W and fc[y + dy, x + dx]
+             and (y + dy, x + dx) not in taken]
+        if q: put(kd, *max(q)[1:])
+    for kind in ('eye', 'brow', 'mouth', 'nose', 'jaw'):
+        if kind not in want: continue
+        for i, (kd, cv) in cov.items():
+            if kd != kind or not (p := best(cv)): continue
+            y, x = p
+            if kind == 'eye' and not f['frontal'] and not content: x, y = inward(x, y, fc)
+            put(kind, y, x)
+            if content and kind in ('eye', 'mouth'):
+                pair(kind, cv, y, x, ((0, -1), (0, 1), (-1, -1), (-1, 1), (1, -1), (1, 1)) if kind == 'eye' else ((0, -1), (0, 1)))
+            if kind == 'mouth' and 'nose' in want and f['name'] == 'stand2':    # (de trois quarts, l'ombre du nez : au-dessus du bout
+                if fc[y - 1, x + 1 + content] and (y - 1, x + 1 + content) not in taken: put('nose', y - 1, x + 1 + content)   # droit du sourire)
+            if kind == 'jaw' and cv[y, x] > 0:
+                q = [(cv[y + dy, x + dx], y + dy, x + dx) for dy, dx in ((0, -1), (0, 1), (-1, 0), (1, 0)) if 0 <= y + dy < H and
+                     0 <= x + dx < W and fc[y + dy, x + dx] and (y + dy, x + dx) not in taken]
+                if q and max(q)[0] >= 0.5 * cv[y, x]: put(kind, *max(q)[1:])
+    return out
+
+
+STEADY = {'D': ('stand', 'grab') + WK}   # (de profil à la porte, la même pose : chaque trait à la même place dans chaque image)
+
+
+def steady(R, names, front):
+    """les traits d'images de même pose à la même place dans chacune (rien ne saute d'une image à l'autre) : pour chaque sorte, la
+    médiane sur le groupe de sa rangée sous le haut du visage et de son écart au bout du visage sur cette rangée (front : de profil,
+    le nez, le plus à droite ; sinon le milieu, les deux sourcils de part et d'autre) ; seulement les sortes que le dessin a dans la
+    moitié au moins des images ; la mâchoire sur deux pixels"""
+    def ref(fc, y):
+        xs = np.where(fc[y])[0]
+        return xs.max() if front else (xs.min() + xs.max()) / 2
+    top = {n: np.where(R[n]['fc'].any(1))[0][0] for n in names}
+    off = {}
+    for n in names:
+        fc = R[n]['fc']
+        for kd, x, y in R[n]['ft']:
+            off.setdefault(kd, []).append((y - top[n], ref(fc, y) - x if front else abs(x - ref(fc, y)), n))
+    med = {kd: [int(round(np.median([v[0] for v in L]))), int(round(np.median([v[1] for v in L])))] for kd, L in off.items()
+           if len({v[2] for v in L}) >= len(names) / 3}
+    if front:                                                               # (de profil, dans l'ordre du visage, une rangée entre l'œil,
+        for a, b, gap in (('eye', 'nose', 2), ('nose', 'mouth', 2), ('mouth', 'jaw', 1)):   # le nez et la bouche ; le nez, la bouche
+            if a in med and b in med: med[b][0] = max(med[b][0], med[a][0] + gap)          # et le sourcil un pixel dans le visage, pas
+        for kd in ('brow', 'nose', 'mouth'):                                               # sur son bord)
+            if kd in med: med[kd][1] = max(med[kd][1], 1)
+    for n in names:
+        fc, has = R[n]['fc'], {kd for kd, _, _ in R[n]['ft']}
+        ft = []
+        for kd, (dy, dx) in med.items():
+            y = top[n] + dy
+            if not (0 <= y < fc.shape[0] and fc[y].any()) or not (front or kd in has): continue
+            xs = [int(ref(fc, y) - dx)] if front else [int(np.floor(ref(fc, y) - dx)), int(np.ceil(ref(fc, y) + dx))]
+            if kd == 'jaw': xs.append(xs[0] - 1)
+            ft += [(kd, x, y) for x in xs if 0 <= x < fc.shape[1] and fc[y, x]]
+        R[n]['ft'] = ft
 
 
 def build(F):
-    """chaque image à chacune de ses places, à sa lumière, son bord ; RGBA, ancre, ses yeux (px de la cellule)"""
+    """chaque image à chacune de ses places, à sa lumière, son bord ; RGBA, ancre, ses traits (px de la cellule)"""
     cells = {}
     for p, Z in (('A', O.Z_M), ('D', Z_D)):
         s = O.F / Z
+        R = {}
+        for n in USE[p]:
+            c, ax, ay, fc, cov = cell(F[n], s)
+            R[n] = dict(c=no_specks(c), ax=ax, ay=ay, fc=fc, ft=features(F[n], p, cov, fc))
+        if p in STEADY: steady(R, STEADY[p], True)
+        steady(R, [n for n in USE[p] if F[n]['frontal']], False)
         for n in USE[p] + tuple(k + '_m' for k in MIRROR.get(p, ())):
             base = n[:-2] if n.endswith('_m') else n
-            c, ax, ay, fc, ey = cell(F[base], s)
-            c = no_specks(c)
-            ey = eyes_of(base, F[base], ey)
+            c, ax, fc, ft = R[base]['c'], R[base]['ax'], R[base]['fc'], R[base]['ft']
             if n.endswith('_m'):
-                c = c[:, ::-1].copy(); fc = fc[:, ::-1]; ax = c.shape[1] - 1 - ax; ey = [(c.shape[1] - x, y, e) for x, y, e in ey]
+                c = c[:, ::-1].copy(); fc = fc[:, ::-1]; ax = c.shape[1] - 1 - ax; ft = [(kd, c.shape[1] - 1 - x, y) for kd, x, y in ft]
             c = no_outline(light(c, p), p)
             a = c[..., 3] > 0
             ys, xs = np.where(a)
             y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1      # (serrée sur lui)
             hd = F[base]['hd'] * s / F[base]['ppm']
             c, fc = c[y0:y1, x0:x1], fc[y0:y1, x0:x1]
-            ey = [inward(int(np.floor(x)) - x0, int(np.floor(y)) - y0, fc) for x, y, e in ey] if FACE_PX[0] <= hd + 0.5 else []
-            cells[(p, n)] = dict(c=c, ax=ax - x0, ay=ay - y0, eyes=ey, face=fc, hd=hd)
+            cells[(p, n)] = dict(c=c, ax=ax - x0, ay=R[base]['ay'] - y0, feats=[(kd, x - x0, y - y0) for kd, x, y in ft], face=fc, hd=hd)
     hc = lambda k: (lambda xs: (xs.min() + xs.max() + 1) / 2)(np.where((k['c'][:int(round(k['hd'])), :, 3] > 0).any(0))[0])
     S, L = cells[('D', 'stand')], cells[('D', 'stand2')]                     # (appuyé au cadre : sa tête là où elle était debout, son
     L['ax'] = int(round(hc(L) - (hc(S) - S['ax'])))                         #  bras sur le mur, derrière le cadre)
@@ -435,8 +548,8 @@ class Atlas:
 
 def grain(img, C, boxes):
     """le grain de la peinture (tools/regrain.py), place par place, toutes ses images ensemble : ses familles, chaque pixel à la
-    sienne, le grain fin baké ancré à ses pieds, ses clairs sous P95 ; puis ses yeux (un pixel sombre : la famille la plus sombre
-    de ses cheveux)"""
+    sienne, le grain fin baké ancré à ses pieds, ses clairs sous P95 ; puis ses traits (TONE : la famille la plus proche du pixel
+    où ils tombent, assombri, et plus sombre que lui : rien qui ne soit déjà dans ses couleurs)"""
     infos = {}
     for p in ('A', 'D'):
         items = []
@@ -449,14 +562,13 @@ def grain(img, C, boxes):
         P = dict(RG.DEF); P.update(families=FAMILIES, p95=round(P95[p], 1))
         infos[p] = RG.regrain_group(items, P, 'oden ' + p)
         base = np.array(infos[p]['base'], float)
-        dark = [b for b in base if abs(b[2] - b[0]) < 0.25 * b.max() + 4] or list(base)
-        eye = np.array(dark[0])
         for (q, n), b in boxes.items():
             if q != p: continue
-            for ex, ey in C[(q, n)]['eyes']:
-                fc = C[(q, n)]['face']
-                if 0 <= ey < fc.shape[0] and 0 <= ex < fc.shape[1] and fc[ey, ex]:
-                    img[b[1] + ey, b[0] + ex, :3] = eye
+            for kd, x, y in C[(q, n)]['feats']:
+                cur = img[b[1] + y, b[0] + x, :3].astype(float)
+                tgt = cur * np.array(TONE[p][kd], float)                    # (la famille la plus proche du pixel assombri, plus
+                ok = [c for c in base if c @ LUM <= cur @ LUM - 6]          #  sombre que lui)
+                if ok: img[b[1] + y, b[0] + x, :3] = min(ok, key=lambda c: ((c - tgt) ** 2).sum())
     return infos
 
 
