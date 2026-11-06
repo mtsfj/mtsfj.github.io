@@ -5910,103 +5910,210 @@
   const rlMesh = new THREE.Mesh(new THREE.PlaneGeometry(RL.w, RL.h), new THREE.MeshBasicMaterial({ map: rlTex, transparent: true, depthWrite: false }));
   rlMesh.position.set(RL.x + RL.w / 2, -(RL.y + RL.h / 2), 0.47); scene.add(rlMesh);
   // Ichiraku's people in the room of tools/ichiraku_interior.py (the doors' glass, the counter, the stools, the end wall: a small 3D
-  // model seen by the street's eye), each at his own depth and so at its scale (1400 / Z px a metre): Teuchi in his aisle behind the
-  // counter (T, cut by it and by what stands in front of him: O, the lantern, the bowls, the counter's edge), Teuchi at the door
-  // with his hooked pole up to the noren's rail (R), the regular on the corner stool (S), Naruto on the right-hand one (N), the
-  // regular walking from his stool to the door (W: a size for each pixel of his height, his feet on the floor at his depth),
-  // the glass column by column (G: under the noren's rail, the rail across, the bottom's light edge), where the steam rises
-  // (the bowls before their stools, the stock pot). Written by tools/ichiraku_figures.py with assets/ramen_figures.webp: crisp
-  // silhouettes, one per frame and size (Teuchi and the regular redrawn at their size, Naruto's frames kept pixel for pixel)
-  const IRF = {"T":{"cells":[[0,0,48,43],[49,0,48,43],[98,0,48,43],[147,0,48,43],[196,0,48,43],[245,0,48,43],[294,0,48,43],[343,0,48,43],[392,0,48,43]],"y":600,"cx":24,"z":27.27,"at":{"counter":1199.0,"pots":1205.3,"shelf":1183.7}},"R":{"cells":[[0,44,84,192],[85,44,84,192]],"x":1194.0,"y":500,"cx":42,"z":16.68},"S":{"cells":[[170,44,36,42],[207,44,36,42],[244,44,36,42]],"x":1165.1,"y":620,"cx":18},"N":{"cells":[[281,44,23,47],[305,44,23,47],[329,44,23,47],[353,44,23,47],[377,44,23,47],[401,44,23,47]],"x":1218.4,"y":614,"cx":11.5},"W":{"h0":98,"cells":[[[425,44,38,98],[464,44,38,98],[0,237,38,98]],[[39,237,38,99],[78,237,38,99],[117,237,38,99]],[[156,237,38,100],[195,237,38,100],[234,237,38,100]],[[273,237,38,101],[312,237,38,101],[351,237,38,101]],[[390,237,38,102],[429,237,38,102],[468,237,38,102]],[[0,340,40,103],[41,340,40,103],[82,340,40,103]],[[123,340,40,104],[164,340,40,104],[205,340,40,104]],[[246,340,40,105],[287,340,40,105],[328,340,40,105]],[[369,340,40,106],[410,340,40,106],[451,340,40,106]],[[0,447,40,107],[41,447,40,107],[82,447,40,107]],[[123,447,40,108],[164,447,40,108],[205,447,40,108]],[[246,447,42,109],[289,447,42,109],[332,447,42,109]],[[375,447,42,110],[418,447,42,110],[461,447,42,110]],[[0,558,42,111],[43,558,42,111],[86,558,42,111]],[[129,558,42,112],[172,558,42,112],[215,558,42,112]],[[258,558,42,113],[301,558,42,113],[344,558,42,113]],[[387,558,44,114],[432,558,44,114],[0,673,44,114]],[[45,673,44,115],[90,673,44,115],[135,673,44,115]],[[180,673,44,116],[225,673,44,116],[270,673,44,116]],[[315,673,44,117],[360,673,44,117],[405,673,44,117]],[[450,673,44,118],[0,792,44,118],[45,792,44,118]],[[90,792,44,119],[135,792,44,119],[180,792,44,119]],[[225,792,46,120],[272,792,46,120],[319,792,46,120]],[[366,792,46,121],[413,792,46,121],[460,792,46,121]],[[0,914,46,122],[47,914,46,122],[94,914,46,122]],[[141,914,46,123],[188,914,46,123],[235,914,46,123]],[[282,914,46,124],[329,914,46,124],[376,914,46,124]],[[423,914,46,125],[0,1040,46,125],[47,1040,46,125]],[[94,1040,48,126],[143,1040,48,126],[192,1040,48,126]],[[241,1040,48,127],[290,1040,48,127],[339,1040,48,127]],[[388,1040,48,128],[437,1040,48,128],[0,1169,48,128]],[[49,1169,48,129],[98,1169,48,129],[147,1169,48,129]],[[196,1169,48,130],[245,1169,48,130],[294,1169,48,130]],[[343,1169,50,131],[394,1169,50,131],[445,1169,50,131]],[[0,1301,50,132],[51,1301,50,132],[102,1301,50,132]],[[153,1301,50,133],[204,1301,50,133],[255,1301,50,133]],[[306,1301,50,134],[357,1301,50,134],[408,1301,50,134]],[[459,1301,50,135],[0,1437,50,135],[51,1437,50,135]],[[102,1437,50,136],[153,1437,50,136],[204,1437,50,136]],[[255,1437,52,137],[308,1437,52,137],[361,1437,52,137]],[[414,1437,52,138],[0,1576,52,138],[53,1576,52,138]],[[106,1576,52,139],[159,1576,52,139],[212,1576,52,139]],[[265,1576,52,140],[318,1576,52,140],[371,1576,52,140]],[[424,1576,52,141],[0,1718,52,141],[53,1718,52,141]],[[106,1718,52,142],[159,1718,52,142],[212,1718,52,142]],[[265,1718,54,143],[320,1718,54,143],[375,1718,54,143]],[[430,1718,54,144],[0,1863,54,144],[55,1863,54,144]],[[110,1863,54,145],[165,1863,54,145],[220,1863,54,145]],[[275,1863,54,146],[330,1863,54,146],[385,1863,54,146]],[[440,1863,54,147],[0,2011,54,147],[55,2011,54,147]],[[110,2011,56,148],[167,2011,56,148],[224,2011,56,148]],[[281,2011,56,149],[338,2011,56,149],[395,2011,56,149]]],"top":1.82,"from":[8.61,25.92],"to":[5.854,17.25]},"O":[0,2161,82,110,1150,590],"G":[[1160,522,631,636,681],[1161,521,631,636,681],[1162,521,631,636,681],[1163,521,631,636,681],[1164,521,631,636,682],[1165,520,631,636,682],[1166,520,631,636,682],[1167,520,631,636,682],[1168,520,631,636,682],[1169,520,631,636,682],[1170,519,631,636,682],[1173,519,631,636,683],[1174,519,631,636,683],[1175,518,631,636,683],[1176,518,631,636,683],[1177,518,631,636,683],[1178,518,631,636,684],[1179,518,631,636,684],[1180,517,631,636,684],[1181,517,631,636,684],[1182,517,631,636,684],[1183,517,631,636,684],[1184,517,631,636,685],[1185,516,631,636,685],[1192,515,631,636,686],[1193,515,631,636,686],[1194,514,631,636,686],[1195,514,631,636,686],[1196,514,631,636,686],[1197,514,631,636,686],[1198,514,631,636,687],[1199,513,631,636,687],[1200,513,631,636,687],[1201,513,631,636,687],[1202,513,631,636,687],[1203,513,631,636,687],[1204,512,631,636,687],[1205,512,631,636,688],[1209,511,631,636,688],[1210,511,631,636,688],[1211,511,631,636,688],[1212,511,631,636,689],[1213,511,631,636,689],[1214,510,631,636,689],[1215,510,631,636,689],[1216,510,631,636,689],[1217,510,631,636,689],[1218,510,631,636,689],[1219,509,631,636,690],[1220,509,631,636,690],[1221,509,631,636,690],[1222,509,631,636,690],[1223,509,631,636,690]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]]};
+  // model seen by the street's eye), cut from the owner's two sheets (tools/src/ichiraku_teuchi_sheet.webp, ichiraku_regular_sheet.webp)
+  // by tools/ichiraku_figures.py: in colour, the shop's warm light on them from above, each at his depth and so at his scale
+  // (1400 / Z px a metre). Teuchi in his aisle behind the counter (T: his frames at the counter, the stock pot, the shelf set by the
+  // top of his head, his walk by his feet; at the depth Tz, on the rows Ty; cut by what stands in front of him: O, the lantern, the
+  // bowls, the counter's edge), Teuchi at the doors (D: his walk, front, his hooked pole raised to the noren's rail by steps, wiping
+  // his brow; his column, depth, floor row: Dz), the regular on the corner stool (S: eating, drinking his broth, putting his bowl
+  // down, turning, getting up, setting his jacket straight; his column and floor row: Sx, Sy), the regular walking from his stool
+  // to the doors (W: a size for each pixel of his height, his feet on the floor at his depth; fix: his bag's strap at the doors),
+  // Naruto on the right-hand stool (N: a dark silhouette, as before), the glass column by column (G: under the noren's rail, the
+  // transom, the bottom's light edge, the noren's hem: the rows under it in its shadow), where the steam rises (the bowls, the
+  // stock pot). A cell is [sx, sy, w, h, ox, oy]: (ox, oy) the middle of his chest and the top of his head (or the floor) in it
+  const IRF = {"T":{"idle":[[0,0,45,48,22,0]],"calm":[[46,0,45,48,22,0]],"nod":[[92,0,44,48,24,0]],"smile":[[137,0,45,48,22,0]],"stir":[[183,0,44,47,20,1],[228,0,59,50,20,1],[288,0,58,50,19,1],[347,0,58,50,20,1],[406,0,47,50,19,1],[454,0,49,50,19,1]],"lift":[[504,0,51,57,30,0]],"serve":[[556,0,63,73,22,1],[620,0,60,72,25,0]],"shelf":[[681,0,43,59,21,1],[725,0,42,60,20,0]],"walk":[[768,0,43,86,21,85],[812,0,42,85,20,85],[855,0,39,85,19,85],[895,0,39,85,18,84],[935,0,44,85,21,85]]},"Ty":{"head":607.3,"feet":692.02},"Tz":27.27,"at":{"counter":1199.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[0,87,67,132,33,131],[68,87,65,132,31,132],[134,87,59,132,29,132],[194,87,59,133,27,131],[254,87,67,131,32,131]],"dfront":[[322,87,57,131,28,131]],"dbrow":[[380,87,73,131,30,131]],"dpole":[[454,87,79,136,36,136],[534,87,79,144,36,144],[614,87,79,175,36,175],[694,87,79,202,36,202]]},"Dz":[1182.0,17.6,734.32],"S":{"seat":[[774,87,49,82,26,79]],"chop":[[824,87,55,82,26,79]],"sip":[[880,87,44,82,24,79],[925,87,44,79,24,79]],"done":[[0,290,56,82,30,79]],"turn":[[57,290,44,83,22,80],[102,290,44,82,22,79]],"rise":[[147,290,46,88,22,88],[194,290,40,93,19,93]],"jacket":[[272,290,54,94,28,94],[327,290,40,94,20,94]],"stand":[[235,290,36,93,18,93]]},"Sx":1165.1,"Sy":696.03,"W":{"h0":92,"cells":[[[368,290,43,91,18,91],[412,290,42,92,20,92],[455,290,41,91,17,91],[497,290,37,93,16,93]],[[535,290,43,92,18,92],[579,290,43,93,20,93],[623,290,43,92,18,92],[667,290,38,94,17,94]],[[706,290,43,93,18,93],[750,290,43,94,20,94],[794,290,43,93,18,93],[838,290,38,95,17,95]],[[877,290,45,94,19,94],[923,290,43,95,20,95],[967,290,43,94,18,94],[0,386,38,96,17,96]],[[39,386,45,95,19,95],[85,386,44,97,21,97],[130,386,43,95,18,95],[174,386,39,97,17,97]],[[214,386,45,96,19,96],[260,386,45,98,21,98],[306,386,44,96,18,96],[351,386,39,98,17,98]],[[391,386,46,97,19,97],[438,386,45,99,21,99],[484,386,45,97,19,97],[530,386,40,99,18,99]],[[571,386,46,98,19,98],[618,386,45,100,21,100],[664,386,45,98,19,98],[710,386,40,100,18,100]],[[751,386,47,99,20,99],[799,386,45,101,21,101],[845,386,45,99,19,99],[891,386,41,101,18,101]],[[933,386,47,100,20,100],[0,488,47,102,22,102],[48,488,46,100,19,100],[95,488,41,102,18,102]],[[137,488,48,101,20,101],[186,488,47,103,22,103],[234,488,46,101,19,101],[281,488,41,103,18,103]],[[323,488,48,102,20,102],[372,488,47,104,22,104],[420,488,47,102,20,102],[468,488,42,104,19,104]],[[511,488,48,103,20,103],[560,488,47,105,22,105],[608,488,47,103,20,103],[656,488,42,105,19,105]],[[699,488,49,104,21,104],[749,488,49,106,23,106],[799,488,48,104,20,104],[848,488,43,106,19,106]],[[892,488,50,105,21,105],[943,488,49,107,23,107],[0,596,48,105,20,105],[49,596,43,107,19,107]],[[93,596,50,106,21,106],[144,596,49,108,23,108],[194,596,48,106,20,106],[243,596,43,108,19,108]],[[287,596,50,107,21,107],[338,596,49,109,23,109],[388,596,50,107,21,107],[439,596,43,109,19,109]],[[483,596,51,108,21,108],[535,596,50,110,23,110],[586,596,50,108,21,108],[637,596,45,110,20,110]],[[683,596,52,109,22,109],[736,596,51,111,24,111],[788,596,50,109,21,109],[839,596,45,111,20,111]],[[885,596,52,110,22,110],[938,596,51,112,24,112],[0,709,50,110,21,110],[51,709,45,112,20,112]],[[97,709,52,111,22,111],[150,709,51,113,24,113],[202,709,51,111,21,111],[254,709,45,113,20,113]],[[300,709,53,112,22,112],[354,709,52,114,24,114],[407,709,52,112,22,112],[460,709,46,114,20,114]],[[507,709,53,113,22,113],[561,709,53,115,25,115],[615,709,52,113,22,113],[668,709,47,115,21,115]],[[716,709,54,114,23,114],[771,709,53,116,25,116],[825,709,52,114,22,114],[878,709,47,116,21,116]],[[926,709,54,115,23,115],[0,826,53,117,25,117],[54,826,53,115,22,115],[108,826,47,117,21,117]],[[156,826,55,116,23,116],[212,826,54,118,25,118],[267,826,53,116,22,116],[321,826,47,118,21,118]],[[369,826,55,117,23,117],[425,826,54,119,25,119],[480,826,54,117,23,117],[535,826,48,119,21,119]],[[584,826,55,118,23,118],[640,826,55,120,26,120],[696,826,55,118,23,118],[752,826,48,120,21,120]],[[801,826,57,119,24,119],[859,826,55,121,26,121],[915,826,55,119,23,119],[971,826,49,121,22,121]],[[0,948,57,120,24,120],[58,948,56,122,26,122],[115,948,55,120,23,120],[171,948,49,122,22,122]],[[221,948,57,121,24,121],[279,948,56,123,26,123],[336,948,55,121,23,121],[392,948,50,123,22,123]],[[443,948,57,122,24,122],[501,948,57,124,27,124],[559,948,57,122,24,122],[617,948,50,124,22,124]],[[668,948,58,123,24,123],[727,948,57,125,27,125],[785,948,57,123,24,123],[843,948,50,125,22,125]],[[894,948,59,124,25,124],[954,948,58,126,27,126],[0,1075,57,124,24,124],[58,1075,51,126,23,126]],[[110,1075,59,125,25,125],[170,1075,58,127,27,127],[229,1075,57,125,24,125],[287,1075,51,127,23,127]],[[339,1075,59,126,25,126],[399,1075,58,128,27,128],[458,1075,58,126,24,126],[517,1075,52,128,23,128]],[[570,1075,60,127,25,127],[631,1075,59,129,28,129],[691,1075,58,127,24,127],[750,1075,52,129,23,129]],[[803,1075,60,128,25,128],[864,1075,60,130,28,130],[925,1075,59,128,25,128],[0,1206,52,130,23,130]],[[53,1206,61,129,26,129],[115,1206,60,131,28,131],[176,1206,59,129,25,129],[236,1206,52,131,23,131]],[[289,1206,62,130,26,130],[352,1206,60,132,28,132],[413,1206,60,130,25,130],[474,1206,54,132,24,132]],[[529,1206,62,131,26,131],[592,1206,60,133,28,133],[653,1206,60,131,25,131],[714,1206,54,133,24,133]],[[769,1206,62,132,26,132],[832,1206,62,134,29,134],[895,1206,60,132,25,132],[956,1206,54,134,24,134]],[[0,1341,62,133,26,133],[63,1341,62,135,29,135],[126,1341,61,133,26,133],[188,1341,54,135,24,135]],[[243,1341,64,134,27,134],[308,1341,62,136,29,136],[371,1341,62,134,26,134],[434,1341,54,136,24,136]],[[489,1341,64,135,27,135],[554,1341,62,137,29,137],[617,1341,62,135,26,135],[680,1341,55,137,24,137]],[[736,1341,64,136,27,136],[801,1341,62,138,29,138],[864,1341,62,136,26,136],[927,1341,56,138,25,138]],[[0,1480,64,137,27,137],[65,1480,64,139,30,139],[130,1480,63,137,26,137],[194,1480,56,139,25,139]],[[251,1480,65,137,27,137],[317,1480,64,140,30,140],[382,1480,64,137,27,137],[447,1480,56,140,25,140]],[[504,1480,66,138,28,138],[571,1480,64,141,30,141],[636,1480,64,138,27,138],[701,1480,57,141,25,141]],[[759,1480,66,139,28,139],[826,1480,64,142,30,142],[891,1480,64,139,27,139],[956,1480,57,142,25,142]]],"fix":[[0,1623,66,141,30,141]],"top":1.72,"from":[8.61,25.92],"to":[5.854,17.25]},"N":{"cells":[[67,1623,23,47],[91,1623,23,47],[115,1623,23,47],[139,1623,23,47],[163,1623,23,47],[187,1623,23,47]],"x":1218.4,"y":614,"cx":11.5},"O":[211,1623,82,110,1150,590],"G":[[1160,522,631,636,681,598],[1161,521,631,636,681,597],[1162,521,631,636,681,597],[1163,521,631,636,681,597],[1164,521,631,636,682,597],[1165,520,631,636,682,597],[1166,520,631,636,682,597],[1167,520,631,636,682,597],[1168,520,631,636,682,597],[1169,520,631,636,682,597],[1170,519,631,636,682,596],[1173,519,631,636,683,596],[1174,519,631,636,683,596],[1175,518,631,636,683,596],[1176,518,631,636,683,596],[1177,518,631,636,683,596],[1178,518,631,636,684,596],[1179,518,631,636,684,596],[1180,517,631,636,684,596],[1181,517,631,636,684,595],[1182,517,631,636,684,595],[1183,517,631,636,684,595],[1184,517,631,636,685,595],[1185,516,631,636,685,595],[1192,515,631,636,686,594],[1193,515,631,636,686,594],[1194,514,631,636,686,594],[1195,514,631,636,686,594],[1196,514,631,636,686,594],[1197,514,631,636,686,594],[1198,514,631,636,687,594],[1199,513,631,636,687,594],[1200,513,631,636,687,594],[1201,513,631,636,687,593],[1202,513,631,636,687,593],[1203,513,631,636,687,593],[1204,512,631,636,687,593],[1205,512,631,636,688,593],[1209,511,631,636,688,593],[1210,511,631,636,688,592],[1211,511,631,636,688,592],[1212,511,631,636,689,592],[1213,511,631,636,689,592],[1214,510,631,636,689,592],[1215,510,631,636,689,592],[1216,510,631,636,689,592],[1217,510,631,636,689,592],[1218,510,631,636,689,592],[1219,509,631,636,690,592],[1220,509,631,636,690,592],[1221,509,631,636,690,591],[1222,509,631,636,690,591],[1223,509,631,636,690,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]]};
   const IRFI = new Image(); IRFI.src = 'assets/ramen_figures.webp?v=1';
-  const irGlass = new Path2D();                                                // (the glass, in scene px: the people only there)
-  for (const [x, top, a, b, bot] of IRF.G || []) { irGlass.rect(x, top, 1, a - top + 1); irGlass.rect(x, b, 1, bot - b + 1); }
-  // behind the lit glass only their shadows show: drawn at scene res (in scene coordinates), one dark colour, crisp
+  const irGlass = new Path2D(), irHem = [new Path2D(), new Path2D(), new Path2D()];   // (the glass, in scene px: the people only there; the rows under the hem)
+  for (const [x, top, a, b, bot, hem] of IRF.G || []) {
+    irGlass.rect(x, top, 1, a - top + 1); irGlass.rect(x, b, 1, bot - b + 1);
+    if (hem) irHem.forEach((P, i) => P.rect(x, hem + 1 + i, 1, 1));
+  }
+  const IR_HAUT = [0.6, 0.8, 0.92];                                            // (the noren's shadow on them, as on the room: the share kept, row by row)
+  // they are drawn at scene res (in scene coordinates), crisp, then doubled into the room's canvas
   const shC = document.createElement('canvas'); shC.width = RL.w; shC.height = RL.h; const shg = shC.getContext('2d'); shg.translate(-RL.x, -RL.y);
-  // the painting's grain shows in them: a fixed grain, one scene pixel per grain, blotchy like the painting
+  // Naruto's silhouette takes the painting's grain: a fixed grain, one scene pixel per grain, blotchy like the painting
   const sbC = document.createElement('canvas'); sbC.width = RL.w * RL.K; sbC.height = RL.h * RL.K; const sbg = sbC.getContext('2d');
   const grC = document.createElement('canvas'); grC.width = RL.w; grC.height = RL.h;
   (function () { const g = grC.getContext('2d'), im = g.createImageData(RL.w, RL.h), d = im.data;
     for (let i = 0; i < d.length; i += 4) d[i + 3] = Math.random() < 0.5 ? 20 + Math.random() * 60 : 0; g.putImageData(im, 0, 0); })();
   const RAM = { acc: 0, cook: { view: 0, t: 0, next: 5, work: 0 }, wisps: [], dip: 0 };
   for (let i = 0; i < 5; i++) RAM.wisps.push({ t: Math.random() * 2.6, s: i % 3 });   // (each from a bowl or the stock pot: IRF.wisps)
-  // Teuchi's evening, timed in code: he goes between his three places behind the counter (the shelf of jars on the left, the
-  // counter in the middle, the stock pot on the right: IRF.T.at) at a walking pace, eased in and out, his steps by the distance
-  // walked (no sliding, no jump); he turns through his side view (front, side, back, never front to back at once); at the
-  // counter his arms work in bursts (his stepping frames' arms, the feet behind the counter), at the pots he stirs (his back's),
-  // at the shelf he looks for something; he glances at the street now and then; he breathes (his head rises a pixel, about
-  // every 4 s); nothing holds still more than a few seconds. Reduced motion: at the counter, front, still
-  const TCH_AT = { counter: [IRF.T.at.counter, 0], pots: [IRF.T.at.pots, 2], shelf: [IRF.T.at.shelf, 2] };   // each place: his x, the view he works in (0 front, 1 side, 2 back)
-  const TCH = { x: TCH_AT.counter[0], x0: TCH_AT.counter[0], tx: TCH_AT.counter[0], mt: 0, md: 0, view: 0, want: 0, vt: 0, act: 'counter', at: 0, dur: 6, burst: 0, bt: 0, arm: 0, dist: 0, dir: -1, f: 0, br: 0, glance: 0 };
-  const TCH_V = 28, TCH_STEP = 4.3;                                            // (his pace and his step, in px at his depth: 0.55 m/s)
-  function stepTeuchi(dt, t) {
-    const T = TCH;
-    T.br = reduced ? 0 : 0.5 * Math.sin(t * 1.55);
-    if (reduced) { Object.assign(T, { x: TCH_AT.counter[0], view: 0, f: 0 }); return; }
-    T.at += dt;
-    if (T.md > 0) {                                                            // walking: eased, his frame from the distance walked
-      if (T.view !== 1) { T.vt += dt; if (T.vt > 0.15) { T.vt = 0; T.view += Math.sign(1 - T.view); } T.f = [0, 3, 6][T.view]; return; }
-      T.mt += dt; const u = Math.min(1, T.mt / T.md), k = u * u * (3 - 2 * u), nx = T.x0 + (T.tx - T.x0) * k;
-      T.dist += Math.abs(nx - T.x); T.x = nx; T.f = 3 + [0, 1, 0, 2][Math.floor(T.dist / TCH_STEP) % 4];
-      if (u >= 1) { T.md = 0; T.dist = 0; T.f = 3; T.want = TCH_AT[T.act][1]; T.vt = 0; }
-      return;
+  // a walk along a row of the room, from x0 to x1 (scene px) at v px/s, eased in and/or out over 0.3 s (a short one: eased both
+  // ways); legX: where the walker is on it at its time t, done at T. Each walker's frame comes from the distance he has walked
+  const LEG_A = 0.3;
+  function legNew(x0, x1, v, eIn, eOut) {
+    const L = Math.abs(x1 - x0), short = L < v * LEG_A * 2;
+    return { x0, x1, L, v, eIn, eOut, short, t: 0, T: short ? Math.max(0.6, 1.5 * L / v) : L / v + ((eIn ? 1 : 0) + (eOut ? 1 : 0)) * LEG_A / 2 };
+  }
+  function legX(G) {
+    const t = Math.min(G.t, G.T), a = LEG_A, v = G.v; let d;
+    if (G.short) { const u = t / G.T; d = G.L * u * u * (3 - 2 * u); }
+    else {
+      d = G.eIn ? (t < a ? v * t * t / (2 * a) : v * (t - a / 2)) : v * t;
+      if (G.eOut && t > G.T - a) d = G.L - v * (G.T - t) * (G.T - t) / (2 * a);
     }
-    if (T.glance > 0) { T.glance -= dt; T.want = T.glance > 0 ? 1 : TCH_AT[T.act][1]; T.dir = -1; }
-    if (T.view !== T.want) { T.vt += dt; if (T.vt > 0.15) { T.vt = 0; T.view += Math.sign(T.want - T.view); } T.f = [0, 3, 6][T.view]; return; }
-    if (T.view === 1) T.f = 3;
-    else if (T.act === 'counter') {                                            // his arms at work, in bursts
-      if (T.burst > 0) { if ((T.bt -= dt) < 0) { T.bt = 0.15 + Math.random() * 0.12; T.arm = T.arm === 1 ? 2 : 1; T.burst--; } T.f = T.arm; }
-      else { T.f = 0; T.arm = 0; if (Math.random() < dt * 0.7) T.burst = 2 + ((Math.random() * 5) | 0); }
-      if (Math.random() < dt * 0.04) T.glance = 0.7 + Math.random() * 0.6;    // a look at the street
-    } else if (T.act === 'pots') {                                             // stirring, slower
-      if ((T.bt -= dt) < 0) { T.bt = 0.28 + Math.random() * 0.22; T.arm = T.arm === 7 ? 8 : 7; } T.f = T.arm || 6;
-    } else { if ((T.bt -= dt) < 0) { T.bt = 0.8 + Math.random() * 1.5; T.arm = Math.random() < 0.3 ? 7 : 6; } T.f = T.arm || 6; }   // the shelf
-    if (T.at > T.dur) {                                                        // the next place
-      const go = T.act === 'counter' ? (Math.random() < 0.62 ? 'pots' : 'shelf') : 'counter';
-      T.act = go; T.at = 0; T.dur = go === 'counter' ? 6 + Math.random() * 10 : go === 'pots' ? 4 + Math.random() * 5 : 2.5 + Math.random() * 3;
-      T.x0 = T.x; T.tx = TCH_AT[go][0]; T.md = Math.max(0.6, Math.abs(T.tx - T.x0) / TCH_V); T.mt = 0; T.dist = 0; T.dir = Math.sign(T.tx - T.x0) || -1; T.vt = 0;
+    return G.x0 + Math.sign(G.x1 - G.x0) * Math.min(G.L, d);
+  }
+  // Teuchi's evening, timed in code: he goes between his three places behind the counter (the shelf of jars on the left, the
+  // counter in the middle, the stock pot on the right: IRF.at), walking (his side frames, turned round to go left), turning through
+  // his side (front, side, back, never front to back at once). At the counter he stands, nods, closes his eyes, smiles at the
+  // street, works a bowl; at the pot he stirs, tastes, lifts the strainer; at the shelf he reaches for the jars and the bowls; from
+  // the pot or the shelf he looks round at the street now and then. Twice a day (the noren in at the closing, out in the morning:
+  // IR.wait) he goes to the doors: along his aisle to the left, behind the left post, through the room out of sight, in from the
+  // left post to the doors at their depth (Dz), turns to us, raises his hooked pole to the rail (the noren goes in, or out, as he
+  // holds it there: IR.take), lowers it, wipes his brow and goes back the same way. A driven hour: at his counter at once.
+  // Reduced motion: at the counter, still
+  const TCH_VIEW = [['idle', 0], ['walk', 0], ['shelf', 0]], TCH_AT = { counter: 0, pots: 1, shelf: 2 };   // (the frame he turns through: front, side, back; the view he works in at each place)
+  const TCH_V = 28, TCH_STEP = 7.2;                                            // (his pace and his step behind the counter, in px at his depth: 0.55 m/s, 0.14 m)
+  const TRIP_V = 1.0, TRIP_STEP = 0.14;                                        // (to the doors: m/s; his step, m)
+  const TCH = { x: IRF.at.counter, act: 'counter', mode: 'place', at: 0, dur: 6, view: 0, vt: 0, dir: -1, c: TCH_VIEW[0], flip: false, where: 'T',
+    seq: [], ft: 0, leg: null, dist: 0, trip: 0, tt: 0, glance: 0 };
+  const tchHide = (cells) => 1159 - Math.max(...cells.map((c) => Math.max(c[4], c[2] - c[4])));   // (the column where he is out of sight behind the left post)
+  const tchRand = (a, b) => a + Math.random() * (b - a);
+  function tchWork(act) {                                                      // his work at a place: [frames, frame, seconds], ...
+    const r = Math.random();
+    if (act === 'counter') return r < 0.42 ? [['idle', 0, tchRand(1.5, 3.5)]] : r < 0.6 ? [['nod', 0, 0.35], ['idle', 0, 0.25], ['nod', 0, 0.35], ['idle', 0, tchRand(0.8, 1.5)]]
+      : r < 0.72 ? [['calm', 0, tchRand(1.5, 2.5)], ['idle', 0, 0.6]] : r < 0.84 ? [['smile', 0, tchRand(1.2, 2)]] : [['serve', 0, 0.7], ['serve', 1, 1.1], ['serve', 0, 0.5], ['idle', 0, 1]];
+    if (act === 'pots') {
+      const s = []; for (let k = 0; k < 2; k++) for (let i = 0; i < 4; i++) s.push(['stir', i, 0.17]);
+      return r < 0.2 ? s.concat([['stir', 4, 0.3], ['stir', 5, 0.4], ['stir', 4, 0.3]]) : r < 0.32 ? s.concat([['lift', 0, tchRand(0.8, 1.3)]]) : s;
+    }
+    return r < 0.5 ? [['shelf', 0, tchRand(0.8, 1.8)]] : [['shelf', 1, tchRand(0.6, 1.2)], ['shelf', 0, tchRand(0.5, 1)]];
+  }
+  function tchTurn(T, dt, want) {                                              // (a step of his turn every 0.15 s)
+    T.vt += dt; if (T.vt > 0.15) { T.vt = 0; T.view += Math.sign(want - T.view); }
+    T.c = TCH_VIEW[T.view]; T.flip = T.view === 1 && T.dir < 0; T.seq = []; T.ft = 0;
+  }
+  function tchWalk(T, dt, g, step, done) {                                     // (along his leg: his frame from the distance walked)
+    T.leg.t += dt; const nx = legX(T.leg); T.dist += Math.abs(nx - T.x); T.x = nx;
+    T.c = [g, Math.floor(T.dist / step) % 5]; T.flip = T.leg.x1 < T.leg.x0;
+    if (T.leg.t >= T.leg.T) { T.leg = null; T.dist = 0; done(); }
+  }
+  function teuchiDoor(go) {                                                    // (to the doors; or, a driven hour, back at his counter at once)
+    const T = TCH;
+    if (!go) { if (!T.trip && !reduced) return; Object.assign(T, { trip: 0, mode: 'place', act: 'counter', x: IRF.at.counter, view: 0, at: 0, dur: 6, seq: [], ft: 0, c: TCH_VIEW[0], flip: false, where: 'T', leg: null }); return; }
+    if (T.trip === 5) { T.trip = 4; T.ft = 0; }                                // (on his way back: to the doors again)
+    else if (T.trip === 6) { T.trip = 3; T.leg = legNew(T.x, IRF.Dz[0], TRIP_V * 1400 / IRF.Dz[1], false, true); T.dist = 0; }
+    else if (T.trip === 7) { T.trip = 2; T.tt = Math.max(0, tchThrough() - T.tt); }
+    else if (T.trip === 8) { T.trip = 1; T.leg = null; T.dist = 0; T.dir = -1; }
+    else if (!T.trip) { T.trip = 1; T.mode = 'place'; T.leg = null; T.dist = 0; T.dir = -1; T.glance = 0; }
+  }
+  const tchThrough = () => {                                                   // (the room, out of sight: its length at his pace, s)
+    const sT = 1400 / IRF.Tz, sD = 1400 / IRF.Dz[1];
+    return Math.hypot((tchHide(IRF.T.walk) - 700) / sT - (tchHide(IRF.D.dwalk) - 700) / sD, IRF.Tz - IRF.Dz[1]) / TRIP_V;
+  };
+  function tchTrip(T, dt) {
+    const sT = 1400 / IRF.Tz, sD = 1400 / IRF.Dz[1], XA = tchHide(IRF.T.walk), XD = tchHide(IRF.D.dwalk), through = tchThrough;
+    if (T.trip === 1) {                                                        // along his aisle to the left, behind the left post
+      T.where = 'T'; T.dir = -1;
+      if (T.view !== 1) return tchTurn(T, dt, 1);
+      if (!T.leg) T.leg = legNew(T.x, XA, TRIP_V * sT, true, false);
+      tchWalk(T, dt, 'walk', TRIP_STEP * sT, () => { T.trip = 2; T.tt = through(); });
+    } else if (T.trip === 2) {
+      T.where = null;
+      if ((T.tt -= dt) <= 0) { T.trip = 3; T.x = XD; T.leg = legNew(XD, IRF.Dz[0], TRIP_V * sD, false, true); }
+    } else if (T.trip === 3) {                                                 // in at the doors, from behind the left post
+      T.where = 'D'; tchWalk(T, dt, 'dwalk', TRIP_STEP * sD, () => { T.trip = 4; T.ft = 0.3; T.c = ['dfront', 0]; T.flip = false; });
+    } else if (T.trip === 4) {                                                 // turned to us; his pole up to the rail by steps, held, down
+      if ((T.ft -= dt) > 0) return;
+      if (IR.wait) { IR.wait = false; IR.take = 0; }
+      if (IR.take < 0) { T.trip = 5; T.ft = 0.8; T.c = ['dbrow', 0]; return; }
+      const u = IR.out ? 2.4 - IR.take : IR.take;
+      T.c = ['dpole', u < 0.15 ? 0 : u < 0.3 ? 1 : u < 0.45 ? 2 : u < 1.6 ? 3 : u < 1.75 ? 2 : u < 1.9 ? 1 : 0];
+    } else if (T.trip === 5) {                                                 // he wipes his brow, turns
+      if ((T.ft -= dt) > 0) return;
+      T.trip = 6; T.ft = 0.15; T.c = ['dwalk', 0]; T.flip = true;
+    } else if (T.trip === 6) {                                                 // and goes back: behind the left post, through the room
+      if ((T.ft -= dt) > 0) return;
+      if (!T.leg) T.leg = legNew(T.x, XD, TRIP_V * sD, true, false);
+      tchWalk(T, dt, 'dwalk', TRIP_STEP * sD, () => { T.trip = 7; T.tt = through(); T.where = null; });
+    } else if (T.trip === 7) {
+      if ((T.tt -= dt) <= 0) { T.trip = 8; T.x = XA; T.where = 'T'; T.view = 1; T.c = ['walk', 0]; T.flip = false; T.leg = legNew(XA, IRF.at.counter, TRIP_V * sT, false, true); }
+    } else {                                                                   // along his aisle to his counter
+      tchWalk(T, dt, 'walk', TRIP_STEP * sT, () => { Object.assign(T, { trip: 0, mode: 'place', act: 'counter', at: 0, dur: tchRand(6, 16), dir: 1, seq: [], ft: 0 }); });
     }
   }
-  // the regular, seated on the corner stool with his back to the doors (Tazuna in his straw hat): his back, his elbows at the
-  // bowl in bursts, a breath. He is there whenever the shop is open; as the closing begins (before the neon, long before the
-  // noren) he gets up (seated to standing by his stool, a short cross-fade) and walks to the door, toward us: from his stool to
-  // just behind the left door's glass (IRF.W: from, to, in metres), growing as he comes (each size its own crisp frame, his feet
-  // on the floor at his depth), his steps from the distance walked; at the door he steps out (a short fade). In the morning he
-  // is in his place again. A driven hour, the first frame or reduced motion: there or gone at once
-  const REG = { st: 'seat', t: 0, a: 1, X: 0, Z: 0, dist: 0, f: 0, bt: 0, burst: 0, br: 0, hk0: -1 };
-  const REG_V = 1.35, REG_OUT = 0.45;                                          // (his walk, m/s; his step through the door, s)
+  function stepTeuchi(dt, t) {
+    const T = TCH;
+    if (reduced) { teuchiDoor(false); return; }
+    if (T.trip) { if (SHOP.k < 0.05) teuchiDoor(false); else return tchTrip(T, dt); }
+    T.where = 'T';
+    if (T.mode === 'move') {                                                   // walking along his aisle, eased
+      if (T.view !== 1) return tchTurn(T, dt, 1);
+      return tchWalk(T, dt, 'walk', TCH_STEP, () => { T.mode = 'place'; T.c = TCH_VIEW[1]; T.flip = T.dir < 0; });
+    }
+    if (T.glance > 0) T.glance -= dt;
+    const want = T.glance > 0 ? 0 : TCH_AT[T.act];
+    if (T.view !== want) return tchTurn(T, dt, want);
+    T.at += dt;
+    if ((T.ft -= dt) > 0) return;
+    if (!T.seq.length) {
+      if (T.at > T.dur && T.glance <= 0) {                                     // the next place
+        const go = T.act === 'counter' ? (Math.random() < 0.62 ? 'pots' : 'shelf') : 'counter';
+        T.act = go; T.at = 0; T.dur = go === 'counter' ? tchRand(6, 16) : go === 'pots' ? tchRand(4, 9) : tchRand(2.5, 5.5);
+        T.mode = 'move'; T.leg = legNew(T.x, IRF.at[go], TCH_V, true, true); T.dist = 0; T.dir = Math.sign(IRF.at[go] - T.x) || -1;
+        return;
+      }
+      if (T.glance > 0) T.seq = [['smile', 0, T.glance]];
+      else if (T.act !== 'counter' && Math.random() < 0.08) { T.glance = tchRand(0.9, 1.5); T.seq = []; return; }   // a look at the street
+      else T.seq = tchWork(T.act);
+    }
+    const [g, i, d] = T.seq.shift(); T.c = [g, i]; T.ft = d; T.flip = false;
+  }
+  // the regular, seated on the corner stool with his back to the doors, a salaryman in his navy suit: he eats (his chopsticks up
+  // and down), drinks his broth from the bowl, rests, looks round. He is there whenever the shop is open; as the closing begins
+  // (before the neon, long before the noren) he puts his bowl down, turns, gets up, sets his jacket straight, takes his bag and
+  // walks to the doors, toward us: from his stool to just behind the left door's glass (IRF.W: from, to, in metres), growing as he
+  // comes (each size its own crisp frame, his feet on the floor at his depth), his steps from the distance walked; at the doors he
+  // settles his bag's strap and steps out (a short fade). In the morning he is in his place again. A driven hour, the first frame
+  // or reduced motion: there or gone at once
+  const REG = { st: 'seat', t: 0, a: 1, X: 0, Z: 0, dist: 0, f: 0, c: ['seat', 0], seq: [], ft: 0, hk0: -1 };
+  const REG_V = 1.35, REG_OUT = 0.45, REG_STEP = 0.22, REG_FIX = 0.9;          // (his walk, m/s; his step, m; his strap and his step through the door, s)
+  const REG_UP = [['done', 0, 0.5], ['turn', 0, 0.4], ['turn', 1, 0.45], ['rise', 0, 0.45], ['jacket', 0, 0.4], ['jacket', 1, 0.4], ['rise', 1, 0.4], ['stand', 0, 0.35]];   // (getting up: his frames, s)
   const regAt = (u) => { const [x0, z0] = IRF.W.from, [x1, z1] = IRF.W.to; return [x0 + (x1 - x0) * u, z0 + (z1 - z0) * u]; };
+  function regSeat() {                                                         // (his meal: [frames, frame, seconds], ...)
+    const r = Math.random(), s = [];
+    if (r < 0.5) { for (let k = 2 + ((Math.random() * 3) | 0); k > 0; k--) s.push(['chop', 0, tchRand(0.28, 0.4)], ['seat', 0, tchRand(0.25, 0.35)]); s.push(['seat', 0, tchRand(1, 2.5)]); }
+    else if (r < 0.72) s.push(['sip', 0, 0.45], ['sip', 1, tchRand(1, 1.6)], ['sip', 0, 0.4], ['seat', 0, tchRand(1, 2)]);
+    else if (r < 0.86) s.push(['done', 0, tchRand(1.5, 3)], ['seat', 0, 0.8]);
+    else s.push(['turn', 0, tchRand(1, 1.6)], ['seat', 0, 0.8]);
+    return s;
+  }
   function stepGuests(dt, t) {
     const R = REG, hk = openK('ramen'), live = R.hk0 >= 0 && Math.abs(hk - R.hk0) < 0.05 && !reduced; R.hk0 = hk;
     const want = hk > 0.97;
-    R.br = reduced ? 0 : 0.45 * Math.sin(t * 1.4 + 0.7);
-    if (R.st === 'seat' && !want) { if (live && IRFI.complete && IRFI.naturalWidth) { R.st = 'up'; R.t = 0; } else R.st = 'gone'; }
-    else if (R.st === 'gone' && want) { R.st = 'seat'; R.a = live ? 0 : 1; }
+    if (R.st === 'seat' && !want) { if (live && IRFI.complete && IRFI.naturalWidth) { R.st = 'up'; R.seq = REG_UP.slice(); R.ft = 0; } else R.st = 'gone'; }
+    else if (R.st !== 'seat' && R.st !== 'gone' && want && !live) R.st = 'gone';   // (a driven hour back to the evening: in his place at once)
+    if (R.st === 'gone' && want) { R.st = 'seat'; R.a = live ? 0 : 1; R.seq = []; R.ft = 0; R.c = ['seat', 0]; }
     if (R.st === 'seat') {
       R.a = Math.min(1, R.a + dt / 1.2);                                         // (the morning, if seen: he is there, softly)
-      if (reduced) { R.f = 0; return; }
-      if (R.burst > 0) { if ((R.bt -= dt) < 0) { R.bt = 0.22 + Math.random() * 0.16; R.f = R.f === 1 ? 2 : 1; R.burst--; } }
-      else { R.f = 0; if (Math.random() < dt * 0.45) R.burst = 3 + ((Math.random() * 4) | 0); }
+      if (reduced) { R.c = ['seat', 0]; return; }
+      if ((R.ft -= dt) > 0) return;
+      if (!R.seq.length) R.seq = regSeat();
+      const [g, i, d] = R.seq.shift(); R.c = [g, i]; R.ft = d;
     } else if (R.st === 'up') {                                                 // up from his stool
-      R.t += dt; if (R.t > 0.4) { R.st = 'walk'; R.t = 0; [R.X, R.Z] = regAt(0); R.dist = 0; }
+      if ((R.ft -= dt) > 0) return;
+      if (R.seq.length) { const [g, i, d] = R.seq.shift(); R.c = [g, i]; R.ft = d; return; }
+      R.st = 'walk'; R.t = 0; [R.X, R.Z] = regAt(0); R.dist = 0; R.f = 0;
     } else if (R.st === 'walk') {                                               // to the door, eased in and out (0.6 s each)
       const [x0, z0] = IRF.W.from, [x1, z1] = IRF.W.to, L = Math.hypot(x1 - x0, z1 - z0), T = L / REG_V + 0.6, a = 0.6;
       R.t += dt; const tt = Math.min(R.t, T), d = REG_V * (tt < a ? tt * tt / (2 * a) : tt > T - a ? (T - a) - (T - tt) * (T - tt) / (2 * a) : tt - a / 2) / L;
       const [nx, nz] = regAt(Math.min(1, d)); R.dist += Math.hypot(nx - R.X, nz - R.Z); R.X = nx; R.Z = nz;
-      R.f = [0, 1, 0, 2][Math.floor(R.dist / 0.36) % 4];
-      if (R.t >= T) { R.st = 'out'; R.t = 0; R.f = 0; }
-    } else if (R.st === 'out') { R.t += dt; if (R.t > REG_OUT) R.st = 'gone'; }   // (through the door)
+      R.f = Math.floor(R.dist / REG_STEP) % 4;
+      if (R.t >= T) { R.st = 'fix'; R.t = 0; }
+    } else if (R.st === 'fix') { R.t += dt; if (R.t > REG_FIX) { R.st = 'out'; R.t = 0; R.f = 0; } }   // (his strap)
+    else if (R.st === 'out') { R.t += dt; if (R.t > REG_OUT) R.st = 'gone'; }   // (through the door)
   }
-  function regWalk(X, Z, f, a, L) {                                            // (the regular standing at (X, Z): his size, his feet on the floor)
-    const W = IRF.W, s = 1400 / Z, n = Math.max(0, Math.min(W.cells.length - 1, Math.round(W.top * s) - W.h0)), c = W.cells[n][f];
-    L.push({ c, x: Math.round(700 + X * s - c[2] / 2), y: Math.round(615 + 1.5 * s) - c[3], a });
+  function regWalk(X, Z, a, L, c) {                                            // (the regular standing at (X, Z): his size, his feet on the floor)
+    const W = IRF.W, s = 1400 / Z, n = Math.max(0, Math.min(W.cells.length - 1, Math.round(W.top * s) - W.h0));
+    L.push({ c: c || W.cells[n][REG.f], x: 700 + X * s, y: 615 + 1.5 * s, a, z: Z });
   }
-  function guestsNear(L) {                                                     // (into the near pass, droite-08's)
-    const R = REG, S = IRF.S, b = R.br > 0.25 ? 1 : 0;
-    if (R.st === 'seat' || R.st === 'up') L.push({ c: S.cells[R.f], x: Math.round(S.x - S.cx), y: S.y - b, a: R.st === 'up' ? 1 - R.t / 0.4 : R.a });
-    if (R.st === 'up') regWalk(IRF.W.from[0], IRF.W.from[1], 0, R.t / 0.4, L);
-    if (R.st === 'walk') regWalk(R.X, R.Z, R.f, 1, L);
-    if (R.st === 'out') regWalk(R.X, R.Z, 0, 1 - R.t / REG_OUT, L);
+  function guestsNear(L) {                                                     // (into the near pass)
+    const R = REG;
+    if (R.st === 'seat' || R.st === 'up') L.push({ c: IRF.S[R.c[0]][R.c[1]], x: IRF.Sx, y: IRF.Sy, a: R.st === 'seat' ? R.a : 1, z: IRF.W.from[1] });
+    if (R.st === 'walk') regWalk(R.X, R.Z, 1, L);
+    if (R.st === 'fix') regWalk(R.X, R.Z, 1, L, IRF.W.fix[0]);
+    if (R.st === 'out') regWalk(R.X, R.Z, 1 - R.t / REG_OUT, L);
   }
   function stepRamen(dt, t) {
     for (const m of vent) {                      // the vent: puffs rise, swell, drift left with the wind and fade
@@ -6030,41 +6137,51 @@
       }
     };
     const masked = (g) => { if (rlMask.complete && rlMask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(rlMask, 0, 0, rlC.width, rlC.height); g.globalCompositeOperation = 'source-over'; } };
-    // their silhouettes, crisp, one dark colour, the painting's grain, on the glass only (and what is nearer cut out of them)
-    const people = (list, colour, grain, alpha, occ) => {
-      shg.setTransform(1, 0, 0, 1, -RL.x, -RL.y); shg.globalCompositeOperation = 'source-over'; shg.globalAlpha = 1; shg.clearRect(RL.x, RL.y, RL.w, RL.h);
-      shg.imageSmoothingEnabled = false;
+    const begin = () => { shg.setTransform(1, 0, 0, 1, -RL.x, -RL.y); shg.globalCompositeOperation = 'source-over'; shg.globalAlpha = 1; shg.clearRect(RL.x, RL.y, RL.w, RL.h); shg.imageSmoothingEnabled = false; };
+    const blit = (alpha) => {                    // (on the glass only; into the room's canvas, doubled)
+      shg.globalCompositeOperation = 'destination-in'; shg.fillStyle = '#000'; shg.fill(irGlass); shg.globalCompositeOperation = 'source-over';
+      rlg.imageSmoothingEnabled = false; rlg.globalAlpha = alpha; rlg.drawImage(shC, 0, 0, rlC.width, rlC.height); rlg.globalAlpha = 1;
+    };
+    // the people in colour, crisp: each cell set by its anchor (x: the middle of his chest; y: the top of his head, or the floor),
+    // turned round about it to walk left; what is nearer cut out of them, the noren's shadow on them
+    const sprites = (list, occ) => {
+      begin();
       for (const P of list) {
-        shg.globalAlpha = Math.max(0, Math.min(1, P.a == null ? 1 : P.a)); const [sx, sy, w, h] = P.c;
-        if (P.flip) { shg.save(); shg.translate(P.x + w, P.y); shg.scale(-1, 1); shg.drawImage(IRFI, sx, sy, w, h, 0, 0, w, h); shg.restore(); }
-        else shg.drawImage(IRFI, sx, sy, w, h, P.x, P.y, w, h);
+        const [sx, sy, w, h, ox, oy] = P.c, x = Math.round(P.x), y = Math.round(P.y) - oy;
+        shg.globalAlpha = Math.max(0, Math.min(1, P.a == null ? 1 : P.a));
+        if (P.flip) { shg.save(); shg.translate(x + ox, y); shg.scale(-1, 1); shg.drawImage(IRFI, sx, sy, w, h, 0, 0, w, h); shg.restore(); }
+        else shg.drawImage(IRFI, sx, sy, w, h, x - ox, y, w, h);
       }
       shg.globalAlpha = 1;
       if (occ) { const [sx, sy, w, h, x, y] = IRF.O; shg.globalCompositeOperation = 'destination-out'; shg.drawImage(IRFI, sx, sy, w, h, x, y, w, h); }
+      shg.globalCompositeOperation = 'source-atop';
+      IR_HAUT.forEach((k, i) => { shg.fillStyle = 'rgba(0,0,0,' + (1 - k) + ')'; shg.fill(irHem[i]); });
+      blit(1);
+    };
+    // Naruto's silhouette: one dark colour, the painting's grain
+    const shadow = (list, colour, grain, alpha) => {
+      begin();
+      for (const P of list) { const [sx, sy, w, h] = P.c; shg.drawImage(IRFI, sx, sy, w, h, P.x, P.y, w, h); }
       shg.globalCompositeOperation = 'source-in'; shg.fillStyle = colour; shg.fillRect(RL.x, RL.y, RL.w, RL.h);
       shg.globalCompositeOperation = 'destination-out'; shg.globalAlpha = grain; shg.drawImage(grC, RL.x, RL.y); shg.globalAlpha = 1;
-      shg.globalCompositeOperation = 'destination-in'; shg.fill(irGlass); shg.globalCompositeOperation = 'source-over';
-      rlg.imageSmoothingEnabled = false; rlg.globalAlpha = alpha; rlg.drawImage(shC, 0, 0, rlC.width, rlC.height); rlg.globalAlpha = 1;
+      blit(alpha);
     };
     rlg.globalCompositeOperation = 'source-over'; rlg.globalAlpha = 1; rlg.clearRect(0, 0, rlC.width, rlC.height);
     rlg.fillStyle = 'rgba(255,196,128,' + Math.max(0, 0.05 + 0.04 * Math.sin(t * 0.9) - (RAM.dip > 0 ? 0.05 : 0)) + ')';
     rlg.fillRect(0, 0, rlC.width, rlC.height);      // the room's light breathes on everything
     wisps(rlg, true); masked(rlg);
-    const reach = IR.take >= 0 ? (IR.out ? 2.4 - IR.take : IR.take) : -1;            // the noren taken in (or hung out)
-    const atDoor = ok && reach >= 0 && reach < 2.4;
-    if (ok && !atDoor) {                                                             // Teuchi, behind the counter (his breath: a pixel)
-      const T = IRF.T, c = T.cells[TCH.f];
-      people([{ c, x: Math.round(TCH.x) - T.cx, y: T.y - (TCH.br > 0.25 ? 1 : 0), flip: TCH.view === 1 && TCH.dir > 0 }], '#220a06', 1, 0.86, true);
-    }
+    const T = TCH, tc = ok && T.where && (T.where === 'D' ? IRF.D : IRF.T)[T.c[0]][T.c[1]];
+    if (tc && T.where === 'T')                                                       // Teuchi, behind the counter
+      sprites([{ c: tc, x: T.x, y: T.c[0] === 'walk' ? IRF.Ty.feet : IRF.Ty.head, flip: T.flip }], true);
     sbg.globalCompositeOperation = 'source-over'; sbg.clearRect(0, 0, sbC.width, sbC.height); wisps(sbg, false); masked(sbg);
     rlg.drawImage(sbC, 0, 0);                                                        // (the bowls' steam, in front of him)
-    // the people at the counter, on the stools before it (Naruto, droite-08; the regular), and the regular on his way to the
-    // door: nearer than Teuchi, darker; Teuchi at the door with his pole, nearer still
-    IRNEAR.length = 0;
-    if (NRM.st === 'here') IRNEAR.push({ c: IRF.N.cells[NRM.f], x: Math.round(IRF.N.x - IRF.N.cx), y: IRF.N.y - (NRM.br > 0.25 ? 1 : 0) });
-    guestsNear(IRNEAR);
-    if (atDoor) { const R = IRF.R; IRNEAR.push({ c: R.cells[reach < 0.6 || reach > 1.9 ? 0 : 1], x: Math.round(R.x) - R.cx, y: R.y, a: Math.min(1, reach / 0.3, (2.4 - reach) / 0.3) }); }
-    if (ok && IRNEAR.length) people(IRNEAR, '#14060a', 0.5, 0.95, false);
+    // the people at the counter, on the stools before it (Naruto, droite-08; the regular), the regular on his way to the door,
+    // Teuchi at the doors: nearer than Teuchi's aisle, the farthest first
+    if (ok && NRM.st === 'here') shadow([{ c: IRF.N.cells[NRM.f], x: Math.round(IRF.N.x - IRF.N.cx), y: IRF.N.y - (NRM.br > 0.25 ? 1 : 0) }], '#14060a', 0.5, 0.95);
+    IRNEAR.length = 0; guestsNear(IRNEAR);
+    if (tc && T.where === 'D') IRNEAR.push({ c: tc, x: T.x, y: IRF.Dz[2], flip: T.flip, z: IRF.Dz[1] });
+    IRNEAR.sort((a, b) => b.z - a.z);
+    if (ok && IRNEAR.length) sprites(IRNEAR, false);
     rlTex.needsUpdate = true;
   }
 
@@ -6092,7 +6209,7 @@
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
   const shopOff = addTex('assets/shop_off.webp?v=5', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
-  const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, hk0: -1, graded: false };
+  const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
   const IRA = { W: 1104, H: 504, cw: 48, ch: 84 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
   const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
@@ -6133,7 +6250,7 @@
   }
   function stepShop(dt, t) {
     SHOP.t += dt;
-    if (!IR.graded) { IR.graded = true; for (const L of IRL) L.m.forEach((m, r) => gradeSprite(m.material, r ? 'self' : 'street')); gradeSprite(IRNR.m[0].material, 'street'); gradeSprite(IRNR.m[1].material, 'self'); }
+    if (!IR.graded) { IR.graded = true; for (const L of IRL) L.m.forEach((m, r) => gradeSprite(m.material, r ? 'self' : 'street')); gradeSprite(IRNR.m[0].material, 'street'); gradeSprite(IRNR.m[1].material, 'self'); gradeSprite(rlMesh.material, 'self'); }
     const hk = openK('ramen'), pz = irPow();
     if (!SHOP.open && !OPEN.on && hk > 0.99 && SHOP.t > 2) { SHOP.open = true; SHOP.t = 0; }   // (shut by the opening's script at night: open again in its hours)
     const sc = SHOP.open, nW = sc && hk > 0.92, lW = [sc && hk > 0.78, sc && hk > 0.7], kW = sc && hk > 0.2, oW = hk > 0.5;   // the stage: each part at its own share of the hour's ease
@@ -6145,6 +6262,7 @@
     SHOP.k = Math.max(0, Math.min(1, SHOP.k + (kW ? dt / 0.8 : -dt / 0.5)));   // the kitchen, last
     shopOff.material.opacity = (1 - SHOP.k) * 0.88 * pz;                       // (its panes lit by the street: none with the zone's power out, the unlit street's own front then)
     rlMesh.material.opacity = SHOP.k;
+    rlMesh.material.color.setRGB(0.1 + 0.9 * pz, 0.1 + 0.9 * pz, 0.15 + 0.85 * pz);   // (its people: in the dark with the zone's power out)
     for (const m of vent) m.material.opacity *= 0.25 + 0.75 * SHOP.k;           // the kitchen rests too
     IRL.forEach((L, i) => {                                                      // the lanterns: their light, their swing
       const S = IR.l[i]; if (lW[i] !== S.on) { S.on = lW[i]; S.t = 0; } S.t += dt;
@@ -6162,10 +6280,14 @@
     });
     stepNaruRamen(dt, hk);
     const live = IR.hk0 >= 0 && Math.abs(hk - IR.hk0) < 0.05 && !reduced;      // (a driven hour, the first frame: its state at once)
-    if (oW !== IR.out) { IR.out = oW; IR.take = live ? 0 : -1; }
+    if (oW !== IR.out) {                                                         // the noren in (or out): Teuchi comes to the doors for it, if seen
+      if (IR.wait) { IR.wait = false; IR.out = oW; }                            // (the hour back before he got there: nothing to do)
+      else { IR.out = oW; IR.wt = 0; IR.wait = live && SHOP.k > 0.5 && IRFI.complete && IRFI.naturalWidth > 0; IR.take = live && !IR.wait ? 0 : -1; teuchiDoor(IR.wait); }
+    }
+    if (IR.wait && ((IR.wt += dt) > 30 || SHOP.k < 0.5)) { IR.wait = false; IR.take = 0; }   // (held up, or the kitchen dark: it goes all the same)
     IR.hk0 = hk;
-    let dy = 0, vis = IR.out;
-    if (IR.take >= 0) {                                                          // 2.4 s: Teuchi reaches up, the noren rises 2, 4 px, is gone (the other way in the morning)
+    let dy = 0, vis = IR.wait ? !IR.out : IR.out;
+    if (IR.take >= 0) {                                                          // 2.4 s: Teuchi's pole at the rail, the noren rises 2, 4 px, is gone (the other way in the morning)
       IR.take += dt; const u = IR.out ? 2.4 - IR.take : IR.take;
       dy = u < 0.8 ? 0 : u < 1.2 ? -2 : -4; vis = u < 1.6;
       if (IR.take > 2.4) IR.take = -1;
