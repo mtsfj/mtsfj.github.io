@@ -966,7 +966,7 @@ def main():
     ap.add_argument('--only', default=None, help='horde | bus')
     ap.add_argument('--planches', default=None, help='un dossier : une planche de contrôle par zombie (x4)')
     o = ap.parse_args()
-    only = o.only.split(',') if o.only else ['horde']
+    only = o.only.split(',') if o.only else ['horde', 'bus']
     ZH = BZ = None
     if 'horde' in only:
         ZH, _ = cuire_horde()

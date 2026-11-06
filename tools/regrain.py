@@ -485,25 +485,8 @@ def do_horde(HRD, rep):
 
 
 def do_bus(BZ, rep):
-    a, sp = load('bus_zombies.webp'), load('bus_zombies_spill.webp')
-    out, boxes = [], []
-    groups = {}
-    for sh in ('pull', 'roof', 'fall', 'fallhi', 'climb', 'emerge'):
-        S = BZ[sh]
-        for v, y in S['rows'].items():
-            for k in range(S['n']):
-                b = [k * S['w'], y, S['w'], S['h']]
-                boxes.append(b)
-                groups.setdefault(v, []).append(dict(a=a, box=b, anchor=(S['ax'], S['ay']), seq=(sh, k), **{'with': [sp]}))
-    if rep:
-        report(a, boxes, 'bus_zombies avant')
-    for v, items in groups.items():                                  # (un personnage par rangée : A, B)
-        out.append(regrain_group(items, params('bus'), 'bus_zombies ' + v))
-    save(a, 'bus_zombies.webp')
-    save(sp, 'bus_zombies_spill.webp', rgb=True)
-    if rep:
-        report(a, boxes, 'bus_zombies après')
-    return out
+    print('les zombies du bus : tools/zombie_sheets.py (les planches du propriétaire), plus ce mode ; rien d\'écrit')
+    return []
 
 
 def street(o):

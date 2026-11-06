@@ -1840,24 +1840,31 @@
     if (S.hold && S.wait > 0) S.wait = Math.max(S.wait, 0.5);   // (held at its stop for the finale: CREW.api.release())
     if ((S.dir > 0 && x0 > BUS.gap[1] + 4) || (S.dir < 0 && x0 + BUS.W < BUS.gap[0] - 4)) { busOff(true); S.next = 40 + Math.random() * 70; crewGone(); }
   }
-  // ---- TranZit's zombies, riding the bus (bus/zombie_rig.py: rigged figures, joints posed by rotations and IK; dressed
-  // and lit by bus/zombie_look.py: torn clothes on spring chains, rotting grey-green skin, tufts of hair, lit by the
-  // dusk and the street, by the bus's saloon light (its own layer, crackling with the tubes) and by the oden's orange
-  // and the awning's red by where they are; orange eyes with a faint glow). On every pass (the crew's aside), one crouches on the roof,
-  // holding on to the rack and swaying, now and then rearing up to claw at the air; one hangs at a window, its back to
-  // the street, wrenches the loose plank nailed across it, rips it off and flings it back along the bus, then claws at
-  // the glass, looking round at the street. The plank falls on its arc, bounces and clatters on the wet road, lies there
-  // a while and fades. Hidden like the bus behind the near buildings.
+  // ---- TranZit's zombies (the owner's five, drawn frame by frame: tools/zombie_sheets.py cuts its sheets, brings them
+  // to the bus's depth (41 m, 23.4 px/m) by majority and to the street's grain; bus_zombies_glow: the saloon's light on
+  // their edges, crackling with the tubes; bus_zombies_spill: the oden's orange from the left, the awning's red from the
+  // right; orange eyes, a faint glow). On every pass (the crew's own aside) two ride it already, as it comes round the
+  // corner (they jumped on before): one hangs at a window, its back to the street, wrenches the loose plank nailed across
+  // it, rips it off and flings it back along the bus, then claws at the glass and looks round at the street; one crouches
+  // on the roof, holding on and swaying, now and then rearing up to claw at the air. A pack runs after it, out from behind
+  // the corner it came round, sprinting in profile, a little slower than it: they lose ground and drop back out of sight
+  // behind the far corner. When it stops (its stop, the crew's, a round of `jugg`) they catch up along its near side: now
+  // and then one leaps, catches a window's plank and hangs there for the plank's act, another runs and leaps onto the
+  // roof, hauls himself up and crouches there; the others claw at its side. It leaves: who is on it rides on, the others
+  // run after it and fall behind. The plank: nailed, in his hands, thrown, always the same sprite (bus_plank: 16 angles
+  // and lying): it falls on its arc, bounces and clatters on the wet road, lies there a while and fades. Hanging and
+  // clawing on its near side (in front of it), crouched on its roof line (behind its edge), running at road depth in
+  // front of it or behind it; all hidden like the bus behind the near buildings.
   // `jugg`, after the game: a click kills a zombie (it drops to the road; +500 rises in the game's yellow; the points
   // stay in this browser, bottom right). The first kill on a pass starts a round (too late for the bus to pull up in
-  // sight: on its next pass, which stops for it): the bus pulls up, zombies come over
-  // its roof and out of its windows (6, 10, 14... a round, three to five at a time), the round in red chalk tallies at
-  // the bottom left; a round left alone 25 s, the bus drives off with its riders (the round comes back on a later pass:
+  // sight: on its next pass, which stops for it): the bus pulls up, its zombies come running from behind it and climb
+  // on or come at its windows (6, 10, 14... a round, three to five at a time), the round in red chalk tallies at the
+  // bottom left; a round left alone 25 s, the bus drives off with its riders (the round comes back on a later pass:
   // once a round has begun, every pass brings riders).
   // Perk-a-Cola: zone 7's three machines each sell their perk (Speed Cola 3000, Double Tap 2000, Juggernog 2500): the
   // bottle drunk in first person, its icon at the bottom left for good (under reduced motion: no drink, the icon at once;
-  // the bus parked by cuts, rmBus below) ----
-  const BZ = {"W":1872,"H":840,"win":103,"roofCol":120,"plankY":50.65,"winSlots":[25,49,74,131,160],"roofSlots":[30,72,165,208],"soda":[281,569,347,724],"drink":{"w":96,"h":128,"n":25,"fps":8},"pull":{"w":48,"h":66,"ax":24,"ay":64,"fps":8,"n":39,"rows":{"A":0,"B":66},"eyes":{"A":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5]],"B":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5],[24.0,19.5]]},"plank":[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,0.02,-50.03,-0.076],[1,0.3,-48.45,-0.272],[1,0.6,-47.58,-0.384],[1,0.21,-48.79,-0.229],[1,0.12,-49.24,-0.173],[1,0.38,-48.18,-0.306],[1,0.88,-46.96,-0.466],[1,1.05,-46.64,-0.512],[1,0.34,-48.32,-0.288],[1,0.36,-48.24,-0.299],[1,1.02,-46.7,-0.503],[1,1.4,-46.07,-0.593],[1,3.89,-46.05,0.573],[1,4.7,-45.35,0.088],[1,-2.85,-45.51,-1.33],[1,-11.96,-54.78,-2.414],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0],[2,0,0,0]],"loop":28},"roof":{"w":40,"h":36,"ax":20,"ay":32,"fps":8,"n":26,"rows":{"A":132,"B":168},"eyes":{"A":[[34.5,16.0],[35.0,16.5],[35.5,17.0],[35.5,17.5],[35.5,17.5],[35.0,16.5],[34.5,16.5],[34.5,15.5],[34.0,15.5],[34.0,14.5],[33.5,14.5],[33.5,14.5],[34.0,15.5],[34.5,16.5],[35.0,16.5],[35.5,17.0],[35.5,17.5],[34.5,11.5],[29.5,3.0],0,0,0,0,[27.0,1.5],[31.5,7.5],[34.0,14.5]],"B":[[34.5,16.0],[35.0,16.5],[35.5,17.0],[35.5,17.5],[35.5,17.5],[35.0,16.5],[34.5,16.5],[34.5,15.5],[34.0,15.5],[34.0,14.5],[33.5,14.5],[33.5,14.5],[34.0,15.5],[34.5,16.5],[35.0,16.5],[35.5,17.0],[35.5,17.5],[34.5,11.5],[29.5,3.0],0,0,0,0,[27.0,1.5],[31.5,7.5],[34.0,14.5]]}},"fall":{"w":60,"h":70,"ax":26,"ay":64,"fps":10,"n":13,"rows":{"A":204,"B":274},"eyes":{"A":[0,0,[21.5,18.0],[17.5,32.5],[16.0,50.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5]],"B":[0,0,[21.5,18.0],[17.5,32.5],[16.0,50.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5],[15.0,65.5]]}},"fallhi":{"w":60,"h":110,"ax":26,"ay":104,"fps":10,"n":15,"rows":{"A":344,"B":454},"eyes":{"A":[0,0,0,0,[20.0,15.5],[18.0,31.5],[16.5,50.5],[16.0,70.5],[15.5,91.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5]],"B":[0,0,0,0,[20.0,15.5],[18.0,31.5],[16.5,50.5],[16.0,70.5],[15.5,91.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5],[15.0,105.5]]}},"climb":{"w":40,"h":72,"ax":20,"ay":68,"fps":10,"n":15,"rows":{"A":564,"B":636},"eyes":{"A":[0,0,[28.5,71.5],[28.5,67.0],[28.5,63.5],[28.5,63.5],[29.5,61.5],[30.5,59.5],[32.0,56.5],[33.0,54.5],[33.0,53.5],[33.5,53.5],[33.5,53.5],[34.0,52.5],[34.5,52.5]],"B":[0,0,[28.5,71.5],[28.5,67.0],[28.5,63.5],[28.5,63.5],[29.5,61.5],[30.5,59.5],[32.0,56.5],[33.0,54.5],[33.0,53.5],[33.5,53.5],[33.5,53.5],[34.0,52.5],[34.5,52.5]]}},"emerge":{"w":48,"h":66,"ax":24,"ay":64,"fps":10,"n":16,"rows":{"A":708,"B":774},"eyes":{"A":[[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[24.0,17.5],[29.0,18.0],[32.5,18.5],0,0,0,0,0,0,0],"B":[[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[21.5,17.5],[24.0,17.5],[29.0,18.0],[32.5,18.5],0,0,0,0,0,0,0]},"front":[0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1]}};
+  // the bus parked by cuts, its zombies still, rmBus below) ----
+  const BZ = {"W":1024,"H":181,"ppm":23.4,"Z":[{"run":[[841,125,21,25,12,25],[907,125,19,25,11,25],[863,125,21,25,11,25],[815,125,25,25,12,25],[966,125,27,24,14,24],[21,157,19,24,8,24],[0,157,20,24,8,24],[149,157,19,23,10,23]],"leap":[[947,125,18,25,8,25],[242,157,19,22,10,22],[494,125,23,27,9,27],[71,125,26,30,10,30],[210,125,17,30,4,30],[435,125,17,28,6,28],[728,125,18,26,8,26],[612,157,18,15,14,15]],"jump":[[814,50,15,36,6,36],[85,90,11,34,5,34],[830,50,13,36,6,36],[56,125,14,31,7,31],[353,125,15,29,7,29],[226,157,15,23,8,23]],"roof":[[925,90,20,31,7,31],[691,90,21,32,8,32],[713,90,21,32,8,32],[293,125,19,29,7,29],[796,50,17,36,7,36],[194,50,19,39,7,39],[514,0,20,41,6,41],[322,0,22,43,6,43]],"plank":[[693,0,21,40,10,40],[781,0,20,40,10,40],[802,0,20,40,12,40],[368,0,19,43,13,43],[100,0,19,48,13,48],[0,0,23,49,11,49],[944,0,17,40,9,40],[865,0,19,40,7,40]],"fall":[[646,0,23,40,11,40],[603,50,24,37,12,37],[936,50,24,34,11,34],[146,125,21,30,9,30],[316,157,24,21,8,21],[706,157,31,12,10,12]]},{"run":[[708,125,19,26,9,26],[615,125,26,26,12,26],[405,125,29,28,11,28],[581,125,33,26,15,26],[518,125,21,27,9,27],[747,125,17,26,8,26],[765,125,16,26,7,26],[799,125,15,26,6,26]],"leap":[[385,157,18,20,10,20],[885,125,21,25,10,25],[268,125,24,29,9,29],[806,90,26,31,9,31],[98,125,23,30,8,30],[168,125,21,30,7,30],[552,157,21,17,15,17],[631,157,18,13,15,13]],"jump":[[230,90,24,33,12,33],[476,0,15,42,7,42],[596,0,16,41,8,41],[233,50,14,39,7,39],[339,90,17,33,8,33],[190,125,19,30,9,30]],"roof":[[881,90,21,31,9,31],[757,90,20,32,8,32],[45,90,19,34,7,34],[946,90,20,31,8,31],[758,50,18,36,7,36],[651,50,19,37,7,37],[89,50,20,39,7,39],[535,0,20,41,7,41]],"plank":[[110,50,20,39,10,39],[425,50,21,38,10,38],[715,0,21,40,11,40],[556,0,19,41,10,41],[145,0,22,46,10,46],[406,0,23,42,12,42],[885,0,19,40,8,40],[576,0,19,41,8,41]],"fall":[[447,50,21,38,10,38],[628,50,22,37,10,37],[574,90,23,32,7,32],[666,125,20,26,8,26],[435,157,25,19,10,19],[738,157,31,12,4,12]]},{"run":[[370,90,32,32,13,32],[436,90,29,32,10,32],[109,90,34,33,14,33],[369,125,35,28,16,28],[403,90,32,32,14,32],[495,90,26,32,10,32],[833,90,23,31,10,31],[122,125,23,30,11,30]],"leap":[[642,125,23,26,9,26],[778,90,27,31,8,31],[144,90,29,33,11,33],[613,0,32,40,12,40],[976,0,25,39,8,39],[961,50,23,34,7,34],[501,157,24,18,15,18],[363,157,21,20,12,20]],"jump":[[572,50,30,37,15,37],[78,0,21,48,8,48],[168,0,18,46,8,46],[388,0,17,43,8,43],[23,90,21,34,10,34],[622,90,22,32,11,32]],"roof":[[242,125,25,29,9,29],[857,90,23,31,7,31],[255,90,22,33,6,33],[736,50,21,36,6,36],[469,50,21,38,6,38],[492,0,21,41,6,41],[430,0,23,42,6,42],[211,0,22,44,7,44]],"plank":[[310,50,22,38,11,38],[333,50,22,38,10,38],[454,0,21,42,10,42],[120,0,24,46,11,46],[24,0,28,48,11,48],[282,50,27,38,14,38],[356,50,22,38,11,38],[670,0,22,40,10,40]],"fall":[[268,0,26,43,12,43],[1002,0,22,39,12,39],[985,50,23,34,8,34],[468,125,25,27,6,27],[526,157,25,17,9,17],[770,157,27,11,11,11]]},{"run":[[169,157,19,23,10,23],[103,157,22,23,12,23],[79,157,23,23,12,23],[126,157,22,23,10,23],[189,157,18,23,8,23],[299,157,16,22,8,22],[281,157,17,22,9,22],[262,157,18,22,10,22]],"leap":[[208,157,17,23,8,23],[484,157,16,19,11,19],[41,157,18,24,9,24],[687,125,20,26,8,26],[60,157,18,24,6,24],[782,125,16,26,6,26],[595,157,16,16,12,16],[650,157,17,13,13,13]],"jump":[[967,90,20,31,9,31],[844,50,13,36,7,36],[97,90,11,34,5,34],[357,90,12,33,6,33],[228,125,13,30,6,30],[453,125,14,28,7,28]],"roof":[[988,90,19,31,6,31],[278,90,20,33,6,33],[777,50,18,36,5,36],[299,90,19,33,6,33],[554,50,17,38,5,38],[534,50,19,38,6,38],[737,0,21,40,6,40],[513,50,20,38,6,38]],"plank":[[131,50,20,39,10,39],[152,50,20,39,9,39],[823,0,20,40,9,40],[844,0,20,40,11,40],[345,0,22,43,12,43],[295,0,26,43,13,43],[214,50,18,39,7,39],[925,0,18,40,7,40]],"fall":[[671,50,17,37,9,37],[882,50,21,35,10,35],[903,90,21,31,9,31],[927,125,19,25,4,25],[461,157,22,19,8,19],[798,157,25,11,7,11]]},{"run":[[522,90,25,32,13,32],[466,90,28,32,13,32],[598,90,23,32,8,32],[904,50,31,34,14,34],[174,90,29,33,11,33],[645,90,22,32,9,32],[735,90,21,32,10,32],[204,90,25,33,15,33]],"leap":[[994,125,21,24,10,24],[548,90,25,32,7,32],[707,50,28,36,9,36],[248,50,33,38,12,38],[668,90,22,32,6,32],[0,90,22,34,7,34],[341,157,21,21,11,21],[574,157,20,17,14,17]],"jump":[[491,50,21,38,8,38],[234,0,16,44,7,44],[962,0,13,40,6,40],[251,0,16,44,9,44],[39,125,16,31,8,31],[313,125,19,29,9,29]],"roof":[[540,125,20,27,8,27],[333,125,19,29,7,29],[20,125,18,31,8,31],[319,90,19,33,8,33],[65,90,19,34,8,34],[689,50,17,37,8,37],[379,50,22,38,9,38],[402,50,22,38,9,38]],"plank":[[23,50,21,39,11,39],[45,50,21,39,11,39],[67,50,21,39,12,39],[759,0,21,40,13,40],[187,0,23,45,12,45],[53,0,24,48,13,48],[173,50,20,39,11,39],[905,0,19,40,10,40]],"fall":[[0,50,22,39,11,39],[858,50,23,35,12,35],[0,125,19,31,12,31],[561,125,19,27,10,27],[404,157,30,19,18,19],[668,157,37,12,23,12]]}],"P":[{"leap":[[15.15,0.51],[15.78,0.37],[14.15,0.22],[22.02,0.81],[15.5,0.93],[10.29,0.19],[11.43,0.02],[14.0,0.81]],"jump":[[8.69,0.06],[5.4,0.24],[6.17,0.63],[7.23,0.21],[7.17,0.39],[7.6,0.8]]},{"leap":[[13.43,0.28],[15.41,0.47],[17.72,0.26],[18.02,0.94],[16.84,0.66],[13.37,0.66],[15.66,0.04],[12.35,0.49]],"jump":[[12.42,0.65],[13.19,0.51],[7.28,0.23],[6.94,0.88],[8.48,0.17],[9.54,0.18]]},{"leap":[[15.83,0.57],[15.7,0.34],[21.68,0.16],[27.84,0.77],[17.23,0.93],[12.96,0.44],[15.8,0.57],[13.6,0.53]],"jump":[[17.25,0.53],[11.92,0.05],[9.53,0.82],[8.87,0.72],[10.65,0.15],[11.29,0.47]]},{"leap":[[12.16,0.73],[12.86,0.94],[12.86,0.13],[17.08,0.22],[11.22,0.63],[12.02,0.32],[12.65,0.65],[12.95,0.16]],"jump":[[9.3,0.71],[8.25,0.79],[5.8,0.5],[6.0,0.5],[6.0,0.01],[7.6,0.21]]},{"leap":[[16.27,0.65],[13.63,0.72],[18.73,0.54],[23.61,0.23],[12.34,0.14],[11.69,0.84],[15.61,0.53],[15.01,0.42]],"jump":[[8.65,0.81],[9.16,0.03],[6.43,0.79],[7.56,0.75],[8.29,0.0],[8.21,0.74]]}],"E":[{"run":[[18.63,2.81],[17.05,2.64],[15.49,1.99],[17.63,2.65],[18.94,2.57],[12.83,2.52],[10.75,4.17],[14.18,1.99]],"leap":[[15.29,2.99],[16.79,2.49],[13.15,2.74],[13.77,5.7],[7.41,5.47],[8.8,3.82],[7.2,1.94],[14.92,2.88]],"roof":[[14.86,3.33],[15.66,3.51],[15.44,3.51],[13.68,3.32],[11.59,2.93],[11.13,3.46],[10.93,3.35],[11.7,3.47]],"plank":[0,0,0,0,0,0,0,[10.25,2.82]]},{"run":[[13.57,3.33],[19.4,2.55],[16.35,4.82],[19.27,4.78],[14.02,4.84],[12.6,4.47],[13.79,3.84],[10.3,4.5]],"leap":[[11.29,3.89],[13.85,4.11],[17.09,4.92],[16.0,6.26],[14.13,4.69],[11.18,3.69],[15.6,3.83],[10.16,2.6]],"roof":[[16.78,5.7],[13.54,5.27],[15.66,5.14],[12.43,5.23],[12.87,2.98],[12.26,2.69],[11.86,2.48],[10.72,3.31]],"plank":[0,0,0,0,0,0,0,[12.75,5.58]]},{"run":[[24.84,3.96],[18.38,3.04],[22.12,3.02],[25.59,3.48],[21.86,2.46],[16.54,2.6],[16.17,2.47],[17.35,3.22]],"leap":[[15.22,2.99],[16.22,2.76],[20.04,3.46],[22.07,7.7],[17.59,3.35],[14.32,2.86],[20.52,4.42],[14.85,2.95]],"roof":[[18.75,4.29],[16.54,3.01],[15.42,2.57],[15.79,4.78],[14.79,4.4],[13.57,4.87],[12.0,4.75],[8.99,4.98]],"plank":[0,0,0,0,0,0,0,[12.5,4.77]]},{"run":[[14.98,2.54],[16.19,2.54],[16.23,2.54],[14.51,2.44],[11.84,3.14],[12.02,2.54],[13.41,2.75],[13.35,2.65]],"leap":[[12.11,2.94],[14.19,2.8],[12.04,2.34],[10.98,4.84],[8.98,3.14],[11.24,2.53],[12.0,2.96],[12.36,2.47]],"roof":[[14.53,2.74],[15.36,2.44],[13.18,2.58],[14.75,2.44],[12.21,3.32],[11.62,2.75],[13.16,3.26],[11.64,2.97]],"plank":[0,0,0,0,0,0,0,[10.5,3.14]]},{"run":[[21.62,2.55],[22.8,3.35],[16.03,2.55],[20.73,3.11],[18.93,3.12],[17.32,2.55],[19.3,3.31],[22.47,3.12]],"leap":[[16.99,2.92],[15.07,2.99],[14.87,4.54],[18.3,3.8],[9.17,2.41],[12.45,3.11],[15.4,2.8],[17.89,4.21]],"roof":[[15.85,2.66],[14.77,2.85],[13.97,3.3],[12.51,2.59],[8.23,2.3],[7.92,3.49],[8.32,3.2],[7.54,2.81]],"plank":[0,0,0,0,0,0,0,[9.85,3.39]]}],"K":[[[1,-0.19,-35.47,3.14],[1,-0.21,-35.38,3.121],[1,-2.47,-35.5,2.898],[1,-4.08,-36.66,2.62],[1,-3.5,-42.31,2.675],[2,6.29,-44.46,0.57],[0,0,0,0],[0,0,0,0]],[[1,1.25,-31.98,3.137],[1,0.23,-32.12,3.139],[1,0.83,-34.41,2.717],[1,0.44,-34.92,2.568],[1,0.38,-41.91,0.388],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[1,0.48,-34.8,0.006],[1,1.79,-35.53,3.087],[1,1.77,-37.44,2.824],[1,3.87,-40.02,2.65],[2,9.2,-43.47,0.411],[0,0,0,0],[0,0,0,0],[0,0,0,0]],[[1,0.02,-32.6,0.01],[1,1.33,-32.47,0.029],[1,2.19,-32.21,3.0],[1,-0.56,-33.28,2.789],[1,2.94,-37.04,2.486],[2,7.66,-39.29,2.892],[0,0,0,0],[0,0,0,0]],[[1,-0.47,-34.05,3.136],[1,0.85,-33.91,3.11],[1,0.66,-34.02,2.927],[1,-0.7,-35.28,2.769],[1,5.03,-37.43,0.879],[2,4.21,-43.89,2.721],[0,0,0,0],[0,0,0,0]]],"S":[1.951,2.086,1.949,1.637,1.817],"pl":[22,3,25,17],"soda":[281,569,347,724],"drink":{"w":96,"h":128,"n":25,"fps":8}};   // (tools/zombie_sheets.py writes this line)
   const lsGet = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, String(v)); } catch (e) {} };
   const PERKS = {                                  // near to far: x across the machines, price, tag colour, its icon and drink
@@ -1869,150 +1876,290 @@
     has: { jugg: lsGet('mtsfj-tz-perk') === '1', speed: lsGet('mtsfj-tz-speed') === '1', tap: lsGet('mtsfj-tz-tap') === '1' }, dk: 'jugg', imgs: {},
     seen: lsGet('mtsfj-tz-points') !== null, began: lsGet('mtsfj-tz-round') !== null, active: false, due: false, n: 0, spawned: 0, killed: 0, quiet: 0, spawnT: 0,
     puller: null, alpha: null, hud: null, drink: -1, cv: null, img: null, lit: 1 };
-  const zTex = crispLate('assets/bus_zombies.webp?v=3', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
+  // where they go on the bus (its columns heading right; mirrored heading left): its windows (the loose planks nailed on
+  // the barricades), the roof's slots, the plank's row in its window, the roof's line; the acts' frames (s each)
+  const BZC = { win: [25, 46.5, 74.5, 103.5, 131, 166.5], bar: [103.5, 166.5], rider: 103.5, roof: [32, 56, 80, 120, 150, 196], leapTo: [56, 80, 120],
+    plankRow: 36, roofRow: 10, near: [38.8, 40.6], far: 42.6, take: 34,
+    T: { leap: [0.1, 0.1, 0.08, 0.1, 0.1, 0.14, 0.14, 0.2], jump: [0.2, 0.1, 0.16, 0.16, 0.16, 0.2], plank: [0.55, 0.4, 0.3, 0.3, 0.2, 0.25], fall: [0.1, 0.28, 0.46, 0.64, 0.84] } };
+  const zSum = (T, t) => { let k = 0, s = T[0]; while (k < T.length - 1 && t >= s) s += T[++k]; return k; };   // (the frame at t of a timed act)
+  const zTex = crispLate('assets/bus_zombies.webp?v=4', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
       const c = document.createElement('canvas'); c.width = BZ.W; c.height = BZ.H; const g = c.getContext('2d'); g.drawImage(zTex.image, 0, 0);
       const d = g.getImageData(0, 0, BZ.W, BZ.H).data, a = new Uint8Array(BZ.W * BZ.H); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3]; ZG.alpha = a;
     } catch (e) {}
   });
-  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=2', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=3', 'bus');
+  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=3', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=4', 'bus');
   function zMesh(tex, glow) {                      // a zombie's layer: its own cell of the sheets (uCell), hidden behind the near buildings
-    const u = { value: new THREE.Vector4(0, 0, 1, 1) };
+    const u = { value: new THREE.Vector4(0, 0, 1, 1) }, fl = { value: 0 };
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial(glow ? { map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }
-      : { map: tex, transparent: true, depthWrite: false, alphaTest: 0.02 }));
+      : { map: tex, transparent: true, depthWrite: false, alphaTest: 0.5 }));
     m.material.customProgramCacheKey = () => (glow ? 'bus-zglow' : 'bus-zbody');
     m.material.onBeforeCompile = busShade((sh) => {
       sh.uniforms.uCell = u;
       sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform vec4 uCell;').replace('#include <uv_vertex>', 'vUv = uv * uCell.zw + uCell.xy;');
       if (glow) return;
-      sh.uniforms.tZS = { value: zTexS }; sh.uniforms.uWarm = BUS.uWarm; sh.uniforms.uRed = BUS.uRed;   // the street's spill, as on the shell
-      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D tZS;\nuniform vec3 uWarm, uRed;')
-        .replace('#include <map_fragment>', '#include <map_fragment>\nvec2 zs = texture2D(tZS, vUv).rg;\ndiffuseColor.rgb *= 1.0 + zs.r * uWarm * smoothstep(640.0, 500.0, vWP.x) + zs.g * uRed * smoothstep(760.0, 860.0, vWP.x);');
+      sh.uniforms.tZS = { value: zTexS }; sh.uniforms.uWarm = BUS.uWarm; sh.uniforms.uRed = BUS.uRed; sh.uniforms.uFlip = fl;   // the street's spill, as on the shell
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D tZS;\nuniform vec3 uWarm, uRed;\nuniform float uFlip;')
+        .replace('#include <map_fragment>', '#include <map_fragment>\nvec2 zs = texture2D(tZS, vUv).rg; if (uFlip > 0.5) zs = zs.yx;\n'   // (R its left side, G its right: swapped when mirrored)
+          + 'diffuseColor.rgb *= 1.0 + zs.r * uWarm * smoothstep(640.0, 500.0, vWP.x) + zs.g * uRed * smoothstep(760.0, 860.0, vWP.x);');
     });
-    m.userData.cell = u; m.visible = false; scene.add(m); return m;
+    m.userData.cell = u; m.userData.flip = fl; m.visible = false; scene.add(m); return m;
   }
-  const ZP = [];                                   // the zombies: riders, a round's, the shot still falling
-  for (let i = 0; i < 10; i++) {
+  const ZP = [];                                   // the zombies: riders, the pack, a round's, the shot still falling
+  for (let i = 0; i < 14; i++) {
     const eye = new THREE.Mesh(new THREE.PlaneGeometry(5, 4), new THREE.MeshBasicMaterial({ map: plGlowTex, color: 0xff8a2a, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.5 }));
     eye.material.onBeforeCompile = busShade(); eye.material.customProgramCacheKey = () => 'bus'; eye.visible = false; scene.add(eye);
-    ZP.push({ base: zMesh(zTex, false), glow: zMesh(zTexG, true), eye, on: false, dying: false });
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: fogTex, color: 0x000000, transparent: true, depthWrite: false, opacity: 0.4 }));
+    sh.material.onBeforeCompile = busShade(); sh.material.customProgramCacheKey = () => 'bus'; sh.visible = false; scene.add(sh);   // (on the road: its contact shadow)
+    ZP.push({ base: zMesh(zTex, false), glow: zMesh(zTexG, true), eye, sh, on: false, dying: false, i });
   }
-  const zPlank = busPart('assets/bus_plank.webp?v=1', 21, 21, 0.6528, { alphaTest: 0.02 }, 1, 17);
-  BUS.list.splice(BUS.list.indexOf(zPlank), 1);    // (the plank outlives the bus: it lies on the road)
-  const ZS = { pl: { st: 'none', x: 0, y: 0, vx: 0, vy: 0, a: 0, w: 0, life: 0, hits: 0 } };
-  function zStart(z, kind, v, col, t) {
-    Object.assign(z, { on: true, dying: false, kind, sheet: kind === 'claw' ? 'pull' : kind, v, col, t: t || 0, fade: 1, lit: 1, A: null });
+  const ZS = { pls: [], ctx: null, stop: 0, win: false, roof: false };   // the loose planks (one a barricade, nailed on each pass); the bus where it is
+  for (let i = 0; i < 4; i++) {
+    const m = busPart('assets/bus_plank.webp?v=2', BZ.pl[2], BZ.pl[2], 0.6524, { alphaTest: 0.5 }, 1, BZ.pl[3]);
+    BUS.list.splice(BUS.list.indexOf(m), 1);       // (a plank outlives the bus: it lies on the road)
+    ZS.pls.push({ m, st: 'none', col: 0, x: 0, y: 0, vx: 0, vy: 0, a: 0, w: 0, life: 0, hits: 0, z: null });
+  }
+  const zRoadY = (d) => Math.round(crewRow(d) + 0.5);   // (its feet's edge on the road, at d m)
+  const zNear = () => BZC.near[0] + Math.random() * (BZC.near[1] - BZC.near[0]);
+  function zStart(z, o) {
+    Object.assign(z, { on: true, dying: false, mv: 'run', t: 0, f: 0, ph: Math.random(), v: 0, vmax: 0, dir: 1, x: 0, d: 40.4, att: false, lx: 0, ly: 0, tgt: null,
+      pl: null, rs: 'sway', rt: 0, rd: 2 + Math.random() * 4, lit: 1, fade: 1, F: null, round: false, wcol: undefined, gc: undefined, land: 0, drop: false }, o);
+    z.n = o.n !== undefined ? o.n : Math.floor(Math.random() * BZ.Z.length);
     z.base.visible = z.glow.visible = true;
   }
-  function zOff(z) { z.on = z.dying = false; z.base.visible = z.glow.visible = z.eye.visible = false; }
-  function busZSpawn() {                           // riders on every pass (the crew's own passes aside)
+  function zOff(z) {
+    if (z.pl && z.pl.st === 'held') z.pl.st = 'none';
+    z.on = z.dying = false; z.pl = null; z.base.visible = z.glow.visible = z.eye.visible = z.sh.visible = false;
+  }
+  const zFree = () => ZP.find((q) => !q.on);
+  const zLooks = (k) => { const a = [...BZ.Z.keys()]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a.slice(0, k); };
+  function zHangAt(z, col) {                       // hanging at a window: the plank's place in its first frame on the window's plank row
+    const K = BZ.K[z.n][0]; Object.assign(z, { att: true, wcol: col, lx: col - (K[0] ? K[1] : 0), ly: BZC.plankRow - (K[0] ? K[2] : -32) });
+  }
+  function busZSpawn() {                           // riders on every pass (the crew's own aside), the barricades' planks, the pack behind
     for (const z of ZP) if (!z.dying) zOff(z);
-    ZG.puller = null;
-    const a = ZP.find((q) => !q.on); zStart(a, 'pull', 'A', BZ.win, -1); ZG.puller = a;
-    const b = ZP.find((q) => !q.on); zStart(b, 'roof', 'B', BZ.roofCol, Math.random() * 3);
-    if (ZS.pl.st === 'none') { ZS.pl.st = 'nailed'; zPlank.material.opacity = 1; }
+    for (const p of ZS.pls) if (p.st === 'nailed' || p.st === 'held') p.st = 'none';
+    for (const c of BZC.bar) { const p = ZS.pls.find((q) => q.st === 'none'); if (p) { Object.assign(p, { st: 'nailed', col: c, z: null, a: 0 }); p.m.material.opacity = 1; } }
+    const S = busS, who = zLooks(BZ.Z.length);
+    const a = zFree(); zStart(a, { n: who[0], mv: 'plank', t: -1, dir: S.dir }); zHangAt(a, BZC.rider); a.pl = ZS.pls.find((p) => p.st === 'nailed' && p.col === BZC.rider) || null;
+    const b = zFree(); zStart(b, { n: who[1], mv: 'roof', att: true, lx: BZC.roof[Math.random() < 0.5 ? 4 : 5], ly: BZC.roofRow, rt: Math.random() * 3, dir: S.dir });
+    if (reduced) return;                           // (reduced motion: no pack; they never run)
+    const rear = S.dir > 0 ? S.x + BUS.rear : S.x + BUS.W - BUS.rear, k = 2 + Math.floor(Math.random() * 3);
+    let gap = 26;
+    for (let i = 0; i < k; i++) {                  // (behind the corner it came round: they come out of it after it)
+      const z = zFree(); if (!z) break;
+      const far = i > 0 && Math.random() < 0.22;
+      zStart(z, { n: who[(2 + i) % who.length], mv: 'run', dir: S.dir, x: rear - S.dir * gap, d: far ? BZC.far : zNear(), vmax: BUS.V * (0.86 + 0.1 * Math.random()) });
+      z.v = z.vmax; gap += 30 + Math.random() * 34;
+    }
   }
-  function busZOff(keep) {                         // the bus gone: its riders with it (the shot finish their fall, unless all goes)
-    for (const z of ZP) if (z.on && (!z.dying || !keep)) zOff(z);
-    if (!keep || ZS.pl.st === 'nailed' || ZS.pl.st === 'held') { ZS.pl.st = 'none'; zPlank.visible = false; }
-    ZG.active = false; ZG.puller = null; tzHud();
+  function busZOff(keep) {                         // the bus gone: who is on it goes with it (the pack and the shot stay, unless all goes)
+    for (const z of ZP) if (z.on && (!keep || (z.att && !z.dying))) zOff(z);
+    for (const p of ZS.pls) if (!keep || p.st === 'nailed' || p.st === 'held') { p.st = 'none'; p.m.visible = false; }
+    ZG.active = false; tzHud();
   }
-  function zFrame(z) {                             // its frame now: an act played once, a loop, or the act then its loop
-    const A = BZ[z.sheet], k = Math.floor(Math.max(0, z.t) * A.fps);
-    if (z.kind === 'pull') return z.t < 0 ? 0 : k < A.n ? k : A.loop + (k - A.loop) % (A.n - A.loop);
-    if (z.kind === 'claw') return A.loop + k % (A.n - A.loop);
-    if (z.kind === 'roof') return k % A.n;
-    return Math.min(k, A.n - 1);
-  }
-  function zDraw(z, X, Y, L, f, zz) {              // its cell, its anchor at (X, Y), mirrored heading left
-    const A = BZ[z.sheet], c = z.base.userData.cell.value;
-    c.set(f * A.w / BZ.W, 1 - (A.rows[z.v] + A.h) / BZ.H, A.w / BZ.W, A.h / BZ.H); z.glow.userData.cell.value.copy(c);
-    const left = L ? X - (A.w - A.ax) : X - A.ax, top = Y - A.ay;
-    z.base.scale.set(L ? -A.w : A.w, A.h, 1); z.glow.scale.copy(z.base.scale);
-    z.base.position.set(left + A.w / 2, -(top + A.h / 2), zz); z.glow.position.set(left + A.w / 2, -(top + A.h / 2), zz + 0.00005);
+  function zDraw(z, X, Y, L, mv, f, zz) {          // its cell (mv, f), its anchor at (X, Y), mirrored heading left
+    const F = BZ.Z[z.n][mv][f], c = z.base.userData.cell.value;
+    c.set(F[0] / BZ.W, 1 - (F[1] + F[3]) / BZ.H, F[2] / BZ.W, F[3] / BZ.H); z.glow.userData.cell.value.copy(c);
+    X = Math.round(X); Y = Math.round(Y);
+    const left = L ? X - (F[2] - F[4]) : X - F[4], top = Y - F[5];
+    z.base.scale.set(L ? -F[2] : F[2], F[3], 1); z.glow.scale.copy(z.base.scale); z.base.userData.flip.value = L ? 1 : 0;
+    z.base.position.set(left + F[2] / 2, -(top + F[3] / 2), zz); z.glow.position.set(left + F[2] / 2, -(top + F[3] / 2), zz + 0.00005);
     z.base.material.opacity = z.fade; z.glow.material.opacity = ZG.lit * z.lit * z.fade;
-    const e = A.eyes[z.v][f];                      // its eyes' glow (their pixels are in the sheet)
+    const E = BZ.E[z.n][mv], e = E && E[f];          // its eyes' glow (their pixel is in the sheet)
     z.eye.visible = !!e && !z.dying;
-    if (e) z.eye.position.set(L ? left + A.w - e[0] : left + e[0], -(top + e[1]), zz + 0.0001);
-    Object.assign(z, { X, Y, L, f, zz, left, top, A });
+    if (e) z.eye.position.set(L ? left + F[2] - e[0] : left + e[0], -(top + e[1]), zz + 0.0001);
+    const road = !z.att && Y > 640;                // (on the road: its contact shadow under its feet)
+    z.sh.visible = road; if (road) { z.sh.scale.set(mv === 'fall' && f >= 4 ? 22 : 11, 2.4, 1); z.sh.position.set(X + 0.5, -(Y - 0.5), zz - 0.00005); z.sh.material.opacity = 0.4 * z.fade; }
+    Object.assign(z, { X, Y, L, F, mvd: mv, f, zz, left, top });
   }
-  function busZStep(dt, x0, y0, bob, L, S) {       // the riders, where the bus is now
-    const sxe = (c) => (L ? x0 + BUS.W - c : x0 + c);  // a column's edge (heading right) as a scene x, mirrored heading left
-    const gY = y0 + bob + BUS.ground, rY = y0 + bob + BUS.roof;
+  function zPlankAt(p, x, y, a) { p.x = x; p.y = y; p.a = a; }
+  function zRelease(p, B, k, s) {                  // thrown (k: its strength) the way its hands swung it (s: -1 left, 1 right; else back
+    const S = B ? B.S : busS, dir = S.dir || 1, sx = s || -dir;   //  along the bus), up, spinning; its zombie shot: it drops
+    Object.assign(p, { st: 'flying', vx: dir * (S.v || 0) + sx * (40 + 25 * Math.random()) * k, vy: -(70 + 30 * Math.random()) * k - 12, w: sx * 9 * k, hits: 0, z: null });
+  }
+  function zSwing(z, f, L) {                       // which way the plank was going as it left its hands (its track, the last two frames)
+    const K = BZ.K[z.n], a = K[f], b = K[f - 1];
+    if (!a || !b || !a[0] || !b[0] || Math.abs(a[1] - b[1]) < 1) return 0;
+    return Math.sign(a[1] - b[1]) * (L ? -1 : 1);
+  }
+  function zRun(z, dt, B) {                        // running (its stride on the road: its frames go with its feet), or slowing to its spot
+    let vt = z.vmax;
+    if (B && z.tgt) {
+      const rem = (z.tgt.x - z.x) * z.dir;
+      if (rem <= 0.5) { zArrive(z, B); return; }
+      if (z.tgt.k !== 'roof') vt = Math.min(vt, Math.max(6, rem * 2.5));
+    }
+    z.v += Math.sign(vt - z.v) * Math.min(Math.abs(vt - z.v), 70 * dt);
+    z.x += z.dir * z.v * dt; z.ph += z.v * dt / (BZ.S[z.n] * BZ.ppm);
+  }
+  function zArrive(z, B) {                         // at its spot: the leap onto the roof, the leap to a window, or at its side, clawing
+    const k = z.tgt.k, lxOf = (X) => (B.L ? B.x0 + BUS.W - X : X - B.x0);
+    if (k === 'roof') Object.assign(z, { mv: 'leap', t: 0, att: true, lx: lxOf(z.x), ly: 88, gc: z.tgt.col });
+    else if (k === 'win') Object.assign(z, { mv: 'jump', t: 0, att: true, lx: z.tgt.col, ly: 88, wcol: z.tgt.col });
+    else if (k === 'stop') Object.assign(z, { mv: 'wait', v: 0 });
+    else Object.assign(z, { mv: 'claw', t: Math.random() * 2, v: 0 });
+    z.tgt = null;
+  }
+  function zPlan(B) {                              // stopped: the pack's leaders, each to its spot (now and then a window's plank, the roof)
+    const S = B.S;
+    if (ZS.stop !== S.stT) { ZS.stop = S.stT; ZS.win = Math.random() < 0.6; ZS.roof = Math.random() < 0.55; }
+    const rear = S.dir > 0 ? B.x0 + BUS.rear : B.x0 + BUS.W - BUS.rear;
+    const free = ZP.filter((z) => z.on && !z.dying && z.mv === 'run' && !z.tgt).sort((a, b) => (a.x - b.x) * S.dir * -1);
+    for (const z of free) {
+      if (z.d > 41) { z.tgt = { k: 'stop', x: rear + S.dir * (10 + 30 * Math.random()) }; continue; }   // (the far side: it stops behind the bus, out of sight, out of a round)
+      const busy = ZP.filter((q) => q.on && !q.dying && q !== z);
+      const winFree = (c) => !busy.some((q) => q.wcol === c || (q.tgt && q.tgt.col === c && q.tgt.k === 'win'));
+      const roofFree = (c) => !busy.some((q) => (q.mv === 'roof' && Math.abs(q.lx - c) < 18) || (q.tgt && q.tgt.k === 'roof' && Math.abs(q.tgt.col - c) < 18) || (q.mv === 'leap' && Math.abs(q.gc - c) < 18));
+      const bar = BZC.bar.find((c) => winFree(c) && ZS.pls.some((p) => p.st === 'nailed' && p.col === c));
+      const sx = (c) => (B.L ? B.x0 + BUS.W - c : B.x0 + c);
+      if (ZS.win && bar !== undefined && S.wait > 1.6) { ZS.win = false; z.tgt = { k: 'win', col: bar, x: sx(bar) }; continue; }
+      const rc = BZC.leapTo.find(roofFree);
+      if (ZS.roof && rc !== undefined && S.wait > 1.6) { ZS.roof = false; z.tgt = { k: 'roof', col: rc, x: sx(rc - BZC.take) }; continue; }
+      const n = busy.filter((q) => q.mv === 'claw' || (q.tgt && q.tgt.k === 'claw')).length;
+      z.tgt = { k: 'claw', x: sx(22 + 15 * n + 4 * Math.random()) };
+    }
+  }
+  function zLeapAt(z, f) {                         // the leap's anchor (local, heading right): its feet on the road, then the arc to its hands on
+    const F = BZ.Z[z.n].leap, P = BZ.P[z.n].leap, g = z.gc;  // the roof's edge, hauled up, crouched on top
+    const grab = [g - (P[5][0] - F[5][4]), BZC.roofRow - (P[5][1] - F[5][5])], t0 = z.lx;
+    if (f <= 2) return [t0 - 2 * (2 - f), 88];
+    if (f <= 4) { const s = (f - 2) / 3; return [t0 + (grab[0] - t0) * s, 88 + (grab[1] - 88) * s - 10 * Math.sin(Math.PI * s)]; }
+    if (f === 5) return grab;
+    if (f === 6) return [grab[0] + 3, BZC.roofRow + 7];
+    return [g + 4, BZC.roofRow];
+  }
+  function zJumpAt(z, f) {                         // the leap to a window: on the road, then its hands on the window's plank row
+    if (f === 0) return [z.wcol, 88];
+    const F = BZ.Z[z.n].jump[f], P = BZ.P[z.n].jump[f];
+    return [z.wcol - (P[0] - F[4]), BZC.plankRow + (f === 1 ? 6 : 0) - (P[1] - F[5])];
+  }
+  function zRoofFrame(z, dt) {                     // on the roof: holding on and swaying; now and then up, clawing the air, and down again
+    z.rt += dt;
+    const step = 0.12;
+    if (z.rs === 'sway') { if (z.rt > z.rd && !reduced) { z.rs = 'rise'; z.rt = 0; } return [0, 1, 2, 3, 2, 1][Math.floor(z.rt * 5) % 6]; }
+    if (z.rs === 'rise') { const k = Math.floor(z.rt / step); if (k > 3) { z.rs = 'claw'; z.rt = 0; return 7; } return 4 + k; }
+    if (z.rs === 'claw') { if (z.rt > 1.3) { z.rs = 'down'; z.rt = 0; } return [7, 6, 7, 7, 6][Math.floor(z.rt * 4) % 5]; }
+    const k = Math.floor(z.rt / step); if (k > 3) { z.rs = 'sway'; z.rt = 0; z.rd = 2.5 + Math.random() * 5; return 0; } return 7 - k;
+  }
+  const zClawF = (t) => [6, 6, 6, 7, 7, 6, 6, 7, 7, 7][Math.floor(t * 4) % 10];   // (clawing at the glass or its side, now and then looking round)
+  function busZStep(dt, x0, y0, bob, L, S) {       // who is on it or at it, where the bus is now
+    const B = ZS.ctx = { x0, y0, bob, L, S }, sxe = (c) => (L ? x0 + BUS.W - c : x0 + c), yb = y0 + bob;
     ZG.lit = S.k;
     if (ZG.active && S.wait > 0 && !reduced) {     // a round: pulled up, the bus waits while its zombies come (reduced motion: rmBusTick)
       S.wait = Math.max(S.wait, 0.5); ZG.quiet += dt; ZG.spawnT -= dt;
-      const alive = ZP.filter((q) => q.on && !q.dying);
+      const alive = ZP.filter((q) => q.on && !q.dying && q.round);
       if (ZG.spawnT <= 0 && ZG.spawned < ZG.n && alive.length < Math.min(5, 2 + ZG.round)) { zRoundSpawn(alive); ZG.spawnT = 1.1 + Math.random(); }
       if (ZG.quiet > 25) { ZG.active = false; S.wait = 0.8; tzHud(); }   // left alone: it drives on, its riders with it
     }
+    const stopped = S.wait > 0 && !reduced;
+    if (stopped) zPlan(B);
     for (const z of ZP) {
       if (!z.on || z.dying) continue;
-      const X = sxe(z.col);
-      if (z.kind === 'pull' && z.t < 0) { if (X > BUS.gap[0] + 14 && X < BUS.gap[1] - 30) z.t = 0; }   // its act once its window is in sight
-      else if (!reduced) z.t += dt;                // (reduced motion: they stand still)
-      if (z.kind === 'climb' && z.t >= BZ.climb.n / BZ.climb.fps) { z.kind = z.sheet = 'roof'; z.t = 0; }
-      if (z.kind === 'emerge' && z.t >= BZ.emerge.n / BZ.emerge.fps) { z.kind = 'claw'; z.sheet = 'pull'; z.t = 0; }
-      const f = zFrame(z), high = z.kind === 'roof' || z.kind === 'climb';
-      const zz = z.kind === 'emerge' ? (BZ.emerge.front[f] ? 0.6526 : 0.6482) : z.kind === 'climb' ? (z.t < 0.75 * BZ.climb.n / BZ.climb.fps ? 0.6458 : 0.6526) : 0.6526;
-      zDraw(z, X, high ? rY : gY, L, f, zz);       // (out of the window from inside the bus; over the roof from its far side)
-    }
-    const p = ZS.pl, z = ZG.puller;                // the loose plank: nailed, in the puller's hands (its track), thrown
-    if (p.st === 'nailed' || p.st === 'held') {
-      const live = z && z.on && !z.dying && z.kind === 'pull' && z.t >= 0, tr = live ? BZ.pull.plank[z.f] : [0, 0, 0, 0];
-      if (tr[0] === 2) { p.st = 'flying'; p.vx = S.dir * S.v - S.dir * 55; p.vy = -95; p.w = -S.dir * 9; p.hits = 0; }
-      else if (p.st === 'held' && !live) { p.st = 'flying'; p.vx = S.dir * S.v; p.vy = -12; p.w = 2.5; p.hits = 0; }   // its zombie shot: it drops
-      else {
-        const X = sxe(BZ.win), hx = tr[0] === 1 ? tr[1] : 0, hy = tr[0] === 1 ? tr[2] : -BZ.plankY, ha = tr[0] === 1 ? tr[3] : 0;
-        p.st = tr[0] === 1 ? 'held' : 'nailed'; p.x = X + (L ? -hx : hx); p.y = gY + hy; p.a = L ? -ha : ha;
+      if (!z.att) {                                // on the road: running after it, at its side, waiting behind it
+        if (!stopped && (z.mv === 'claw' || z.mv === 'wait' || z.tgt)) { z.mv = 'run'; z.tgt = null; }   // (it leaves: after it)
+        if (z.mv === 'run') zRun(z, reduced ? 0 : dt, stopped ? B : null);
+        else z.t += reduced ? 0 : dt;
+        if (!z.on) continue;
+        if (z.mv === 'run' || z.mv === 'wait') { z.lit = 0; zDraw(z, z.x, zRoadY(z.d), z.dir < 0, 'run', z.mv === 'wait' ? 1 : Math.floor(z.ph * 8) % 8, z.d > 41 ? 0.6449 : 0.6526 + (41 - z.d) * 0.0001); }
+        else if (z.mv === 'claw') { z.lit = 0.3; zDraw(z, z.x, zRoadY(z.d), L, 'plank', zClawF(z.t), 0.6526 + (41 - z.d) * 0.0001); }
+        if (z.att) z.t = 0;                        // (it has just leapt: drawn from its act next)
+        continue;
       }
-      zPlankDraw();
+      // on the bus or leaping onto it (the bus waits for those leaping)
+      if (z.mv === 'leap' || z.mv === 'jump') S.wait = Math.max(S.wait, 0.4);
+      if (z.mv === 'plank' && z.t < 0) { const X = sxe(z.wcol); if (X > BUS.gap[0] + 14 && X < BUS.gap[1] - 30) z.t = 0; }   // (a rider's act once its window is in sight)
+      else if (!reduced) z.t += dt;
+      let f = 0, mv = z.mv, lx = z.lx, ly = z.ly, zz = 0.6526;
+      if (mv === 'leap') {
+        f = zSum(BZC.T.leap, z.t); [lx, ly] = zLeapAt(z, f); z.lit = 0.3;
+        if (f === 7) zz = 0.6449;
+        if (z.t >= BZC.T.leap.reduce((a, b) => a + b, 0)) Object.assign(z, { mv: 'roof', lx, ly: BZC.roofRow, rs: 'sway', rt: 0, t: 0 });
+      } else if (mv === 'jump') {
+        f = zSum(BZC.T.jump, z.t); [lx, ly] = zJumpAt(z, f); z.lit = 1;
+        if (z.t >= BZC.T.jump.reduce((a, b) => a + b, 0)) {   // (caught: the plank's act if its plank is still nailed there, else clawing at the glass)
+          const p = ZS.pls.find((q) => q.st === 'nailed' && q.col === z.wcol);
+          zHangAt(z, z.wcol); Object.assign(z, { mv: p ? 'plank' : 'hang', t: p ? 0 : Math.random() * 2, pl: p || null });
+        }
+      } else if (mv === 'roof') { f = zRoofFrame(z, reduced ? 0 : dt); zz = 0.6449; z.lit = 0; }
+      else if (mv === 'hang') { mv = 'plank'; f = zClawF(z.t); z.lit = 1; }
+      else if (mv === 'plank') {
+        z.lit = 1;
+        const T = BZC.T.plank, end = T.reduce((a, b) => a + b, 0);
+        f = z.t < 0 ? 0 : z.t < end ? zSum(T, z.t) : zClawF(z.t - end);
+        const p = z.pl, K = BZ.K[z.n][f];
+        if (p && (p.st === 'nailed' || p.st === 'held')) {   // the plank: in its hands (its track), or thrown at the frame it leaves them
+          const X = sxe(lx), Y = yb + ly;
+          if (z.t >= 0 && K[0]) { p.st = 'held'; p.z = z; zPlankAt(p, X + (L ? -K[1] : K[1]), Y + K[2], L ? Math.PI - K[3] : K[3]); if (K[0] === 2) { zRelease(p, B, 1, zSwing(z, f, L)); z.pl = null; } }
+          else if (p.st === 'held') { zRelease(p, B, 1, zSwing(z, f - 1, L)); z.pl = null; }
+        }
+      }
+      zDraw(z, sxe(lx), yb + ly, L, mv, f, zz);
     }
+    for (const p of ZS.pls) { if (p.st === 'nailed') zPlankAt(p, sxe(p.col), yb + BZC.plankRow, 0); zPlankDraw(p); }   // (where the bus and its hands put them now)
   }
-  function zRoundSpawn(alive) {                    // one more of the round: over the roof or out of a window, where there is room
-    const z = ZP.find((q) => !q.on); if (!z) return false;
-    const used = alive.map((q) => q.col), roofs = BZ.roofSlots.filter((c) => !used.includes(c)), wins = BZ.winSlots.filter((c) => !used.includes(c));
-    const roof = roofs.length > 0 && (wins.length === 0 || Math.random() < 0.45), list = roof ? roofs : wins;
-    if (!list.length) return false;
-    const v = Math.random() < 0.5 ? 'A' : 'B', col = list[Math.floor(Math.random() * list.length)];
-    if (reduced) zStart(z, roof ? 'roof' : 'claw', v, col, Math.random() * 3);   // (reduced motion: there at once, crouched or clawing, still)
-    else zStart(z, roof ? 'climb' : 'emerge', v, col);
+  function zRoundSpawn(alive) {                    // one more of the round: running from behind the bus, to its roof or a window
+    const z = zFree(); if (!z) return false;
+    const S = busS, B = ZS.ctx, on = ZP.filter((q) => q.on && !q.dying);
+    const roofs = BZC.roof.filter((c) => !on.some((q) => (q.mv === 'roof' && Math.abs(q.lx - c) < 18) || (q.gc !== undefined && q.mv === 'leap' && Math.abs(q.gc - c) < 18) || (q.tgt && q.tgt.k === 'roof' && Math.abs(q.tgt.col - c) < 18)));
+    const wins = BZC.win.filter((c) => !on.some((q) => q.wcol === c || (q.tgt && q.tgt.k === 'win' && q.tgt.col === c)));
+    const roof = roofs.length > 0 && (wins.length === 0 || Math.random() < 0.45), list = roof ? roofs.filter((c) => c - BZC.take >= 14) : wins;
+    if (!list.length || !B) return false;
+    const col = list[Math.floor(Math.random() * list.length)], sx = (c) => (B.L ? B.x0 + BUS.W - c : B.x0 + c);
+    if (reduced) {                                 // (reduced motion: there at once, crouched or clawing at a window, still)
+      zStart(z, { mv: roof ? 'roof' : 'hang', att: true, lx: col, ly: BZC.roofRow, dir: S.dir, round: true });
+      if (!roof) zHangAt(z, col);
+    } else {
+      const x = S.dir > 0 ? BUS.gap[0] - 24 - 20 * Math.random() : BUS.gap[1] + 24 + 20 * Math.random();   // (behind the corner it came round)
+      zStart(z, { mv: 'run', dir: S.dir, x, d: zNear(), vmax: BUS.V * (0.92 + 0.08 * Math.random()), round: true,
+        tgt: roof ? { k: 'roof', col, x: sx(col - BZC.take) } : { k: 'win', col, x: sx(col) } });
+      z.v = z.vmax;
+    }
     ZG.spawned++; return true;
   }
-  function zPlankDraw() {                          // the plank: its angle's frame, or lying flat
-    const p = ZS.pl;
-    zPlank.visible = p.st !== 'none' && (busS.active || p.st === 'flying' || p.st === 'lying');
-    if (!zPlank.visible) return;
-    zPlank.material.map.offset.x = p.st === 'lying' ? 16 / 17 : (((Math.round(p.a / (Math.PI / 16)) % 16) + 16) % 16) / 17;
-    zPlank.position.set(Math.round(p.x), -Math.round(p.y), 0.6528);
+  function zPlankDraw(p) {                         // a plank: its angle's frame, or lying flat
+    p.m.visible = p.st !== 'none' && (busS.active || p.st === 'flying' || p.st === 'lying');
+    if (!p.m.visible) return;
+    p.m.material.map.offset.x = p.st === 'lying' ? 16 / 17 : (((Math.round(p.a / (Math.PI / 16)) % 16) + 16) % 16) / 17;
+    p.m.position.set(Math.floor(p.x) + 0.5, -(Math.floor(p.y) + 0.5), p.st === 'nailed' || p.st === 'held' ? 0.6524 : 0.6528);
   }
-  function busZTick(dt) {                          // bus or no bus: the plank's flight, the shot's fall, the drink
-    const p = ZS.pl;
-    if (p.st === 'flying') {
-      p.vy += 237 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.a += p.w * dt;
-      const yg = busGround(p.x) + 4;               // the road just in front of the bus's wheels
-      if (p.y >= yg && p.vy > 0) {
-        p.y = yg; p.vy *= -0.32; p.vx *= 0.55; p.w *= 0.4; p.hits++;
-        if (p.hits >= 3 || Math.abs(p.vy) < 18) { p.st = 'lying'; p.life = 25; p.y = yg; }
+  function busZTick(dt) {                          // bus or no bus: the planks' flight, the pack after it, the shot's fall, the drink
+    for (const p of ZS.pls) {
+      if (p.st === 'flying') {
+        p.vy += 237 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.a += p.w * dt;
+        const yg = busGround(p.x) + 4;             // the road just in front of the bus's wheels
+        if (p.y >= yg && p.vy > 0) {
+          p.y = yg; p.vy *= -0.32; p.vx *= 0.55; p.w *= 0.4; p.hits++;
+          if (p.hits >= 3 || Math.abs(p.vy) < 18) { p.st = 'lying'; p.life = 25; p.y = yg; }
+        }
+      } else if (p.st === 'lying') {
+        p.x += p.vx * dt; p.vx *= Math.exp(-5 * dt); p.life -= dt;
+        p.m.material.opacity = Math.min(1, p.life / 2);
+        if (p.life <= 0) p.st = 'none';
       }
-    } else if (p.st === 'lying') {
-      p.x += p.vx * dt; p.vx *= Math.exp(-5 * dt); p.life -= dt;
-      zPlank.material.opacity = Math.min(1, p.life / 2);
-      if (p.life <= 0) p.st = 'none';
+      zPlankDraw(p);
     }
-    zPlankDraw();
-    if (!busS.active && STAGE.res.tranzit) {        // (the bus gone: its place kept while its plank or a shot rider lies on the road)
-      const p = ZS.pl, R = []; if (zPlank.visible) R.push(p.st === 'lying' ? [Math.round(p.x) - 9, Math.round(p.y) - 2, Math.round(p.x) + 9, Math.round(p.y) + 3] : busRect(zPlank));   // (lying: flat, its 2 rows)
+    if (!busS.active) for (const z of ZP) {         // the bus gone: the pack runs on after it, out of sight behind the far corner
+      if (!z.on || z.dying) continue;
+      z.mv = 'run'; z.tgt = null; zRun(z, dt, null);
+      zDraw(z, z.x, zRoadY(z.d), z.dir < 0, 'run', Math.floor(z.ph * 8) % 8, z.d > 41 ? 0.6449 : 0.6526 + (41 - z.d) * 0.0001);
+      if ((z.dir > 0 && z.left > BUS.gap[1] + 2) || (z.dir < 0 && z.left + 64 < BUS.gap[0])) zOff(z);   // (well behind the corner, whatever its frame)
+    }
+    if (!busS.active && STAGE.res.tranzit) {        // (the bus gone: its place kept while a plank, a shot rider or the pack is in sight)
+      const R = [];
+      for (const p of ZS.pls) if (p.m.visible) R.push(p.st === 'lying' ? [Math.floor(p.x) - 12, Math.floor(p.y) - 2, Math.floor(p.x) + 12, Math.floor(p.y) + 3] : busRect(p.m));
       for (const z of ZP) if (z.on && z.base.visible) R.push(busRect(z.base));
       if (R.length) { STAGE.place('tranzit', R); STAGE.res.tranzit.until = Math.max(STAGE.res.tranzit.until, t + 1); } else STAGE.done('tranzit');
     }
-    for (const z of ZP) {                          // shot: the drop to the road, a while lying there, gone
+    for (const z of ZP) {                          // shot: thrown back, dropped to the road, its knees, face down; a while lying there, gone
       if (!z.on || !z.dying) continue;
-      z.t += reduced ? 0 : dt; z.lit = Math.max(0, 1 - z.t * 1.5);   // (out of the saloon's light as it falls; reduced motion: lying at once)
-      const A = BZ[z.sheet], end = A.n / A.fps;
-      z.fade = Math.min(1, Math.max(0, end + 3 - z.t));
+      z.t += reduced ? 0 : dt;
+      if (z.land < 0) { z.vy += 229 * dt; z.fy += z.vy * dt; if (z.fy >= z.fg) { z.fy = z.fg; z.land = z.t; } }
+      const T = BZC.T.fall, f = reduced ? 5 : z.land < 0 ? (z.t < T[0] ? 0 : 1) : zSum(T, z.t - z.land + (z.drop ? T[1] : 0));
+      z.lit = Math.max(0, 1 - z.t * 1.5);          // (out of the saloon's light as it falls)
+      z.fade = Math.min(1, Math.max(0, (z.land < 0 ? 9 : z.land + T[4] + 3) - z.t));
       if (z.fade <= 0) { zOff(z); continue; }
-      zDraw(z, z.X, z.Y, z.L, Math.min(Math.floor(z.t * A.fps), A.n - 1), 0.6526);
+      z.att = false; zDraw(z, z.fx, z.fy, z.L, 'fall', f, z.zz < BUS.z ? 0.6449 : 0.6526);
     }
     tzDrink(dt);
   }
@@ -2068,25 +2215,33 @@
   function tzClick(ev) {                           // the hero's click: a zombie shot, or the soda machines
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top));
-    const j = Math.min(Math.max(Math.floor(y) - BUS.occ.y0, 0), BUS.occ.L.length - 1);
+    const j = Math.min(Math.max(Math.floor(y) - BUS.occ.y0, 0), BUS.occ.L.length - 1), B = ZS.ctx;
     let hit = null;
     if (ZG.alpha && x >= BUS.occ.L[j] && x < BUS.occ.R[j]) for (const z of ZP) {   // (behind a building: out of sight)
-      if (!z.on || z.dying || !z.A || (hit && hit.zz >= z.zz)) continue;
-      if (z.zz < BUS.z && (z.kind !== 'climb' || y >= z.Y)) continue;   // still inside the bus, or behind it below its roof
-      const A = z.A, x0 = Math.floor(x - z.left), y0 = Math.floor(y - z.top);
+      if (!z.on || z.dying || !z.F || !z.base.visible || (hit && hit.zz >= z.zz)) continue;
+      if (z.zz < BUS.z && busS.active && B && x >= B.x0 && x < B.x0 + BUS.W && y >= B.y0 + B.bob + BZC.roofRow - 1) continue;   // behind the bus, under its roof line
+      const F = z.F, x0 = Math.floor(x - z.left), y0 = Math.floor(y - z.top);
       for (let k = 0; k < 9 && hit !== z; k++) {   // its pixels, a pixel round them for a finger
         const cx = x0 + (k % 3) - 1, cy = y0 + Math.floor(k / 3) - 1;
-        if (cx < 0 || cy < 0 || cx >= A.w || cy >= A.h) continue;
-        if (ZG.alpha[(A.rows[z.v] + cy) * BZ.W + z.f * A.w + (z.L ? A.w - 1 - cx : cx)] > 127) hit = z;
+        if (cx < 0 || cy < 0 || cx >= F[2] || cy >= F[3]) continue;
+        if (ZG.alpha[(F[1] + cy) * BZ.W + F[0] + (z.L ? F[2] - 1 - cx : cx)] > 127) hit = z;
       }
     }
     if (hit) { zKill(hit, x, y); return true; }
     if (x >= BZ.soda[0] && x < BZ.soda[2] && y >= BZ.soda[1] && y < BZ.soda[3]) { tzSoda(x); return true; }
     return false;
   }
+  function zDie(z) {                               // shot: thrown back, it drops to the road (from the roof or a window: in front of the bus)
+    if (z.pl && z.pl.st === 'held') zRelease(z.pl, ZS.ctx, 0.15, 0);   // (its plank drops with it)
+    const fg = zRoadY(z.d > 41 && !z.att ? z.d : Math.min(z.d, 40.6));
+    Object.assign(z, { dying: true, mv: 'fall', t: 0, fx: z.X, fy: z.Y, fg, vy: z.att ? -20 : 0, pl: null, tgt: null });
+    z.land = z.fy >= fg - 0.5 ? 0 : -1; z.drop = z.land < 0; if (!z.drop) z.fy = fg;
+    if (z.att) z.zz = 0.6526;
+    if (reduced) { z.fy = fg; z.land = 0; }
+  }
   function zKill(z, x, y) {                        // shot: it drops to the road
-    const hi = z.kind === 'roof' || z.kind === 'climb', was = ZG.active;
-    Object.assign(z, { dying: true, kind: hi ? 'fallhi' : 'fall', sheet: hi ? 'fallhi' : 'fall', t: 0, Y: hi ? z.Y + BUS.ground - BUS.roof : z.Y });
+    const was = ZG.active;
+    zDie(z);
     ZG.pts += 500; ZG.seen = true; lsSet('mtsfj-tz-points', ZG.pts);   // (500 a kill: the first round, 6 of them, buys the perk)
     tzPop('tz-plus', '+500', x, y - 4);
     const S = busS;
@@ -2103,15 +2258,16 @@
     }
     tzHud();
     if (reduced) {                                 // (reduced motion: no fall, it lies on the road at once, gone 3 s on; the street drawn anew)
-      z.t = (BZ[z.sheet].n - 1) / BZ[z.sheet].fps; z.lit = 0;
+      z.lit = 0;
       setTimeout(() => { if (z.on && z.dying) { zOff(z); frame(); } }, 3000);
       RMB.kill = performance.now(); if (was && !ZG.active) RMB.won = RMB.kill; else if (!was && ZG.active) RMB.spawnAt = RMB.kill + 600;
       frame();
     }
   }
-  function tzRound() {                             // a round: its zombies' count; the riders still on it are its first
+  function tzRound() {                             // a round: its zombies' count; those on the bus or at its near side are its first
     Object.assign(ZG, { active: true, began: true, due: false, n: 6 + 4 * (ZG.round - 1), killed: 0, quiet: 0, spawnT: 0.6 });
-    ZG.spawned = ZP.filter((q) => q.on && !q.dying).length;
+    for (const q of ZP) q.round = q.on && !q.dying && (q.att || q.d <= 41);
+    ZG.spawned = ZP.filter((q) => q.round).length;
     lsSet('mtsfj-tz-round', ZG.round); tzHud();
   }
   // ---- reduced motion (secrets regression E): no loop then, so the TranZit never drives; now and then (the passes'
@@ -2138,7 +2294,7 @@
     if (!S.active) { rmBusPark(); return; }
     let cut = false;
     if (ZG.active) {
-      const alive = ZP.filter((q) => q.on && !q.dying);
+      const alive = ZP.filter((q) => q.on && !q.dying && q.round);
       if (now >= RMB.spawnAt && ZG.spawned < ZG.n && alive.length < Math.min(5, 2 + ZG.round)) { cut = zRoundSpawn(alive); RMB.spawnAt = now + 1100 + Math.random() * 1000; }
       if (now - RMB.kill > 25000) { ZG.active = false; tzHud(); RMB.won = now - 1400; }   // (left alone: it goes 0.8 s on, its riders with it)
     }
@@ -8713,8 +8869,8 @@
   (function () {                                 // the sprites there are now
     const each = (o, kind) => o && o.traverse((m) => { if (m.material) (Array.isArray(m.material) ? m.material : [m.material]).forEach((x) => gradeSprite(x, kind)); });
     try { each(kilMesh, 'sky'); } catch (e) {}                                  // Killua high on his roof, lit by the sky (his hair's lightning rim: its own light)
-    try { for (const m of BUS.list) gradeSprite(m.material, 'street'); } catch (e) {}   // the TranZit (its lamps and glows: their own light)
-    try { for (const z of ZP) { gradeSprite(z.base.material, 'street'); gradeSprite(z.glow.material, 'self'); gradeSprite(z.eye.material, 'self'); } } catch (e) {}   // its zombies
+    try { for (const m of BUS.list) gradeSprite(m.material, 'street'); for (const p of ZS.pls) gradeSprite(p.m.material, 'street'); } catch (e) {}   // the TranZit (its lamps and glows: their own light), its loose planks
+    try { for (const z of ZP) { gradeSprite(z.base.material, 'street'); gradeSprite(z.glow.material, 'self'); gradeSprite(z.eye.material, 'self'); gradeSprite(z.sh.material, 'street'); } } catch (e) {}   // its zombies
     try { for (const T of BBUS.tiers) { gradeSprite(T.mesh.material, 'sky'); gradeSprite(T.lmesh.material, 'self'); } } catch (e) {}   // the Battle Bus, in the sky (its lights: their own)
     try { for (const F of GLD.figs) gradeSprite(F.mesh.material, 'sky'); } catch (e) {}   // its skydivers
     try { if (clb) gradeSprite(clb.material, 'far'); } catch (e) {}              // the climber on Fuji
