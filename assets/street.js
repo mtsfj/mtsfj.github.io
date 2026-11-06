@@ -2337,14 +2337,16 @@
   if (reduced) rmBusNext(busS.next);                // (reduced motion: the first parked bus, after a pass's first wait)
   // ---- the crew (Dempsey, Nikolai, Takeo, Richtofen: the owner's sheets, drawn frame by frame, cut and brought to the
   // street's grain by tools/crew_sheets.py): now and then the TranZit pulls up at its stop heading right, its front door
-  // folds open and the four step down one by one, walk past its nose to their spots (in their drawn steps: the planted foot
-  // on its pixel, each at his drawing's own pace, never through the one ahead), kneel and fire toward us, at the horde
+  // folds open and the four step down one by one, walk toward us as their walks are drawn (Takeo and Richtofen straight at
+  // us, Dempsey and Nikolai on a slant to our right; the planted foot on its pixel; growing a pixel at a time, by majority
+  // from their sheets' three sizes) to their spots 4 to 7 m nearer, kneel and fire toward us, at the horde
   // coming up the right half of the street from our side, seen from behind (the owner's twelve, baked at four sizes and
   // drawn in the street's perspective: ~280 px at the bottom of the frame, ~60 px by the junction). The crew aims at the
   // one nearest them (the drawn direction nearest it); every shot its flash (a new shape each time), its light on the
   // shooter, a faint tracer now and then, the recoil; Dempsey's Garand runs dry after eight. Struck, a zombie is thrown
-  // back, its knees go and it pitches forward onto the road. Cleared, the four stand and cheer (Nikolai drinks), walk back,
-  // climb in; the door closes and the bus pulls away. The horde's own shadows on the
+  // back, its knees go and it pitches forward onto the road. Cleared, the four stand and cheer (Nikolai drinks), back off
+  // to the bus still facing the street (their walk in reverse), turn at the door and climb in, the nearest first; the door
+  // closes and the bus pulls away. The horde's own shadows on the
   // road (contact, and long toward us: the junction lights them from behind) and its reflection in the wet street (the
   // water's masks); hidden behind the AC unit and the pole when it passes beyond them. The four: a contact shadow under
   // each, their reflections and their flashes' mirrored at their own feet (the water's pass leaves them out). When: desktop only, never under
@@ -2352,10 +2354,10 @@
   // on screen; due at 3 min, then after every 3rd stop heading right or 15 min at most, and after each 5th round won at
   // `jugg`: the next pass then heads right to its stop (its sheets late: still due, the pass after). CREW.api: the
   // finale's hooks ----
-  const CRW = {"ppm":24.3,"kicks":[0.0,0.3],"heroes":{"dempsey":{"cw":31,"ch":56,"ax":16,"ay":55,"cols":12,"n":46,"size":[372,224],"wstep":[1,5,0,0,0,3,0,0],"wtf":[0.094,0.253,0.08,0.08,0.08,0.253,0.08,0.08],"dirs":[0,55,70,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[0,-21]},{"cell":23,"muz":[0,-22]},{"cell":24,"muz":[10,-19]},{"cell":25,"muz":[9,-22]},{"cell":26,"muz":[10,-19]},{"cell":27,"muz":[9,-22]},{"cell":28,"muz":[11,-20]},{"cell":29,"muz":[9,-23]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38},{"cell":39},{"cell":40},{"cell":41}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"nikolai":{"cw":28,"ch":55,"ax":13,"ay":54,"cols":12,"n":46,"size":[336,220],"wstep":[4,1,4,0,4,2,1,4],"wtf":[0.169,0.08,0.169,0.08,0.169,0.084,0.08,0.169],"dirs":[-85,-55,30,80],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[-10,-21]},{"cell":23,"muz":[-10,-21]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[-8,-21]},{"cell":26,"muz":[9,-20]},{"cell":27,"muz":[9,-24]},{"cell":28,"muz":[13,-21]},{"cell":29,"muz":[11,-24]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38,"u":0},{"cell":39,"u":0.1},{"cell":40,"u":0.18},{"cell":41,"u":0.82}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"takeo":{"cw":27,"ch":53,"ax":15,"ay":52,"cols":12,"n":45,"size":[324,212],"wstep":[0,0,0,0,1,1,0,2],"wtf":[0.08,0.08,0.08,0.08,0.188,0.188,0.08,0.225],"dirs":[-60,0,60],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false},{"cell":5,"inside":false},{"cell":6,"inside":false}],"walk":[{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12},{"cell":13},{"cell":14}],"rise":[{"cell":15,"inside":false},{"cell":16,"inside":false},{"cell":17,"inside":true},{"cell":18,"inside":true}],"stand":[{"cell":19},{"cell":20}],"kneel":[{"cell":21,"kn":false},{"cell":22,"kn":true}],"aim":[{"cell":23,"muz":[-11,-19]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[0,-20]},{"cell":26,"muz":[0,-20]},{"cell":27,"muz":[9,-19]},{"cell":28,"muz":[9,-20]}],"reload":[{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":true},{"cell":32,"drop":false},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false}],"cheer":[{"cell":37},{"cell":38},{"cell":39},{"cell":40}],"idle":[{"cell":41,"u":0},{"cell":42,"u":0.18},{"cell":43,"u":0.5},{"cell":44,"u":0.82}]}},"richtofen":{"cw":29,"ch":56,"ax":14,"ay":55,"cols":12,"n":45,"size":[348,224],"wstep":[0,0,0,0,0,3,0],"wtf":[0.117,0.117,0.117,0.117,0.117,0.3,0.117],"dirs":[0,45,65,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11}],"rise":[{"cell":12,"inside":false},{"cell":13,"inside":false},{"cell":14,"inside":true},{"cell":15,"inside":true}],"stand":[{"cell":16},{"cell":17}],"kneel":[{"cell":18,"kn":false},{"cell":19,"kn":false},{"cell":20,"kn":true}],"aim":[{"cell":21,"muz":[1,-23]},{"cell":22,"muz":[-2,-25]},{"cell":23,"muz":[7,-22]},{"cell":24,"muz":[8,-25]},{"cell":25,"muz":[11,-22]},{"cell":26,"muz":[9,-24]},{"cell":27,"muz":[11,-23]},{"cell":28,"muz":[9,-26]}],"reload":[{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":true},{"cell":32,"drop":false},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false}],"cheer":[{"cell":37},{"cell":38},{"cell":39},{"cell":40}],"idle":[{"cell":41,"u":0},{"cell":42,"u":0.18},{"cell":43,"u":0.5},{"cell":44,"u":0.82}]}}}}, DOOR = {"x0":201,"y0":22,"w":22,"h":58,"frames":4,"clip":[204,24,220,79],"step":[69,74],"floor":78,"W":268};
+  const CRW = {"ppm":24.3,"kicks":[0.0,0.3],"heroes":{"dempsey":{"lv":[{"k":1.0,"y":0,"cw":31,"ch":56,"ax":16,"ay":55,"ws":[1,5,0,0,0,3,0,0]},{"k":1.1,"y":224,"cw":34,"ch":61,"ax":17,"ay":60,"ws":[1,5,0,0,0,3,0,0]},{"k":1.22,"y":468,"cw":37,"ch":68,"ax":19,"ay":67,"ws":[1,6,0,0,3,4,0,0]}],"cols":12,"n":46,"size":[444,740],"wtf":[0.114,0.192,0.11,0.11,0.11,0.145,0.11,0.11],"vz":1.141,"dirs":[0,55,70,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[0,-21]},{"cell":23,"muz":[0,-22]},{"cell":24,"muz":[10,-19]},{"cell":25,"muz":[9,-22]},{"cell":26,"muz":[10,-19]},{"cell":27,"muz":[9,-22]},{"cell":28,"muz":[11,-20]},{"cell":29,"muz":[9,-23]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38},{"cell":39},{"cell":40},{"cell":41}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"nikolai":{"lv":[{"k":1.0,"y":0,"cw":28,"ch":55,"ax":13,"ay":54,"ws":[4,1,4,0,4,2,1,4]},{"k":1.1,"y":220,"cw":31,"ch":61,"ax":15,"ay":60,"ws":[5,1,3,0,4,3,1,5]},{"k":1.22,"y":464,"cw":33,"ch":67,"ax":16,"ay":66,"ws":[4,1,4,0,5,2,1,6]}],"cols":12,"n":46,"size":[396,732],"wtf":[0.156,0.092,0.156,0.086,0.156,0.108,0.092,0.156],"vz":0.873,"dirs":[-85,-55,30,80],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12}],"rise":[{"cell":13,"inside":false},{"cell":14,"inside":false},{"cell":15,"inside":true},{"cell":16,"inside":true}],"stand":[{"cell":17},{"cell":18}],"kneel":[{"cell":19,"kn":false},{"cell":20,"kn":false},{"cell":21,"kn":true}],"aim":[{"cell":22,"muz":[-10,-21]},{"cell":23,"muz":[-10,-21]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[-8,-21]},{"cell":26,"muz":[9,-20]},{"cell":27,"muz":[9,-24]},{"cell":28,"muz":[13,-21]},{"cell":29,"muz":[11,-24]}],"reload":[{"cell":30,"drop":false},{"cell":31,"drop":false},{"cell":32,"drop":true},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false},{"cell":37,"drop":false}],"cheer":[{"cell":38,"u":0},{"cell":39,"u":0.1},{"cell":40,"u":0.18},{"cell":41,"u":0.82}],"idle":[{"cell":42,"u":0},{"cell":43,"u":0.18},{"cell":44,"u":0.5},{"cell":45,"u":0.82}]}},"takeo":{"lv":[{"k":1.0,"y":0,"cw":27,"ch":53,"ax":15,"ay":52,"ws":[0,0,0,0,1,1,0,2]},{"k":1.1,"y":212,"cw":29,"ch":58,"ax":16,"ay":57,"ws":[0,0,1,0,0,1,0,1]},{"k":1.22,"y":444,"cw":33,"ch":64,"ax":18,"ay":63,"ws":[0,0,1,0,0,1,1,1]}],"cols":12,"n":45,"size":[396,700],"wtf":[0.122,0.122,0.122,0.122,0.126,0.126,0.122,0.139],"vz":1.189,"dirs":[-60,0,60],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false},{"cell":5,"inside":false},{"cell":6,"inside":false}],"walk":[{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11},{"cell":12},{"cell":13},{"cell":14}],"rise":[{"cell":15,"inside":false},{"cell":16,"inside":false},{"cell":17,"inside":true},{"cell":18,"inside":true}],"stand":[{"cell":19},{"cell":20}],"kneel":[{"cell":21,"kn":false},{"cell":22,"kn":true}],"aim":[{"cell":23,"muz":[-11,-19]},{"cell":24,"muz":[-8,-21]},{"cell":25,"muz":[0,-20]},{"cell":26,"muz":[0,-20]},{"cell":27,"muz":[9,-19]},{"cell":28,"muz":[9,-20]}],"reload":[{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":true},{"cell":32,"drop":false},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false}],"cheer":[{"cell":37},{"cell":38},{"cell":39},{"cell":40}],"idle":[{"cell":41,"u":0},{"cell":42,"u":0.18},{"cell":43,"u":0.5},{"cell":44,"u":0.82}]}},"richtofen":{"lv":[{"k":1.0,"y":0,"cw":29,"ch":56,"ax":14,"ay":55,"ws":[0,0,0,0,0,3,0]},{"k":1.1,"y":224,"cw":31,"ch":62,"ax":15,"ay":61,"ws":[0,0,0,0,0,3,0]},{"k":1.22,"y":472,"cw":33,"ch":68,"ax":16,"ay":67,"ws":[1,0,0,0,0,3,0]}],"cols":12,"n":45,"size":[396,744],"wtf":[0.138,0.138,0.138,0.138,0.138,0.171,0.138],"vz":1.194,"dirs":[0,45,65,85],"moves":{"down":[{"cell":0,"inside":true},{"cell":1,"inside":true},{"cell":2,"inside":false},{"cell":3,"inside":false},{"cell":4,"inside":false}],"walk":[{"cell":5},{"cell":6},{"cell":7},{"cell":8},{"cell":9},{"cell":10},{"cell":11}],"rise":[{"cell":12,"inside":false},{"cell":13,"inside":false},{"cell":14,"inside":true},{"cell":15,"inside":true}],"stand":[{"cell":16},{"cell":17}],"kneel":[{"cell":18,"kn":false},{"cell":19,"kn":false},{"cell":20,"kn":true}],"aim":[{"cell":21,"muz":[1,-23]},{"cell":22,"muz":[-2,-25]},{"cell":23,"muz":[7,-22]},{"cell":24,"muz":[8,-25]},{"cell":25,"muz":[11,-22]},{"cell":26,"muz":[9,-24]},{"cell":27,"muz":[11,-23]},{"cell":28,"muz":[9,-26]}],"reload":[{"cell":29,"drop":false},{"cell":30,"drop":false},{"cell":31,"drop":true},{"cell":32,"drop":false},{"cell":33,"drop":false},{"cell":34,"drop":false},{"cell":35,"drop":false},{"cell":36,"drop":false}],"cheer":[{"cell":37},{"cell":38},{"cell":39},{"cell":40}],"idle":[{"cell":41,"u":0},{"cell":42,"u":0.18},{"cell":43,"u":0.5},{"cell":44,"u":0.82}]}}}}, DOOR = {"x0":201,"y0":22,"w":22,"h":58,"frames":4,"clip":[204,24,220,79],"step":[69,74],"floor":78,"W":268};
   const CREW = { active: false, phase: '', t: 0, seen: lsGet('mtsfj-crew-seen') === '1', stops: Math.max(0, +lsGet('mtsfj-crew-stops') || 0), vis: 0,
     next: false, tex: null, loaded: 0, need: 0, made: false, heroes: [], zs: [], fx: [], tr: [], queue: [], killed: 0, spawned: 0, tier: 'desk', lone: 0, api: null, form: 'stop',
-    clock: 0, bx0: 0, by0: 0, callForm: null, lastForm: 'stop', script: false, cheerOnly: false, plan: [], clearedAt: 0, goalX: 834, ev: {}, leftOK: false, cap: 10,
+    clock: 0, bx0: 0, by0: 0, callForm: null, lastForm: 'stop', script: false, cheerOnly: false, plan: [], clearedAt: 0, goal: [5.4, 39], ev: {}, leftOK: false, cap: 10,
     keep: false, lastAt: 0, hold: 1.6, fast: 1 };                              // (keep: due still, its sheets were late; lastAt: the street's time at its last coming)
   const CREW_SLOTS = 16;                                   // (the horde's slots; ten in use at once, the finale's surge up to all)
   function crewCap(n) {                                    // (a phone keeps ten)
@@ -2365,10 +2367,12 @@
   function crewEmit(n) { for (const f of (CREW.ev[n] || []).slice()) { try { f(CREW.api.state); } catch (e) {} } }
   const CF = 959.5, CEYE = 1.41, CHZ = 615, ROW_DOOR = 648.5;   // the camera: focal (px), eye height (m), horizon row; the door's foot
   const crewDepth = (row) => CF * CEYE / (row - CHZ), crewRow = (d) => CHZ + CF * CEYE / d;
-  const CSPOT = {                                          // where each stands to fire: scene x, row; and his order off the bus
-    stop: [['richtofen', 855, 648.0], ['nikolai', 834, 649.7], ['takeo', 812, 648.2], ['dempsey', 794, 649.3]],
-    lastStand: [['richtofen', 560, 650.5], ['nikolai', 602, 651.5], ['takeo', 800, 650.0], ['dempsey', 840, 651.0]],
-    door: [['richtofen', 24, 650.2], ['nikolai', 9, 651.0], ['takeo', -9, 650.6], ['dempsey', -24, 651.2]] };   // (x from the door: a step off it)
+  const CSPOT = {                                          // where each walks to, in his order off the bus: his drawn walk (1) or its mirror (-1, to
+    stop: [['richtofen', 1, 5.6], ['nikolai', 1, 4.6], ['takeo', -1, 5.6], ['dempsey', 1, 6.8]],   // our left), and how much nearer it takes him (m):
+    lastStand: [['richtofen', 1, 6.0], ['nikolai', -1, 5.2], ['takeo', -1, 4.8], ['dempsey', 1, 8.2]],   // they come toward us, as drawn (Takeo and
+    door: [['dempsey', 1, 4.8], ['takeo', -1, 4.8], ['richtofen', 1, 4.0], ['nikolai', 1, 3.2]] };   // Richtofen straight at us, Dempsey and Nikolai
+                                                           // on a slant to our right); their spot is where that walk ends (crewPathTo): 33 to 37 m,
+                                                           // none over another on screen, none walking through one already there
   const CGUN = { garand: [1, 0, 8, 0.42], ppsh: [7, 0.066, 71, 1.0], type100: [5, 0.075, 30, 0.85], mp40: [5, 0.11, 32, 0.95] };   // burst, gap, magazine, pause
   const CWHO = { dempsey: 'garand', nikolai: 'ppsh', takeo: 'type100', richtofen: 'mp40' };
   const COCC = {"pole":{"d":9.95,"runs":[[50,52,1026,1063],[53,53,1024,1063],[54,57,1023,1063],[58,65,1025,1063],[66,90,1025,1064],[91,93,1024,1064],[94,454,1023,1064],[455,529,1023,1068],[530,665,1022,1068],[666,719,1023,1068],[720,742,1023,1065],[743,749,1024,1065],[750,751,1036,1065]]}};   // the pole: traced from the painting (bus/occ_trace.py), spans [y0, y1, x0, x1] and their depths (m)
@@ -2376,8 +2380,8 @@
     if (CREW.tex) return;
     const T = CREW.tex = { crew: {}, flash: {}, L: [] }, on = () => { CREW.loaded++; };
     // (every asset a literal URL: sync_assets.py finds them by that pattern)
-    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=4', 'assets/crew_dempsey_flash.webp?v=4'], nikolai: ['assets/crew_nikolai.webp?v=5', 'assets/crew_nikolai_flash.webp?v=5'],
-      takeo: ['assets/crew_takeo.webp?v=5', 'assets/crew_takeo_flash.webp?v=5'], richtofen: ['assets/crew_richtofen.webp?v=5', 'assets/crew_richtofen_flash.webp?v=5'] };
+    const SRC = { dempsey: ['assets/crew_dempsey.webp?v=5', 'assets/crew_dempsey_flash.webp?v=5'], nikolai: ['assets/crew_nikolai.webp?v=6', 'assets/crew_nikolai_flash.webp?v=6'],
+      takeo: ['assets/crew_takeo.webp?v=6', 'assets/crew_takeo_flash.webp?v=6'], richtofen: ['assets/crew_richtofen.webp?v=6', 'assets/crew_richtofen_flash.webp?v=6'] };
     for (const h of Object.keys(CRW.heroes)) { T.crew[h] = crisp(SRC[h][0], on); T.flash[h] = crisp(SRC[h][1], on); CREW.need += 2; }
     for (const src of ['assets/horde_L0.webp?v=4', 'assets/horde_L1.webp?v=5', 'assets/horde_L2.webp?v=5', 'assets/horde_L3.webp?v=5', 'assets/horde_L4.webp?v=4']) { T.L.push(crisp(src, on)); CREW.need++; }
     T.door = crisp('assets/bus_door.webp?v=1', on); T.doorGlow = crisp('assets/bus_door_glow.webp?v=1', on); CREW.need += 2;
@@ -2402,11 +2406,13 @@
     m.onBeforeCompile = own ? extra : busShade(extra); m.customProgramCacheKey = () => 'crew-' + kind;
     return gradeSprite(m, opts && opts.blending === THREE.AdditiveBlending ? 'self' : 'street');
   }
-  const cellShade = (u, clip) => (sh) => {                 // a sheet's cell (uCell); clipped to a rect (the doorway) while inside
-    sh.uniforms.uCell = u; sh.uniforms.uClip = clip;
-    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform vec4 uCell;').replace('#include <uv_vertex>', 'vUv = uv * uCell.zw + uCell.xy;');
-    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform vec4 uClip;')
-      .replace('#include <map_fragment>', 'if (vWP.x < uClip.x || vWP.x >= uClip.z || -vWP.y < uClip.y || -vWP.y >= uClip.w) discard;\n#include <map_fragment>');
+  const cellShade = (u, clip, rm, body) => (sh) => {       // a sheet's cell (uCell) at his whole-pixel size by majority (ZRM, uRm); clipped to a rect
+    sh.uniforms.uCell = u; sh.uniforms.uClip = clip; sh.uniforms.uRm = rm; if (body) sh.uniforms.tBody = { value: body };   // (the doorway) while
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform vec4 uCell;\nvarying vec2 vLuv;')   // inside; the flash
+      .replace('#include <uv_vertex>', 'vUv = uv * uCell.zw + uCell.xy;\nvLuv = uv;');   // layer takes the texel the body's majority took (tBody)
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform vec4 uClip, uCell, uRm;\nvarying vec2 vLuv;' + (body ? '\nuniform sampler2D tBody;' : ''))
+      .replace('#include <map_fragment>', 'if (vWP.x < uClip.x || vWP.x >= uClip.z || -vWP.y < uClip.y || -vWP.y >= uClip.w) discard;\n'
+        + (body ? ZRM.replace('vec4 c = texture2D(map,', 'vec4 c = texture2D(tBody,') : ZRM));
   };
   let crewOccT = null;
   function crewOccTex() {                                  // the near things the horde passes behind: their depth (m x 8) by pixel
@@ -2481,13 +2487,13 @@
     CREW.doorGlow.visible = false; scene.add(CREW.doorGlow);
     for (const [who] of CSPOT.stop) {                  // each: his body, his flash-lit layer, his contact shadow, his reflection in
       const C = CRW.heroes[who], u = { value: new THREE.Vector4() }, clip = { value: new THREE.Vector4(-1e4, -1e4, 1e4, 1e4) };   // the wet street (mirrored at his feet; the water's own pass leaves him out)
-      const hd = { value: 40 }, foot = { value: 650 }, far = { value: 1 };
-      const body = new THREE.Mesh(new THREE.PlaneGeometry(C.cw, C.ch), crewMat(T.crew[who], cellShade(u, clip), 'body', { alphaTest: 0.5 }));
-      const lit = new THREE.Mesh(new THREE.PlaneGeometry(C.cw, C.ch), crewMat(T.flash[who], cellShade(u, clip), 'lit', { blending: THREE.AdditiveBlending }));
+      const hd = { value: 40 }, foot = { value: 650 }, far = { value: 1 }, rm = { value: new THREE.Vector4(1, 1, 1, 1) };   // (rm: his size by majority)
+      const body = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), crewMat(T.crew[who], cellShade(u, clip, rm), 'body', { alphaTest: 0.5 }));
+      const lit = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), crewMat(T.flash[who], cellShade(u, clip, rm, T.crew[who]), 'lit', { blending: THREE.AdditiveBlending }));
       const cont = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), crewMat(fogTex, (sh) => sh, 'hc', { color: 0x000000, opacity: 0.85 }, true));
-      const refl = WET.on ? new THREE.Mesh(new THREE.PlaneGeometry(C.cw, C.ch), crewMat(T.crew[who], zShadeH(u, hd, foot, far), 'hr', { alphaTest: 0.02, side: THREE.DoubleSide }, true)) : null;
+      const refl = WET.on ? new THREE.Mesh(new THREE.PlaneGeometry(1, 1), crewMat(T.crew[who], zShadeH(u, hd, foot, far, rm), 'hr', { alphaTest: 0.02, side: THREE.DoubleSide }, true)) : null;
       for (const m of [body, lit, cont, refl]) if (m) { m.visible = false; scene.add(m); WET.hide.push(m); }
-      CREW.heroes.push({ who, C, body, lit, cont, refl, hd, foot, u, clip, gun: CWHO[who] });
+      CREW.heroes.push({ who, C, body, lit, cont, refl, hd, foot, u, clip, rm, gun: CWHO[who] });
     }
     crewOccT = crewOccTex();
     for (let i = 0; i < CREW_SLOTS; i++) {              // the horde's slots: the body, its long shadow, its reflection, its contact shadow
@@ -2529,23 +2535,17 @@
     Object.assign(CREW, { active: true, phase: 'door', t: 0, killed: 0, spawned: 0, queue: [], form: form || 'stop', lone: 0, cheerOnly: !!o.cheerOnly, clearedAt: 0 });
     CREW.hold = o.hold > 0 ? o.hold : CRW.heroes.dempsey.moves.idle ? 4 : 1.6; CREW.fast = CREW.cheerOnly ? 1.8 : 1;   // (the cheer's length; a cheer at the door: brisk steps down and up)
     CREW.lastForm = CREW.form;
-    CREW.goalX = CREW.form === 'stop' ? CSPOT.stop[1][1] : CREW.form === 'door' ? S.x + 212.5 : CSPOT[CREW.form].reduce((a, q) => a + q[1], 0) / 4;
     CREW.seen = true; CREW.next = false; lsSet('mtsfj-crew-seen', '1');
     if (!CREW.cheerOnly) { CREW.keep = false; CREW.lastAt = CREW.vis; CREW.stops = 0; lsSet('mtsfj-crew-stops', 0); }   // (the count starts again)
-    const X0 = S.x;
-    CSPOT[CREW.form].forEach(([who, sx, row], i) => {
+    const door = S.x + 212.5, D0 = crewDepth(ROW_DOOR);
+    CSPOT[CREW.form].forEach(([who, sg, dD], i) => {     // each: his walk out from the door, worked out now (its end, his spot: where he stands to fire)
       const H = CREW.heroes.find((h) => h.who === who);
-      if (CREW.form === 'door') sx = X0 + 212.5 + sx;
-      Object.assign(H, { i, sx, row, door: X0 + 212.5, st: 'wait', t: 0, at: CREW.cheerOnly ? 0.15 + i * 0.12 : 0.55 + i * 1.0, kick: 0, left: CGUN[H.gun][2], nextShot: 0, burst: 0, tgt: null, f: 0, flash: 0, aim: crewFront(who), flip: false, wk: null, wait: 0 });
+      Object.assign(H, { i, mir: sg < 0, door, x: door, D: D0, y: ROW_DOOR, st: 'wait', t: 0, at: CREW.cheerOnly ? 0.15 + i * 0.12 : 0.55 + i * 1.0, kick: 0, left: CGUN[H.gun][2], nextShot: 0, burst: 0, tgt: null, f: 0, flash: 0, aim: crewFront(who), flip: false, wk: null, wait: 0 });
+      H.out = crewPathTo(H, Math.round(door), D0, D0 - dD, false);
+      const e = H.out.f.length - 1; H.sx = H.out.x[e]; H.Dspot = H.out.D[e]; H.row = crewRow(H.Dspot);
     });
-    const hs = CSPOT[CREW.form].map(([who]) => CREW.heroes.find((h) => h.who === who));   // (each walks at his drawing's own pace: one never
-    for (let i = 1; i < hs.length; i++) {                                                //  walks through the one ahead of him, he waits his turn)
-      const L = hs[i - 1], F = hs[i], vL = crewSpeed(L.who), vF = crewSpeed(F.who), AL = Math.abs(L.sx - L.door), AF = Math.abs(F.sx - F.door), g = 12;
-      if (Math.sign(L.sx - L.door) !== Math.sign(F.sx - F.door)) continue;
-      let t = L.at + g / vL;                         // (off the step once the one ahead is a stride on; faster than him: not on him before he stops)
-      if (vF > vL) t = Math.max(t, AF <= AL - g ? L.at + (AF + g) / vL - AF / vF : L.at + AL / vL - (AL - g) / vF);
-      F.at = Math.max(F.at, t);
-    }
+    const hs = CSPOT[CREW.form].map(([who]) => CREW.heroes.find((h) => h.who === who));   // (the horde's goal: the four, the middle of them)
+    CREW.goal = [hs.reduce((a, h) => a + (h.sx - 700) * h.Dspot / CF, 0) / hs.length, hs.reduce((a, h) => a + h.Dspot, 0) / hs.length];
     const fg = [];                                     // the waves: four already mid-road, then from our side, one every ~1.6 s
     [[905, 16], [960, 21], [880, 12.5], [1000, 26]].forEach(([x, d], i) => fg.push({ t: 0, x, d, b: (i * 5) % 12 }));
     for (let i = 0; i < 14; i++) fg.push({ t: 1.2 + i * 1.6 + (i > 7 ? 2.5 : 0), x: 930 + ((i * 97) % 400), d: 6.1 + ((i * 37) % 13) / 10, b: (i * 7 + 3) % 12 });
@@ -2563,8 +2563,8 @@
       if (src === 'right') w = Object.assign({}, w, { d: Math.max(w.d, 15), x: 640 + ((w.x - 640) % 260) });
     }
     if (src === 'right') {                             // up the right half of the road (the ordinary event's: as it always was)
-      const X = (w.x - 700) * w.d / CF, gx = (CREW.goalX - 700) * 40 / CF;      // its goal: the crew
-      const dx = gx - X, dd = 40 - w.d, n = Math.hypot(dx, dd);
+      const X = (w.x - 700) * w.d / CF, [gx, gD] = CREW.goal;                   // its goal: the crew (the middle of them, where they stand)
+      const dx = gx - X, dd = gD - w.d, n = Math.hypot(dx, dd);
       Object.assign(z, { on: true, b: w.b, X, D: w.d, wx: dx / n, wd: dd / n, v: 0.7 * (0.8 + 0.4 * Math.random()), t: Math.random() * 2, st: 'walk', st_t: 0, hp: 3 + (Math.random() < 0.5 ? 1 : 0), fade: 1, src, path: null, lum: 1 });
       CREW.spawned++; return true;
     }
@@ -2602,13 +2602,16 @@
       if (H.st === undefined) continue;
       H.t += dt;
       if (H.st === 'wait') { if (CREW.phase !== 'door' && CREW.t >= H.at) { H.st = 'down'; H.t = 0; } allSet = false; allIn = false; continue; }
-      if (H.st === 'down' && H.t >= 1 / CREW.fast) { H.st = 'walk'; H.t = 0; H.x = H.door; H.y = ROW_DOOR; H.wk = null; H.wait = 0; }
-      if ((H.st === 'walk' || H.st === 'back') && H.t >= (H.wait || 0)) {   // to his spot, back to the door (backing, still watching the street): his
-        if (!H.wk || H.wk.st !== H.st) H.wk = H.st === 'walk' ? crewPath(H, H.sx, H.row, true) : crewPath(H, H.door, ROW_DOOR, false);   // drawn steps
+      if (H.st === 'down' && H.t >= 1 / CREW.fast) { H.st = 'walk'; H.t = 0; H.x = H.door; H.D = crewDepth(ROW_DOOR); H.y = ROW_DOOR; H.wk = null; H.wait = 0; }
+      if ((H.st === 'walk' || H.st === 'back') && H.t >= (H.wait || 0)) {   // to his spot, toward us; back to the door, backing, still facing the street:
+        if (!H.wk || H.wk.st !== H.st) {               // his drawn steps, the planted foot on its pixel (crewPathTo)
+          H.wk = H.st === 'walk' ? H.out : crewPathTo(H, Math.round(H.x), H.D, crewDepth(ROW_DOOR), true);
+          H.wk.st = H.st; H.wk.i = 0; H.wk.t = 0;
+        }
         const W = H.wk; W.t += dt;
         while (W.i < W.f.length && W.t >= W.d[W.i]) { W.t -= W.d[W.i]; W.i++; }
-        if (W.i < W.f.length) { H.x = W.x[W.i]; H.y = W.y[W.i]; }
-        else if (H.st === 'walk') { H.wk = null; H.x = H.sx; H.y = H.row; H.st = CREW.cheerOnly ? 'cheer' : 'kneel'; H.t = 0; H.knelt = false; }   // (out only to cheer: at once)
+        if (W.i < W.f.length) { H.x = W.x[W.i]; H.D = W.D[W.i]; H.y = crewRow(H.D); }
+        else if (H.st === 'walk') { H.wk = null; H.x = H.sx; H.D = H.Dspot; H.y = H.row; H.st = CREW.cheerOnly ? 'cheer' : 'kneel'; H.t = 0; H.knelt = false; }   // (out only to cheer: at once)
         else { H.wk = null; H.st = 'board'; H.t = 0; }
       }
       if (H.st === 'kneel' && H.t >= 0.45) { H.st = CREW.cheerOnly ? 'cheer' : 'aim'; H.t = 0; H.calm = 0; H.knelt = true; H.nextShot = CREW.clock + 0.4 + Math.random() * 0.5; }
@@ -2729,33 +2732,28 @@
     if (H.left <= 0) { H.st = 'reload'; H.t = 0; H.burst = 0; H.nextShot = CREW.clock + 1.8; return; }
     H.nextShot = CREW.clock + (H.burst % G[0] === 0 ? G[3] * (0.8 + 0.4 * Math.random()) : G[1]);
   }
-  function crewSpeed(who) {                               // his walk's pace (px/s): his drawn steps over their times
-    const C = CRW.heroes[who];
-    return C.wstep.reduce((a, b) => a + b, 0) / C.wtf.reduce((a, b) => a + b, 0);
-  }
-  function crewPath(H, x1, y1, toEnd) {                    // his walk to x1 (row y1): each frame of his walk shown its time (C.wtf), then the body on
-    const C = CRW.heroes[H.who], S = C.wstep, T = C.wtf, L = S.length;   // by that frame's step (C.wstep, whole px: the planted foot stays on its
-    const x0 = Math.round(H.x), D = Math.round(x1) - x0, dir = D < 0 ? -1 : 1, A = Math.abs(D), y0 = H.y;   // pixel); backwards (to the left, or
-    const st = (p, j) => dir > 0 ? S[(p + j) % L] : S[(p - j - 1 + 64 * L) % L];   // backing to the door): the same steps, the frames in reverse
-    let b = null;                                    // (the phase and the number of frames that come nearest the distance; what is left over, under
-    for (let p = 0; p < L; p++) {                    //  half a step, at the start of the walk out (the pose changes there) and at the door on the way back)
-      let c = 0, n = 0;
-      while (c + st(p, n) / 2 < A && n < 4000) c += st(p, n++);
-      if (!b || Math.abs(A - c) < b.e) b = { p, n, c, e: Math.abs(A - c) };
-    }
-    const xs = toEnd ? Math.round(x1) - dir * b.c : x0, P = { st: H.st, f: [], x: [], y: [], d: [], i: 0, t: 0 };
-    for (let j = 0, x = xs; j <= b.n; j++) {
-      const k = dir > 0 ? (b.p + j) % L : (b.p - j + 64 * L) % L;
-      P.f.push(k); P.x.push(x); P.y.push(Math.round(y0 + (y1 - y0) * (b.c ? Math.abs(x - xs) / b.c : 1)));
-      P.d.push(dir > 0 ? T[k] : T[(k - 1 + L) % L]);
-      if (j < b.n) x += dir * st(b.p, j);
+  const crewK = (D) => Math.max(1, CF / D / CRW.ppm);      // his size at depth D, x his sheet's (x 1: 43 px standing, at the door)
+  function crewPathTo(H, x, D, D1, back) {                 // his walk from (x, depth D) to depth D1: toward us (his walk's frames in turn) or backing
+    const C = CRW.heroes[H.who], T = C.wtf, L = T.length, sg = H.mir ? -1 : 1, P = { f: [], x: [], D: [], d: [], i: 0, t: 0 };   // away (in reverse).
+    let c = 0;                                             // Each frame shown its time (C.wtf), then the body on: toward us (or away) C.vz m/s of it,
+    for (let j = 0; j < 4000; j++) {                       // to the side that frame's drawn step at his size there (lv.ws, px at that size of his sheet),
+      const f = back ? ((-j % L) + L) % L : j % L, k = back ? (f - 1 + L) % L : f;   // in whole px: the planted foot stays on its pixel (and moves less
+      P.f.push(f); P.x.push(x); P.D.push(D); P.d.push(T[k]);   // than a pixel up or down: at 33 to 40 m a step toward us is half a pixel). His mirror
+      if (back ? D >= D1 : D <= D1) break;                 // (H.mir) walks to our left
+      let n = back ? D + C.vz * T[k] : D - C.vz * T[k];
+      if (back ? n > D1 : n < D1) n = D1;
+      const kq = crewK(D), lv = C.lv.find((l) => l.k >= kq - 0.004) || C.lv[C.lv.length - 1];
+      c += sg * (back ? -1 : 1) * lv.ws[k] * Math.min(1, kq / lv.k) * Math.abs(n - D) / (C.vz * T[k]);
+      const dx = Math.round(c); x += dx; c -= dx; D = n;
     }
     return P;
   }
-  function crewBackWaits() {                               // back to the door, the nearest first: each waits so that he never walks through the one
-    const hs = CREW.heroes.filter((H) => H.st === 'back').sort((a, b) => Math.abs(a.x - a.door) - Math.abs(b.x - b.door));   // ahead, and comes
-    let prev = -1e9;                                       // to the door once he has climbed in
-    for (const H of hs) { const A = Math.abs(H.x - H.door), v = crewSpeed(H.who); H.wk = null; H.wait = Math.max(0, prev + 1 / CREW.fast - A / v); prev = H.wait + A / v; }
+  function crewBackWaits() {                               // back to the door, the nearest first: each waits so that he comes to the door once the one
+    const hs = CREW.heroes.filter((H) => H.st === 'back').map((H) => {   // before him has climbed in
+      const P = crewPathTo(H, Math.round(H.x), H.D, crewDepth(ROW_DOOR), true); return [H, P.d.reduce((a, b) => a + b, 0)];
+    }).sort((a, b) => a[1] - b[1]);
+    let prev = -1e9;
+    for (const [H, t] of hs) { H.wk = null; H.wait = Math.max(0, prev + 1 / CREW.fast - t); prev = H.wait + t; }
   }
   function crewFront(who) {                               // his direction nearest straight at us (CRW dirs: degrees, + to our right)
     const D = CRW.heroes[who].dirs; let b = 0;
@@ -2792,11 +2790,16 @@
         : t < 0 ? at(M.kneel, 0.45, -t) : crewCheerFrame(M.cheer, t, Math.max(0.6, CREW.hold - up));
     }
     else { const K = CRW.kicks; let ph = 0; while (ph + 1 < K.length && H.kick > K[ph + 1]) ph++; fr = M.aim[Math.min(C.dirs.length - 1, H.aim) * K.length + ph]; }   // (aimed, then its recoil)
-    const n = fr.cell, col = n % C.cols, row = Math.floor(n / C.cols), W = C.size[0], Hh = C.size[1];
-    H.u.value.set(col * C.cw / W, 1 - (row + 1) * C.ch / Hh, C.cw / W, C.ch / Hh);
-    const fl = !!H.flip && (H.st === 'aim' || H.st === 'reload'), sgn = fl ? -1 : 1;   // (firing to his left, in the finale: mirrored)
-    const left = fl ? Math.round(ax) - (C.cw - C.ax) : Math.round(ax) - C.ax, top = Math.round(ay) - C.ay;
-    for (const m of [H.body, H.lit]) { m.scale.x = sgn; m.position.set(left + C.cw / 2, -(top + C.ch / 2), m === H.lit ? 0.6556 : 0.6555); }
+    // his size where he stands (x crewK: at the door his sheet's own, 43 px standing; nearer, bigger): the smallest of his sheet's sizes (C.lv)
+    // at least as big, brought down to his own in whole pixels by majority (cellShade's ZRM): he grows a pixel at a time, the same families
+    const D = crewDepth(ay), kq = crewK(D), lv = C.lv.find((l) => l.k >= kq - 0.004) || C.lv[C.lv.length - 1], s = Math.min(1, kq / lv.k);
+    const n = fr.cell, W = C.size[0], Hh = C.size[1], cx = (n % C.cols) * lv.cw, cy = lv.y + Math.floor(n / C.cols) * lv.ch;
+    const W2 = Math.max(1, Math.round(lv.cw * s)), H2 = Math.max(1, Math.round(lv.ch * s)), fx = W2 / lv.cw, fy2 = H2 / lv.ch, ks = lv.k * fy2;
+    H.u.value.set(cx / W, 1 - (cy + lv.ch) / Hh, lv.cw / W, lv.ch / Hh); H.rm.value.set(W2, H2, lv.cw, lv.ch);
+    const fl = (!!H.flip && (H.st === 'aim' || H.st === 'reload')) || (!!H.mir && (H.st === 'walk' || H.st === 'back')), sgn = fl ? -1 : 1;   // (firing to his left
+    const left = fl ? Math.round(ax) - (W2 - Math.round(lv.ax * fx)) : Math.round(ax) - Math.round(lv.ax * fx), top = Math.round(ay) - Math.round(lv.ay * fy2);   // in the
+    const z0 = 0.6556 + (41 - D) * 0.0002;            // finale, walking to our left: mirrored); nearer in front (as the far ones of the horde)
+    for (const m of [H.body, H.lit]) { m.scale.set(sgn * W2, H2, 1); m.position.set(left + W2 / 2, -(top + H2 / 2), m === H.lit ? z0 + 0.00005 : z0); }
     const inside = (H.st === 'down' || H.st === 'board') && fr.inside;
     if (inside) H.clip.value.set(CREW.bx0 + DOOR.clip[0], CREW.by0 + DOOR.clip[1], CREW.bx0 + DOOR.clip[2] + 1, CREW.by0 + DOOR.clip[3] + 1);
     else H.clip.value.set(-1e4, -1e4, 1e4, 1e4);
@@ -2804,17 +2807,17 @@
     // on the ground: his contact shadow, under him; his reflection, mirrored at his feet (not in the doorway)
     const out = H.body.visible && H.st !== 'down' && H.st !== 'board', fy = Math.round(ay), kn = H.st === 'aim' || H.st === 'reload' || H.st === 'idle' || !!fr.kn;
     const cw = (kn ? 0.95 : 0.74) * CF / crewDepth(ay);   // (on one knee: knee and foot)
-    H.cont.visible = out; H.cont.scale.set(cw, 3.2, 1); H.cont.position.set(Math.round(ax) + 0.5, -(fy + 0.5), 0.6549);
+    H.cont.visible = out; H.cont.scale.set(cw, 3.2 * ks, 1); H.cont.position.set(Math.round(ax) + 0.5, -(fy + 0.5), z0 - 0.0004);
     if (H.refl) {
-      H.refl.visible = out; H.refl.scale.set(sgn, -1, 1); H.refl.position.set(left + C.cw / 2, -(2 * fy - (top + C.ch / 2)), 1.156);
-      H.hd.value = crewDepth(ay); H.foot.value = fy;
+      H.refl.visible = out; H.refl.scale.set(sgn * W2, -H2, 1); H.refl.position.set(left + W2 / 2, -(2 * fy - (top + H2 / 2)), 1.156);
+      H.hd.value = D; H.foot.value = fy;
     }
     const f = CREW.fx[H.i], fr2 = f.userData.refl;      // the flash itself, at the muzzle (and its reflection)
     f.visible = H.lit.visible; fr2.visible = WET.on && f.visible && !!fr.muz;
     if (f.visible && fr.muz) {
       f.material.map.offset.x = Math.floor(Math.random() * 12) / 12;
-      const my = Math.round(ay + fr.muz[1]) + 0.5;
-      f.position.set(Math.round(ax + sgn * fr.muz[0]) + 0.5, -my, 0.6625);
+      const my = Math.round(ay + fr.muz[1] * ks) + 0.5;
+      f.position.set(Math.round(ax + sgn * fr.muz[0] * ks) + 0.5, -my, 0.6625);
       fr2.position.set(f.position.x, -(2 * fy - my), 1.156); fr2.scale.y = -1; fr2.userData.foot.value = fy;
     }
   }
@@ -2827,7 +2830,7 @@
   function crewTracer(H, z) {
     const t = CREW.tr.find((q) => q.t > 0.12) || CREW.tr[0];
     const C = CRW.heroes[H.who], fr = C.moves.aim[H.aim * CRW.kicks.length]; if (!fr || !fr.muz) return;
-    const x0 = H.x + (H.flip ? -1 : 1) * fr.muz[0], y0 = H.y + fr.muz[1], x1 = 700 + CF * z.X / z.D, y1 = crewRow(z.D) - 1.3 * CF / z.D;
+    const ks = crewK(H.D || crewDepth(H.y)), x0 = H.x + (H.flip ? -1 : 1) * fr.muz[0] * ks, y0 = H.y + fr.muz[1] * ks, x1 = 700 + CF * z.X / z.D, y1 = crewRow(z.D) - 1.3 * CF / z.D;
     const a = 0.08 + Math.random() * 0.1, b = a + 0.22, xa = x0 + (x1 - x0) * a, ya = y0 + (y1 - y0) * a, xb = x0 + (x1 - x0) * b, yb = y0 + (y1 - y0) * b;
     const len = Math.hypot(xb - xa, yb - ya);
     t.m.scale.set(len, 1, 1); t.m.rotation.z = -Math.atan2(yb - ya, xb - xa); t.m.position.set((xa + xb) / 2, -(ya + yb) / 2, 1.9); t.m.visible = true; t.t = 0;
@@ -2848,7 +2851,7 @@
           if (z.src === 'alley') z.lum = 0.4 + 0.6 * Math.max(0, Math.min(1, (z.X + 6.0) / 1.2));   // (out of the alley's dark)
         }
         z.X += z.wx * z.v * dt * k; z.D += z.wd * z.v * dt * k; z.t += dt * k * z.v / ZH.stride;   // (its walk's cycles: its feet with the road)
-        if (z.path ? z.path.length === 1 && Math.hypot(z.path[0][0] - z.X, z.path[0][1] - z.D) < 1.4 : z.D > 36.5) crewHit(z, 9);   // (at the crew's feet: point blank)
+        if (z.path ? z.path.length === 1 && Math.hypot(z.path[0][0] - z.X, z.path[0][1] - z.D) < 1.4 : z.D > CREW.goal[1] - 3.5) crewHit(z, 9);   // (at the crew's feet: point blank)
       }
       if (z.st === 'fall' && z.st_t > 1.0) { z.st = 'down'; z.st_t = 0; }
       if (z.st === 'down') { z.fade = Math.max(0, 1 - Math.max(0, z.st_t - 6) / 1.5); if (z.fade <= 0) { crewZOff(z); continue; } }
@@ -4434,14 +4437,14 @@
       case 'rain':
         if (u >= 2.8) { A.retreat(); finEv('blast'); finBlast(); finStage('blast'); }   // (the flash: every zombie still up falls, finDawn)
         break;
-      case 'blast':                              // the dawn: the four one step out of the door, the cheer held 4 s (Nikolai
-        if (FIN.dawn >= 2 && !A.state.active) {  // drinks), in again within 2 s, and away (about 8 s, under the door's light)
+      case 'blast':                              // the dawn: the four a few steps out of the door, the cheer held 4 s (Nikolai
+        if (FIN.dawn >= 2 && !A.state.active) {  // drinks), back in, and away (about 16 s, under the door's light)
           finOnce('in', ['cheer'], () => { A.release(); finStage('leave'); });
           if (A.cheer({ formation: 'door', hold: 4 })) { finStage('cheer'); finEv('cheer'); } else { A.release(); finStage('leave'); }
         }
         break;
-      case 'cheer':                              // (a cheer that never ends: let the bus go at 14 s)
-        if (u >= 14) { A.release(); finStage('leave'); }
+      case 'cheer':                              // (a cheer that never ends: let the bus go at 20 s; they walk out 4 m and back)
+        if (u >= 20) { A.release(); finStage('leave'); }
         break;
       case 'leave':                              // the TranZit away to the right; the plate as it goes
         if (u >= 3) finPlate();
