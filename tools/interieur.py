@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Ce que les outils des vitrines partagent : une pièce vue par une ouverture d'une façade de côté, redressée.
 
-    (un module : tools/ichiraku_interior.py, tools/center_interior.py, tools/oden_window.py s'en servent)
+    (un module : tools/ichiraku_interior.py, tools/center_interior.py, tools/oden_interior.py s'en servent)
 
 La caméra regarde la rue qui descend (une perspective à un point, VP au centre : ce qui longe la rue court vers VP, ce qui
 lui est de travers est horizontal, ce qui est vertical d'aplomb). Par une porte ou une fenêtre d'une façade de côté, un
