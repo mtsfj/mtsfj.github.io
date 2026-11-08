@@ -47,7 +47,9 @@
 <style>
   /* the charter (tokens, base, sections, cards, rows, footer) is assets/site.css; here only the home's own: its street */
 
-  .hero { position: relative; height: 100svh; min-height: 540px; overflow: hidden; background: var(--night-deep) url(data:image/webp;base64,UklGRmoBAABXRUJQVlA4IF4BAADwBwCdASowABsAPrVInksnJCKhqrgN+OAWiWIAtPYi8j07fIin6I6CFjbOuV1/HelPXn1CNPU4/Wi67AL1zb0qwxSCz5JInwAA/vbwddqFDj70M1LvCREuuDCTH2qq2IBzxyRJ78d9W05g4YINol1y3dh498RL4FQ9Sj1rew+BuHgVV1wP60SVFrjw3+q0h9yU0SNv2dGXwSG2WyOQa6hwRXqc9sYRr/0UdL+hkHaujeO2DLMH5O3JhYfoLgtOFSbUE5lR4Cq44zO9kVNKN6exjtxOEm9l1hZm9sjCOyo2b9+fuU2qpTmEtowPabeM76P6PXfF+kEQZnB7rrRDz77efRB6/DAe6UIZG80820RVpXycWa9+oGhh/Scod2e1Xfa0v456TRKWiRp5U+hE7ve8+zZOPFyeuczup1vB9XAXehMUMYraofHtie2wWNz/L8hkbGvLL8mqJvyRxp8AAA==) center 55% / cover no-repeat; }
+  .hero { position: relative; height: 100svh; min-height: 540px; max-height: max(540px, 260vw); overflow: hidden; background: var(--night-deep) url(data:image/webp;base64,UklGRmoBAABXRUJQVlA4IF4BAADwBwCdASowABsAPrVInksnJCKhqrgN+OAWiWIAtPYi8j07fIin6I6CFjbOuV1/HelPXn1CNPU4/Wi67AL1zb0qwxSCz5JInwAA/vbwddqFDj70M1LvCREuuDCTH2qq2IBzxyRJ78d9W05g4YINol1y3dh498RL4FQ9Sj1rew+BuHgVV1wP60SVFrjw3+q0h9yU0SNv2dGXwSG2WyOQa6hwRXqc9sYRr/0UdL+hkHaujeO2DLMH5O3JhYfoLgtOFSbUE5lR4Cq44zO9kVNKN6exjtxOEm9l1hZm9sjCOyo2b9+fuU2qpTmEtowPabeM76P6PXfF+kEQZnB7rrRDz77efRB6/DAe6UIZG80820RVpXycWa9+oGhh/Scod2e1Xfa0v456TRKWiRp5U+hE7ve8+zZOPFyeuczup1vB9XAXehMUMYraofHtie2wWNz/L8hkbGvLL8mqJvyRxp8AAA==) center 55% / cover no-repeat; }
+  /* (max-height: a renderer that grows its window to the page's height, as Google's does to see a page whole, would grow the street with it,
+     the page with the street, and so on without end; no real screen is taller than 2.6 times its width) */
   .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
   @media (min-width: 900px) and (min-aspect-ratio: 6/5) { .hero { height: calc(100vw * 816 / 1456); min-height: 0; } }   /* a computer: the whole scene (the script sets it to the pixel) */
   .hero.whole { min-height: 0; }
