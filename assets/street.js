@@ -39,10 +39,31 @@
   const fadeQuad = new THREE.Mesh(new THREE.PlaneGeometry(IW * 3, IH * 3), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 1, depthTest: false, depthWrite: false,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcAlphaFactor }));
   fadeQuad.position.set(IW / 2, -IH / 2, 9); fadeQuad.renderOrder = 998; fadeQuad.frustumCulled = false; scene.add(fadeQuad);
-  THREE.DefaultLoadingManager.onLoad = () => { setTimeout(lateStart, 1200); if (FADE.t0 >= 0) return; FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame(); };   // (the late sprites: once the eager batch is in)
-  setTimeout(() => { if (FADE.t0 < 0) { FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame(); setTimeout(lateStart, 1200); } }, 9000);
+  // ---- the first frame in a task of its own, just after the setup (FIRST): it compiles the shaders of all it draws, a long task
+  // (a second and more on some devices), and the images' requests, made during the setup, left only once it was done. They leave
+  // now with the setup's end, and load while it compiles; what the first frame would ask for by the hour (the unlit street) is
+  // asked for with them. The fade never starts before that frame ----
+  const FIRST = { on: true, fade: false, asked: false };
+  function fadeGo() {                            // the fade's start: the layers are in (or 9 s on)
+    if (FADE.t0 >= 0) return;
+    if (FIRST.on) { FIRST.fade = true; return; }   // (after the first frame)
+    FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame();
+  }
+  function preFrame() {                          // frame() before the first frame: it is asked for, once
+    if (FIRST.asked) return; FIRST.asked = true;
+    try { stepHours(); } catch (e) { }
+    setTimeout(() => { FIRST.on = false; frame(); if (FIRST.fade) fadeGo(); }, 0);
+  }
+  THREE.DefaultLoadingManager.onLoad = () => { setTimeout(lateStart, 1200); fadeGo(); };   // (the late sprites: once the eager batch is in)
+  setTimeout(() => { if (FADE.t0 < 0) { fadeGo(); setTimeout(lateStart, 1200); } }, 9000);
 
   const loader = new THREE.TextureLoader();
+  // ---- each image goes to the GPU as it comes in, in its own load event (renderer.initTexture), not in the first frame that draws
+  // it: on a reload all the layers came in together, and their decoding and uploading froze the fade's first frame (half a second
+  // on a phone; the fade then showed from its middle). Its callback comes once it is there ----
+  const upload = (tex) => { try { renderer.initTexture(tex); } catch (e) { } };
+  { const load = loader.load.bind(loader);
+    loader.load = (src, onLoad, onProgress, onError) => load(src, (tex) => { upload(tex); if (onLoad) onLoad(tex); }, onProgress, onError); }
   function crisp(src, cb, onErr) {
     const t = loader.load(src, () => { if (cb) cb(); }, undefined, () => { if (onErr) onErr(); });
     t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
@@ -57,7 +78,7 @@
   function crispLate(src, group, cb, onErr) {
     const t = new THREE.Texture(); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
     LATE.need[group] = (LATE.need[group] || 0) + 1; LATE.ready[group] = false;
-    LATE.q.push(() => { LATE.pending++; imgLoader.load(src, (img) => { t.image = img; t.needsUpdate = true; LATE.pending--; if (--LATE.need[group] === 0) LATE.ready[group] = true; if (cb) cb(); },
+    LATE.q.push(() => { LATE.pending++; imgLoader.load(src, (img) => { t.image = img; t.needsUpdate = true; upload(t); LATE.pending--; if (--LATE.need[group] === 0) LATE.ready[group] = true; if (cb) cb(); },
       undefined, () => { LATE.pending--; if (onErr) onErr(); }); });   // (a failed image: its group never ready, its event never starts)
     return t;
   }
@@ -9742,6 +9763,7 @@
   if (OPEN.on) openReset(); else if (OPEN.settle) openSettled();
 
   function frame() {
+    if (FIRST.on) { preFrame(); return; }        // (the first frame: in its own task, FIRST)
     raf = null;
     const dt = Math.min(clock.getDelta(), 0.05); t += dt;
     px += (tx - px) * 0.04; py += (ty - py) * 0.04;
