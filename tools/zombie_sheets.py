@@ -29,9 +29,10 @@ Le chemin, pour chaque zombie :
   colonne la plus creuse ; les bouts détachés (une mèche, la planche en l'air) rendus à l'image la plus proche. Le compte
   de chaque rangée est vérifié.
 - L'échelle : une par zombie et par vue, d'après sa taille (TAILLE, en mètres) : la marche de dos (la horde), le zombie debout
-  de dos au bus (sa planche, les deux dernières images) et le premier saut de dos (la course), mesurés du haut de la tête
-  (au milieu du corps : pas les mains levées) à la semelle ; la course de profil et le toit à l'échelle de leur planche.
-  Aucune image ne change de taille : une échelle pour toute une planche.
+  de dos au bus (sa planche, les deux dernières images) et dressé de profil sur le toit, mesurés du haut de la tête (au
+  milieu du corps : pas les mains levées) à la semelle ; la course à l'échelle du toit, au rapport de leurs aires de profil
+  (echelles). Aucune image ne change de taille : une échelle pour toute une planche. La taille de la rue : K, celle de ce
+  qui est debout dans la peinture (tools/zombie_sol.py : le bus, les portes, les distributeurs, 1,10 fois le modèle B).
 - La ligne du sol : chaque image posée sur sa semelle la plus basse (la marche, la course, le toit), au milieu des jambes de
   dos, au milieu du corps de profil, au milieu de ce qui touche le sol pour la chute ; les sauts posés par leurs mains (la
   prise) ou par le code (leur courbe).
@@ -59,9 +60,9 @@ Le chemin, pour chaque zombie :
 Ce qui est écrit :
 - la horde : horde_L0..L4.webp, à ses cinq tailles d'avant (64, 100, 150, 290 et 42 px pour 1,76 m), et la ligne ZH (les
   images de chaque silhouette par taille : [x, y, l, h, ax, ay], l'ancre sur la semelle) ;
-- le bus : bus_zombies.webp (à 41 m, 23,4 px/m), bus_zombies_glow.webp (la lumière du salon du bus sur eux : leurs bords,
-  calque additif), bus_zombies_spill.webp (R : le côté gauche, l'orange de l'oden ; G : le côté droit, le rouge de l'auvent)
-  et la ligne BZ (les images par zombie et par mouvement, les yeux, la trace de la planche, les foulées).
+- le bus : bus_zombies.webp (à 41 m, 25,7 px/m : 23,4 en B, x K), bus_zombies_glow.webp (la lumière du salon du bus sur
+  eux : leurs bords, calque additif), bus_zombies_spill.webp (R : le côté gauche, l'orange de l'oden ; G : le côté droit, le
+  rouge de l'auvent) et la ligne BZ (les images par zombie et par mouvement, les yeux, la trace de la planche, les foulées).
 Il faut Pillow, numpy, scipy.
 """
 import os
@@ -92,7 +93,9 @@ HN = 1.76                                             # (la taille nominale des 
 NIVEAUX = [64, 100, 150, 290, 42]                     # (horde_L0..L4 : leur hauteur pour 1,76 m ; l'ordre de street.js)
 CF, CEYE, CHZ = 959.5, 1.41, 615.0                    # (la caméra B de street.js)
 BUS_ROW = 648.0                                       # (le pied du bus : sa voie, 41 m)
-BUS_PPM = (BUS_ROW - CHZ) / CEYE                      # (23,4 px par mètre à la profondeur du bus)
+from zombie_sol import facteur                        # noqa: E402  (K : la taille de ce qui est debout dans la peinture, x B)
+K_PEINT = facteur()[0]
+BUS_PPM = (BUS_ROW - CHZ) / CEYE * K_PEINT            # (25,7 px par mètre au bus : 23,4 en B, x 1,10 : la taille du bus peint)
 
 
 # ---- le choix des versions, rangée par rangée (regardées à leur taille dans la rue : 100 px pour la horde, 41 px au bus) :
@@ -372,48 +375,22 @@ def haut_debout(f):
     return yb - haut_tete(m, cx, H)
 
 
-def torse(f, a=0.30, b=0.42):
-    """la largeur du torse de dos, bras levés : la course de pixels qui tient le milieu du corps, entre 30 et 42 % de la
-    hauteur sous le haut de la tête (sous les aisselles)"""
-    m = f['m']
-    H = m.shape[0]
-    yb = bas(m)
-    cx = int(milieu_bande(m, yb - 0.55 * H, yb - 0.4 * H))
-    top = haut_tete(m, cx, H)
-    hs = yb - top
-    ws = []
-    for y in range(int(top + a * hs), int(top + b * hs)):
-        row = m[y]
-        if not row[cx]:
-            continue
-        l = r = cx
-        while l > 0 and row[l - 1]:
-            l -= 1
-        while r < len(row) - 1 and row[r + 1]:
-            r += 1
-        ws.append(r - l + 1)
-    return float(np.median(ws))
-
-
 def echelles(n):
     """px de la planche par mètre, par planche : la horde par sa marche (le haut de la tête à 0,98 de la taille : le dos
     voûté) ; le toit par le zombie debout de dos (les deux dernières images de la fenêtre, 0,98) et dressé de profil (la
-    dernière du toit, sa taille), la moyenne des deux ; la course par le toit, au rapport de leurs torses de dos bras levés
-    (la planche agrippée, le zombie pendu)"""
+    dernière du toit, sa taille), la moyenne des deux ; la course par le toit, au rapport de leurs aires de profil : la
+    course (ses huit foulées) et le zombie qui se dresse sur le toit (ses deux dernières images), deux figures de profil
+    dont les bras et les jambes s'écartent du corps, la même surface de tissu et de peau à la même échelle (la tête, les
+    mains et les chaussures côte à côte : la planche des échelles). (Le rapport des torses de dos, bras levés, d'avant les
+    cuisait de 10 à 33 % trop petits : les coureurs du bus en miniature)"""
     T = TAILLE[n]
     h = float(np.median([haut_debout(f) for f in rangee(n, 'horde', 0)])) / (0.98 * T)
     t2 = rangee(n, 'toit_fenetre', 1)
     t1 = rangee(n, 'toit_fenetre', 0)
     t = 0.5 * (float(np.median([haut_debout(f) for f in t2[6:8]])) / (0.98 * T) + t1[7]['m'].shape[0] / T)
-    rap = float(np.median([torse(f) for f in t2[:2]])) / float(np.median([torse(f) for f in rangee(n, 'course', 2)[1:6]]))
-    e = {'horde': h, 'toit_fenetre': t, 'course': t / rap}
-    for k, c in CORR.get(n, {}).items():
-        e[k] *= c
-    return e
-
-
-CORR = {'01': {'course': 1.10}, '04': {'course': 1.12}}   # (à l'œil : la course de 01 et 04 dessinée plus petite que ses autres
-                                                      #  planches, les têtes et les corps côte à côte à la même échelle)
+    ac = float(np.median([f['m'].sum() for f in rangee(n, 'course', 0)]))
+    at = float(np.median([f['m'].sum() for f in t1[6:8]]))
+    return {'horde': h, 'toit_fenetre': t, 'course': t * float(np.sqrt(ac / at))}
 
 
 # ---- les ancres (px de la planche, dans la boîte de l'image) : (ax, ay), ay le bord sous la semelle la plus basse
@@ -897,7 +874,7 @@ def save(arr, name, rgb=False):
     im.save(os.path.join(ASSETS, name), 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
-# ---- les zombies du bus (à 41 m, 23,4 px/m)
+# ---- les zombies du bus (à 41 m, 25,7 px/m : à la taille du bus peint)
 MOVES_B = [('run', 'course', 0), ('leap', 'course', 1), ('jump', 'course', 2), ('roof', 'toit_fenetre', 0), ('plank', 'toit_fenetre', 1),
            ('fall', 'horde', 1)]
 YEUX = {'run': range(8), 'leap': range(8), 'roof': range(8), 'plank': [7]}   # (les images où l'on voit son visage, de profil)
@@ -993,12 +970,14 @@ def cuire_bus():
                 md['plank'] = [[t[0], round((t[1] - f['a'][0]) * sc, 2), round((t[2] - f['a'][1]) * sc, 2), round(t[3], 3)] if t[0] else [0, 0, 0, 0]
                                for f, t in zip(fr, tr)]
                 md['plankL'] = [round(t[4] * sc, 1) for t in tr if t[0] == 1]
-            if mv == 'run':                           # (ses avances d'une image à la suivante : le pied posé tenu)
-                adv, held = foulees(fr, [f['a'][1] for f in fr], [f['a'][0] for f in fr], e[kind], hs)
-                md['run'] = {'a': [round(v * sc, 2) for v in adv],
-                             'h': [[round(vers(f, (h[0], 0), sc, c)[0], 2), round(vers(fr[(k + 1) % 8], (h[1], 0), sc, cs[(k + 1) % 8])[0], 2)] if h else 0
-                                   for k, (f, c, h) in enumerate(zip(fr, cs, held))]}
-                md['stride'] = round(sum(adv) / e[kind], 3)
+            if mv == 'run':                           # (ses avances d'une image à la suivante : le pied posé tenu, à ses px dans les
+                adv, held = foulees(fr, [f['a'][1] for f in fr], [f['a'][0] for f in fr], e[kind], hs)   #  images réduites)
+                hm = [[round(vers(f, (h[0], 0), sc, c)[0], 2), round(vers(fr[(k + 1) % 8], (h[1], 0), sc, cs[(k + 1) % 8])[0], 2)] if h else 0
+                      for k, (f, c, h) in enumerate(zip(fr, cs, held))]
+                lo = 0.05 * float(np.mean(adv)) * sc
+                av = [max(lo, (h[0] - cs[k]['AX']) - (h[1] - cs[(k + 1) % 8]['AX'])) if h else v * sc for k, (h, v) in enumerate(zip(hm, adv))]
+                md['run'] = {'a': [round(v, 2) for v in av], 'h': hm}
+                md['stride'] = round(sum(av) / sc / e[kind], 3)
             if mv == 'leap':                          # (l'élan : le pied posé des premières images ; accroupi en haut, son pied)
                 base = max(f['box'][1] + bas(f['m']) for f in fr)
                 axs = [f['a'][0] for f in fr]
@@ -1145,6 +1124,44 @@ def planches_controle(out, ZH, BZ):
         c.save(os.path.join(out, 'zombie_%s_planche_x4.png' % n))
 
 
+def planche_echelles(out, ppm=80):
+    """la planche des échelles : pour chaque zombie, ses vues côte à côte à la même échelle (ppm px par mètre, d'après
+    echelles) sur une règle de 1,76 m (rouge, un trait tous les 10 cm) : la course (deux foulées), l'élan du saut, le saut de
+    dos, dressé sur le toit (de profil), à la fenêtre (de dos), la marche de la horde ; leurs têtes, leurs mains, leurs
+    chaussures de la même taille (un aperçu : lissé, pas les images de la rue)"""
+    vues = [('course', 0, 0), ('course', 0, 4), ('course', 1, 2), ('course', 2, 1), ('toit_fenetre', 0, 7), ('toit_fenetre', 1, 7), ('horde', 0, 0)]
+    rows = []
+    for n in ZN:
+        e = echelles(n)
+        ims = []
+        for kind, r, k in vues:
+            f = rangee(n, kind, r)[k]
+            ys, xs = np.nonzero(f['m'])
+            y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+            a = np.zeros((y1 - y0, x1 - x0, 4), np.uint8)
+            a[..., :3] = f['rgb'][y0:y1, x0:x1]
+            a[..., 3] = f['m'][y0:y1, x0:x1] * 255
+            im = Image.fromarray(a, 'RGBA')
+            sc = ppm / e[kind]
+            ims.append(im.resize((max(1, round(im.width * sc)), max(1, round(im.height * sc))), Image.LANCZOS))
+        rows.append((n, ims))
+    H = int(2.05 * ppm) + 18
+    W = max(sum(i.width + 10 for i in ims) for _, ims in rows) + 40
+    c = Image.new('RGBA', (W, H * len(rows)), (200, 200, 206, 255))
+    d = ImageDraw.Draw(c)
+    for j, (n, ims) in enumerate(rows):
+        base = j * H + H - 4
+        d.line([(6, base), (6, base - TAILLE[n] * ppm)], fill=(220, 0, 0, 255), width=2)
+        for y in np.arange(0, TAILLE[n], 0.1):
+            d.line([(2, base - y * ppm), (10, base - y * ppm)], fill=(220, 0, 0, 255))
+        d.text((14, j * H + 2), '%s (%s, %.2f m)' % (n, NOMS[n], TAILLE[n]), fill=(0, 0, 0, 255))
+        x = 30
+        for im in ims:
+            c.alpha_composite(im, (x, int(base - im.height)))
+            x += im.width + 10
+    c.convert('RGB').save(os.path.join(out, 'zombies_echelles.png'))
+
+
 def main():
     ap = argparse.ArgumentParser(description='les zombies de la horde et du bus, découpés dans les planches (voir la docstring)')
     ap.add_argument('--only', default=None, help='horde | bus')
@@ -1163,6 +1180,7 @@ def main():
         ZH = dec.raw_decode(js[js.index('  const ZH = ') + 13:])[0]
         BZ = dec.raw_decode(js[js.index('  const BZ = ') + 13:])[0]
         planches_controle(o.planches, ZH, BZ)
+        planche_echelles(o.planches)
 
 
 if __name__ == '__main__':

@@ -184,6 +184,7 @@ nU = lambda s: NG['vx'] + (NG['uzn'] - NG['vx']) * NG['zn'] / (NG['zn'] - s)
 nK = lambda u: NG['kzn'] * (u - NG['vx']) / (NG['uzn'] - NG['vx'])
 i = JS.find('const CRW = ') + 12
 CRW = json.JSONDecoder().raw_decode(JS[i:])[0]
+KZ = J('SOL').get('k', 1.0) if 'const SOL = ' in JS else 1.0   # (la horde et le bus à la taille de ce qui est debout dans la peinture : B x K, tools/zombie_sol.py)
 HRD = J('ZH') if 'const ZH = ' in JS else json.JSONDecoder().raw_decode(JS[JS.find('HRD = ', i) + 6:])[0]   # (la horde : ZH, tools/zombie_sheets.py)
 BZ = J('BZ')
 sB_floor = lambda y: (y - HZ) / EYE_B            # B, debout sur le trottoir (ou le sol d'une boutique au niveau du trottoir)
@@ -241,16 +242,16 @@ CHARS = [
          places=[('à l\'arrêt (rangée 649)', 1.0, sB_road(649), 649)]),
     dict(id='horde', nom='la horde (niveau 100 px ; 01, chemise blanche)', outil='tools/zombie_sheets.py', asset='horde_L0..L4.webp', js='ZH, crewZDraw, ZRM',
          modele='B', H=1.76, tete=7.5, ref=HRD['L'][1]['frames'][0][0][:4], head=12, sheet='horde_L1.webp',
-         places=[('D 17,0 m (rangée %.0f)' % (615 + 959.5 * 1.41 / 17.0), 1.76 * 959.5 / 17.0 / HRD['L'][1]['h'], 959.5 / 17.0, None)]),
+         places=[('D 17,0 m (rangée %.0f), x K' % (615 + 959.5 * 1.41 / 17.0), 1.76 * KZ * 959.5 / 17.0 / HRD['L'][1]['h'], 959.5 / 17.0, None)]),
     dict(id='horde_pres', nom='la horde, de près (niveau 290 px)', outil='tools/zombie_sheets.py', asset='horde_L3.webp', js='ZH, crewZDraw, ZRM',
          modele='B', H=1.76, tete=7.5, ref=HRD['L'][3]['frames'][0][0][:4], head=34, sheet='horde_L3.webp',
-         places=[('D 6,1 m (le bas du cadre)', 1.76 * 959.5 / 6.1 / HRD['L'][3]['h'], 959.5 / 6.1, None)]),
+         places=[('D 6,6 m (le bas du cadre), x K', 1.76 * KZ * 959.5 / 6.6 / HRD['L'][3]['h'], 959.5 / 6.6, None)]),
     dict(id='horde_loin', nom='la horde, au carrefour (niveau 42 px)', outil='tools/zombie_sheets.py', asset='horde_L4.webp', js='ZH, crewZDraw, ZRM',
          modele='B', H=1.76, tete=7.5, ref=HRD['L'][4]['frames'][0][0][:4], head=5, sheet='horde_L4.webp',
-         places=[('D 41 m', 1.76 * 959.5 / 41.0 / HRD['L'][4]['h'], 959.5 / 41.0, None)]),
+         places=[('D 44 m, x K', 1.76 * KZ * 959.5 / 44.0 / HRD['L'][4]['h'], 959.5 / 44.0, None)]),
     dict(id='bus_zombie', nom='zombie du bus, à sa fenêtre (01)', outil='tools/zombie_sheets.py', asset='bus_zombies.webp', js='BZ, BZC, busZStep',
          modele='B', H=1.76, tete=7.5, ref=(BZ['Z'][0]['plank'][6][:4] if 'Z' in BZ else [0, 0, 48, 66]), head=5, sheet='bus_zombies.webp',
-         places=[('41 m (le bus, rangée 648)', 1.0, sB_road(648), None)]),
+         places=[('41 m (le bus, rangée 648), x K', 1.0, sB_road(648), None)]),
     dict(id='gengar', nom='Ectoplasma (Gengar) au Centre', outil='— (gengar_shadow.webp)', asset='gengar_shadow.webp', js='GG, stepGengar',
          modele='B', H=1.50, tete=None, ref=[0, 0, 64, 64], head=None, full=48 * GGK, note='Pokédex : 1,5 m ; la vitre de la porte : 32 px, 0,9 m',
          places=[('derrière la porte du Centre (seuil ~660)', GGK, sB_floor(660), None)]),
