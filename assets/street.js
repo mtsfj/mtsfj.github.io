@@ -6,6 +6,12 @@
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // ---- the crawlers (Google's renderer and its testing tools, the other engines, the link previews): the street is not drawn
+  // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
+  // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
+  if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=71') 50% 70% / cover no-repeat"; return;
+  }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
   // gestures are cancelled, and so is a two-finger touch's move and a double tap (touch-action on the page: one-finger pans
