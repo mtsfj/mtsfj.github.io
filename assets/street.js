@@ -1919,13 +1919,13 @@
     plankRow: 36, roofRow: 10, near: [40.5, 40.95], take: 34,
     T: { leap: [0.1, 0.1, 0.08, 0.1, 0.1, 0.14, 0.14, 0.2], jump: [0.2, 0.1, 0.16, 0.16, 0.16, 0.2], plank: [0.55, 0.4, 0.3, 0.3, 0.2, 0.25], fall: [0.1, 0.28, 0.46, 0.64, 0.84] } };
   const zSum = (T, t) => { let k = 0, s = T[0]; while (k < T.length - 1 && t >= s) s += T[++k]; return k; };   // (the frame at t of a timed act)
-  const zTex = crispLate('assets/bus_zombies.webp?v=8', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
+  const zTex = crispLate('assets/bus_zombies.webp?v=9', 'bus', () => {   // (its alpha read once: the clicks hit the zombies' own pixels)
     try {
       const c = document.createElement('canvas'); c.width = BZ.W; c.height = BZ.H; const g = c.getContext('2d'); g.drawImage(zTex.image, 0, 0);
       const d = g.getImageData(0, 0, BZ.W, BZ.H).data, a = new Uint8Array(BZ.W * BZ.H); for (let i = 0; i < a.length; i++) a[i] = d[i * 4 + 3]; ZG.alpha = a;
     } catch (e) {}
   });
-  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=7', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=8', 'bus');
+  const zTexG = crispLate('assets/bus_zombies_glow.webp?v=8', 'bus'), zTexS = crispLate('assets/bus_zombies_spill.webp?v=9', 'bus');
   function zMesh(tex, glow) {                      // a zombie's layer: its own cell of the sheets (uCell), hidden behind the near buildings
     const u = { value: new THREE.Vector4(0, 0, 1, 1) }, fl = { value: 0 };
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial(glow ? { map: tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }
