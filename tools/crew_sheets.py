@@ -27,7 +27,9 @@ Le chemin, image par image :
   creuse, les bouts détachés rendus à l'image la plus proche. Les couleurs ne viennent que du coeur de la figure (le masque
   rogné de 2 px) : le liseré blanchâtre du bord (le kaki clair de Takeo s'y fond) ne donne jamais sa couleur.
 - Une échelle par rangée de planche (scales : les planches dessinent plus grandes leurs rangées de 6 ou 4 images), la même
-  pour toutes ses images : debout au repos, H px (la taille du héros à la rangée 649, CRW.ppm 24,3 px/m ; 42 à 44) ; la
+  pour toutes ses images : debout au repos, H px (la taille du héros à la porte du bus, CRW.ppm 26,1 px/m : le modèle B x K,
+  la taille de ce qui est debout dans la peinture, comme la horde et les zombies du bus (tools/zombie_sol.py) ; 45 à 47 px,
+  1,72 à 1,80 m ; 0,6 du bus, sous le haut de sa porte) ; la
   marche, 0,97 H ; à genou au repos, K px (sa vraie hauteur à genou, ~0,7 de debout ; la tête y garde la taille qu'elle a
   debout, à un pixel près) ; le rechargement, 0,96 K.
 - Une ligne de sol : le bas de chaque image sur la rangée ay (la dernière rangée de la figure est ay - 1), sauf là où le pied
@@ -44,7 +46,7 @@ Le chemin, image par image :
 - L'éclair sur le tireur (crew_<héros>_flash.webp, la même grille ; ajouté par street.js en mélange additif, seulement dans
   la visée, le temps de l'éclair) : pour chaque image de visée, la lumière de la bouche du canon (muz) sur ses pixels, le
   visage, les mains, l'arme et le devant du buste, en 1 / (1 + (d / R)^2), chaude, prise tache par tache (regrain).
-- Les tailles (LEVELS) : chaque image cuite à x 1 (à la porte du bus, 43 px debout), x 1,1 et x 1,22 (52 px, à 33 m), ensemble
+- Les tailles (LEVELS) : chaque image cuite à x 1 (à la porte du bus, 46 px debout), x 1,13 et x 1,26 (59 px, à 32 m), ensemble
   dans un atlas, une bande par taille, une seule famille de tons pour toutes (regrain) ; street.js prend la plus petite au
   moins aussi grande que lui là où il est et la ramène à sa taille en pixels entiers, par majorité (ZRM) : il grandit d'un
   pixel à la fois en venant vers nous, le même grain à toutes les tailles.
@@ -52,7 +54,8 @@ Le chemin, image par image :
   trois quarts vers nous, presque sur place ; ils marchent donc vers nous, comme dessinés. Sur chaque image de marche, à chaque
   taille, ses pieds au sol (talon, pointe) ; d'une image à la suivante le corps va de côté de lv.ws px entiers (le moins qui
   pose un pied au sol de l'une sur un pied au sol de l'autre, à un pixel près, jamais en arrière ; sans pied commun l'autre se
-  pose plus loin et le corps reste) ; le reste de WALK_V (1,2 m/s) vers nous (vz) ; chaque image dure la longueur de son pas
+  pose plus loin et le corps reste) ; le reste de WALK_V (1,2 m/s à la taille de la peinture ; x K en mètres de B, ceux de
+  street.js) vers nous (vz) ; chaque image dure la longueur de son pas
   sur le sol, deux pas par seconde (CADENCE), bornée à TF (wtf). Dempsey vient à 18° de droit sur nous, Nikolai (sa marche
   v2) à 43°, Takeo à 8° (vers notre gauche : son miroir), Richtofen à 6°. Un pas vers nous, à 33 à 40 m, fait moins d'un
   pixel : le pied posé descend d'un pixel au plus.
@@ -89,12 +92,17 @@ EXPOSE = 0.37               # (la nuit : les couleurs des planches, peintes en p
                             #  l'équipe d'avant (21 à 34) ; le même pour les quatre : le kaki de Takeo plus clair que le manteau
                             #  de Richtofen, comme dessinés ; regrain ne comprime plus les clairs, déjà sous la cible)
 FLOOR = 9                   # (le plancher du bus au-dessus de la chaussée, à la porte : DOOR.floor 78, BUS.ground 87)
-PPM = 24.3                  # (CRW.ppm : px par mètre à la rangée 649 ; gardé)
+from zombie_sol import facteur, CF, CEYE, CHZ                         # noqa: E402
+K_PEINT = facteur()[0]      # (K : la taille de ce qui est debout dans la peinture, 1,10 fois le modèle B ; tools/zombie_sol.py)
+ROW_DOOR = 648.5            # (le pied de la porte du bus, 40,4 m)
+PPM = round(K_PEINT * (ROW_DOOR - CHZ) / CEYE, 1)   # (CRW.ppm : px par mètre à la porte, à la taille de la peinture : 23,76 en B
+                            #  x 1,10 = 26,1 ; un homme de 1,80 m y fait 47 px, 0,6 du bus (77,5 px pour 3 m), comme la horde)
 FLASH = dict(rgb=(255, 196, 128), peak=0.26, R=5.5, floor=0.02)     # (la lumière de l'éclair : couleur, force au canon, rayon, seuil)
 CADENCE = 2.0               # (la marche : deux pas par seconde, le haut d'un pas d'homme (1,6 à 2) : un cycle de deux pas en 1 s)
 WALK_V = 1.2                # (m/s : leur pas, vers nous ; le pas de côté que le dessin donne, le reste vers nous)
-LEVELS = (1.0, 1.1, 1.22)   # (les tailles cuites : x 1 à la porte (43 px debout), jusqu'à x 1,22 (52 px, 33 m) ; street.js prend la plus
-                            #  petite au moins aussi grande que lui là où il est et la ramène à sa taille, en px entiers, par majorité)
+LEVELS = (1.0, 1.13, 1.26)  # (les tailles cuites : x 1 à la porte (46 px debout), jusqu'à x 1,26 (59 px), assez pour le plus proche :
+                            #  Dempsey en lastStand, 8,2 m devant la porte (32,2 m : x 1,257) ; street.js prend la plus petite au moins
+                            #  aussi grande que lui là où il est et la ramène à sa taille, en px entiers, par majorité ; jamais agrandie)
 TF = (0.08, 0.3)            # (une image de la marche dure entre tant et tant de s)
 KICKS = [0.0, 0.3]          # (la visée, le recul : H.kick au-dessus de 0,3 dans street.js)
 
@@ -111,7 +119,7 @@ HEROES = {
     # ne fait pas un recul). Les deux versions coupent le bout du canon à la huitième image de la marche (le bord de la
     # planche) : un pixel du canon, gardé.
     'dempsey': dict(
-        H=43, K=30, ver=dict(walk='v2', step='v2', stand='v2', aim='v2', reload='v2', kneel='v2'),
+        H=46, K=32, ver=dict(walk='v2', step='v2', stand='v2', aim='v2', reload='v2', kneel='v2'),
         walk=list(range(8)),
         down=[('stand', 0, FLOOR, True), ('step', 0, FLOOR, True), ('step', 1, 5, False), ('step', 2, 0, False), ('step', 3, 0, False)],
         rise=[('step', 4, 0, False, 'v1'), ('step', 5, 0, False, 'v1'), ('step', 6, 5, True, 'v1'), ('step', 7, FLOOR, True, 'v1')],
@@ -126,7 +134,7 @@ HEROES = {
     # la droite : elles servent de recul aux deux de droite ; à gauche, pas de recul (l'image visée reste). Pas de visée
     # droit sur nous : son trois-quarts droit (4) en tient lieu (la horde vient sur notre droite de lui).
     'nikolai': dict(
-        H=44, K=31, ver=dict(walk='v2', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
+        H=47, K=33, ver=dict(walk='v2', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
         walk=list(range(8)),
         down=[('stand', 0, FLOOR, True), ('step', 0, FLOOR, True), ('step', 1, 5, False), ('step', 2, 0, False), ('step', 3, 0, False)],
         rise=[('step', 4, 0, False), ('step', 5, 0, False), ('step', 6, 5, True), ('step', 7, FLOOR, True)],
@@ -139,7 +147,7 @@ HEROES = {
     # sur les huit images (pas de descente de face) : sa descente, debout puis deux pas de sa marche, du plancher au sol ;
     # sa visée : de face, à notre gauche, à notre droite (les images 7 et 8 de la planche refont la visée de face).
     'takeo': dict(
-        H=42, K=29, ver=dict(walk='v2', step='v2', stand='v2', aim='v2', reload='v2', kneel='v2'),
+        H=45, K=31, ver=dict(walk='v2', step='v2', stand='v2', aim='v2', reload='v2', kneel='v2'),
         walk=list(range(8)),
         down=[('stand', 0, FLOOR, True), ('walk', 1, FLOOR, True), ('walk', 2, 7, False), ('walk', 3, 5, False), ('walk', 4, 3, False),
               ('walk', 5, 1, False), ('stand', 1, 0, False)],
@@ -153,7 +161,7 @@ HEROES = {
     # droite il semble glisser de côté), sur ses sept premières images (la huitième est coupée par le bord de la planche :
     # l'épaule, le manteau, l'arme ; le cycle se referme de la septième à la première, pieds joints).
     'richtofen': dict(
-        H=44, K=31, ver=dict(walk='v2', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
+        H=47, K=33, ver=dict(walk='v2', step='v1', stand='v1', aim='v1', reload='v1', kneel='v1'),
         walk=list(range(7)),
         down=[('stand', 0, FLOOR, True), ('step', 0, FLOOR, True), ('step', 1, 5, False), ('step', 2, 0, False), ('step', 3, 0, False)],
         rise=[('step', 4, 0, False), ('step', 5, 0, False), ('step', 6, 5, True), ('step', 7, FLOOR, True)],
@@ -548,7 +556,7 @@ def walk_times(step):
     T = 2.0 / CADENCE
     lat = np.array(step, float) / PPM
     vlat = lat.sum() / T
-    vz = float(np.sqrt(max(0.0, WALK_V ** 2 - vlat ** 2)))
+    vz = float(np.sqrt(max(0.0, WALK_V ** 2 - vlat ** 2)))   # (en mètres de la peinture : street.js le prend x K, en mètres de B)
     w = np.hypot(lat, vz * T / L)
     tf = np.clip(w * T / w.sum(), *TF)
     for _ in range(20):
@@ -633,7 +641,7 @@ def assemble(BL, log=print):
         wq = [q for q in B['F'] if q['mv'] == 'walk']
         ws.append(walk_steps([A[q['box'][1]:q['box'][1] + B['ch'], q['box'][0]:q['box'][0] + B['cw']] for q in wq], B['ay'])[0])
     J = dict(lv=[dict(k=B['kl'], y=bands[li], cw=B['cw'], ch=B['ch'], ax=B['ax'], ay=B['ay'], ws=ws[li]) for li, B in enumerate(BL)],
-             cols=cols, n=n, size=[A.shape[1], A.shape[0]], wtf=[round(float(t), 3) for t in tf], vz=round(vz, 3),
+             cols=cols, n=n, size=[A.shape[1], A.shape[0]], wtf=[round(float(t), 3) for t in tf], vz=round(vz * K_PEINT, 3),
              dirs=[d for d, _, _ in Hc['aims']], moves={k: mv[k] for k in order})
     log('%-9s %d tailles de %d images (%s), %d familles, pente %.3f, %d px détachés ; la marche : pas de côté %s (%d px le cycle, le pied '
         'posé à %d px près ; aux autres tailles %s), %.2f m/s de côté, %.2f vers nous (%.0f° de droit sur nous), durées %s'

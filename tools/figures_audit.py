@@ -239,7 +239,7 @@ CHARS = [
          modele='plan de la pièce, 19,8 px/m', H=1.75, tete=7.0, ref=None, head=5.5, full=35.0, places=[('dans la pièce', 1.0, sB_floor(638), None)]),
     dict(id='crew', nom="l'équipe (Dempsey ; Nikolai, Takeo, Richtofen pareils)", outil='tools/crew_sheets.py (les planches du propriétaire)', asset='crew_*.webp',
          js='CRW, CSPOT, crewHeroDraw', modele='B', H=1.80, tete=7.0, ref=crew_cell('dempsey', 'walk'), head=7, sheet='crew_dempsey.webp',
-         places=[('à l\'arrêt (rangée 649)', 1.0, sB_road(649), 649)]),
+         places=[('à l\'arrêt (rangée 649), x K', 1.0, sB_road(649), 649)]),
     dict(id='horde', nom='la horde (niveau 100 px ; 01, chemise blanche)', outil='tools/zombie_sheets.py', asset='horde_L0..L4.webp', js='ZH, crewZDraw, ZRM',
          modele='B', H=1.76, tete=7.5, ref=HRD['L'][1]['frames'][0][0][:4], head=12, sheet='horde_L1.webp',
          places=[('D 17,0 m (rangée %.0f), x K' % (615 + 959.5 * 1.41 / 17.0), 1.76 * KZ * 959.5 / 17.0 / HRD['L'][1]['h'], 959.5 / 17.0, None)]),
