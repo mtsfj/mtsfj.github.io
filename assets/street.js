@@ -6056,7 +6056,7 @@
     if (h === null) { try { localStorage.removeItem('mtsfj-hour'); } catch (e) {} } else lsSet('mtsfj-hour', h);
     if (!nightSys()) return;
     if (FIN.dawn >= 0) { finClear(true); return; }   // (after the finale: its morning goes, the chosen hour comes with the power)
-    setTimeOverride(h, h === null ? 2 : 1.2);
+    setTimeOverride(h, h === null ? 2 : 1.2, { near: true });   // (the slider drawn back: the street goes back, not round the clock)
   }
   function stepSwitch() {
     if (!SWB.graded) { SWB.graded = true; gradeSprite(swMesh.material, 'street'); for (const m of [swRim, ...swLed]) gradeSprite(m.material, 'self'); }
@@ -9470,7 +9470,7 @@
   function setTimeOverride(h, seconds, o) {      // force the hour to h over seconds; h null: back to the visitor's clock
     const dur = reduced ? 0 : Math.max(0, +seconds || 0), from = CLOCK.h;
     let to = null;
-    if (h != null) { let d = ((+h - from) % 24 + 24) % 24; if (d > 23) d -= 24; to = from + d; }   // forward (or back, under an hour)
+    if (h != null) { let d = ((+h - from) % 24 + 24) % 24; if (d > (o && o.near ? 12 : 23)) d -= 24; to = from + d; }   // forward (or back, under an hour; o.near: the shorter way, the switch's slider)
     CLOCK.over = { from, to, t: 0, dur };
     CLOCK.pushFrom = CLOCK.push; CLOCK.pushTo = h != null && o && o.push ? Math.max(0, Math.min(1, +o.push)) : 0;
     stepNight(0); if (reduced) requestAnimationFrame(() => frame());
