@@ -79,9 +79,13 @@
     }
   }
   const skies = [...document.querySelectorAll('.skyline canvas')];
-  if (skies.length) {
-    skies.forEach(skyline);
-    let tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => skies.forEach(skyline), 150); });
+  if (skies.length) {                              // (drawn as they come near the screen: their size reads the page's layout, which
+    const drawn = new Set(), draw = (cv) => { drawn.add(cv); skyline(cv); };   // a page still loading has to make for it)
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); draw(e.target); } }), { rootMargin: '800px 0px' });
+      skies.forEach((cv) => io.observe(cv));
+    } else skies.forEach(draw);
+    let tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => drawn.forEach(skyline), 150); });
   }
 
   const still = matchMedia('(prefers-reduced-motion: reduce)').matches;

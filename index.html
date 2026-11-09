@@ -27,11 +27,35 @@
 <meta name="twitter:description" content="Autotelic exploration for evaluating large generative models.">
 <meta name="twitter:image" content="https://mtsfj.github.io/og.png?v=4">
 <meta name="twitter:image:alt" content="A pixel-art street at dusk, in the rain, Mount Fuji at its end. The home page of Mathis Fajeau, PhD student at Inria Bordeaux.">
+<script>
+  /* the street's poster (assets/poster_*.avif, tools/poster.py): its first frame, fetched first of all and drawn in the hero at once,
+     under the street's canvas, while three.js and the street load; the street fades in over it as it did over the placeholder. Only
+     where that first frame is known: the painted evening's hours (8:45 to 19:57, the visitor's or ?hour=), the moon there, no red
+     night, nothing kept by the eleventh secret; the opening's first frame on the tab's first visit, the evening under way after it or
+     under reduced motion. Its decoding off the main thread (createImageBitmap); robots keep the painting (street.js). Until it is drawn
+     (or the page's first paint, without it), the page's sections under the hero are not laid out (cv-boot: content-visibility), so
+     the first layout is the hero's: the page's whole layout, a sixth of a second on a phone, comes just after, while the street loads */
+  (function () {
+    try {
+      if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent) || !window.createImageBitmap || !window.fetch) return;
+      var nav = performance.getEntriesByType ? performance.getEntriesByType('navigation')[0] : null;
+      if (!location.hash && !(nav && /reload|back_forward/.test(nav.type))) document.documentElement.classList.add('cv-boot');   // (not for a link to a section, nor where the browser puts the page back where it was: laid out at once, to land there)
+      var q = new URLSearchParams(location.search), ls = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+      if (q.get('night') === 'red' || ls('mtsfj-eleven') !== null || ls('mtsfj-moon') === 'gone') return;
+      var h = q.get('hour'), d = new Date();
+      h = h !== null && h !== '' && isFinite(+h) ? ((+h % 24) + 24) % 24 : d.getHours() + d.getMinutes() / 60 + d.getSeconds() / 3600;
+      if (!(h >= 8.75 && h < 19.95)) return;
+      var open = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try { if (sessionStorage.getItem('mtsfj-opened')) open = false; } catch (e) { }
+      var w = innerWidth, hh = Math.min(Math.max(innerHeight, 540), Math.max(540, 2.6 * w)), vw = w / Math.max(w / 1456, hh / 816), m = !(w >= 900 && w > innerHeight * 1.2) && vw <= 560;   // (a phone: the middle columns only, x 448 to 1008)
+      var name = 'assets/poster_' + (open ? 'open' : 'settled') + (m ? '_m' : ''), P = window.__poster = { on: true, open: open, bm: null, x0: m ? 448 : 0, xw: m ? 560 : 1456 };
+      var get = function (ext) { return fetch(name + '.' + ext + '?v=1', { priority: 'high' }).then(function (r) { if (r.ok) { P.got = true; if (P.go) P.go(); } return r.ok ? r.blob() : Promise.reject(r.status); }).then(function (b) { return createImageBitmap(b); }); };   // (its answer in, its bytes coming: the street's scripts may be asked for, theirs come after)
+      P.ready = get('avif').catch(function () { return get('webp'); }).then(function (bm) { P.bm = bm; if (P.draw) P.draw(); }, function () { P.on = false; });
+    } catch (e) { }
+  })();
+</script>
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/site.css?v=24">
-<link rel="preload" as="image" href="assets/layer_city_off.webp?v=71" crossorigin="anonymous" fetchpriority="high">
-<link rel="preload" as="script" href="assets/three.min.js">
-<link rel="preload" as="script" href="assets/street.js?v=42">
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/Silkscreen-400-latin.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="assets/fonts/InterTight-400-latin.woff2" crossorigin>
 <meta name="theme-color" content="#0f0c22">
@@ -51,6 +75,7 @@
   /* (max-height: a renderer that grows its window to the page's height, as Google's does to see a page whole, would grow the street with it,
      the page with the street, and so on without end; no real screen is taller than 2.6 times its width) */
   .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
+  .cv-boot .page .section { content-visibility: auto; contain-intrinsic-size: auto 900px; }   /* (the first layout the hero's: index.html's first script) */
   @media (min-width: 900px) and (min-aspect-ratio: 6/5) { .hero { height: calc(100vw * 816 / 1456); min-height: 0; } }   /* a computer: the whole scene (the script sets it to the pixel) */
   .hero.whole { min-height: 0; }
   .hero.whole::after { height: 7%; }   /* (the foot's fade kept short: the road shows whole) */
@@ -296,6 +321,7 @@
 <body>
 
 <header class="hero" id="top">
+  <canvas id="poster" aria-hidden="true"></canvas>
   <canvas id="street" aria-hidden="true"></canvas>
   <nav class="hero-nav" aria-label="Navigation">
     <a href="#bio">Bio</a><a href="#articles" data-lang="fr">Articles</a><a href="#articles" data-lang="en" lang="en" hidden>Articles</a><a href="blog/">Blog</a><a href="#publications">Publications</a><a href="#engineering" data-lang="fr">Ingénierie</a><a href="#engineering" data-lang="en" lang="en" hidden>Engineering</a><a href="#contact">Contact</a>
@@ -308,6 +334,44 @@
   </div>
   <div class="scroll-hint" data-lang="fr">↓ défiler</div>
   <div class="scroll-hint" data-lang="en" lang="en" hidden>↓ scroll</div>
+  <script>
+    /* the hero before street.js: its height and its title as street.js sets them (resize, titleMode, placeTitle: the whole scene on a
+       computer, the title on the wood at scene px 44, 36), so nothing moves when it comes; and the poster, if there is one, drawn on the
+       street canvas's own pixels (the camera's view at its start, three's floor(css px x pixel ratio), nearest) */
+    (function () {
+      var hero = document.getElementById('top'), IW = 1456, IH = 816, P = window.__poster;
+      if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) return;
+      var view = function () {
+        var whole = innerWidth >= 900 && innerWidth > innerHeight * 1.2;
+        hero.classList.toggle('whole', whole);
+        if (whole) hero.style.height = Math.round(hero.clientWidth * IH / IW) + 'px'; else hero.style.removeProperty('height');
+        var w = hero.clientWidth, h = hero.clientHeight, s = Math.max(w / IW, h / IH), vw = w / s, vh = h / s;
+        return { w: w, h: h, l: IW / 2 - vw / 2, t: Math.min(IH - vh, 64), vw: vw, vh: vh };
+      };
+      var title = function (v) {
+        var el = hero.querySelector('.hero-text'), on = v.vw >= 700, k = v.w / v.vw; if (!el) return;
+        el.classList.toggle('anchored', on); hero.classList.toggle('title-narrow', !on);
+        if (on) { el.style.setProperty('--k', k.toFixed(4)); el.style.setProperty('--tx', Math.max(20, Math.round((44 - v.l) * k * 2) / 2) + 'px'); el.style.setProperty('--ty', Math.max(14, Math.round((36 - v.t) * k * 2) / 2) + 'px'); }
+      };
+      var v0 = view(); title(v0);
+      var laid = function () { if (laid.done) return; laid.done = true; setTimeout(function () { document.documentElement.classList.remove('cv-boot'); }, 0); };   // (the page laid out whole, in a task of its own)
+      setTimeout(laid, 1500);
+      if (!P || !P.on) { requestAnimationFrame(laid); return; }
+      var cv = document.getElementById('poster'); P.cv = cv; P.view = v0;
+      P.draw = function (v) {
+        if (v) P.view = v; v = P.view;
+        if (!P.bm || P.done || !v) return;
+        if (v.l < P.x0 || v.l + v.vw > P.x0 + P.xw) { cv.width = 0; return; }   // (a view out of the phone's poster: none)
+        var pr = Math.min(window.devicePixelRatio || 1, 2), W = v.cw || Math.floor(v.w * pr), H = v.ch || Math.floor(v.h * pr);
+        if (cv.width !== W) cv.width = W; if (cv.height !== H) cv.height = H;
+        var g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
+        g.drawImage(P.bm, v.l - P.x0, v.t, v.vw, v.vh, 0, 0, W, H);
+        if (!P.shown) { P.shown = true; try { performance.mark('street:poster'); } catch (e) { } requestAnimationFrame(laid); }
+      };
+      if (P.bm) P.draw();
+      addEventListener('resize', function () { if (!P.taken) { var v = view(); title(v); P.draw(v); } });
+    })();
+  </script>
 </header>
 
 <nav class="toc" aria-label="Sommaire / Contents">
@@ -625,8 +689,18 @@
 <script src="assets/site.js?v=19"></script>
 <script src="assets/walls.js?v=6"></script>
 
-<script src="assets/three.min.js"></script>
-<script src="assets/street.js?v=42"></script>
+<script>
+  /* three.js and the street (street.min.js: tools/build_street.py) and the street's biggest layer, once the poster's answer is in
+     (index.html's first script; at most 0.8 s after this): until then the page's bandwidth is the poster's. In this order (async
+     false), as two scripts here would be */
+  (function () {
+    var go = function () { if (go.done) return; go.done = true;
+      var c = 'assets/layer_city_off.webp?v=71', E = window.__early = {}; if (window.fetch) E[c] = fetch(c);   // (the street's biggest layer, with them: street.js takes it, at the same address as its ASSETS.city)
+      ['assets/three.min.js', 'assets/street.min.js?v=1'].forEach(function (src) { var e = document.createElement('script'); e.src = src; e.async = false; document.body.appendChild(e); }); };
+    var P = window.__poster;
+    if (P && P.on && P.ready && !P.got) { P.go = go; P.ready.then(go, go); setTimeout(go, 800); } else go();
+  })();
+</script>
 <script src="assets/analytics.js?v=3" defer></script>
 </body>
 </html>

@@ -1,10 +1,11 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
-(function () {
+(async function () {                             // (async: its setup in parts, SETUP below)
   const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=71", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=3", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=3", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=7", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=10", "x": 280, "y": 450, "w": 100, "h": 320}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
+  const POSTER = window.__poster || null;      // (index.html: the street's first frame, drawn in the hero while this loads; posterSync, below)
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // ---- the crawlers (Google's renderer and its testing tools, the other engines, the link previews): the street is not drawn
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
@@ -19,7 +20,9 @@
   // games' own touches stay as they were ----
   document.documentElement.style.touchAction = 'pan-x pan-y';
   for (const g of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(g, (ev) => ev.preventDefault(), { passive: false });
-  document.addEventListener('touchmove', (ev) => { if (ev.touches.length > 1) ev.preventDefault(); }, { passive: false });
+  // (the two-finger move on iOS alone, where the viewport's word is ignored: elsewhere a touchmove listener that may cancel makes
+  // every scroll of the page wait for the main thread, a page's scrolling held up by the street's frames on a phone)
+  if (/iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) document.addEventListener('touchmove', (ev) => { if (ev.touches.length > 1) ev.preventDefault(); }, { passive: false });
   window.addEventListener('wheel', (ev) => { if (ev.ctrlKey || ev.metaKey) ev.preventDefault(); }, { passive: false });
   window.addEventListener('keydown', (ev) => { if ((ev.ctrlKey || ev.metaKey) && ['+', '=', '-', '_', '0'].includes(ev.key)) ev.preventDefault(); });
 
@@ -44,26 +47,144 @@
   // now with the setup's end, and load while it compiles; what the first frame would ask for by the hour (the unlit street) is
   // asked for with them. The fade never starts before that frame ----
   const FIRST = { on: true, fade: false, asked: false };
+  // what the setup no longer paints itself: textures the first visible frame needs (the lamp's air, the skyline's haze) painted each in
+  // a task of its own just after the first frame (an item of the loading manager each: the fade waits for them); the red night's (its
+  // halo, its clouds) painted when first needed, or once the street is live and the page idle. The same pixels, the same seeds ----
+  const LATER = { now: [], idle: [] };
+  function later(f) { const k = 'later ' + LATER.now.length; THREE.DefaultLoadingManager.itemStart(k); LATER.now.push(() => { try { f(); } finally { THREE.DefaultLoadingManager.itemEnd(k); } }); }
+  function lazyPaint(f) { let done = false; const L = () => { if (!done) { done = true; f(); } }; LATER.idle.push(L); return L; }
+  function laterIdle() { const f = LATER.idle.shift(); if (!f) return; f(); (window.requestIdleCallback || setTimeout)(laterIdle, window.requestIdleCallback ? { timeout: 4000 } : 500); }
   function fadeGo() {                            // the fade's start: the layers are in (or 9 s on)
     if (FADE.t0 >= 0) return;
     if (FIRST.on) { FIRST.fade = true; return; }   // (after the first frame)
-    FADE.t0 = performance.now(); OPEN.t0 = t; if (reduced) frame();
+    FADE.t0 = performance.now(); performance.mark('street:fade'); OPEN.t0 = t; if (reduced) frame();
   }
   function preFrame() {                          // frame() before the first frame: it is asked for, once
     if (FIRST.asked) return; FIRST.asked = true;
     try { stepHours(); } catch (e) { }
-    setTimeout(() => { FIRST.on = false; frame(); if (FIRST.fade) fadeGo(); }, 0);
+    preCompile();                                // (from now: the first frame's own first, the rain's)
+    setTimeout(() => { FIRST.on = false; frame(); performance.mark('street:first-frame'); if (FIRST.fade) fadeGo(); for (const f of LATER.now) setTimeout(f, 0); LATER.now.length = 0; }, 0);
   }
+  // ---- the street's programs, compiled one at a time from the setup's end on (renderer.compile on one object; the rain's first,
+  // what the first frame draws), each in a task of its own, while the layers load: the first frame, the water's pass and the fade
+  // find them ready instead of compiling them all in one long task. The same programs ----
+  const PREC = { q: null, one: null, ch: null };
+  function preCompile() {
+    if (PREC.q) return;
+    PREC.q = [rain, rain2, fadeQuad].filter((o) => o.visible); scene.traverseVisible((o) => { if (o.material && !PREC.q.includes(o)) PREC.q.push(o); });
+    PREC.one = new THREE.Scene(); PREC.ch = new MessageChannel(); PREC.ch.port1.onmessage = preStep; PREC.ch.port2.postMessage(0);
+  }
+  function preStep() {                           // (8 ms of them, one at least, then the next task)
+    const t0 = performance.now(), sc = PREC.one;
+    while (PREC.q.length && performance.now() - t0 < 8) { const o = PREC.q.shift(); sc.fog = scene.fog; sc.traverse = (f) => f(o); try { renderer.compile(sc, camera); } catch (e) { } }
+    if (PREC.q.length) PREC.ch.port2.postMessage(0); else { PREC.ch.port1.onmessage = null; PREC.ch = PREC.one = null; }
+  }
+  // ---- the poster (index.html, tools/poster.py): the street's first frame drawn in a canvas under this one, on its pixels, while
+  // the street loads; before the fade it follows the camera's view (a drag, a resize), and it goes when the fade is done. The marks
+  // street:first-frame, street:fade, street:live (and index.html's street:poster) time the street's arrival ----
+  function posterSync() {
+    if (POSTER.done || !POSTER.draw) return;
+    const c = renderer.domElement, l = camera.left, tp = -camera.top, vw = camera.right - camera.left, vh = camera.top - camera.bottom;
+    const key = l + ',' + tp + ',' + vw + ',' + vh + ',' + c.width + ',' + c.height;
+    if (key === POSTER.key) return; POSTER.key = key; POSTER.taken = true;
+    POSTER.draw({ w: hero.clientWidth, h: hero.clientHeight, cw: c.width, ch: c.height, l, t: tp, vw, vh });
+  }
+  function posterEnd() {
+    if (!POSTER || POSTER.done) return; POSTER.done = true;
+    try { if (POSTER.cv) POSTER.cv.remove(); if (POSTER.bm) POSTER.bm.close(); } catch (e) { }
+    POSTER.bm = null;
+  }
+  // ---- the setup in four tasks, not one (a phone spent half a second in it, the poster frozen meanwhile): three pauses
+  // (setupPause, at the end of a part) where the browser runs what waits (a frame, the requests just made, an input). Meanwhile
+  // the images' callbacks wait for the setup's end (setupWait, in loader.load: they may touch any of it), and so does the fade (an
+  // item of the loading manager). Whatever else may run in a pause (an image's onload, an event, an observer) touches only what is
+  // set up above it. Under reduced motion, one task as before ----
+  const SETUP = { q: [], parts: !reduced };
+  THREE.DefaultLoadingManager.itemStart('setup');
+  function setupWait(f) { return (...a) => { if (SETUP.q) SETUP.q.push(() => f(...a)); else f(...a); }; }
+  function setupPause() { return SETUP.parts ? new Promise((res) => setTimeout(res, 0)) : null; }
+  function setupEnd() { const q = SETUP.q; SETUP.q = null; for (const f of q) f(); THREE.DefaultLoadingManager.itemEnd('setup'); }
+  // (what a narrow first view, a phone's, does not show, asked for with the late sprites: an image drawn only well to one side of
+  // that view, 64 px or more past its edge, that the pan brings in tens of seconds later; offView(x0, x1, load), x in scene px. The
+  // first frame on a computer's whole view as before; on a phone the bandwidth before the fade goes to what it shows)
+  const OFFVIEW = [];
+  function offView(x0, x1, load) { OFFVIEW.push([x0, x1, load]); }
   THREE.DefaultLoadingManager.onLoad = () => { setTimeout(lateStart, 1200); fadeGo(); };   // (the late sprites: once the eager batch is in)
   setTimeout(() => { if (FADE.t0 < 0) { fadeGo(); setTimeout(lateStart, 1200); } }, 9000);
 
   const loader = new THREE.TextureLoader();
-  // ---- each image goes to the GPU as it comes in, in its own load event (renderer.initTexture), not in the first frame that draws
-  // it: on a reload all the layers came in together, and their decoding and uploading froze the fade's first frame (half a second
-  // on a phone; the fade then showed from its middle). Its callback comes once it is there ----
-  const upload = (tex) => { try { renderer.initTexture(tex); } catch (e) { } };
+  // ---- each image goes to the GPU as it comes in, not in the first frame that draws it: on a reload all the layers came in
+  // together, and their decoding and uploading froze the fade's first frame (half a second on a phone; the fade then showed from its
+  // middle). A small one in its own load event (renderer.initTexture); a big one (UP.big pixels) decoded off the main thread: its bytes
+  // again from the browser's cache (force-cache: no second download), an ImageBitmap flipped as WebGL flips an <img>, uploaded in its
+  // place (held back meanwhile before the fade: drawn as not loaded yet, under it; a decode that has not come in UP.wait ms: its <img>,
+  // as before). The texture keeps its <img> (its uses in canvases, its src); its callback comes once it is on the GPU, and the fade
+  // waits for it (an item of the loading manager). A browser whose ImageBitmap does not give the very same bytes as its <img> (UP.ok,
+  // checked once on a tiny image) uploads the <img> ----
+  const UP = { opt: { imageOrientation: 'flipY', premultiplyAlpha: 'none', colorSpaceConversion: 'none' }, big: 1 << 18, wait: 1500 };
+  UP.ok = (async () => {
+    const url = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAGklEQVR42mP4z8Dwn+E/QwMDA8N/rhMpRswAOsYF6G6tqCAAAAAASUVORK5CYII=';   // (2 x 2, four alphas)
+    if (!window.createImageBitmap || !window.fetch) return false;
+    const im = new Image(); await new Promise((res, rej) => { im.onload = res; im.onerror = rej; im.src = url; });   // (not decode(): a frame late, and frames are slow while the street loads)
+    const bm = await createImageBitmap(await (await fetch(url)).blob(), UP.opt);
+    const gl = renderer.getContext(), fb = gl.createFramebuffer(), tx = gl.createTexture(), a = new Uint8Array(16), b = new Uint8Array(16);
+    const read = (src, flip, out) => {
+      gl.bindTexture(gl.TEXTURE_2D, tx); gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tx, 0);
+      gl.readPixels(0, 0, 2, 2, gl.RGBA, gl.UNSIGNED_BYTE, out);
+    };
+    try { read(im, true, a); read(bm, false, b); } finally { gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.deleteFramebuffer(fb); gl.deleteTexture(tx); bm.close(); renderer.resetState(); }   // (three's own state told)
+    return a.every((x, i) => x === b[i]) && a[8] !== a[0];
+  })().catch(() => false);
+  function upload(t, src, done) {                // t's image is in: to the GPU (done: once it is there)
+    const img = t.image, n = img ? (img.naturalWidth || img.width || 0) * (img.naturalHeight || img.height || 0) : 0;
+    if (n < UP.big || !src || !t.flipY || t.premultiplyAlpha || t.version < 1) { try { renderer.initTexture(t); } catch (e) { } done(); return; }
+    const v = t.version, hold = FADE.t0 < 0; if (hold) t.version = 0;   // (before the fade: held back meanwhile)
+    let over = false;
+    const back = (bm) => {
+      if (over) { if (bm) bm.close(); return; } over = true; clearTimeout(late);
+      if (t.image !== img || t.version !== (hold ? 0 : v)) { if (bm) bm.close(); done(); return; }   // (changed meanwhile: left as it is now)
+      t.version = v;                             // (uploaded already by a frame: initTexture does nothing)
+      if (bm) { t.image = bm; t.flipY = false; }
+      try { renderer.initTexture(t); } catch (e) { }
+      if (bm) { t.image = img; t.flipY = true; bm.close(); }
+      done();
+    };
+    const late = setTimeout(() => back(null), UP.wait);
+    UP.ok.then((ok) => (ok ? fetch(src, { cache: 'force-cache' }).then((r) => (r.ok ? r.blob() : Promise.reject(new Error('' + r.status)))).then((x) => createImageBitmap(x, UP.opt)) : null))
+      .then(back, () => back(null));
+  }
+  // ---- a layer known to be big (UP.early: the street's of 2^18 px or more) does not wait for its <img> to learn it: its bytes
+  // fetched at once (the city's by index.html, with the scripts), decoded off the main thread as they come in, its <img> then made
+  // from the browser's cache (the same bytes, no second download); one missing from the list goes the way above. Each fetch in a
+  // task of its own (UP.fetch): the first fetch() made in the setup's own task held it a sixth of a second there on a phone,
+  // wherever it was, and a few milliseconds in a task of its own ----
+  UP.fetch = (src) => new Promise((res) => setTimeout(res, 0)).then(() => fetch(src));
+  UP.early = /\/(layer_city_off|street_unlit|street_sun|layer_sky|night_far|lights_rest|ichiraku_lanterns|fuji_aux|fuji_night|fuji_tree|fuji_front|fuji_flash_tree|fuji_flash_ridge|fuji_flash_glow|wet|om_flyer)\.webp/;
+  function early(t, src, end, fail) {
+    const plain = () => imgLoader.load(src, (img) => { t.image = img; t.format = THREE.RGBAFormat; t.needsUpdate = true; upload(t, src, end); }, undefined, fail);
+    const pre = window.__early && window.__early[src]; if (pre) delete window.__early[src];   // (index.html's, asked for with the scripts)
+    if (!window.fetch || !window.createImageBitmap) { plain(); return; }
+    const bytes = (pre || UP.fetch(src)).then((r) => (r.ok ? r.blob() : Promise.reject(new Error('' + r.status))));
+    // (its decoding and its <img> from the cache start with its bytes; UP.ok, the check, only says at the end which goes up)
+    Promise.all([UP.ok, bytes.then((b) => createImageBitmap(b, UP.opt)), bytes.then(() => new Promise((res, rej) => imgLoader.load(src, res, undefined, rej)))])
+      .then(([ok, bm, img]) => {
+        t.image = img; t.format = THREE.RGBAFormat; t.needsUpdate = true;
+        if (!ok) { bm.close(); upload(t, src, end); return; }   // (no ImageBitmap as WebGL wants it: the <img>)
+        const flip = t.flipY; if (flip && !t.premultiplyAlpha) { t.image = bm; t.flipY = false; }
+        try { renderer.initTexture(t); } catch (e) { }
+        t.image = img; t.flipY = flip; bm.close(); end();
+      }, () => plain());                          // (its bytes or its decoding failed: the <img>, and its error if it fails too)
+  }
   { const load = loader.load.bind(loader);
-    loader.load = (src, onLoad, onProgress, onError) => load(src, (tex) => { upload(tex); if (onLoad) onLoad(tex); }, onProgress, onError); }
+    loader.load = (src, onLoad, onProgress, onError) => {
+      const M = loader.manager, k = src + ' (gpu)'; M.itemStart(k);
+      const fail = setupWait((e) => { M.itemEnd(k); if (onError) onError(e); });
+      if (UP.early.test(src)) { const t = new THREE.Texture(); early(t, src, setupWait(() => { if (onLoad) onLoad(t); M.itemEnd(k); }), fail); return t; }
+      return load(src, (tex) => upload(tex, src, setupWait(() => { if (onLoad) onLoad(tex); M.itemEnd(k); })), onProgress, fail);
+    };
+  }
   function crisp(src, cb, onErr) {
     const t = loader.load(src, () => { if (cb) cb(); }, undefined, () => { if (onErr) onErr(); });
     t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
@@ -78,7 +199,7 @@
   function crispLate(src, group, cb, onErr) {
     const t = new THREE.Texture(); t.magFilter = THREE.NearestFilter; t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
     LATE.need[group] = (LATE.need[group] || 0) + 1; LATE.ready[group] = false;
-    LATE.q.push(() => { LATE.pending++; imgLoader.load(src, (img) => { t.image = img; t.needsUpdate = true; upload(t); LATE.pending--; if (--LATE.need[group] === 0) LATE.ready[group] = true; if (cb) cb(); },
+    LATE.q.push(() => { LATE.pending++; imgLoader.load(src, (img) => { t.image = img; t.needsUpdate = true; LATE.pending--; upload(t, src, () => { if (--LATE.need[group] === 0) LATE.ready[group] = true; if (cb) cb(); }); },
       undefined, () => { LATE.pending--; if (onErr) onErr(); }); });   // (a failed image: its group never ready, its event never starts)
     return t;
   }
@@ -163,7 +284,7 @@
     p.userData = { name, kind, shop, seed: Math.random() * 100, next: shop ? 30 + Math.random() * 60 : kind === 'shop' || kind === 'vend' ? 20 + Math.random() * 50 : 3 + Math.random() * 8, burst: 0, on: true, stut: 0 };
     if (kind === 'home') {                           // a home's window: on a long while, off a while
       const u = p.userData;
-      Object.assign(u, { onT: [120, 180], offT: [60, 120], on: Math.random() < 0.75 });
+      Object.assign(u, { onT: [120, 180], offT: [60, 120], on: Math.random() < 0.75 || !!(POSTER && POSTER.on) });   // (under a poster: lit, as it shows them)
       u.next = (u.on ? u.onT[0] : u.offT[0]) * Math.random(); p.material.opacity = u.on ? 1 : 0;
     }
     if (kind === 'lantern') p.userData.w = 1 + Math.random() * 0.6;
@@ -580,7 +701,9 @@
     sky: [[166, 868], [178, 867], [190, 858], [202, 847], [214, 853], [226, 845], [238, 839], [250, 837], [262, 826], [274, 817], [286, 809], [298, 809], [310, 808], [322, 811], [334, 839], [346, 828], [358, 815]] };
   const lcAir = () => {
     const W = 2 * AIR.hw, H = LC.foot - LC.top, X0 = LC.x - AIR.hw, bx0 = X0 >> 1, by0 = LC.top >> 1, BW = W >> 1, BH = ((LC.foot - 1) >> 1) - by0 + 1;
-    const d = new Uint8Array(W * H * 4), L = new Float32Array(BW * BH), S = AIR.sky, sl = S[S.length - 1];
+    const d = new Uint8Array(W * H * 4), t = new THREE.DataTexture(d, W, H, THREE.RGBAFormat); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true;
+    later(() => {                                // (its pixels just after the first frame: FIRST)
+    const L = new Float32Array(BW * BH), S = AIR.sky, sl = S[S.length - 1];
     const hs = (x, y, z) => { let h = Math.imul(x ^ Math.imul(y, 0x27d4eb2d) ^ Math.imul(z, 0x165667b1), 0x9e3779b1); h ^= h >>> 15; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };   // a stable draw, 0..1
     const skyX = (y) => { if (y >= sl[0]) return y <= sl[0] + 6 ? sl[1] : -1e9; let k = 1; while (S[k][0] < y) k++; return y <= S[0][0] ? S[0][1] : S[k - 1][1] + (S[k][1] - S[k - 1][1]) * (y - S[k - 1][0]) / (S[k][0] - S[k - 1][0]); };   // where the sky ends, by row
     for (let j = 0; j < BH; j++) for (let i = 0; i < BW; i++) L[j * BW + i] = lcLit(2 * (bx0 + i) + 1, 2 * (by0 + j) + 1);   // the light at each block's centre
@@ -598,7 +721,9 @@
         const o = ((H - 1 - y) * W + x) * 4; d[o] = 255; d[o + 1] = 220; d[o + 2] = 188; d[o + 3] = AIR.a[b];
       }
     }
-    const t = new THREE.DataTexture(d, W, H, THREE.RGBAFormat); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true; return t;
+    t.needsUpdate = true;
+    });
+    return t;
   };
   const lcCone = new THREE.Mesh(new THREE.PlaneGeometry(2 * AIR.hw, LC.foot - LC.top), new THREE.MeshBasicMaterial({ map: lcAir(), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
   lcCone.position.set(LC.x, -(LC.top + LC.foot) / 2, 1.13); scene.add(lcCone);   // over the lit windows behind it
@@ -629,6 +754,8 @@
   }
   rain.visible = !reduced;   // reduced motion: the street is drawn still, the drops would hang in the sky as false stars
   scene.add(rain);
+
+  if (SETUP.parts) await setupPause();          // (the setup's first part ends: SETUP)
 
   // ---- procedural events (all sky objects sit at z=-1, behind the buildings and wires) ----
   const pxMat = (color, opacity) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false });
@@ -1365,6 +1492,8 @@
   // shooting stars: a short streak that fades, every 20–60 s
   const streak = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(22, -9, 0)]), new THREE.LineBasicMaterial({ color: 0xfff1d8, transparent: true, opacity: 0 }));
   scene.add(streak); const shoot = { active: false, t: 0, next: 5 + Math.random() * 50 };
+  if (SETUP.parts) await setupPause();          // (the second ends: SETUP)
+
   // the summit climber, a rare ambient event (build_zzzclimber.py, patch_climber.py): a tiny climber comes over the rim of
   // mount Fuji's crater, walks up the last px of its right slope with his feet on the outline, stops at the top, raises a mini
   // French flag (3 x 2 px), waves it 3-4 s, lowers it and walks back down the same side with it: held, never planted (the
@@ -3437,7 +3566,7 @@
   }
   const ws = { state: 'empty', t: 0, next: 15 + Math.random() * 40, light: Math.random() < 0.15, screen: false, L: 0, S: 0, f: -1, ph: 0, x0: 0,
     act: 'type', actT: 0, st: 0, look: 3, hT: 0, hv: 7, yT: 0, lampOff: -1, blink: 0, seated: false, dirty: true, acc: 1, base: null, rj: RJ };
-  if (Math.random() < 0.55) Object.assign(ws, { state: 'sit', light: Math.random() < 0.7, screen: true, next: 25 + Math.random() * 70, S: 1 });   // already at the desk
+  if (Math.random() < 0.55 || !!(POSTER && POSTER.on)) Object.assign(ws, { state: 'sit', light: Math.random() < 0.7 || !!(POSTER && POSTER.on), screen: true, next: 25 + Math.random() * 70, S: 1 });   // already at the desk (under a poster: at it, his lamp on, as it shows him)
   ws.L = ws.light ? 1 : 0;
   function stepRoom(dt, t) {
     const W = ws; W.t += dt; W.next -= dt;
@@ -3553,8 +3682,8 @@
   const thrAt = (lx) => 6 * hAt(lx);
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
-  arcImg.src = 'assets/arcade_interior.webp?v=14';
-  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade(); ARC_SILL.src = 'assets/arcade_sill.png?v=7';   // (droite-01)
+  offView(ARC.x, ARC.x + ARC.w, () => { arcImg.src = 'assets/arcade_interior.webp?v=14'; ARC_SILL.src = 'assets/arcade_sill.png?v=7'; });
+  const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade();   // (droite-01)
   // the room behind the door: a small model of it seen through the street's own camera (tools/arcade_room.py: the door
   // found in the street's space from its lines; behind it a box room turned 24 degrees toward the street (its long axis
   // runs down the street, toward a vanishing point at x 77 on the horizon, as its floor's planks do), its end wall 5 m from
@@ -4143,7 +4272,7 @@
       nrSky.material.color.setRGB(1, 1 - 0.56 * s, 1 - 0.6 * s);
     } else nrSky.visible = false;
     moonMesh.material.opacity = moon0 + (1 - moon0) * s; MB.value = s;
-    nrHalo.visible = s > 0.002 && !REDN.gone; nrHalo.material.opacity = 0.5 * s;
+    nrHalo.visible = s > 0.002 && !REDN.gone; nrHalo.material.opacity = 0.5 * s; if (nrHalo.visible) nrHalo.material.map.paint();
     stars.material.opacity = 1 - 0.6 * s;
     // each light's red (the wave: as it reaches it), the painted lights, the far city
     const L = REDN.list;
@@ -4230,6 +4359,15 @@
     scene.onAfterRender = function () { const r = a0.apply(this, arguments); for (const f of LGT.done) f(); return r; }; }
   LGT.pre.push(() => { STUDY.op = winMesh.material.opacity; });      // his screen on its UPS: the window keeps its own level (the lamp
   LGT.post.push(() => { winMesh.material.opacity = STUDY.op; });     // in it follows the mains: studyMains)
+  // ---- before the fade the street's canvas shows only the rain: the fade's quad, opaque, takes all that is drawn before it down to
+  // nothing. So the main pass draws only the rain's two curtains and that quad then (the same pixels, a fraction of the work); the
+  // water's pass still draws the street, whose light the rain takes ----
+  { const b0 = scene.onBeforeRender, a0 = scene.onAfterRender, keep = [];
+    scene.onBeforeRender = function (r) {
+      if (FADE.t0 < 0 && r.getRenderTarget() === null) for (const o of scene.children) if (o !== rain && o !== rain2 && o !== fadeQuad) { keep.push(o, o.visible); o.visible = false; }
+      return b0.apply(this, arguments);
+    };
+    scene.onAfterRender = function () { const r = a0.apply(this, arguments); for (let i = 0; i < keep.length; i += 2) keep[i].visible = keep[i + 1]; keep.length = 0; return r; }; }
   // ---- the places shut by the hour (lumieres-01, gauche-02, direction-09): over a shut place the street with its power out (the fuses'
   // own picture, graded as the street is: their shader, its grade and picture shared), by openK, zone by zone; the oden's own lights
   // with it; the arcade's room (drawArcade) and its spill by openK('arcade') ----
@@ -4865,6 +5003,8 @@
     return [700 + (Math.random() * 2 - 1) * hw, y, 0];
   }
 
+  if (SETUP.parts) await setupPause();          // (the third ends: SETUP)
+
   // ---- cover the hero with the image (like object-fit: cover), centred on the street. On a computer's window (landscape,
   // 900 px wide or more) the whole scene shows: the hero takes the full width at the scene's own ratio, nothing cut (on a
   // window wider than 16:9 the road's foot goes under the fold, a little scroll away); phones keep the cover and the pan ----
@@ -4935,7 +5075,7 @@
       const x0 = PAN.x + PAN.v * dt; PAN.x = x0; panClamp(); PAN.v = PAN.x === x0 ? PAN.v * Math.pow(0.0067, dt) : 0; PAN.wait = 8; return;
     }
     PAN.v = 0; if (reduced) return;
-    if (PAN.wait > 0) { PAN.wait -= dt; return; }
+    if (PAN.wait > 0 || FADE.t0 < 0) { if (FADE.t0 >= 0) PAN.wait -= dt; return; }   // (its wait counted from the fade: the street fades in where the poster is)
     const A = 0.98 * m;
     if (!PAN.auto) { const u = Math.max(-1, Math.min(1, PAN.x / A)); PAN.auto = true; PAN.ph = PAN.x > 1 || Math.abs(PAN.x) <= 1 ? Math.PI - Math.asin(u) : Math.asin(u); }
     PAN.ph += dt * 2 * Math.PI / 90; PAN.x += (A * Math.sin(PAN.ph) - PAN.x) * Math.min(1, dt * 2);
@@ -4950,8 +5090,8 @@
   function stepPanY(dt) {
     const m = panRoomY();
     if (m < 20 || reduced) { PAN.y = 0; PAN.autoY = false; return; }
-    if (panRoom() < 20) { if (PAN.wait > 0) { PAN.wait -= dt; return; } }   // (the horizontal pan counts the wait down when it has room of its own)
-    else if (PAN.wait > 0 || (PAN.drag && PAN.drag.on) || Math.abs(PAN.v) > 3) return;
+    if (panRoom() < 20) { if (PAN.wait > 0 || FADE.t0 < 0) { if (FADE.t0 >= 0) PAN.wait -= dt; return; } }   // (the horizontal pan counts the wait down when it has room of its own; from the fade)
+    else if (PAN.wait > 0 || FADE.t0 < 0 || (PAN.drag && PAN.drag.on) || Math.abs(PAN.v) > 3) return;
     const mid = IH / 2 - view.cy;                                            // the drift's centre: the scene's middle
     if (!PAN.autoY) { const u = Math.max(-1, Math.min(1, (PAN.y - mid) / m)); PAN.autoY = true; PAN.phy = Math.asin(u); }
     PAN.phy += dt * 2 * Math.PI / 90; PAN.y += (mid + m * Math.sin(PAN.phy) - PAN.y) * Math.min(1, dt * 2);
@@ -5067,7 +5207,7 @@
     el.className = 'pc-app' + (act ? '' : ' pc-game');
     if (act && act.href) { el.href = act.href; el.target = '_blank'; el.rel = 'noopener'; }
     else if (act) { el.type = 'button'; el.addEventListener('click', act); }
-    const im = document.createElement('img'); im.src = src; im.alt = ''; im.width = im.height = 96;
+    const im = document.createElement('img'); lateImg(im, src); im.alt = ''; im.width = im.height = 96;   // (late: the computer opens on the live street)
     el.append(im, label); desk.appendChild(el);
   }
   // sub-windows inside the PC, stacked; Esc closes the top one first
@@ -6456,7 +6596,11 @@
   // style (look: its kind; the shadows' alpha and grain for Teuchi's pass and the nearer one; the rims' rows). A cell is [sx, sy,
   // w, h, ox, oy]: (ox, oy) the middle of his chest and the top of his head (or the floor) in it
   const IRF = {"T":{"idle":[[0,0,34,63,17,0]],"calm":[[35,0,34,63,17,0]],"nod":[[70,0,33,63,18,0]],"smile":[[104,0,34,63,17,0]],"stir":[[139,0,33,63,15,0],[173,0,29,63,14,0],[203,0,31,63,14,0],[235,0,33,63,15,0],[269,0,28,63,14,0],[298,0,31,63,14,0]],"lift":[[330,0,38,67,22,4]],"serve":[[369,0,46,64,16,0],[416,0,46,64,19,0]],"shelf":[[463,0,41,66,20,1],[505,0,40,67,19,2]],"walk":[[546,0,37,109,18,109],[584,0,36,109,17,109],[621,0,33,109,16,109],[655,0,33,109,15,109],[689,0,36,109,17,109]]},"Ty":{"head":583.26,"feet":692.02},"Tz":27.27,"at":{"counter":1199.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[726,0,57,168,28,168],[784,0,55,168,26,168],[840,0,51,168,25,168],[892,0,51,168,23,168],[944,0,57,168,27,168]],"dfront":[[0,169,48,169,23,169]],"dbrow":[[49,169,62,169,25,169]],"dpole":[[112,169,66,173,31,173],[179,169,66,191,31,191],[246,169,66,209,31,209],[313,169,66,224,31,224]]},"Dz":[1187.0,17.6,734.32],"S":{"seat":[[380,169,49,95,26,95]],"chop":[[430,169,55,95,26,96]],"sip":[[486,169,44,96,24,96],[531,169,44,92,24,96]],"done":[[576,169,56,96,30,96]],"turn":[[633,169,44,93,22,94],[678,169,44,92,22,92]],"rise":[[723,169,45,103,22,103],[769,169,39,112,19,112]],"jacket":[[846,169,54,117,28,117],[901,169,40,117,20,117]],"stand":[[809,169,36,117,18,117]]},"Sx":1165.1,"Sy":696.03,"W":{"h0":116,"cells":[[[942,169,43,116,18,116],[0,394,42,116,20,116],[43,394,42,116,18,116],[86,394,37,116,16,116]],[[124,394,43,117,18,117],[168,394,43,117,20,117],[212,394,43,117,18,117],[256,394,38,117,17,117]],[[295,394,43,118,18,118],[339,394,43,118,20,118],[383,394,43,118,18,118],[427,394,38,118,17,118]],[[466,394,45,119,19,119],[512,394,43,119,20,119],[556,394,43,119,18,119],[600,394,38,119,17,119]],[[639,394,45,120,19,120],[685,394,43,120,20,120],[729,394,43,120,18,120],[773,394,38,120,17,120]],[[812,394,45,121,19,121],[858,394,44,121,21,121],[903,394,43,121,18,121],[947,394,39,121,17,121]],[[0,516,45,122,19,122],[46,516,45,122,21,122],[92,516,44,122,18,122],[137,516,39,122,17,122]],[[177,516,45,123,19,123],[223,516,45,123,21,123],[269,516,45,123,19,123],[315,516,39,123,17,123]],[[355,516,46,124,19,124],[402,516,45,124,21,124],[448,516,45,124,19,124],[494,516,40,124,18,124]],[[535,516,46,125,19,125],[582,516,45,125,21,125],[628,516,45,125,19,125],[674,516,40,125,18,125]],[[715,516,47,126,20,126],[763,516,45,126,21,126],[809,516,45,126,19,126],[855,516,41,126,18,126]],[[897,516,47,127,20,127],[945,516,47,127,22,127],[0,644,46,127,19,127],[47,644,41,127,18,127]],[[89,644,47,128,20,128],[137,644,47,128,22,128],[185,644,46,128,19,128],[232,644,41,128,18,128]],[[274,644,48,129,20,129],[323,644,47,129,22,129],[371,644,46,129,19,129],[418,644,41,129,18,129]],[[460,644,48,130,20,130],[509,644,47,130,22,130],[557,644,47,130,20,130],[605,644,41,130,18,130]],[[647,644,48,131,20,131],[696,644,47,131,22,131],[744,644,47,131,20,131],[792,644,42,131,19,131]],[[835,644,49,132,21,132],[885,644,48,132,22,132],[934,644,48,132,20,132],[0,777,43,132,19,132]],[[44,777,50,133,21,133],[95,777,49,133,23,133],[145,777,48,133,20,133],[194,777,43,133,19,133]],[[238,777,50,134,21,134],[289,777,49,134,23,134],[339,777,48,134,20,134],[388,777,43,134,19,134]],[[432,777,50,135,21,135],[483,777,49,135,23,135],[533,777,48,135,20,135],[582,777,43,135,19,135]],[[626,777,50,136,21,136],[677,777,49,136,23,136],[727,777,49,136,21,136],[777,777,43,136,19,136]],[[821,777,50,137,21,137],[872,777,49,137,23,137],[922,777,50,137,21,137],[973,777,43,137,19,137]],[[0,915,51,138,21,138],[52,915,50,138,23,138],[103,915,50,138,21,138],[154,915,45,138,20,138]],[[200,915,52,139,22,139],[253,915,51,139,24,139],[305,915,50,139,21,139],[356,915,45,139,20,139]],[[402,915,52,140,22,140],[455,915,51,140,24,140],[507,915,50,140,21,140],[558,915,45,140,20,140]],[[604,915,52,141,22,141],[657,915,51,141,24,141],[709,915,51,141,21,141],[761,915,45,141,20,141]],[[807,915,52,142,22,142],[860,915,51,142,24,142],[912,915,51,142,21,142],[964,915,45,142,20,142]],[[0,1058,53,143,22,143],[54,1058,52,143,24,143],[107,1058,52,143,22,143],[160,1058,46,143,20,143]],[[207,1058,53,144,22,144],[261,1058,52,144,24,144],[314,1058,52,144,22,144],[367,1058,46,144,20,144]],[[414,1058,54,145,23,145],[469,1058,53,145,25,145],[523,1058,52,145,22,145],[576,1058,47,145,21,145]],[[624,1058,54,146,23,146],[679,1058,53,146,25,146],[733,1058,53,146,22,146],[787,1058,47,146,21,146]],[[835,1058,55,147,23,147],[891,1058,53,147,25,147],[945,1058,53,147,22,147],[0,1206,47,147,21,147]],[[48,1206,55,148,23,148],[104,1206,54,148,25,148],[159,1206,53,148,22,148],[213,1206,47,148,21,148]],[[261,1206,55,149,23,149],[317,1206,54,149,25,149],[372,1206,53,149,22,149],[426,1206,48,149,21,149]],[[475,1206,55,150,23,150],[531,1206,55,150,26,150],[587,1206,54,150,23,150],[642,1206,48,150,21,150]],[[691,1206,55,151,23,151],[747,1206,55,151,26,151],[803,1206,55,151,23,151],[859,1206,48,151,21,151]],[[908,1206,57,152,24,152],[966,1206,55,152,26,152],[0,1359,55,152,23,152],[56,1359,49,152,22,152]],[[106,1359,57,153,24,153],[164,1359,56,153,26,153],[221,1359,55,153,23,153],[277,1359,49,153,22,153]],[[327,1359,57,154,24,154],[385,1359,56,154,26,154],[442,1359,55,154,23,154],[498,1359,50,154,22,154]],[[549,1359,57,155,24,155],[607,1359,56,155,26,155],[664,1359,55,155,23,155],[720,1359,50,155,22,155]],[[771,1359,57,156,24,156],[829,1359,57,156,27,156],[887,1359,57,156,24,156],[945,1359,50,156,22,156]],[[0,1516,58,157,24,157],[59,1516,57,157,27,157],[117,1516,57,157,24,157],[175,1516,50,157,22,157]],[[226,1516,59,158,25,158],[286,1516,58,158,27,158],[345,1516,57,158,24,158],[403,1516,50,158,22,158]],[[454,1516,59,159,25,159],[514,1516,58,159,27,159],[573,1516,57,159,24,159],[631,1516,51,159,23,159]],[[683,1516,59,160,25,160],[743,1516,58,160,27,160],[802,1516,57,160,24,160],[860,1516,52,160,23,160]],[[913,1516,60,161,25,161],[0,1678,58,161,27,161],[59,1678,58,161,24,161],[118,1678,52,161,23,161]],[[171,1678,60,162,25,162],[232,1678,59,162,28,162],[292,1678,58,162,24,162],[351,1678,52,162,23,162]],[[404,1678,60,163,25,163],[465,1678,60,163,28,163],[526,1678,59,163,25,163],[586,1678,52,163,23,163]],[[639,1678,61,164,26,164],[701,1678,60,164,28,164],[762,1678,59,164,25,164],[822,1678,52,164,23,164]],[[875,1678,61,165,26,165],[937,1678,60,165,28,165],[0,1844,60,165,25,165],[61,1844,52,165,23,165]],[[114,1844,62,166,26,166],[177,1844,60,166,28,166],[238,1844,60,166,25,166],[299,1844,54,166,24,166]],[[354,1844,62,167,26,167],[417,1844,60,167,28,167],[478,1844,60,167,25,167],[539,1844,54,167,24,167]],[[594,1844,62,168,26,168],[657,1844,61,168,29,168],[719,1844,60,168,25,168],[780,1844,54,168,24,168]],[[835,1844,62,169,26,169],[898,1844,62,169,29,169],[961,1844,60,169,25,169],[0,2014,54,169,24,169]],[[55,2014,62,170,26,170],[118,2014,62,170,29,170],[181,2014,62,170,26,170],[244,2014,54,170,24,170]],[[299,2014,64,171,27,171],[364,2014,62,171,29,171],[427,2014,62,171,26,171],[490,2014,55,171,24,171]],[[546,2014,64,172,27,172],[611,2014,62,172,29,172],[674,2014,62,172,26,172],[737,2014,55,172,24,172]],[[793,2014,64,173,27,173],[858,2014,62,173,29,173],[921,2014,62,173,26,173],[0,2188,56,173,25,173]],[[57,2188,64,174,27,174],[122,2188,64,174,30,174],[187,2188,62,174,26,174],[250,2188,56,174,25,174]],[[307,2188,65,175,27,175],[373,2188,64,175,30,175],[438,2188,63,175,26,175],[502,2188,56,175,25,175]],[[559,2188,65,176,27,176],[625,2188,64,176,30,176],[690,2188,64,176,27,176],[755,2188,56,176,25,176]],[[812,2188,66,177,28,177],[879,2188,64,177,30,177],[944,2188,64,177,27,177],[0,2366,57,177,25,177]]],"fix":[[58,2366,65,176,29,176]],"top":2.1658,"from":[8.61,25.92],"to":[5.854,17.25]},"N":{"cells":[[124,2366,32,66],[157,2366,32,66],[190,2366,32,66],[223,2366,32,66],[256,2366,32,66],[289,2366,32,66]],"x":1218.4,"y":595,"cx":16.0},"O":[322,2366,82,110,1150,590],"G":[[1160,522,631,636,681,598],[1161,521,631,636,681,597],[1162,521,631,636,681,597],[1163,521,631,636,681,597],[1164,521,631,636,682,597],[1165,520,631,636,682,597],[1166,520,631,636,682,597],[1167,520,631,636,682,597],[1168,520,631,636,682,597],[1169,520,631,636,682,597],[1170,519,631,636,682,596],[1173,519,631,636,683,596],[1174,519,631,636,683,596],[1175,518,631,636,683,596],[1176,518,631,636,683,596],[1177,518,631,636,683,596],[1178,518,631,636,684,596],[1179,518,631,636,684,596],[1180,517,631,636,684,596],[1181,517,631,636,684,595],[1182,517,631,636,684,595],[1183,517,631,636,684,595],[1184,517,631,636,685,595],[1185,516,631,636,685,595],[1192,515,631,636,686,594],[1193,515,631,636,686,594],[1194,514,631,636,686,594],[1195,514,631,636,686,594],[1196,514,631,636,686,594],[1197,514,631,636,686,594],[1198,514,631,636,687,594],[1199,513,631,636,687,594],[1200,513,631,636,687,594],[1201,513,631,636,687,593],[1202,513,631,636,687,593],[1203,513,631,636,687,593],[1204,512,631,636,687,593],[1205,512,631,636,688,593],[1209,511,631,636,688,593],[1210,511,631,636,688,592],[1211,511,631,636,688,592],[1212,511,631,636,689,592],[1213,511,631,636,689,592],[1214,510,631,636,689,592],[1215,510,631,636,689,592],[1216,510,631,636,689,592],[1217,510,631,636,689,592],[1218,510,631,636,689,592],[1219,509,631,636,690,592],[1220,509,631,636,690,592],[1221,509,631,636,690,591],[1222,509,631,636,690,591],[1223,509,631,636,690,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]],"look":{"kind":"liser\u00e9","alpha":[0.86,0.95],"grain":[1,0.5],"rim":2544}};
-  const IRFI = new Image(); IRFI.src = 'assets/ramen_figures.webp?v=3';
+  const IRFI = new Image(), IRF_SRC = 'assets/ramen_figures.webp?v=3';
+  let IRFS = null;                               // what they are drawn from, once in: the sheet decoded off the main thread (an ImageBitmap; drawn
+  // as its <img> draws, to the byte), else the <img> (5 Mpx: its decoding in a frame froze the street for a fifth of a second on a phone)
+  offView(RL.x, RL.x + RL.w, () => (window.createImageBitmap && window.fetch ? UP.fetch(IRF_SRC).then((r) => (r.ok ? r.blob() : Promise.reject(r.status))).then((b) => createImageBitmap(b)) : Promise.reject(0))
+    .then((b) => { IRFS = b; }, () => { IRFI.onload = () => { IRFS = IRFI; }; IRFI.src = IRF_SRC; }));
   const irGlass = new Path2D(), irHem = [new Path2D(), new Path2D(), new Path2D()];   // (the glass, in scene px: the people only there; the rows under the hem)
   for (const [x, top, a, b, bot, hem] of IRF.G || []) {
     irGlass.rect(x, top, 1, a - top + 1); irGlass.rect(x, b, 1, bot - b + 1);
@@ -6616,7 +6760,7 @@
   function stepGuests(dt, t) {
     const R = REG, hk = openK('ramen'), live = R.hk0 >= 0 && Math.abs(hk - R.hk0) < 0.05 && !reduced; R.hk0 = hk;
     const want = hk > 0.97;
-    if (R.st === 'seat' && !want) { if (live && IRFI.complete && IRFI.naturalWidth) { R.st = 'up'; R.seq = REG_UP.slice(); R.ft = 0; } else R.st = 'gone'; }
+    if (R.st === 'seat' && !want) { if (live && !!IRFS) { R.st = 'up'; R.seq = REG_UP.slice(); R.ft = 0; } else R.st = 'gone'; }
     else if (R.st !== 'seat' && R.st !== 'gone' && want && !live) R.st = 'gone';   // (a driven hour back to the evening: in his place at once)
     if (R.st === 'gone' && want) { R.st = 'seat'; R.a = live ? 0 : 1; R.seq = []; R.ft = 0; R.c = ['seat', 0]; }
     if (R.st === 'seat') {
@@ -6661,7 +6805,7 @@
     if (RAM.dip <= 0 && Math.random() < dt * 0.08) RAM.dip = 0.09; RAM.dip = Math.max(0, RAM.dip - dt);
     for (const w of RAM.wisps) { w.t += dt; if (w.t > 2.6) { w.t = 0; w.s = (Math.random() * IRF.wisps.length) | 0; } }
     RAM.acc += dt; if (RAM.acc < 1 / 20) return; RAM.acc = 0;
-    const K = RL.K, X = (x) => (x - RL.x) * K, Y = (y) => (y - RL.y) * K, ok = IRFI.complete && IRFI.naturalWidth;
+    const K = RL.K, X = (x) => (x - RL.x) * K, Y = (y) => (y - RL.y) * K, ok = !!IRFS;
     const wisps = (g, pot) => {                  // the steam: from the stock pot (behind Teuchi), from the bowls (in front of him)
       for (const w of RAM.wisps) {
         const W = IRF.wisps[w.s]; if (!W || (w.s === IRF.wisps.length - 1) !== pot) continue;
@@ -6685,8 +6829,8 @@
     const sprite = (P, dy) => {
       const [sx, sy, w, h, ox, oy] = P.c, x = Math.round(P.x), y = Math.round(P.y) - oy;
       shg.globalAlpha = Math.max(0, Math.min(1, P.a == null ? 1 : P.a));
-      if (P.flip) { shg.save(); shg.translate(x + ox, y); shg.scale(-1, 1); shg.drawImage(IRFI, sx, sy + dy, w, h, 0, 0, w, h); shg.restore(); }
-      else shg.drawImage(IRFI, sx, sy + dy, w, h, x - ox, y, w, h);
+      if (P.flip) { shg.save(); shg.translate(x + ox, y); shg.scale(-1, 1); shg.drawImage(IRFS || IRFI, sx, sy + dy, w, h, 0, 0, w, h); shg.restore(); }
+      else shg.drawImage(IRFS || IRFI, sx, sy + dy, w, h, x - ox, y, w, h);
     };
     const sprites = (list, occ) => {
       begin(); const k = occ ? 0 : 1;
@@ -6694,7 +6838,7 @@
       shg.globalAlpha = 1;
       if (LOOK.grain) { shg.globalCompositeOperation = 'destination-out'; shg.globalAlpha = LOOK.grain[k]; shg.drawImage(grC, RL.x, RL.y); shg.globalAlpha = 1; shg.globalCompositeOperation = 'source-over'; }
       if (LOOK.rim) { for (const P of list) sprite(P, LOOK.rim); shg.globalAlpha = 1; }
-      if (occ) { const [sx, sy, w, h, x, y] = IRF.O; shg.globalCompositeOperation = 'destination-out'; shg.drawImage(IRFI, sx, sy, w, h, x, y, w, h); }
+      if (occ) { const [sx, sy, w, h, x, y] = IRF.O; shg.globalCompositeOperation = 'destination-out'; shg.drawImage(IRFS || IRFI, sx, sy, w, h, x, y, w, h); }
       shg.globalCompositeOperation = 'source-atop';
       IR_HAUT.forEach((k, i) => { shg.fillStyle = 'rgba(0,0,0,' + (1 - k) + ')'; shg.fill(irHem[i]); });
       blit(LOOK.alpha ? LOOK.alpha[k] : 1);
@@ -6702,7 +6846,7 @@
     // Naruto's silhouette: one dark colour, the painting's grain
     const shadow = (list, colour, grain, alpha) => {
       begin();
-      for (const P of list) { const [sx, sy, w, h] = P.c; shg.drawImage(IRFI, sx, sy, w, h, P.x, P.y, w, h); }
+      for (const P of list) { const [sx, sy, w, h] = P.c; shg.drawImage(IRFS || IRFI, sx, sy, w, h, P.x, P.y, w, h); }
       shg.globalCompositeOperation = 'source-in'; shg.fillStyle = colour; shg.fillRect(RL.x, RL.y, RL.w, RL.h);
       shg.globalCompositeOperation = 'destination-out'; shg.globalAlpha = grain; shg.drawImage(grC, RL.x, RL.y); shg.globalAlpha = 1;
       blit(alpha);
@@ -6823,7 +6967,7 @@
     const live = IR.hk0 >= 0 && Math.abs(hk - IR.hk0) < 0.05 && !reduced;      // (a driven hour, the first frame: its state at once)
     if (oW !== IR.out) {                                                         // the noren in (or out): Teuchi comes to the doors for it, if seen
       if (IR.wait) { IR.wait = false; IR.out = oW; }                            // (the hour back before he got there: nothing to do)
-      else { IR.out = oW; IR.wt = 0; IR.wait = live && SHOP.k > 0.5 && IRFI.complete && IRFI.naturalWidth > 0; IR.take = live && !IR.wait ? 0 : -1; teuchiDoor(IR.wait); }
+      else { IR.out = oW; IR.wt = 0; IR.wait = live && SHOP.k > 0.5 && !!IRFS; IR.take = live && !IR.wait ? 0 : -1; teuchiDoor(IR.wait); }
     }
     if (IR.wait && ((IR.wt += dt) > 30 || SHOP.k < 0.5)) { IR.wait = false; IR.take = 0; }   // (held up, or the kitchen dark: it goes all the same)
     IR.hk0 = hk;
@@ -8600,8 +8744,10 @@
   // the blood moon's halo (ciel-08): painted at 1:1 (240 px): the old glow's own strength (a 16 px radial gradient
   // stretched 15 times: a smooth cone with a hard foot) in eight value steps (about 7 levels of red apart), the painting's
   // clumped grain over it and the house stipple between the steps (2 x 2 dabs in clumps, no pattern), its foot let down softly
-  function skyHaloTex() {
+  function skyHaloTex() {                       // (painted when the halo is first shown, or the page idle: lazyPaint)
     const N = 240, cv = document.createElement('canvas'); cv.width = cv.height = N;
+    const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    t.paint = lazyPaint(() => {
     const g = cv.getContext('2d'), im = g.createImageData(N, N), d = im.data, G = 18, gr = new Float32Array((G + 2) * (G + 2));
     let r0 = 20263; const rnd = () => (r0 = (r0 * 16807) % 2147483647) / 2147483647;
     for (let i = 0; i < gr.length; i++) gr[i] = rnd();
@@ -8614,14 +8760,17 @@
       const s8 = v * 8, lo = Math.floor(s8), lv = Math.min(1, (lo + skDab(x, y, s8 - lo, 40)) / 8), o = (y * N + x) * 4;
       d[o] = d[o + 1] = d[o + 2] = 255; d[o + 3] = Math.round(255 * lv);
     }
-    g.putImageData(im, 0, 0);
-    const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t;
+    g.putImageData(im, 0, 0); t.needsUpdate = true;
+    });
+    return t;
   }
   // two thin cloud bands drifting across the blood moon (ciel-08), only in the red night: dark crimson, soft and uneven,
   // their alpha in steps with the house stipple between them, in front of the moon and its halo; drifting at whole pixels (still under
   // reduced motion)
-  const skCloud = (() => {
+  const skCloud = (() => {                      // (painted when first shown, or the page idle: lazyPaint)
     const W = 512, H = 64, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.wrapS = THREE.RepeatWrapping; t.repeat.set(240 / W, 1);
+    t.paint = lazyPaint(() => {
     const g = cv.getContext('2d'), im = g.createImageData(W, H), d = im.data, TAU = 2 * Math.PI;
     let r1 = 31337; const rnd = () => (r1 = (r1 * 16807) % 2147483647) / 2147483647;
     for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -8633,8 +8782,8 @@
       const s8 = a * 8, lo = Math.floor(s8), lv = (lo + skDab(x, y, s8 - lo, 70)) / 8, o = (y * W + x) * 4;
       d[o] = 30; d[o + 1] = 5; d[o + 2] = 8; d[o + 3] = Math.round(255 * Math.min(1, lv));
     }
-    g.putImageData(im, 0, 0);
-    const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.wrapS = THREE.RepeatWrapping; t.repeat.set(240 / W, 1);
+    g.putImageData(im, 0, 0); t.needsUpdate = true;
+    });
     const m = new THREE.Mesh(new THREE.PlaneGeometry(240, H), new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false }));
     m.position.set(MOONP.x + MOONP.s / 2, -(MOONP.y + MOONP.s / 2 + 30), -2.45); m.visible = false; scene.add(m); return m;
   })();
@@ -8780,14 +8929,15 @@
   function stepSky(dt, t) {                      // (frame): the sky's grain on its pixels, the blood moon's clouds, the shards, the dawn's actors
     NRU.uSkyO.value.set(sky.position.x - IW / 2, -(sky.position.y + IH / 2));
     const red = nightSys() ? CLOCK.rouge : REDN.k, cm = skCloud;
-    cm.visible = red > 0.002 && !REDN.gone && !FIN.blast;
+    cm.visible = red > 0.002 && !REDN.gone && !FIN.blast; if (cm.visible) cm.material.map.paint();
     if (cm.visible) { cm.material.opacity = red; if (!reduced) cm.material.map.offset.x = (Math.floor(t * 2.2) % 512) / 512; }
     stepShards(dt, t, red);
     stepDawnSky(dt);
   }
   // the skyline haze (fogs[0]): its soft blob painted at 1:1 (420 x 190), the same radial mean as the old canvas gradient
-  // (so the dusk stays as it was), its edge broken by the air, in horizontal streaks, in eight steps with the house stipple
-  (function () {
+  // (so the dusk stays as it was), its edge broken by the air, in horizontal streaks, in eight steps with the house stipple (painted
+  // just after the first frame: FIRST)
+  later(function () {
     const Wd = 420, Hd = 190, cv = document.createElement('canvas'); cv.width = Wd; cv.height = Hd;
     const g = cv.getContext('2d'), im = g.createImageData(Wd, Hd), d = im.data, G = 24, gr = new Float32Array((G + 2) * (G + 2));
     let r0 = 4242; const rnd = () => (r0 = (r0 * 16807) % 2147483647) / 2147483647;
@@ -8805,7 +8955,7 @@
     g.putImageData(im, 0, 0);
     const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
     fogs[0].material.map = t; fogs[0].material.needsUpdate = true;
-  })();
+  });
   FIN.api.on('blast', () => { SKYD.shardsT = Date.now(); lsSet('mtsfj-shards', SKYD.shardsT); });   // (the moon goes: its shards' first day)
   FIN.api.on('dawn', () => { SKYD.fin = true; SKYF.dawnT = 0; SKYF.morn = false; });
   FIN.api.on('plate', () => { SKYF.morn = true; });                                                 // (reduced motion: its morning comes with the plate)                                   // (the dawn's clock: Aka-Fuji by the push, the shards, Ho-Oh, the rainbow)
@@ -9059,7 +9209,7 @@
         .replace('#include <project_vertex>', '#include <project_vertex>\n    vNRw = (modelMatrix * vec4(transformed, 1.0)).xy;');
       sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>' + NR_HEAD + '\n    varying vec2 vNRw;').replace('#include <map_fragment>', '#include <map_fragment>' + NR_FRAG);
     };
-    mat.customProgramCacheKey = () => 'nr-' + grp; mat.userData.nr = grp; mat.needsUpdate = true;
+    mat.customProgramCacheKey = () => 'nr'; mat.userData.nr = grp; mat.needsUpdate = true;   // (one program for all the layers: theirs differ by their uniforms alone)
   }
   function nrShadeKinds(mat, kTex) {             // the tree's shake overlay: each pixel graded as the plane it shows (its kind, B.ktex), its own multiply
     mat.onBeforeCompile = (sh) => {
@@ -9111,7 +9261,7 @@
       sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>' + NR_HEAD + '\n    varying vec2 vNRw;')
         .replace('#include <tonemapping_fragment>', '    gl_FragColor.rgb = nrSprite(gl_FragColor.rgb, vec2(vNRw.x, -vNRw.y), uNRkind);\n#include <tonemapping_fragment>');
     };
-    mat.customProgramCacheKey = () => (key ? key.call(mat) : '') + '|nrs-' + k; mat.userData.nrk = k; mat.needsUpdate = true;
+    mat.customProgramCacheKey = () => (key ? key.call(mat) : '') + '|nrs'; mat.userData.nrk = k; mat.needsUpdate = true;   // (the kinds share a program: their uniform tells them apart)
     return mat;
   }
   (function () {                                 // the sprites there are now
@@ -9983,9 +10133,10 @@
     stepHana(dt);                                // 花筏: petals down the right gutter (sol-09)
 
     if (!FADE.done) {                            // the street resolving in the rain
+      if (POSTER) posterSync();                   // (the poster under it, on the camera's view)
       const u = FADE.t0 < 0 ? 0 : reduced ? 1 : Math.min(1, (performance.now() - FADE.t0) / 900), k = u * u * (3 - 2 * u);
       fadeQuad.material.opacity = 1 - k; rain.renderOrder = rain2.renderOrder = 999;
-      if (u >= 1) { FADE.done = true; scene.remove(fadeQuad); fadeQuad.geometry.dispose(); fadeQuad.material.dispose(); rain.renderOrder = rain2.renderOrder = 0; }
+      if (u >= 1) { FADE.done = true; posterEnd(); performance.mark('street:live'); setTimeout(laterIdle, 3000); scene.remove(fadeQuad); fadeQuad.geometry.dispose(); fadeQuad.material.dispose(); rain.renderOrder = rain2.renderOrder = 0; }
     }
     for (const f of FEAT) f(dt, t);               // (the features' steps)
     if (WET.on) wetPass(t);
@@ -11216,6 +11367,8 @@
   FEAT.push(stepOba);
   // ==== end of DGO ====
 
+  { const a = view.cx - view.w / 2 - 64, b = view.cx + view.w / 2 + 64; for (const [x0, x1, load] of OFFVIEW) if (x1 < a || x0 > b) LATE.q.push(load); else load(); }
+  setupEnd();
   new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible && !raf && !reduced) raf = requestAnimationFrame(tick); }).observe(hero);
   if (reduced) window.addEventListener('resize', () => frame());   // (no loop then: the title and the window follow a resize at once)
   frame();
