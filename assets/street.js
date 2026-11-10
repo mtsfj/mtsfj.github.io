@@ -3883,7 +3883,7 @@
     let n = 0;
     const done = () => { if (++n < 2) return; ARCG.js = 2; if (window.ARCADE) arcPlay(ARCG.want[0], ARCG.want[1]); else ARCG.js = 0; };
     const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'assets/arcade.css?v=1'; l.dataset.arcade = '1'; l.onload = l.onerror = done; document.head.appendChild(l);
-    const sc = document.createElement('script'); sc.src = 'assets/arcade.js?v=1'; sc.onload = done; sc.onerror = () => { ARCG.js = 0; }; document.head.appendChild(sc);
+    const sc = document.createElement('script'); sc.src = 'assets/arcade.js?v=2'; sc.onload = done; sc.onerror = () => { ARCG.js = 0; }; document.head.appendChild(sc);
   }
   // a keyboard's way in: a button in the street, shown when it takes the focus (as the camera screen's), the first cabinet;
   // the dialog's own keys go from machine to machine

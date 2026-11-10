@@ -29,7 +29,7 @@
       keysIni: '↑↓ LETTRE  ← → A : OK', free: 'PARTIE GRATUITE',
       wave: 'VAGUE', bonus: 'BONUS', p1: 'JOUEUR 1', pts: 'PTS', extra: 'VIE EN PLUS', hInfo: ['← → BOUGER', 'A OU B TIRER', 'ABATTEZ LE GRAND', 'POUR UN BONUS'],
       time: 'TEMPS', cp: 'ÉTAPE !', timeup: 'TEMPS ÉCOULÉ', go: 'PARTEZ !', kmh: 'KM/H', dist: 'KM', yInfo: ['← → VOLANT', 'A OU ↑ GAZ', 'B OU ↓ FREIN', 'CHAQUE ÉTAPE', 'DONNE DU TEMPS'],
-      tries: 'ESSAIS', win: 'GAGNÉ !', miss: 'RATÉ', slip: 'TOMBÉ !', kInfo: ['← → PUIS A', '↑ ↓ PUIS A', 'LA PINCE DESCEND', 'LES PELUCHES', 'DANS LA TRAPPE'],
+      tries: 'ESSAIS', win: 'GAGNÉ !', miss: 'RATÉ', slip: 'TOMBÉ !', kInfo: ['← → ↑ ↓ : VISER', 'A : LA PINCE', 'DESCEND, ATTRAPE', 'LES PELUCHES', 'DANS LA TRAPPE'],
       close: 'Fermer', prev: 'machine précédente', next: 'machine suivante', kb: "Jouer à l'arcade",
       mach: ['borne 1', 'borne 2', 'borne 3', 'machine à pinces'],
       help: 'flèches · espace · entrée : pièce, start · P : pause · échap',
@@ -41,7 +41,7 @@
       keysIni: '↑↓ LETTER  ← → A: OK', free: 'FREE PLAY',
       wave: 'WAVE', bonus: 'BONUS', p1: 'PLAYER 1', pts: 'PTS', extra: 'EXTRA LIFE', hInfo: ['← → MOVE', 'A OR B FIRE', 'DOWN THE BIG ONE', 'FOR A BONUS'],
       time: 'TIME', cp: 'CHECKPOINT!', timeup: 'TIME UP', go: 'GO!', kmh: 'KM/H', dist: 'KM', yInfo: ['← → STEER', 'A OR ↑ GAS', 'B OR ↓ BRAKE', 'EACH CHECKPOINT', 'GIVES MORE TIME'],
-      tries: 'TRIES', win: 'WIN!', miss: 'MISSED', slip: 'DROPPED!', kInfo: ['← → THEN A', '↑ ↓ THEN A', 'THE CLAW DROPS', 'GET THE PLUSHIES', 'INTO THE CHUTE'],
+      tries: 'TRIES', win: 'WIN!', miss: 'MISSED', slip: 'DROPPED!', kInfo: ['← → ↑ ↓ : AIM', 'A : THE CLAW', 'DROPS AND GRABS', 'GET THE PLUSHIES', 'INTO THE CHUTE'],
       close: 'Close', prev: 'previous machine', next: 'next machine', kb: 'Play the arcade',
       mach: ['cabinet 1', 'cabinet 2', 'cabinet 3', 'claw machine'],
       help: 'arrows · space · enter: coin, start · P: pause · esc',
@@ -663,9 +663,9 @@
 
   // ==== KUMA SUKUI (クマスクイ, bear scooping, as goldfish are scooped at a summer fair): the claw machine. Its glass seen from
   // the front, the box behind it in a little perspective (the back wall higher, narrower); plush bears in a pile, orange,
-  // pink and purple as in the drawing, and one mint star from the next cabinet. As real cranes: the claw moves left and right
-  // first (A to stop it), then to the back and the front (A again, or the time runs out), then drops, closes and rises by
-  // itself; its grip is weak and a matter of luck (better centred, better held: it can let go as it closes, at the jolt at
+  // pink and purple as in the drawing, and one mint star from the next cabinet. As a joystick crane: the claw moves left, right,
+  // to the back and the front at once (the joystick, the arrows), A drops it (or the time runs out), it closes and rises by
+  // itself (the two steps of a button crane, left-right then back-front, read as a joystick whose up and down did nothing); its grip is weak and a matter of luck (better centred, better held: it can let go as it closes, at the jolt at
   // the top, or on the way back), and it brings what it holds to the chute at the front left. A prize that falls over the
   // chute is won all the same. A light spot under the claw shows where it will land (as some cranes have). Six tries a coin ====
   const KS = { W: 104, H: 144, GH: 128, FRONT: 121, BACK: 89, C0: 6, C1: 15, CX: 52, SHR: 0.18, HX: 17, HZ: 0.14, CH0: 3, CH1: 31, CZ: 0.31 };
@@ -776,8 +776,10 @@
       const I = { held: {}, hit: {} }, C = S.claw;
       if (C.st === 'mx' || C.st === 'mz') {
         if (C.tx === undefined) { C.tx = rnd(40, 92); C.tz = rnd(0.3, 0.85); }
-        if (C.st === 'mx') { if (Math.abs(C.x - C.tx) > 1.5) I.held[C.x < C.tx ? 'r' : 'l'] = 1; else I.hit.a = 1; }
-        else { if (Math.abs(C.z - C.tz) > 0.03) I.held[C.z < C.tz ? 'u' : 'd'] = 1; else I.hit.a = 1; }
+        const fx = Math.abs(C.x - C.tx) > 1.5, fz = Math.abs(C.z - C.tz) > 0.03;   // (both ways at once, as a hand on the stick)
+        if (fx) I.held[C.x < C.tx ? 'r' : 'l'] = 1;
+        if (fz) I.held[C.z < C.tz ? 'u' : 'd'] = 1;
+        if (!fx && !fz) I.hit.a = 1;
       }
       return I;
     }
@@ -791,8 +793,9 @@
       C.t += dt;
       if (C.st === 'mx' || C.st === 'mz') {
         S.timer -= dt;
-        if (C.st === 'mx') { if (I.held.l) C.x -= sp; if (I.held.r) C.x += sp; if (I.hit.a || I.hit.b) { C.st = 'mz'; } }
-        else { if (I.held.u) C.z += 0.5 * dt; if (I.held.d) C.z -= 0.5 * dt; if (I.hit.a || I.hit.b) drop(C); }
+        if (I.held.l) C.x -= sp; if (I.held.r) C.x += sp;          // (up: to the back of the box, down: to the glass)
+        if (I.held.u) C.z += 0.5 * dt; if (I.held.d) C.z -= 0.5 * dt;
+        if (I.hit.a || I.hit.b) drop(C);
         C.x = clamp(C.x, 9, KS.W - 9); C.z = clamp(C.z, 0.06, 0.92);
         if (S.timer <= 0) drop(C);
       } else if (C.st === 'open') { C.o = Math.min(3, Math.floor(C.t / 0.08)); if (C.t > 0.35) { C.st = 'down'; C.t = 0; } }
@@ -871,8 +874,13 @@
       R(g, ax(KS.CH1, 0), ay(0, 18), 1, 18, KC.acr);
       R(g, ax(KS.CH1, KS.CZ), ay(KS.CZ, 18), 1, 18, '#ffdcec');
       for (let i = 0; i <= 8; i++) { const z = KS.CZ * i / 8; R(g, ax(KS.CH1, z), ay(z, 18), 1, 1, KC.acr); }
-      // the light spot where the claw would land, while it can still be moved
-      if (C.st === 'mx' || C.st === 'mz') { const [top] = topAt(C.x, C.z), sy = Math.round(kfy(C.z) - top); R(g, cx - 2, sy - 1, 5, 1, KC.acr); R(g, cx - 1, sy - 2, 3, 3, KC.acr); }
+      // where the claw would land, while it can still be moved: its shadow under the ceiling's light, on the plushies or the
+      // floor (it climbs the box as the claw goes to the back), a light spot at its middle (as some cranes have)
+      if (C.st === 'mx' || C.st === 'mz') {
+        const [top] = topAt(C.x, C.z), sy = Math.round(kfy(C.z) - top);
+        R(g, cx - 2, sy - 2, 5, 1, KC.bar); R(g, cx - 4, sy - 1, 9, 1, KC.bar); R(g, cx - 2, sy, 5, 1, KC.bar);
+        R(g, cx - 1, sy - 1, 3, 1, KC.hi);
+      }
       // a glint on the glass
       for (let i = 0; i < 9; i++) R(g, 88 + i, 22 - i * 2, 1, 2, '#ffe8f4');
       if (S.msgT > 0) text(g, S.msg, 52, 44, KC.hi, 1, 'c', KC.plate);
@@ -887,7 +895,7 @@
         text(g, T().tries + ' ' + Math.max(0, S.tries), 44, 132, KC.ink);
         if (C.st === 'mx' || C.st === 'mz') text(g, pad(Math.ceil(Math.max(0, S.timer)), 2), 99, 132, KC.hi, 1, 'r');
         text(g, pad(S.score, 6), 44, 138, KC.hi);
-        text(g, C.st === 'mx' ? '← →' : C.st === 'mz' ? '↑ ↓' : '', 99, 138, KC.dim, 1, 'r');
+        text(g, C.st === 'mx' || C.st === 'mz' ? '← → ↑ ↓' : '', 99, 138, KC.dim, 1, 'r');
       } else text(g, 'HI ' + pad(G.hi || 0, 6), 44, 131, KC.ink);
     };
     G.drawTitle = (g, k) => {
