@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """The kept retouches, laid into the street's own layers (the owner's choice among the clean pass's alternatives, branch
-agent/clean, tools/relief.py and tools/alt_*.py there): the drinks machines (vend) and the base of the coder's building (zone5).
+agent/clean, tools/relief.py and tools/alt_*.py there): the drinks machines (vend).
 
     python3 tools/bake_retouches.py
 
 Each patch (tools/src/retouches/) replaces the layer's pixels at its place, alpha included (as the street laid it on the GPU):
-layer_city_off.webp and street_unlit.webp take vend at (282, 523) and zone5 at (506, 576); z7_vending.webp (the machines' lit
+layer_city_off.webp and street_unlit.webp take vend at (282, 523); z7_vending.webp (the machines' lit
 comp, now 91 x 205 at 280, 522) and z7_vendoff.webp (their stutter, 23 x 166 at 307, 552) are the patches themselves. Lossless,
 exact: run again after a tool rewrites a layer (build_zzzsec_unlit.py ...), then the ?v= of what changed and tools/poster.py.
 """
@@ -15,8 +15,8 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'tools', 'src', 'retouches')
-LAYERS = {'layer_city_off.webp': [('vend_city.webp', 282, 523), ('zone5_bas_city.webp', 506, 576)],
-          'street_unlit.webp': [('vend_unlit.webp', 282, 523), ('zone5_bas_unlit.webp', 506, 576)]}
+LAYERS = {'layer_city_off.webp': [('vend_city.webp', 282, 523)],
+          'street_unlit.webp': [('vend_unlit.webp', 282, 523)]}
 COPIES = {'z7_vending.webp': 'vend_z7_vending.webp', 'z7_vendoff.webp': 'vend_z7_vendoff.webp'}
 
 
