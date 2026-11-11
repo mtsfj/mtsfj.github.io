@@ -26,7 +26,7 @@
   // ---- the email: built on a click (never in the page's text, for the scrapers), then a plain link.
   // <button type="button" class="btn mail-reveal">E-mail</button>
   document.querySelectorAll('.mail-reveal').forEach((b) => b.addEventListener('click', () => {
-    const at = ['fajeau', 'mathis', '8'].join('') + String.fromCharCode(64) + ['gmail', 'com'].join('.'), a = document.createElement('a');
+    const at = ['mathis', 'fajeau'].join('.') + String.fromCharCode(64) + ['inria', 'fr'].join('.'), a = document.createElement('a');
     a.href = 'mailto:' + at; a.textContent = at; a.className = b.className.replace('mail-reveal', '').trim(); b.replaceWith(a); a.focus();
   }));
 
