@@ -47,6 +47,7 @@ const [url, out, settled, pre] = process.argv.slice(2);
     if (/\.min\.js/.test(route.request().url())) s = fs.readFileSync(process.env.STREET_SRC, 'utf8');   // (the readable source: its names)
     const rep = (a, c) => { if (s.indexOf(a) < 0) throw new Error('street.js changed: ' + a.slice(0, 50)); s = s.replace(a, c); };
     rep('const dt = Math.min(clock.getDelta(), 0.05); t += dt;', 'const dt = window.__dt; t += dt;');
+    rep('THREE.DefaultLoadingManager.onLoad = () => {', 'THREE.DefaultLoadingManager.onLoad = () => { window.__loaded = true;');   // (everything in: on a slow machine the fade may have started before)
     rep('\n  frame();\n  if (reduced) setTimeout(frame, 800);', '\n  window.__S = { frame, renderer, rain, rain2, FADE, LATE, OPEN, PACE, get t() { return t; } };\n  frame();\n  if (reduced) setTimeout(frame, 800);');
     await route.fulfill({ response: r, body: s, headers: { ...r.headers(), 'content-length': undefined } });
   });
@@ -55,7 +56,7 @@ const [url, out, settled, pre] = process.argv.slice(2);
   await p.goto(url, { waitUntil: 'load', timeout: 120000 });
   await p.waitForFunction(() => window.__S, null, { timeout: 60000 });
   await p.evaluate(() => { window.__S.PACE.t0 = Infinity; });
-  await p.waitForFunction(() => { const S = window.__S; return S.FADE.done && S.LATE.started && S.LATE.pending === 0; }, null, { timeout: 120000, polling: 250 });
+  await p.waitForFunction(() => { const S = window.__S; return window.__loaded && S.FADE.done && S.LATE.started && S.LATE.pending === 0; }, null, { timeout: 180000, polling: 250 });
   await p.waitForTimeout(1500);
   const png = await p.evaluate(async (pre) => {
     const S = window.__S, R = S.renderer;

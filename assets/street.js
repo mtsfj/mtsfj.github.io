@@ -110,7 +110,17 @@
   const OFFVIEW = [];
   function offView(x0, x1, load) { OFFVIEW.push([x0, x1, load]); }
   THREE.DefaultLoadingManager.onLoad = () => { setTimeout(lateStart, 1200); fadeGo(); };   // (the late sprites: once the eager batch is in)
-  setTimeout(() => { if (FADE.t0 < 0) { fadeGo(); setTimeout(lateStart, 1200); } }, 9000);
+  // (the fallback, 9 s on, for an image that never comes: it does not start the fade while one of the street's big layers (UP.early:
+  // the city, the sky...) is still on its way, or the street would fade in with a hole where that layer goes, the poster gone, until it
+  // came (a slow line: tens of seconds of an orange sky in the place of the facades). It waits for them, a minute at most; a layer that
+  // failed does not hold it: CRIT counts those under way)
+  const CRIT = { n: 0 };
+  function fallbackFade(t0) {
+    if (FADE.t0 >= 0) return;
+    if (CRIT.n > 0 && performance.now() - t0 < 60000) { setTimeout(() => fallbackFade(t0), 500); return; }
+    fadeGo(); setTimeout(lateStart, 1200);
+  }
+  setTimeout(() => fallbackFade(performance.now()), 9000);
 
   const loader = new THREE.TextureLoader();
   // ---- each image goes to the GPU as it comes in, not in the first frame that draws it: on a reload all the layers came in
@@ -181,7 +191,7 @@
     loader.load = (src, onLoad, onProgress, onError) => {
       const M = loader.manager, k = src + ' (gpu)'; M.itemStart(k);
       const fail = setupWait((e) => { M.itemEnd(k); if (onError) onError(e); });
-      if (UP.early.test(src)) { const t = new THREE.Texture(); early(t, src, setupWait(() => { if (onLoad) onLoad(t); M.itemEnd(k); }), fail); return t; }
+      if (UP.early.test(src)) { const t = new THREE.Texture(); CRIT.n++; early(t, src, setupWait(() => { CRIT.n--; if (onLoad) onLoad(t); M.itemEnd(k); }), (e) => { CRIT.n--; fail(e); }); return t; }   // (CRIT: the fallback waits for it)
       return load(src, (tex) => upload(tex, src, setupWait(() => { if (onLoad) onLoad(tex); M.itemEnd(k); })), onProgress, fail);
     };
   }
