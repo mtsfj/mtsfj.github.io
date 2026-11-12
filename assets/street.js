@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=74", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=3", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=3", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=7", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=75", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=3", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=3", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=3", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=7", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=74') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=75') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4058,7 +4058,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=53', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=54', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6967,7 +6967,7 @@
   // right): a gust leans it toward the wall, eddies rock it; one pre-rendered frame per half degree (the rest frame is
   // empty: the street holds the lantern at rest)
   const LAN = ODEN.lantern, LAN_N = LAN.angles.length, LAN_0 = LAN.angles.indexOf(0);
-  const lanTex = odenTex('assets/oden_lantern.webp?v=4'); lanTex.repeat.set(1 / LAN_N, 1);
+  const lanTex = odenTex('assets/oden_lantern.webp?v=5'); lanTex.repeat.set(1 / LAN_N, 1);
   const lanMesh = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanTex, transparent: true, depthWrite: false }));
   lanMesh.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.03); lanMesh.visible = false; scene.add(lanMesh);
   // the lantern without its light (the power cut, the oden shut by its hours, or lanDark(k)): the same swing, unlit
@@ -7057,7 +7057,7 @@
   // back. Drawn a scene pixel at a time (crisp), on the glass only (its lattice and the window's mullion before him), the
   // leaf's wooden half before his legs; the street's night multiply on him as on the room. Reduced motion: he never comes
   const OMF = {"A":{"stand":[0,0,16,60,6,59],"w1":[17,0,33,59,14,58],"w2":[51,0,20,59,11,58],"w3":[72,0,27,59,11,58],"w4":[100,0,33,59,15,58],"w5":[134,0,18,59,9,58],"w6":[153,0,35,59,15,58],"laugh":[189,0,33,22,16,60],"offer":[223,0,30,22,14,60],"happy":[0,61,32,21,15,59],"idle":[33,61,33,21,16,59],"ladle":[67,61,33,21,17,59],"lift":[101,61,33,21,16,59],"pick":[135,61,33,21,17,59],"serve":[169,61,33,21,17,59],"wipe":[203,61,35,21,18,59],"wipe2":[0,83,31,21,14,59],"nod":[32,83,33,20,16,58],"z":47.1,"floor":659.59,"from":411.97,"at":473.42,"v":29.72},"D":{"stand2":[66,83,39,75,14,74],"grab":[106,83,34,74,8,73],"stand":[141,83,20,74,8,73],"stand_m":[162,83,20,74,11,73],"w1":[183,83,40,73,17,72],"w1_m":[0,159,40,73,22,72],"w2":[41,159,25,73,14,72],"w2_m":[67,159,25,73,10,72],"w3":[93,159,34,73,14,72],"w3_m":[128,159,34,73,19,72],"w4":[163,159,41,73,19,72],"w4_m":[205,159,41,73,21,72],"w5":[0,233,23,73,12,72],"w5_m":[24,233,23,73,10,72],"w6":[48,233,43,73,19,72],"w6_m":[92,233,43,73,23,72],"z":38.2,"floor":669.97,"from":391.12,"at":431.46,"look":445.29,"v":36.65},"step":0.17,"walk":["w1","w2","w3","w4","w5","w6"]};
-  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=2'; OMI.src = 'assets/oden_master.webp?v=5';
+  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=3'; OMI.src = 'assets/oden_master.webp?v=5';
   const ODOOR = (function () {                   // (drawn in one canvas over ODM.box, shown by two: the door's, the window's)
     const mk = (b, show) => {
       const c = document.createElement('canvas'); c.width = b[2]; c.height = b[3];

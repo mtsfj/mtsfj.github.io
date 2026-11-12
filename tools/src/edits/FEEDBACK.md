@@ -37,6 +37,14 @@ street. Read this before redrawing any zone; add to it after every review.
   their height follows the wall's perspective line.
 - **R16. Show options in the real street, from real references.** When a choice is open, put three or four options in
   the street at once (the owner picks in seconds), each grounded in what real places look like.
+- **R17. Check the draft object by object before integrating it.** A draft that drops, merges or swaps an object (a
+  glazed side door turned into more shutter, a slatted door into a western panel door, a sign's text wiped) is rejected,
+  not patched: no polygon or method brings back what the draft lost.
+- **R18. Blotches set the low-pass.** The painter's light is kept below a scale (`sigma`); it must be wider than the
+  noise it hides (Ichiraku's grain: 6; the oden's five-pixel blotches: 10) and narrower than the light's falloff.
+- **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
+  behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
+  one each time they move.
 
 ## Verdicts
 
@@ -55,3 +63,5 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Round lanterns with brackets, shading and a light pool | "les lanternes d'Ichiraku trop moches, remplace par une light normale" | A paper lantern drawn small never read well here | R14 |
 | 2026-11-12 | Five light options in the street (red barrel, square andon, white chōchin, red ball, wall lamps) | The wall lamps, "à paralléliser" (not mirrored: one wall) | The lanterns never sat well at this size; mirrored arms read as two walls | R14, R15, R16 |
 | 2026-11-12 | Four options over the door (wooden eave, steel vent hood, tiled roof, lit lattice transom) | V3, the lattice transom without an awning | The simplest, lit from inside like the shop | R16 |
+| 2026-11-12 | (my own review) Closed shops by the pole, cleaned from a draft | Not shown: the draft had turned the glazed side door into shutter, the slatted door into a panel door, wiped the sign | The draft changed what the objects are | R17 |
+| 2026-11-12 | Oden front: walls in dark planks, crisp noren, clean eave and door wood, open and shut | (awaiting) | Same defects as Ichiraku's front: blotches, a blurred noren | R2, R9, R13, R18, R19 |

@@ -1,0 +1,9 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is a 5 x 5 block). It shows the front of a small oden shop: a red noren curtain reading おでん hanging over a glass sliding door with a wooden lattice, a small warm lamp above the noren, a lit window on the right, a red paper lantern on the left, a lit roof signboard おでん at the top right, a wooden eave, a menu board standing at the bottom right, and the cherry tree's foliage at the top left.
+
+The walls and the eave are covered in random blotchy noise left by image generation. Clean them up and give the front a little depth, without exaggerating, keeping every element's place, size and shape, the framing and the perspective (the front runs toward a vanishing point far to the right):
+- the walls (the pillar left of the door and the wall under the window): clean dark weathered wood planks or plaster with a fine pixel-art texture, no random blotches; keep their light falloff and the warm light the windows cast on them;
+- the eave: a clean wooden eave with a slight thickness, its underside a little darker;
+- the noren: clean red cloth hanging in two panels with soft vertical folds, the characters おでん crisp in cream white, its bottom hem where it is now;
+- the lower wooden panels of the door: clean wood with a fine grain.
+
+Keep the lit door glass and its lattice, the lit window, the red paper lantern, the roof signboard, the menu board, the small lamps, the foliage, the building on the right, the pavement, the palette and the pixel size exactly as they are. Crisp pixel-art pixels. Do not add any object or text.
