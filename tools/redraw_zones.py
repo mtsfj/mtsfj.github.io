@@ -103,9 +103,9 @@ ZONES = {
     # the oden shop's front: its blotchy walls and eave cleaned (the painter's light, the drawing's planks), its noren
     # redrawn crisp; the glass of its door and window (tools/oden_interior.py), its roof light box (oden_sign_*), its
     # paper lantern left as they are (its frames and the door's sliding leaf carry the wall: oden_overlays). It shuts.
-    # the tobacco kiosk (the cabin behind its glass: tools/tabako_window.py, lit by its comp win_z7_kiosk): its shelves of
-    # packs, its notice and its coin tray made legible (the comp, lit), the same darkened under it (shut); the two enamel
-    # plates under the window, its pale ledge, its planks cleaned. Shut and power cut are the same layer here.
+    # the tobacco kiosk (the cabin behind its glass: tools/tabako_window.py, lit by its comp win_z7_kiosk; the draft was
+    # asked of it lit): the two enamel plates under the window, its pale ledge, its planks cleaned. Shut and power cut
+    # are the same layer here.
     # the Pokemon Center's ball sign (lit by its comp z4_emblem): a clean sphere, no outline (the owner: "si c'est une
     # sphère, il y a de l'ombre sur le côté, pas de contour"): the painter's dark rim around it gives way to the street
     # behind; the ball itself lit in the comp, the same darkened in the street (the sign off, the power cut)
@@ -122,8 +122,9 @@ ZONES = {
         dict(poly=[(229, 561), (277, 561), (277, 690), (229, 690)], method='detail', sigma=6.0, k=0.6,       # the planks
              cut=[[(229, 574), (271, 574), (271, 649), (229, 649)], [(229, 650), (267, 650), (267, 679), (229, 679)]]),
         dict(poly=[(229, 650), (267, 650), (267, 670), (229, 670)], method='hist'),                        # the plates
-        dict(poly=[(229, 670), (267, 670), (267, 679), (229, 679)], method='hist'),                        # the ledge
-        dict(poly=[(230, 575), (270, 575), (270, 648), (230, 648)], method='hist', lit=True, shut_k=0.6)]),   # the cabin, lit
+        dict(poly=[(229, 670), (267, 670), (267, 679), (229, 679)], method='hist')]),                      # the ledge
+        # (its lit cabin redrawn crisper was not kept: "je comprends pas ce qui a changé, je préfère l'ancien"; the
+        # cabin stays tools/tabako_window.py's, and other ways of it are shown in the street first)
     'oden': dict(box=(390, 462, 525, 690), scale=5, parts=[
         dict(poly=[(398, 537), (463, 537), (503, 548), (503, 664), (398, 684)], method='detail', sigma=10.0, k=0.7, unlit='lf_ratio',   # its walls, the door's wood
              # (sigma 10: its blotches are five pixels wide, wider than Ichiraku's grain; its light falls off over twenty)
