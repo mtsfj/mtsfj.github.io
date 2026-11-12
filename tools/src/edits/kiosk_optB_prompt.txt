@@ -1,0 +1,5 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is an 8 x 8 block). It shows the front of a small tobacco kiosk: dark blue horizontal planks, a window lit warm from inside, and under it two small enamel plates and a pale blue ledge.
+
+Redraw ONLY the inside of the lit window as a classic Showa-era tobacco shop service window: in its lower third, a low glass showcase counter lit from inside, with cigarette packs laid in neat rows under its glass (small colourful boxes: white, red, blue, gold); a small cash tray on top of the counter; above it the window's two glass panes in thin wooden frames, the right pane slid open; behind, dimmer shelves stacked with cartons, and the booth's left side wall lit orange. Clear, readable shapes at this pixel size.
+
+Keep the window's outer frame, its exact place and size, and everything outside the window (the planks, the plates, the ledge) exactly as they are. Keep the warm light, the palette and the pixel size. Crisp pixel-art pixels. Do not add any person or text.
