@@ -1688,40 +1688,6 @@
     m.position.set(x + 0.5, -(y + 0.5), 0.71); m.visible = reduced; scene.add(m); return m;
   });
 
-  // ---- the steam (meteo-02, meteo-09): the ramen vent's puffs. A puff is a whole-pixel blob
-  // (ventTex: three alpha steps, a 2 x 2 dither, a lumpy outline, a few rim pixels missing) lit by the street around it: its colour is
-  // read from the water's pass (WET.rt, the street as lit right now: its lights' states, the power cut, the red night) at its centre
-  // and a ring of taps round it, as the drips do; dark where nothing lights it, warm by a window, pink by a neon, red at its own
-  // luminance in the red night (nrSprite, as the drips); a mid light without the water's pass ----
-  const STEAM_VS = 'varying vec2 vUv; varying vec2 vC;\n'
-    + 'void main() { vUv = uv; vec4 c = modelMatrix * vec4(0.0, 0.0, 0.0, 1.0); vC = vec2(c.x, -c.y); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }';
-  const STEAM_FS = `uniform sampler2D map, tLight; uniform vec4 uCam; uniform float uLive, uOpacity; varying vec2 vUv; varying vec2 vC;
-    /*NRH*/
-    vec3 lt(vec2 p) { vec2 uv = vec2((p.x - uCam.x) / (uCam.y - uCam.x), (uCam.w - p.y) / (uCam.w - uCam.z)); return texture2D(tLight, clamp(uv, 0.001, 0.999)).rgb; }
-    void main() {
-      vec4 t = texture2D(map, vUv); if (t.a < 0.002) discard;
-      vec3 L = vec3(0.34);                       // the light on the puff: the street under its centre and the brightest of a ring round it (a window or a neon beside it lights it)
-      if (uLive > 0.5) {
-        vec3 h = max(max(lt(vC + vec2(6.0, 0.0)), lt(vC - vec2(6.0, 0.0))), max(lt(vC + vec2(0.0, 6.0)), lt(vC - vec2(0.0, 6.0))));
-        vec3 g = max(max(lt(vC + vec2(14.0, 0.0)), lt(vC - vec2(14.0, 0.0))), max(lt(vC + vec2(0.0, 14.0)), lt(vC - vec2(0.0, 14.0))));
-        L = max(lt(vC), max(0.85 * h, 0.7 * g));
-      }
-      float l = max(L.r, max(L.g, L.b));
-      vec3 c = t.rgb * mix(0.22, 1.2, smoothstep(0.03, 0.55, l)) * mix(vec3(1.0), L / max(l, 0.05), 0.6 * smoothstep(0.08, 0.45, l));   // dim in the dark, the colour of what lights it
-      gl_FragColor = vec4(nrSprite(c, vec2(0.0), 1.0), t.a * uOpacity);
-    }`;
-  const steamCam0 = new THREE.Vector4(0, IW, 0, IH);
-  function steamMat() {
-    const U = { map: { value: null }, uOpacity: { value: 0 },
-      tLight: { get value() { try { return WET.on && WET.rt ? WET.rt.texture : null; } catch (e) { return null; } } },
-      uCam: { get value() { try { return WET.mesh.material.uniforms.uCam.value; } catch (e) { return steamCam0; } } },
-      uLive: { get value() { try { return WET.on && WET.loaded >= 2 ? 1 : 0; } catch (e) { return 0; } } } };
-    const m = new THREE.ShaderMaterial({ uniforms: U, vertexShader: STEAM_VS, fragmentShader: STEAM_FS, transparent: true, depthWrite: false });
-    m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, NRU); sh.fragmentShader = sh.fragmentShader.replace('/*NRH*/', NR_HEAD); };
-    m.customProgramCacheKey = () => 'steam1';
-    return m;
-  }
-
   // fog: one soft blob texture shared by a haze over the far skyline and two mists drifting on the road
   const fogC = document.createElement('canvas'); fogC.width = fogC.height = 256;
   (function () { const g = fogC.getContext('2d'); const r = g.createRadialGradient(128, 128, 10, 128, 128, 126); r.addColorStop(0, 'rgba(180,170,215,.5)'); r.addColorStop(0.55, 'rgba(180,170,215,.24)'); r.addColorStop(1, 'rgba(180,170,215,0)'); g.fillStyle = r; g.fillRect(0, 0, 256, 256); })();
@@ -1741,7 +1707,7 @@
   station.position.set(MOONP.x + 0.62 * MOONP.s, -(MOONP.y + 0.38 * MOONP.s), -2.45); scene.add(station);
 
   // ---- the wind (meteo-11). Everything that moves in the wind reads gust.k: the rain's slant, stretch and gain, the lit rain, the
-  // drips' wind, the steams' drift, the oden lantern's push, Kirua's hair and hem, the tree's push, the mists' thinning, the water's
+  // drips' wind, the oden lantern's push, Kirua's hair and hem, the tree's push, the mists' thinning, the water's
   // ripples, the rain bed's swell, the OM flyer's drift. A gust has a shape (the tree's treeForce, as the air's own push): a small
   // pull back (0.25 s), the push (eased, 0.5 s), a hold that wavers (two slow sines and a flutter: the rain's slant hesitates), the
   // release (eased, 1.1 s). Three kinds: a shiver ('frisson', k 0.22-0.36, 1.2-1.8 s, often), a gust ('rafale', 0.6-1.0, 2-5 s), now
@@ -6561,29 +6527,7 @@
     LWM[1].material.opacity = k; LWM[1].visible = k > 0.004;
   }
 
-  // ---- life in the ramen shop: steam from the kitchen vent, and behind the lit glass under the noren the light
-  // breathes, the cook moves about, a customer leans over his bowl, the bowls steam ----
-  // the vent's puffs are whole-pixel blobs, not airbrush: three alpha steps (core, middle, rim) with a 2 x 2 ordered dither between
-  // them, a lumpy outline (three shapes) and a few rim pixels missing; one nearest-filtered texture per size (4-17 px) and shape
-  const ventTx = {};
-  function ventTex(v, D) {
-    const key = v * 32 + D; if (ventTx[key]) return ventTx[key];
-    const a = new Uint8Array(D * D * 4), c = (D - 1) / 2, B = [0, 2, 3, 1], S = [0.14, 0.25, 0.37];
-    for (let j = 0; j < D; j++) for (let i = 0; i < D; i++) {
-      const dx = i - c, dy = j - c, th = Math.atan2(dy, dx);
-      const q = Math.hypot(dx, dy) / (D / 2) / (1 + 0.16 * Math.sin(2 * th + 1.7 * v) + 0.1 * Math.sin(3 * th + 2.3 * v + 0.6)) + (B[(i & 1) + 2 * (j & 1)] - 1.5) * 0.06;
-      const s = q < 0.34 ? 2 : q < 0.62 ? 1 : q < 0.92 ? 0 : -1;
-      if (s < 0 || (s === 0 && D > 6 && (i * 7 + j * 3 + v * 5) % 10 < 3)) continue;   // outside, or a missing rim pixel
-      const o = ((D - 1 - j) * D + i) * 4; a[o] = 180; a[o + 1] = 170; a[o + 2] = 215; a[o + 3] = Math.round(S[s] * 255);
-    }
-    const t = new THREE.DataTexture(a, D, D, THREE.RGBAFormat); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true;
-    return (ventTx[key] = t);
-  }
-  const vent = [];
-  for (let i = 0; i < 12; i++) {
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), steamMat());   // (lit by the street: the steams' material)
-    m.position.z = 0.96; m.userData = { t: i * 0.3 + Math.random() * 0.2, dx: Math.random() }; scene.add(m); vent.push(m);
-  }
+  // ---- life in the ramen shop: behind the lit glass under the noren the light breathes, the cook moves about, a customer leans over his bowl, the bowls steam ----
   const RL = { x: 1150, y: 520, w: 80, h: 170, K: 1 };                         // (from the doors' upper panes, seen once the noren is in, to the counter's foot; a scene pixel a texel)
   const rlC = document.createElement('canvas'); rlC.width = RL.w * RL.K; rlC.height = RL.h * RL.K; const rlg = rlC.getContext('2d');
   const rlMask = new Image(); rlMask.src = 'assets/ramen_glass.webp?v=6';
@@ -6804,13 +6748,6 @@
     if (R.st === 'out') regWalk(R.X, R.Z, 1 - R.t / REG_OUT, L);
   }
   function stepRamen(dt, t) {
-    for (const m of vent) {                      // the vent: puffs rise, swell, drift left with the wind and fade
-      const u = m.userData; u.t += dt; if (u.t > 3.6) { u.t -= 3.6; u.dx = Math.random(); }
-      const k = u.t / 3.6, D = Math.round(4 + 13 * k), env = Math.round(6 * Math.sin(Math.PI * Math.min(1, k * 1.15))) / 6;   // whole pixels; it fades in steps
-      const cx = 1167 - 14 * k - (6 + 10 * gust.k) * k * k + Math.sin(t * 1.7 + u.dx * 6) * 1.2 * k, X = Math.round(cx - D / 2), Y = Math.round(476 - 44 * k - D / 2);
-      m.position.set(X + D / 2, -(Y + D / 2), 0.96); m.scale.set(D, D, 1); m.material.uniforms.map.value = ventTex(Math.floor(u.dx * 997) % 3, D);
-      m.material.uniforms.uOpacity.value = 0.42 * env * (0.75 + 0.25 * u.dx);
-    }
     stepTeuchi(dt, t); stepGuests(dt, t);
     if (RAM.dip <= 0 && Math.random() < dt * 0.08) RAM.dip = 0.09; RAM.dip = Math.max(0, RAM.dip - dt);
     for (const w of RAM.wisps) { w.t += dt; if (w.t > 2.6) { w.t = 0; w.s = (Math.random() * IRF.wisps.length) | 0; } }
@@ -6902,12 +6839,12 @@
   function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
   LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
-  const shopOff = addTex('assets/shop_off.webp?v=5', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
+  const shopOff = addTex('assets/shop_off.webp?v=6', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
   const IRA = { W: 1104, H: 504, cw: 48, ch: 84 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
-  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
+  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=3'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
   function irUV(m, x, y, w, h, AW, AH) {         // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = x / AW, u1 = (x + w) / AW, v0 = 1 - y / AH, v1 = 1 - (y + h) / AH;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
@@ -6958,7 +6895,6 @@
     shopOff.material.opacity = (1 - SHOP.k) * 0.88 * pz;                       // (its panes lit by the street: none with the zone's power out, the unlit street's own front then)
     rlMesh.material.opacity = SHOP.k;
     rlMesh.material.color.setRGB(0.1 + 0.9 * pz, 0.1 + 0.9 * pz, 0.15 + 0.85 * pz);   // (its people: in the dark with the zone's power out)
-    for (const m of vent) m.material.opacity *= 0.25 + 0.75 * SHOP.k;           // the kitchen rests too
     IRL.forEach((L, i) => {                                                      // the lanterns: their light, their swing
       const S = IR.l[i]; if (lW[i] !== S.on) { S.on = lW[i]; S.t = 0; } S.t += dt;
       const g = Math.floor(S.t / 0.07); L.lv = S.on ? (g < 4 ? IR_ON[g] : 1) : (g < 4 ? IR_OFF[g] : 0);
@@ -8557,7 +8493,7 @@
     const prog = renderer.properties.get(mat).currentProgram;
     if (!prog || (prog.diagnostics && !prog.diagnostics.runnable)) throw new Error('wet shader');
     scene.add(WET.mesh);
-    WET.hide = [rain, rain2, lcRain, lcPool, flyer, spill, fogs[1], fogs[2], fadeQuad].concat(vent, DRIP2.pools.map((q) => q.P));   // (the rain's rings: in the drips' pools)
+    WET.hide = [rain, rain2, lcRain, lcPool, flyer, spill, fogs[1], fogs[2], fadeQuad].concat(DRIP2.pools.map((q) => q.P));   // (the rain's rings: in the drips' pools)
     WET.on = true; wetResize(); window.addEventListener('resize', wetResize);
   }
   function wetResize() { WET.rt.setSize(Math.max(16, Math.round(view.w * WET.q)), Math.max(16, Math.round(view.h * WET.q))); }

@@ -3,7 +3,8 @@
 clean-3): each zone's model output (tools/src/edits/<zone>_model.webp, from <zone>_prompt.txt) is brought back to the
 painting's pixels and written as patches for tools/bake_retouches.py.
 
-    python3 tools/redraw_zones.py            writes tools/src/retouches/<zone>_{city,unlit}.webp (+ the neon's glow texture)
+    python3 tools/redraw_zones.py            writes tools/src/retouches/<zone>_{city,unlit}.webp, the neon's glow texture
+                                            and the closed shop's overlay (assets/shop_off.webp)
     python3 tools/redraw_zones.py --call Z   asks the model again for zone Z (OpenRouter, the key from the environment's
                                             vault or OPENROUTER_API_KEY), then rewrites everything; costs about 0.14 $
 
@@ -45,9 +46,21 @@ ZONES = {
     'ramen': dict(box=(1090, 290, 1300, 570), scale=5, parts=[
         dict(poly=[(1106, 393), (1278, 302), (1278, 402), (1106, 466)], method='direct', neon=True, emblem=(1129, 408, 11)),
         dict(poly=[(1119, 462), (1266, 407), (1266, 560), (1236, 560), (1236, 502), (1168, 502), (1168, 560), (1119, 560)],
-             method='detail', sigma=6.0, k=0.6, keep_lit=True,
-             fill=[[(1134, 426), (1166, 426), (1166, 506), (1134, 506)]])]),
+             method='detail', sigma=6.0, k=0.6,
+             fill=[[(1134, 426), (1166, 426), (1166, 506), (1134, 506)],          # the painted steam smear
+                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # two stray lit dashes on the plaster
+                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),
+    # Ichiraku's door, after the owner's second look: the vent box above it removed (the plaster runs on), the wooden
+    # eave over the curtain given depth (its thickness, its lit edge, its shadow). The doorway itself, its glass and its
+    # frame stay as painted: the closed shop's overlay (shop_off) and the life behind the glass are laid on them.
+    'door': dict(box=(1100, 390, 1280, 580), scale=5, parts=[
+        dict(poly=[(1132, 456), (1245, 414), (1245, 452), (1132, 477)], method='detail', sigma=6.0, k=0.6,
+             fill=[[(1132, 450), (1245, 410), (1245, 456), (1132, 480)]]),
+        dict(poly=[(1131, 476), (1240, 451), (1241, 468), (1133, 492)], method='direct')]),
 }
+SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448),
+                clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
+                lit_from='door', lit_part=1)                                   # the new eave's warm light, shut
 NEON_ZONE = 'ramen'
 NEON_OUT = os.path.join(ROOT, 'assets', 'ichiraku_neon_glow.webp')
 
@@ -94,9 +107,9 @@ def lowpass_filled(img, hole, sigma):
     return num / np.maximum(den, 1e-6)
 
 
-def zone(name, cfg):
+def zone(name, cfg, city, unlit):
     box = cfg['box']; x0, y0, x1, y1 = box; w, h = x1 - x0, y1 - y0
-    city0, unlit0 = load(os.path.join(EDITS, f'{name}_before_city.webp')), load(os.path.join(EDITS, f'{name}_before_unlit.webp'))
+    city0, unlit0 = city[y0:y1, x0:x1].copy(), unlit[y0:y1, x0:x1].copy()
     orig = city0[..., :3]
     e = np.array(Image.open(os.path.join(EDITS, f'{name}_model.webp')).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
     e = (e ** GAMMA) * 255.0
@@ -159,12 +172,8 @@ def zone(name, cfg):
             else:
                 new[m] = ec[m]; unew[m] = ec[m]
     print(f'{name}: registered dx={dx} dy={dy} (gradient correlation {corr:.2f}); pixels changed {int((np.abs(new - orig).sum(-1) > 0).sum())}')
-    city1, unlit1 = city0.copy(), unlit0.copy()
-    city1[..., :3], unlit1[..., :3] = new, unew
-    for tag, a in (('city', city1), ('unlit', unlit1)):
-        Image.fromarray(np.clip(np.round(a), 0, 255).astype(np.uint8), 'RGBA').save(
-            os.path.join(OUT, f'{name}_{tag}.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
-    return glow
+    city[y0:y1, x0:x1, :3], unlit[y0:y1, x0:x1, :3] = new, unew
+    return glow, masks
 
 
 def write_glow(glow, box):
@@ -198,14 +207,41 @@ def call(name):
     print(name, 'model answer saved; cost', d.get('usage', {}).get('cost'), '$')
 
 
+def shop_off(city, masks_by_zone):
+    """The closed shop's overlay (street.js: shopOff, laid over the street as the kitchen shuts): its old pixels on the
+    eave and the vent cleared, the new eave's warm light added as it looks shut (the wood without the shop's light)."""
+    c = SHOP_OFF; ax, ay = c['at']
+    so = load(os.path.join(EDITS, c['src'])); H, W = so.shape[:2]; box = (ax, ay, ax + W, ay + H)
+    so[poly_mask(c['clear'], box)] = 0
+    zb = ZONES[c['lit_from']]['box']; m = masks_by_zone[c['lit_from']][c['lit_part']]
+    full = np.zeros(city.shape[:2], bool); full[zb[1]:zb[3], zb[0]:zb[2]] = m
+    sub = full[ay:ay + H, ax:ax + W]; px = city[ay:ay + H, ax:ax + W, :3]
+    lit = sub & (px[..., 0] > px[..., 2] + 15) & (lum(px) > 40)
+    so[lit, :3] = px[lit] * np.array([0.42, 0.36, 0.42]); so[lit, 3] = 255
+    Image.fromarray(np.clip(np.round(so), 0, 255).astype(np.uint8), 'RGBA').save(
+        os.path.join(ROOT, 'assets', c['out']), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    print('shop_off: cleared the old eave and vent, the new eave shut:', int(lit.sum()), 'px')
+
+
 def main():
     if '--call' in sys.argv: call(sys.argv[sys.argv.index('--call') + 1])
     os.makedirs(OUT, exist_ok=True)
-    for name, cfg in ZONES.items():
-        glow = zone(name, cfg)
+    city = load(os.path.join(ROOT, 'assets', 'layer_city_off.webp')); unlit = load(os.path.join(ROOT, 'assets', 'street_unlit.webp'))
+    for name, cfg in ZONES.items():                # the painter's own pixels back in every zone first
+        x0, y0, x1, y1 = cfg['box']
+        city[y0:y1, x0:x1] = load(os.path.join(EDITS, f'{name}_before_city.webp'))
+        unlit[y0:y1, x0:x1] = load(os.path.join(EDITS, f'{name}_before_unlit.webp'))
+    masks_by_zone = {}
+    for name, cfg in ZONES.items():                # then the zones, in order: each sees the ones before it
+        glow, masks = zone(name, cfg, city, unlit); masks_by_zone[name] = masks
         if name == NEON_ZONE and glow is not None:
-            pos = write_glow(glow, cfg['box'])
-            json.dump(pos, open(os.path.join(EDITS, 'neon_glow_box.json'), 'w'))
+            json.dump(write_glow(glow, cfg['box']), open(os.path.join(EDITS, 'neon_glow_box.json'), 'w'))
+    for name, cfg in ZONES.items():                # the patches, cut from the finished layers (any order lays the same)
+        x0, y0, x1, y1 = cfg['box']
+        for tag, a in (('city', city), ('unlit', unlit)):
+            Image.fromarray(np.clip(np.round(a[y0:y1, x0:x1]), 0, 255).astype(np.uint8), 'RGBA').save(
+                os.path.join(OUT, f'{name}_{tag}.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    shop_off(city, masks_by_zone)
 
 
 if __name__ == '__main__':

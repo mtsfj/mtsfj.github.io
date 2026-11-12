@@ -1,0 +1,7 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is a 5 x 5 block). It shows the lower front of a small ramen shop: a dark plaster wall, a dark louvred vent box above the door, then a wooden slatted eave above a red curtain (noren) and a warmly lit doorway with a wooden frame.
+
+Edit it as follows, keeping the framing, the street perspective (horizontal lines slope down toward the left, toward a vanishing point far to the left), the dark night palette and the pixel size:
+1. Remove the louvred vent box above the door entirely: the dark plaster wall simply continues there, with the same clean texture.
+2. Make the wooden storefront stand out a little in 3D, without exaggerating: the slatted wooden eave above the curtain gets a visible thickness, its top edges catching the warm light from below, and a soft shadow underneath; the wooden door frame and posts get a slight relief (a lit edge on one side, a darker side on the other), with fine wood grain.
+
+Keep the curtain, the lit doorway, its warm light, the wall and everything else exactly as they are. Crisp pixel-art pixels. Do not add any new object or text.
