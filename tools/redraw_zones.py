@@ -20,6 +20,7 @@ from layers already edited, so a second run writes the same bytes. Per zone:
             `fill`, which are filled from around them: what is removed there, like a smear, leaves no light behind) carry
             the model's fine structure (its luminance minus its own low frequencies, times K) in the painter's hue;
             `keep_lit` keeps the painter's crisp lit strokes as painted;
+    copy    the painter's own pixels from beside (`src`: dx, dy), to continue a pavement where an object stood;
     direct  the model's pixels, their global tint brought back to the painting's (a per-channel line fitted on the
             surroundings); with `neon` they are split into the board as it is unlit (the base, in both layers) and the
             light the tubes add (the glow texture, additive, which street.js switches with the shop, the power and the
@@ -42,6 +43,7 @@ GAMMA = 2.0
 MODEL = 'google/gemini-3-pro-image'
 
 ODEN_LANTERN = dict(warm=(398, 536, 424, 573))                    # the oden's paper lantern at rest (it swings: oden_lantern*)
+ODEN_UNDER_BOX = [(468, 661), (485, 661), (485, 670), (468, 670)]   # the pavement under the box removed from the oden's front
 ODEN_KEEP = [ODEN_LANTERN, dict(rect=(409, 536, 412, 542)),          # and its hook
              dict(rect=(424, 579, 460, 620)), dict(rect=(467, 564, 495, 619))]   # the door's and the window's glass (oden_interior)
 ODEN_BOARD = [(475, 482), (510, 482), (510, 540), (475, 528)]       # its roof light box (oden_sign_*: the light it loses, exact)
@@ -92,8 +94,12 @@ ZONES = {
     'oden': dict(box=(390, 462, 525, 690), scale=5, parts=[
         dict(poly=[(398, 537), (463, 537), (503, 548), (503, 664), (398, 684)], method='detail', sigma=10.0, k=0.7, unlit='lf_ratio',   # its walls, the door's wood
              # (sigma 10: its blotches are five pixels wide, wider than Ichiraku's grain; its light falls off over twenty)
-             keep=ODEN_KEEP + [dict(warm=(463, 538, 500, 562)),                                  # the two lamps over the window
-                               dict(rect=(469, 630, 482, 667)), dict(warm=(482, 628, 502, 640))]),   # the menu board (square), the red lights by it
+             keep=ODEN_KEEP + [dict(warm=(463, 538, 500, 562))],                                 # the two lamps over the window
+             # the box under the window (two stacked capsule machines or a menu? unreadable at 12 x 36 px, "les boîtes aux
+             # lettres") and the two red dots by it go (R7): the planks run down to the pavement
+             erase=[[(468, 628), (484, 628), (484, 660), (468, 660)], [(483, 628), (502, 628), (502, 640), (483, 640)]],
+             cut=[ODEN_UNDER_BOX]),                                   # (the wall's foot there is at y 660: the box stood on the pavement)
+        dict(poly=ODEN_UNDER_BOX, method='copy', src=(17, 0)),       # the pavement it stood on: the pavement beside it, same rows
         dict(poly=[(420, 507), (465, 507), (465, 521), (514, 531), (514, 553), (463, 541), (420, 537)], method='detail',
              sigma=4.0, k=0.8, unlit='lf_ratio', feather=3, cut=[ODEN_BOARD],                # the eave, faded into the roof
              keep=[dict(warm=(436, 519, 457, 540))]),                                           # (the lamp over the noren)
@@ -202,8 +208,13 @@ def zone(name, cfg, city, unlit):
                 m &= ~(warm & ((Lo - gaussian_filter(Lo, 2.0)) > 4))
             hole = keep.copy()                     # (what is kept, a lantern or a lit pane, lends the wall none of its light)
             for q in p.get('fill', []): hole |= poly_mask(q, box)
+            er = np.zeros_like(m)                  # `erase`: an object removed, the wall continued through it: no light
+            for q in p.get('erase', []): er |= poly_mask(q, box)   # of its own, and the drawing's planks run down
+            hole |= er                             # over it from the rows above (the draft drew the object there too)
             lf = lowpass_filled(orig, hole, p['sigma'])
             le = lum(e)
+            for x in np.nonzero(er.any(0))[0]:
+                ys = np.nonzero(er[:, x])[0]; le[ys, x] = le[max(ys[0] - 1, 0), x]
             if keep.any():                         # the draft's own drawing of what is kept (a bright lamp, a pane) filled
                 he = binary_dilation(keep, iterations=2)   # from around, else its edge rings dark on the wall beside it
                 le = np.where(he, lowpass_filled(np.repeat(le[..., None], 3, -1), he, 2.0)[..., 0], le)
@@ -212,7 +223,10 @@ def zone(name, cfg, city, unlit):
             ratio = (out + 1.0) / (orig + 1.0)
             ul = unlit0[..., :3]
             if p.get('unlit') == 'lf_ratio':           # the painter's darkening, smoothed (a ratio pixel by pixel blows up
-                dark = np.stack([(gaussian_filter(ul[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
+                if er.any():                       # (an erased object's own darkening left out, and all but this wall's)
+                    dh = ~(m & ~er); dark = (lowpass_filled(ul, dh, 4.0) + 1.0) / (lowpass_filled(orig, dh, 4.0) + 1.0)
+                else:
+                    dark = np.stack([(gaussian_filter(ul[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
                 new[m] = out[m]; unew[m] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[m]   # where a blotch was black)
             elif hole.any():                       # where the smear was, the unlit layer is rebuilt the same way
                 ulf = lowpass_filled(ul, hole, p['sigma'])
@@ -252,6 +266,9 @@ def zone(name, cfg, city, unlit):
                 new[m] = ec[m]; unew[m] = np.clip(ec * np.clip(dark, 0, 1.5), 0, 255)[m]
             else:
                 new[m] = ec[m]; unew[m] = ec[m]
+        elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
+            sx, sy = p['src']
+            new[m] = np.roll(np.roll(orig, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(unlit0[..., :3], -sy, 0), -sx, 1)[m]
         if p.get('feather'):                       # its edge on the old painting: a ramp over `feather` pixels, no seam
             from scipy.ndimage import distance_transform_edt
             wgt = np.clip(distance_transform_edt(poly_mask(p['poly'], box)) / p['feather'], 0, 1)[..., None]
