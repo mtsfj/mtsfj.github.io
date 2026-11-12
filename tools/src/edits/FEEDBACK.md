@@ -46,6 +46,9 @@ street. Read this before redrawing any zone; add to it after every review.
   a square of grain on the clean wall. Keep the object's own pixels (its lit paper and its outline), clean the wall up
   to it, leave the object out of the light taken from the painting and out of the drawing's detail (else it rings dark
   around it), and fade a part's edge into the old painting over a few pixels.
+- **R21. A draft may slide what is next to an ambiguous edge.** Crop the draft's input away from what it cannot read
+  (a pole in front, a neighbour's sign), check the draft's columns against the painting's, and register over a wider
+  reach with the edges held (never wrapped round) when it moved the whole.
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
@@ -75,4 +78,6 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | (draft) the Pokemon Center's ball sign, a first draft with a dark outline | "évite les contours : si c'est une sphère, il y a de l'ombre sur le côté, pas de contour" | An outline makes a sticker; a sphere turns into shadow at its edge | R12 |
 | 2026-11-12 | Pokemon Center's ball sign redrawn as a sphere, no outline: shaded to its edge, red and white fitted apart, the button glowing as the painter's | (awaiting) | A fit over the whole ball pinked its white; the painter's light (detail) brought the outline back; the drawing's sphere plus the painter's glow kept both | R12 |
 | 2026-11-12 | Tobacco kiosk's planks above the sign, cleaned to the roof (the wall whole, R9); the neighbour's lines left whole | (awaiting) | A zone's edge across a thin line cuts it: keep the edge off lines that run on | R9 |
+| 2026-11-12 | The pink-lit doorway by the pole: awning, arched transom, sidelight, paneled door, plaque and slot cleaned | (awaiting) | The first draft turned the pole's sign into slats and slid the door 5 px: cropped right of the pole, registered 4 px | R17, R21 |
+| 2026-11-12 | Tobacco kiosk's lit cabin redrawn (packs crisper) | "bizarre la caisse du soda shop, je comprends pas ce qui a changé, je préfère l'ancien ; essaie d'autres variantes" | A change too faint to read reads as a mistake: either clearly better or left as painted | R16 |
 

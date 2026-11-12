@@ -88,6 +88,12 @@ ZONES = {
         dict(poly=[(1118, 556), (1157, 556), (1157, 729), (1118, 729)], method='detail', sigma=6.0, k=0.6,
              cut=[[(1125, 573), (1155, 573), (1155, 651), (1125, 651)]]),
         dict(poly=[(1232, 556), (1267, 556), (1267, 731), (1232, 731)], method='detail', sigma=6.0, k=0.6)]),
+    # the narrow doorway left of Ichiraku, lit pink from the left (its awning, its arched transom and its lamp, its
+    # paneled door, plaque and letter slot, its slatted wall, its step) cleaned in the painter's light; the pole and
+    # its sign in front (x < 1066) left out (the draft had made them a slatted wall). Its box overlaps Ichiraku's zones:
+    # its before crops hold the painter's pixels there (theirs), and it runs after them
+    'pinkdoor': dict(box=(1064, 470, 1110, 735), scale=5, reach=7, parts=[   # (the drawing set it 4 px left)
+        dict(poly=[(1066, 470), (1110, 470), (1110, 735), (1066, 735)], method='detail', sigma=4.0, k=0.8, unlit='lf_ratio')]),
     # the karate dojo at the street's left edge: its noren (four indigo panels on a rod), its shoji's lattice, its
     # signboard 心源流, its plaster strip and kick-panels, all cleaned of their grain. The dojo shuts by the hour (street.js
     # HRS: the unlit layer shown over it), so the unlit layer gets the new picture darkened as the painter darkened his.
@@ -176,11 +182,17 @@ def grad(z):
     return np.hypot(gx, gy)
 
 
-def register(e, orig, ref):
+def shift(a, dy, dx):
+    """a moved by (dy, dx), its edge pixels repeated into what it uncovers (not wrapped round)."""
+    h, w = a.shape[:2]; yi = np.clip(np.arange(h) - dy, 0, h - 1); xi = np.clip(np.arange(w) - dx, 0, w - 1)
+    return a[yi][:, xi]
+
+
+def register(e, orig, ref, reach=4):
     go = grad(orig); go = (go - go[ref].mean()) / (go[ref].std() + 1e-6); best = None
-    for dy in range(-4, 5):
-        for dx in range(-4, 5):
-            g = grad(np.roll(np.roll(e, dy, 0), dx, 1)); g = (g - g[ref].mean()) / (g[ref].std() + 1e-6)
+    for dy in range(-reach, reach + 1):
+        for dx in range(-reach, reach + 1):
+            g = grad(shift(e, dy, dx)); g = (g - g[ref].mean()) / (g[ref].std() + 1e-6)
             c = (g[ref] * go[ref]).mean()
             if best is None or c > best[0]: best = (c, dx, dy)
     return best
@@ -224,8 +236,10 @@ def zone(name, cfg, city, unlit):
     allm = np.any(masks, 0); ref = ~binary_dilation(allm, iterations=3); ref[:6] = ref[-6:] = False; ref[:, :6] = ref[:, -6:] = False
     if ref.sum() < 200:                        # (a zone redrawn whole: registered on all of it, its margins aside)
         ref = np.zeros_like(allm); ref[6:-6, 6:-6] = True
-    corr, dx, dy = register(e, on if on is not None else orig, ref)
-    e = np.roll(np.roll(e, dy, 0), dx, 1)
+    if cfg.get('reg'):                         # (`reg`: where the drawing and the painting match, to register on)
+        ref = poly_mask(cfg['reg'], box)
+    corr, dx, dy = register(e, on if on is not None else orig, ref, cfg.get('reach', 4))
+    e = shift(e, dy, dx)
     new, unew = orig.copy(), unlit0[..., :3].copy()
     glow = None
     for p, m, keep in zip(cfg['parts'], masks, keeps):
