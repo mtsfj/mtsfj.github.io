@@ -6842,9 +6842,9 @@
   const shopOff = addTex('assets/shop_off.webp?v=6', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
-  const IRA = { W: 1104, H: 504, cw: 48, ch: 84 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows
+  const IRA = { W: 1472, H: 600, cw: 64, ch: 100 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows (tools/redraw_lanterns.py)
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
-  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=3'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
+  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=6'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
   function irUV(m, x, y, w, h, AW, AH) {         // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = x / AW, u1 = (x + w) / AW, v0 = 1 - y / AH, v1 = 1 - (y + h) / AH;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
@@ -6854,7 +6854,7 @@
     m.position.set(box[0] + box[2] / 2, -(box[1] + box[3] / 2), z); scene.add(m); return m;
   }
   // the lanterns, left (shorter: quicker) and right, each its rows in the atlas (base, lit, glow) and its own pendulum (W rad/s)
-  const IRL = [{ row: 0, box: [1118, 491, 38, 66], W: 4.9 }, { row: 3, box: [1223, 460, 48, 84], W: 4.2 }].map((L) =>
+  const IRL = [{ row: 0, box: [1110, 491, 54, 80], W: 4.9 }, { row: 3, box: [1215, 460, 64, 100], W: 4.2 }].map((L) =>
     Object.assign(L, { a: 0, v: 0, eddy: 0, et: 0, f: -1, lv: 1, m: [0, 1, 2].map((r) => irMesh(irLanTex, L.box, 0.5 + 0.0002 * r, r === 2)) }));
   // the noren: base | lit, at rest and three lifts; taken in (hidden) at closing, hung out in the morning
   const IRNR = { box: [1155, 500, 79, 104], AW: 316, AH: 208, f: -1, m: [0, 1].map((r) => irMesh(irNorTex, [1155, 500, 79, 104], 0.5 + 0.0002 * r, false)) };

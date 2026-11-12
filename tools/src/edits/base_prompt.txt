@@ -1,0 +1,5 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is a 5 x 5 block). It shows the lower front of a small ramen shop: a dark plaster wall on both sides of a lit doorway, a wooden menu board on the left wall, down to the pavement.
+
+The wall on both sides of the doorway is covered in random speckle noise left by image generation, while the wall above it has already been cleaned. Clean only that wall: a clean, fine dark plaster with subtle pixel-art dithering, the same dark blue tone and the same light falloff (the warm glow near the doorway), continuous with the clean wall above, down to where it meets the pavement.
+
+Keep the wooden menu board and its poster, the doorway, its frame, its glass, the people and the light inside, the red curtain, the pavement and everything else exactly as they are. Same framing, perspective, palette and pixel size, crisp pixel-art pixels. Do not add any object or text.

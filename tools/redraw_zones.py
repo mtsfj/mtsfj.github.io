@@ -48,8 +48,8 @@ ZONES = {
         dict(poly=[(1119, 462), (1266, 407), (1266, 560), (1236, 560), (1236, 502), (1168, 502), (1168, 560), (1119, 560)],
              method='detail', sigma=6.0, k=0.6,
              fill=[[(1134, 426), (1166, 426), (1166, 506), (1134, 506)],          # the painted steam smear
-                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # two stray lit dashes on the plaster
-                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),
+                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # the lanterns' brackets, drawn again
+                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),       # below (BRACKETS), cleaner
     # Ichiraku's door, after the owner's second look: the vent box above it removed (the plaster runs on), the wooden
     # eave over the curtain given depth (its thickness, its lit edge, its shadow). The doorway itself, its glass and its
     # frame stay as painted: the closed shop's overlay (shop_off) and the life behind the glass are laid on them.
@@ -57,7 +57,29 @@ ZONES = {
         dict(poly=[(1132, 456), (1245, 414), (1245, 452), (1132, 477)], method='detail', sigma=6.0, k=0.6,
              fill=[[(1132, 450), (1245, 410), (1245, 456), (1132, 480)]]),
         dict(poly=[(1131, 476), (1240, 451), (1241, 468), (1133, 492)], method='direct')]),
+    # the plaster below, on both sides of the door, down to the pavement (the owner: the bottom was all grain, the top
+    # clean; one wall, one finish). The menu board and its frame stay as painted (Luffy's posters are laid in it).
+    'base': dict(box=(1100, 530, 1280, 740), scale=5, parts=[
+        dict(poly=[(1118, 556), (1157, 556), (1157, 729), (1118, 729)], method='detail', sigma=6.0, k=0.6,
+             cut=[[(1125, 573), (1155, 573), (1155, 651), (1125, 651)]]),
+        dict(poly=[(1232, 556), (1267, 556), (1267, 731), (1232, 731)], method='detail', sigma=6.0, k=0.6)]),
 }
+# What the lanterns hang from (the owner: they floated, as if behind the facade; the two lit dashes taken for strays
+# were their brackets). The left one hangs under the end of the wooden eave: its cord goes on up to the eave. The right
+# one, past the eave, from an iron bracket: a plate on the wall, an arm over the hook, a drop to it. street.js IRL: the
+# hooks at 1136.5, 496 and 1246.5, 465. Drawn after the zones, in both layers (iron does not need the power).
+IRON, IRON_EDGE = np.array([22.0, 20.0, 26.0]), np.array([78.0, 70.0, 84.0])
+
+
+def brackets(city, unlit):
+    for a in (city, unlit):
+        for y in range(489, 496): a[y, 1136, :3] = IRON                  # the left cord, on up to the eave's underside
+        a[456:463, 1254:1256, :3] = IRON; a[456:463, 1254, :3] = IRON_EDGE   # the plate on the wall, its lit side
+        a[458, 1246:1254, :3] = IRON_EDGE; a[459, 1246:1254, :3] = IRON  # the arm, its top catching the light
+        for y in range(460, 465): a[y, 1246, :3] = IRON                  # the drop to the hook
+    print('lantern hangings drawn: the left cord to the eave, the right bracket')
+
+
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448),
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
                 lit_from='door', lit_part=1)                                   # the new eave's warm light, shut
@@ -113,7 +135,11 @@ def zone(name, cfg, city, unlit):
     orig = city0[..., :3]
     e = np.array(Image.open(os.path.join(EDITS, f'{name}_model.webp')).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
     e = (e ** GAMMA) * 255.0
-    masks = [poly_mask(p['poly'], box) for p in cfg['parts']]
+    masks = []
+    for p in cfg['parts']:
+        m = poly_mask(p['poly'], box)
+        for q in p.get('cut', []): m &= ~poly_mask(q, box)
+        masks.append(m)
     allm = np.any(masks, 0); ref = ~binary_dilation(allm, iterations=3); ref[:6] = ref[-6:] = False; ref[:, :6] = ref[:, -6:] = False
     corr, dx, dy = register(e, orig, ref)
     e = np.roll(np.roll(e, dy, 0), dx, 1)
@@ -236,6 +262,7 @@ def main():
         glow, masks = zone(name, cfg, city, unlit); masks_by_zone[name] = masks
         if name == NEON_ZONE and glow is not None:
             json.dump(write_glow(glow, cfg['box']), open(os.path.join(EDITS, 'neon_glow_box.json'), 'w'))
+    brackets(city, unlit)
     for name, cfg in ZONES.items():                # the patches, cut from the finished layers (any order lays the same)
         x0, y0, x1, y1 = cfg['box']
         for tag, a in (('city', city), ('unlit', unlit)):
