@@ -1,0 +1,10 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is an 8 x 8 block). It shows a shop sign shaped like a capsule ball, at the corner of a shop, lit from inside: red top half, white bottom half, a dark band across the middle and a glowing pale blue button in the centre. Behind it: the shop's red sign band running diagonally and the dark grey building.
+
+Its surfaces are covered in blotchy noise left by image generation. Redraw it clean as a real sphere, keeping exactly its place, its size and the framing:
+- NO outline anywhere around the ball: its silhouette comes only from shading. Like a lit sphere, it is brightest a little above and right of centre and turns darker toward its edge, darkest along the lower left where it turns away from the light; the background shows right up to its edge;
+- the red top half smooth and glossy, with one small soft highlight at the upper right;
+- the white bottom half smooth, shaded the same way (light grey to bluish grey toward the lower left edge);
+- the dark band across the middle following the sphere's curve (slightly bowed), thinner toward the edges;
+- the central button: a narrow dark ring around a glowing pale blue-white disc, brightest in its centre, a soft glow around it.
+
+Keep the red sign band, the building, the background, the palette and the pixel size exactly as they are. Crisp pixel-art pixels. Do not add any object or text.

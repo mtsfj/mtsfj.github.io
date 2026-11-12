@@ -44,6 +44,11 @@ GAMMA = 2.0
 MODEL = 'google/gemini-3-pro-image'
 
 ODEN_LANTERN = dict(warm=(398, 536, 424, 573))                    # the oden's paper lantern at rest (it swings: oden_lantern*)
+def circle(cx, cy, r, n=48):
+    """A round polygon (a sign seen face on)."""
+    return [(cx + r * np.cos(2 * np.pi * i / n), cy + r * np.sin(2 * np.pi * i / n)) for i in range(n)]
+
+
 ODEN_UNDER_BOX = [(468, 661), (485, 661), (485, 670), (468, 670)]   # the pavement under the box removed from the oden's front
 ODEN_KEEP = [ODEN_LANTERN, dict(rect=(409, 536, 412, 542)),          # and its hook
              dict(rect=(424, 579, 460, 620)), dict(rect=(467, 564, 495, 619))]   # the door's and the window's glass (oden_interior)
@@ -95,6 +100,13 @@ ZONES = {
     # the tobacco kiosk (the cabin behind its glass: tools/tabako_window.py, lit by its comp win_z7_kiosk): its shelves of
     # packs, its notice and its coin tray made legible (the comp, lit), the same darkened under it (shut); the two enamel
     # plates under the window, its pale ledge, its planks cleaned. Shut and power cut are the same layer here.
+    # the Pokemon Center's ball sign (lit by its comp z4_emblem): a clean sphere, no outline (the owner: "si c'est une
+    # sphère, il y a de l'ombre sur le côté, pas de contour"): the painter's dark rim around it gives way to the street
+    # behind; the ball itself lit in the comp, the same darkened in the street (the sign off, the power cut)
+    'pokeball': dict(box=(838, 440, 912, 510), scale=8, comp=('z4_emblem', (849, 450)), despeckle=30, parts=[
+        dict(poly=circle(870.5, 470.5, 25), method='direct', unlit='lf_ratio', outside_comp=True),   # the rim, gone
+        dict(poly=circle(870.5, 470.5, 25), method='direct', fit='self_red', glow=(871.0, 470.5, 9.0), lit=True, cover=1)]),
+        # the ball, lit: the drawing's sphere in the painter's colours, its button glowing as the painter's did
     'kiosk': dict(box=(224, 560, 280, 690), scale=8, comp=('win_z7_kiosk', (230, 575)), parts=[
         dict(poly=[(229, 561), (277, 561), (277, 690), (229, 690)], method='detail', sigma=6.0, k=0.6,       # the planks
              cut=[[(229, 574), (271, 574), (271, 649), (229, 649)], [(229, 650), (267, 650), (267, 679), (229, 679)]]),
@@ -200,6 +212,10 @@ def zone(name, cfg, city, unlit):
         csl = (slice(cy - y0, cy - y0 + ch), slice(cx - x0, cx - x0 + cw)); ca = cb[..., 3:4] / 255.0
         on = orig.copy(); on[csl] = on[csl] * (1 - ca) + cb[..., :3] * ca
         cin = np.zeros((h, w), bool); cin[csl] = cb[..., 3] > 0
+        cov = cin.copy(); grow = max([q.get('cover', 0) for q in cfg['parts']] + [0])
+        if grow:                                   # (`cover`: the lit area grown by that many pixels, inside the comp's box:
+            cbox = np.zeros_like(cin); cbox[csl] = True   # the redrawn sign's own edge lit with it, not left in the street)
+            cov = binary_dilation(cin, iterations=grow) & cbox
     allm = np.any(masks, 0); ref = ~binary_dilation(allm, iterations=3); ref[:6] = ref[-6:] = False; ref[:, :6] = ref[:, -6:] = False
     if ref.sum() < 200:                        # (a zone redrawn whole: registered on all of it, its margins aside)
         ref = np.zeros_like(allm); ref[6:-6, 6:-6] = True
@@ -210,7 +226,8 @@ def zone(name, cfg, city, unlit):
     for p, m, keep in zip(cfg['parts'], masks, keeps):
         pn, pu = new.copy(), unew.copy()           # (what the part is laid over: its feathered edge fades into it)
         is_lit = bool(p.get('lit')) and on is not None
-        if is_lit: m = m & cin                       # (a lit part: the comp's pixels, taken lit)
+        if is_lit: m = m & cov                       # (a lit part: the comp's pixels, taken lit)
+        if p.get('outside_comp') and on is not None: m = m & ~cov   # (the street around a lit sign, not the sign)
         O = on if is_lit else orig
         if p['method'] == 'hist':
             out = O.copy()
@@ -258,8 +275,22 @@ def zone(name, cfg, city, unlit):
             else:
                 new[m] = out[m]; unew[m] = np.clip(ul * ratio, 0, 255)[m]
         elif p['method'] == 'direct':
-            A = [np.polyfit(e[..., c][ref], O[..., c][ref], 1) for c in range(3)]
-            ec = np.stack([np.clip(A[c][0] * e[..., c] + A[c][1], 0, 255) for c in range(3)], -1)
+            fit = m if p.get('fit') in ('self', 'self_red') else ref   # (`fit='self'`: the tint fitted on the part
+            A = [np.polyfit(e[..., c][fit], O[..., c][fit], 1) for c in range(3)]   # itself, a sign's colours on the
+            ec = np.stack([np.clip(A[c][0] * e[..., c] + A[c][1], 0, 255) for c in range(3)], -1)   # painter's own;
+            if p.get('fit') == 'self_red':         # 'self_red': its red and its other colours fitted apart, so a white
+                rd = (e[..., 0] > 1.4 * e[..., 1]) & (e[..., 0] > 40)   # half keeps the painter's white, not a pink)
+                for grp in (rd, ~rd):
+                    g = m & grp
+                    if g.sum() < 20: continue
+                    Ag = [np.polyfit(e[..., c][g], O[..., c][g], 1) for c in range(3)]
+                    eg = np.stack([np.clip(Ag[c][0] * e[..., c] + Ag[c][1], 0, 255) for c in range(3)], -1)
+                    ec[grp] = eg[grp]
+            if p.get('glow'):                      # (`glow`: x, y, r: the painter's light there, where brighter, given back
+                gx, gy, gr = p['glow']; yy, xx = np.mgrid[y0:y1, x0:x1]   # to the drawing, fading out to r: a lit button)
+                wgt = np.clip(1 - np.hypot(xx + 0.5 - gx, yy + 0.5 - gy) / gr, 0, 1)[..., None]
+                gl = np.stack([gaussian_filter(O[..., c], 1.5) - gaussian_filter(ec[..., c], 1.5) for c in range(3)], -1)
+                ec = np.clip(ec + wgt * np.clip(gl, 0, 255), 0, 255)
             if p.get('neon'):
                 # the tubes and their light: warm, saturated, brighter than the board around them
                 L = lum(ec); sat = ec.max(-1) - ec.min(-1)
@@ -297,14 +328,23 @@ def zone(name, cfg, city, unlit):
             new[m] = (wgt * new + (1 - wgt) * pn)[m]; unew[m] = (wgt * unew + (1 - wgt) * pu)[m]
         if is_lit:                                 # the new lit picture goes to the comp; the street under it (the window
             litp = new.copy()                      # shut) the same picture darkened as the painter's shut one, channel by
-            dark = np.stack([(gaussian_filter(orig[..., c], 2.0) + 1.0) / (gaussian_filter(on[..., c], 2.0) + 1.0) for c in range(3)], -1)
+            if p.get('cover'):                     # (the grown edge: the darkening carried out from the old lit area)
+                dark = (lowpass_filled(orig, ~cin, 2.0) + 1.0) / (lowpass_filled(on, ~cin, 2.0) + 1.0)
+            else:
+                dark = np.stack([(gaussian_filter(orig[..., c], 2.0) + 1.0) / (gaussian_filter(on[..., c], 2.0) + 1.0) for c in range(3)], -1)
             offp = np.clip(litp * np.clip(dark, 0, 1.5), 0, 255)   # channel; behind shut glass its detail as soft as
             if p.get('shut_k', 1.0) != 1.0:        # the painter's there (shut_k: the share of it kept)
                 olf = np.stack([gaussian_filter(offp[..., c], 3.0) for c in range(3)], -1)
                 offp = np.clip(olf + p['shut_k'] * (offp - olf), 0, 255)
             comp = COMP_OUT.setdefault(name, [cname, cb.copy(), csl])[1]
-            sub = m[csl]; comp[..., :3][sub] = litp[csl][sub]
+            sub = m[csl]; comp[..., :3][sub] = litp[csl][sub]; comp[..., 3][sub] = 255
             new[m] = offp[m]; unew[m] = np.clip(unlit0[..., :3] * (offp + 1.0) / (orig + 1.0), 0, 255)[m]
+    if cfg.get('despeckle'):                   # (`despeckle` on the zone: what its parts laid side by side left as a lone
+        from scipy.ndimage import median_filter   # bright pixel, the street's and the power cut's, takes its neighbours')
+        done = np.any(masks, 0) | (cov if on is not None else False)
+        for arr in (new, unew):
+            med = np.stack([median_filter(arr[..., c], size=3) for c in range(3)], -1)
+            spk = done & ((lum(arr) - lum(med)) > cfg['despeckle']); arr[spk] = med[spk]
     print(f'{name}: registered dx={dx} dy={dy} (gradient correlation {corr:.2f}); pixels changed {int((np.abs(new - orig).sum(-1) > 0).sum())}')
     city[y0:y1, x0:x1, :3], unlit[y0:y1, x0:x1, :3] = new, unew
     return glow, masks

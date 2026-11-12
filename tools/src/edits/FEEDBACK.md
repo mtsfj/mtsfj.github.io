@@ -73,4 +73,5 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Ichiraku's noren cleaned; the oden front with its transitions softened and the box removed, seen on the whole site (desktop, phone) | "ok", "good": on main (ed7d038) | Shapes that read, no seams, the painter's light | R17-R20 |
 | 2026-11-12 | Tobacco kiosk: its lit cabin (packs, notice, coin tray) legible, the same dim behind shut glass, its plates and planks cleaned | (awaiting) | Packs were an orange smear; a shut window's detail kept as soft as the painter's (shut_k) | R13, R17 |
 | 2026-11-12 | (draft) the Pokemon Center's ball sign, a first draft with a dark outline | "évite les contours : si c'est une sphère, il y a de l'ombre sur le côté, pas de contour" | An outline makes a sticker; a sphere turns into shadow at its edge | R12 |
+| 2026-11-12 | Pokemon Center's ball sign redrawn as a sphere, no outline: shaded to its edge, red and white fitted apart, the button glowing as the painter's | (awaiting) | A fit over the whole ball pinked its white; the painter's light (detail) brought the outline back; the drawing's sphere plus the painter's glow kept both | R12 |
 
