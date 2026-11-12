@@ -1,0 +1,5 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is an 8 x 8 block). It shows the upper part of a small tobacco kiosk's front wall: dark blue horizontal wooden planks, the red enamel sign たばこ at the bottom, the edge of the kiosk's corrugated roof crossing the upper right, dark eave lines of the neighbouring house at the upper left and a dark wooden post along the left edge.
+
+The planks are covered in pale blotchy stains left by image generation. Clean them: even, dark blue painted planks running horizontally (the wall faces us), each with a fine wood grain, thin dark joints between them, a slightly lighter top edge; no stains, no blotches. Keep the light falloff of the night.
+
+Keep the たばこ sign, the roof edge, the eave lines, the post, the framing, the palette and the pixel size exactly as they are. Crisp pixel-art pixels. Do not add any object or text.

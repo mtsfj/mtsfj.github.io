@@ -107,6 +107,11 @@ ZONES = {
         dict(poly=circle(870.5, 470.5, 25), method='direct', unlit='lf_ratio', outside_comp=True),   # the rim, gone
         dict(poly=circle(870.5, 470.5, 25), method='direct', fit='self_red', glow=(871.0, 470.5, 9.0), lit=True, cover=1)]),
         # the ball, lit: the drawing's sphere in the painter's colours, its button glowing as the painter's did
+    # the kiosk's planks above its window, up to its roof: their pale stains gone (R9: the wall cleaned whole, with the
+    # planks under the sign); the sign, the roof's edge, the neighbour's eave lines and the post kept
+    'kiosktop': dict(box=(224, 420, 280, 560), scale=8, parts=[
+        dict(poly=[(240, 437), (277, 483), (277, 560), (229, 560), (229, 474), (240, 474)], method='detail',
+             sigma=6.0, k=0.6, keep=[dict(rect=(231, 530, 270, 560))])]),                              # (the sign)
     'kiosk': dict(box=(224, 560, 280, 690), scale=8, comp=('win_z7_kiosk', (230, 575)), parts=[
         dict(poly=[(229, 561), (277, 561), (277, 690), (229, 690)], method='detail', sigma=6.0, k=0.6,       # the planks
              cut=[[(229, 574), (271, 574), (271, 649), (229, 649)], [(229, 650), (267, 650), (267, 679), (229, 679)]]),
