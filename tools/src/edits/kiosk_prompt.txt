@@ -1,0 +1,9 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is an 8 x 8 block). It shows the front of a small tobacco kiosk: dark blue horizontal wooden planks, a window lit warm from inside, and under it two small enamel plates and a pale blue ledge.
+
+Everything there is blurred and smeared. Redraw it crisp and legible at this pixel size, keeping every element's place, size and shape, the framing and the perspective (the kiosk wall faces us: its planks, its window and its plates are horizontal):
+- inside the lit window: on the left, the booth's side wall lit orange; at the back, the top shelves stacked with cigarette packs and cartons as neat rows of small colourful boxes (white, red, blue, gold), a narrower middle shelf with a few small items, a paper notice pinned at the lower left, and at the lower right the little counter with a shallow coin tray; warm light from the top, a little darker at the bottom;
+- the window frame: thin dark wood, its vertical bar on the right, and the faint bluish reflection on the glass at the right edge;
+- the two plates under the window: small white enamel plates with a thin border and a few tiny red and black printed marks (not readable at this size);
+- the pale blue ledge below them and the wall's planks: clean painted wood with a fine grain, no blotches.
+
+Keep the palette, the light and the pixel size. Crisp pixel-art pixels. Do not add any object.

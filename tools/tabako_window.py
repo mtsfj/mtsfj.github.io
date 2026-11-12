@@ -26,7 +26,9 @@ VP, ce qui lui fait face est de face) :
 Éteinte, comme elle est dans les calques : la même cabine prise dans les pixels sombres du peintre. Dans layer_city_off
 et street_unlit (les mêmes ici : leur rapport au commit BEFORE gardé), night_far (0) et street_sun (0) ; écrit
 assets/win_z7_kiosk.webp (le comp de la fenêtre, ce qui change quand elle s'allume) et sa boîte dans assets/street.js.
-Il faut git, Pillow, numpy.
+Il faut git, Pillow, numpy. Après lui : tools/redraw_zones.py (zone kiosk) redessine la cabine allumée (le comp) et
+l'éteinte, les plaques et les planches ; reprendre ses fichiers *_before (tools/src/edits/kiosk_*), la relancer, monter
+la version du comp dans assets/street.js.
 """
 import io
 import os

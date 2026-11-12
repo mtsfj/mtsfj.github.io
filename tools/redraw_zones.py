@@ -29,7 +29,8 @@ from layers already edited, so a second run writes the same bytes. Per zone:
   `unlit='lf_ratio'` (the places that shut): the new picture times the painter's darkening, smoothed channel by channel.
 The overlays street.js lays on a zone follow it (R10): the closed shop's (shop_off), the oden's lantern frames and its
 door's sliding leaf (oden_overlays: from tools/src/edits/<name>_before.webp; after tools/oden_interior.py rewrites
-assets/oden_door.webp, copy it there and run this again).
+assets/oden_door.webp, copy it there and run this again); a lit window's comp (the kiosk's win_z7_kiosk, `comp` and
+`lit` parts: its new lit picture in the comp, the street under it the same darkened as the painter's shut one).
 """
 import json, os, sys
 import numpy as np
@@ -91,6 +92,15 @@ ZONES = {
     # the oden shop's front: its blotchy walls and eave cleaned (the painter's light, the drawing's planks), its noren
     # redrawn crisp; the glass of its door and window (tools/oden_interior.py), its roof light box (oden_sign_*), its
     # paper lantern left as they are (its frames and the door's sliding leaf carry the wall: oden_overlays). It shuts.
+    # the tobacco kiosk (the cabin behind its glass: tools/tabako_window.py, lit by its comp win_z7_kiosk): its shelves of
+    # packs, its notice and its coin tray made legible (the comp, lit), the same darkened under it (shut); the two enamel
+    # plates under the window, its pale ledge, its planks cleaned. Shut and power cut are the same layer here.
+    'kiosk': dict(box=(224, 560, 280, 690), scale=8, comp=('win_z7_kiosk', (230, 575)), parts=[
+        dict(poly=[(229, 561), (277, 561), (277, 690), (229, 690)], method='detail', sigma=6.0, k=0.6,       # the planks
+             cut=[[(229, 574), (271, 574), (271, 649), (229, 649)], [(229, 650), (267, 650), (267, 679), (229, 679)]]),
+        dict(poly=[(229, 650), (267, 650), (267, 670), (229, 670)], method='hist'),                        # the plates
+        dict(poly=[(229, 670), (267, 670), (267, 679), (229, 679)], method='hist'),                        # the ledge
+        dict(poly=[(230, 575), (270, 575), (270, 648), (230, 648)], method='hist', lit=True, shut_k=0.6)]),   # the cabin, lit
     'oden': dict(box=(390, 462, 525, 690), scale=5, parts=[
         dict(poly=[(398, 537), (463, 537), (503, 548), (503, 664), (398, 684)], method='detail', sigma=10.0, k=0.7, unlit='lf_ratio',   # its walls, the door's wood
              # (sigma 10: its blotches are five pixels wide, wider than Ichiraku's grain; its light falls off over twenty)
@@ -109,6 +119,7 @@ ZONES = {
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
                 lit_from='door', lit_part=0)                                   # the lattice transom's warm light, shut
+COMP_OUT = {}                                   # zone -> [comp name, its new pixels, its slice]: written by main
 NEON_ZONE = 'ramen'
 NEON_OUT = os.path.join(ROOT, 'assets', 'ichiraku_neon_glow.webp')
 
@@ -183,35 +194,46 @@ def zone(name, cfg, city, unlit):
         for q in p.get('cut', []): m &= ~poly_mask(q, box)
         k = obj_masks(p.get('keep', []), orig, box); m &= ~k
         masks.append(m); keeps.append(k)
+    on = None                                  # a lit window's zone (`comp`: its comp's name and place): the draft was
+    if cfg.get('comp'):                        # made of it lit, the street with the comp laid on it
+        cname, (cx, cy) = cfg['comp']; cb = load(os.path.join(EDITS, f'{name}_comp_before.webp')); ch, cw = cb.shape[:2]
+        csl = (slice(cy - y0, cy - y0 + ch), slice(cx - x0, cx - x0 + cw)); ca = cb[..., 3:4] / 255.0
+        on = orig.copy(); on[csl] = on[csl] * (1 - ca) + cb[..., :3] * ca
+        cin = np.zeros((h, w), bool); cin[csl] = cb[..., 3] > 0
     allm = np.any(masks, 0); ref = ~binary_dilation(allm, iterations=3); ref[:6] = ref[-6:] = False; ref[:, :6] = ref[:, -6:] = False
-    corr, dx, dy = register(e, orig, ref)
+    if ref.sum() < 200:                        # (a zone redrawn whole: registered on all of it, its margins aside)
+        ref = np.zeros_like(allm); ref[6:-6, 6:-6] = True
+    corr, dx, dy = register(e, on if on is not None else orig, ref)
     e = np.roll(np.roll(e, dy, 0), dx, 1)
     new, unew = orig.copy(), unlit0[..., :3].copy()
     glow = None
     for p, m, keep in zip(cfg['parts'], masks, keeps):
         pn, pu = new.copy(), unew.copy()           # (what the part is laid over: its feathered edge fades into it)
+        is_lit = bool(p.get('lit')) and on is not None
+        if is_lit: m = m & cin                       # (a lit part: the comp's pixels, taken lit)
+        O = on if is_lit else orig
         if p['method'] == 'hist':
-            out = orig.copy()
+            out = O.copy()
             for c in range(3):
-                src, refv = e[..., c][m], orig[..., c][m]
+                src, refv = e[..., c][m], O[..., c][m]
                 order = np.argsort(src, kind='stable'); v = np.empty_like(src); v[order] = np.sort(refv); out[..., c][m] = v
             if p.get('unlit') == 'lf_ratio':           # the unlit layer: this picture times the painter's darkening
-                dark = np.stack([(gaussian_filter(unlit0[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
+                dark = np.stack([(gaussian_filter(unlit0[..., c], 4.0) + 1.0) / (gaussian_filter(O[..., c], 4.0) + 1.0) for c in range(3)], -1)
                 new[m] = out[m]; unew[m] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[m]
             else:
-                ratio = (out + 1.0) / (orig + 1.0)
+                ratio = (out + 1.0) / (O + 1.0)
                 new[m] = out[m]; unew[m] = np.clip(unlit0[..., :3] * ratio, 0, 255)[m]
         elif p['method'] == 'detail':
             m = m.copy()
             if p.get('keep_lit'):
-                Lo = lum(orig); warm = ((orig[..., 0] - orig[..., 2]) > 10) & (Lo > 30)
+                Lo = lum(O); warm = ((O[..., 0] - O[..., 2]) > 10) & (Lo > 30)
                 m &= ~(warm & ((Lo - gaussian_filter(Lo, 2.0)) > 4))
             hole = keep.copy()                     # (what is kept, a lantern or a lit pane, lends the wall none of its light)
             for q in p.get('fill', []): hole |= poly_mask(q, box)
             er = np.zeros_like(m)                  # `erase`: an object removed, the wall continued through it: no light
             for q in p.get('erase', []): er |= poly_mask(q, box)   # of its own, and the drawing's planks run down
             hole |= er                             # over it from the rows above (the draft drew the object there too)
-            lf = lowpass_filled(orig, hole, p['sigma'])
+            lf = lowpass_filled(O, hole, p['sigma'])
             le = lum(e)
             for x in np.nonzero(er.any(0))[0]:
                 ys = np.nonzero(er[:, x])[0]; le[ys, x] = le[max(ys[0] - 1, 0), x]
@@ -220,13 +242,13 @@ def zone(name, cfg, city, unlit):
                 le = np.where(he, lowpass_filled(np.repeat(le[..., None], 3, -1), he, 2.0)[..., 0], le)
             hf = le - gaussian_filter(le, p['sigma'])
             out = np.clip(lf + p['k'] * hf[..., None] * (lf + 1.0) / (lum(lf) + 1.0)[..., None], 0, 255)
-            ratio = (out + 1.0) / (orig + 1.0)
+            ratio = (out + 1.0) / (O + 1.0)
             ul = unlit0[..., :3]
             if p.get('unlit') == 'lf_ratio':           # the painter's darkening, smoothed (a ratio pixel by pixel blows up
                 if er.any():                       # (an erased object's own darkening left out, and all but this wall's)
-                    dh = ~(m & ~er); dark = (lowpass_filled(ul, dh, 4.0) + 1.0) / (lowpass_filled(orig, dh, 4.0) + 1.0)
+                    dh = ~(m & ~er); dark = (lowpass_filled(ul, dh, 4.0) + 1.0) / (lowpass_filled(O, dh, 4.0) + 1.0)
                 else:
-                    dark = np.stack([(gaussian_filter(ul[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
+                    dark = np.stack([(gaussian_filter(ul[..., c], 4.0) + 1.0) / (gaussian_filter(O[..., c], 4.0) + 1.0) for c in range(3)], -1)
                 new[m] = out[m]; unew[m] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[m]   # where a blotch was black)
             elif hole.any():                       # where the smear was, the unlit layer is rebuilt the same way
                 ulf = lowpass_filled(ul, hole, p['sigma'])
@@ -236,7 +258,7 @@ def zone(name, cfg, city, unlit):
             else:
                 new[m] = out[m]; unew[m] = np.clip(ul * ratio, 0, 255)[m]
         elif p['method'] == 'direct':
-            A = [np.polyfit(e[..., c][ref], orig[..., c][ref], 1) for c in range(3)]
+            A = [np.polyfit(e[..., c][ref], O[..., c][ref], 1) for c in range(3)]
             ec = np.stack([np.clip(A[c][0] * e[..., c] + A[c][1], 0, 255) for c in range(3)], -1)
             if p.get('neon'):
                 # the tubes and their light: warm, saturated, brighter than the board around them
@@ -262,17 +284,27 @@ def zone(name, cfg, city, unlit):
                 # the unlit layer: the new picture times the painter's own darkening there (unlit over lit, smoothed),
                 # so the lattice is the new one and the shut dojo as dark as the painter made it
                 sig = 4.0                              # (channel by channel: the shut colour too, not only the darkness)
-                dark = np.stack([(gaussian_filter(unlit0[..., c], sig) + 1.0) / (gaussian_filter(orig[..., c], sig) + 1.0) for c in range(3)], -1)
+                dark = np.stack([(gaussian_filter(unlit0[..., c], sig) + 1.0) / (gaussian_filter(O[..., c], sig) + 1.0) for c in range(3)], -1)
                 new[m] = ec[m]; unew[m] = np.clip(ec * np.clip(dark, 0, 1.5), 0, 255)[m]
             else:
                 new[m] = ec[m]; unew[m] = ec[m]
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
             sx, sy = p['src']
-            new[m] = np.roll(np.roll(orig, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(unlit0[..., :3], -sy, 0), -sx, 1)[m]
+            new[m] = np.roll(np.roll(O, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(unlit0[..., :3], -sy, 0), -sx, 1)[m]
         if p.get('feather'):                       # its edge on the old painting: a ramp over `feather` pixels, no seam
             from scipy.ndimage import distance_transform_edt
             wgt = np.clip(distance_transform_edt(poly_mask(p['poly'], box)) / p['feather'], 0, 1)[..., None]
             new[m] = (wgt * new + (1 - wgt) * pn)[m]; unew[m] = (wgt * unew + (1 - wgt) * pu)[m]
+        if is_lit:                                 # the new lit picture goes to the comp; the street under it (the window
+            litp = new.copy()                      # shut) the same picture darkened as the painter's shut one, channel by
+            dark = np.stack([(gaussian_filter(orig[..., c], 2.0) + 1.0) / (gaussian_filter(on[..., c], 2.0) + 1.0) for c in range(3)], -1)
+            offp = np.clip(litp * np.clip(dark, 0, 1.5), 0, 255)   # channel; behind shut glass its detail as soft as
+            if p.get('shut_k', 1.0) != 1.0:        # the painter's there (shut_k: the share of it kept)
+                olf = np.stack([gaussian_filter(offp[..., c], 3.0) for c in range(3)], -1)
+                offp = np.clip(olf + p['shut_k'] * (offp - olf), 0, 255)
+            comp = COMP_OUT.setdefault(name, [cname, cb.copy(), csl])[1]
+            sub = m[csl]; comp[..., :3][sub] = litp[csl][sub]
+            new[m] = offp[m]; unew[m] = np.clip(unlit0[..., :3] * (offp + 1.0) / (orig + 1.0), 0, 255)[m]
     print(f'{name}: registered dx={dx} dy={dy} (gradient correlation {corr:.2f}); pixels changed {int((np.abs(new - orig).sum(-1) > 0).sum())}')
     city[y0:y1, x0:x1, :3], unlit[y0:y1, x0:x1, :3] = new, unew
     return glow, masks
@@ -294,7 +326,8 @@ def write_glow(glow, box):
 def call(name):
     import base64, urllib.request
     cfg = ZONES[name]; x0, y0, x1, y1 = cfg['box']; s = cfg['scale']
-    z = load(os.path.join(EDITS, f'{name}_before_city.webp'))[..., :3] / 255.0
+    src = os.path.join(EDITS, f'{name}_before_on.webp')    # (a lit window's zone: the draft is asked of it lit)
+    z = load(src if os.path.exists(src) else os.path.join(EDITS, f'{name}_before_city.webp'))[..., :3] / 255.0
     im = Image.fromarray((np.clip(z ** (1 / GAMMA), 0, 1) * 255).astype(np.uint8)).resize(((x1 - x0) * s, (y1 - y0) * s), Image.NEAREST)
     import io; buf = io.BytesIO(); im.save(buf, 'PNG')
     body = {"model": MODEL, "modalities": ["image", "text"], "usage": {"include": True}, "messages": [{"role": "user", "content": [
@@ -404,6 +437,10 @@ def main():
                 os.path.join(OUT, f'{name}_{tag}.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
     shop_off(city, masks_by_zone)
     oden_overlays(before, dict(city=city, unlit=unlit))
+    for name, (cname, comp, _) in COMP_OUT.items():   # a lit window's comp, its new picture where it lit before
+        Image.fromarray(np.clip(np.round(comp), 0, 255).astype(np.uint8), 'RGBA').save(
+            os.path.join(ROOT, 'assets', cname + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+        print(cname + ': the lit window redrawn')
 
 
 if __name__ == '__main__':
