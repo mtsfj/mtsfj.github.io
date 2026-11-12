@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """The kept retouches, laid into the street's own layers (the owner's choice among the clean pass's alternatives, branch
 agent/clean, tools/relief.py and tools/alt_*.py there): the drinks machines (vend); and the model clean-ups written by
-tools/redraw_zones.py: the rooftop unit's fan (fan) and Ichiraku's front with its new signboard (ramen) its door (door) and the plaster below (base); the narrow pink-lit doorway left of it (pinkdoor); the dojo's front (dojo); the oden's front (oden); the tobacco kiosk's plates and planks (kiosk, kiosktop), its cabin shut (kiosk: its lit cabin is the comp win_z7_kiosk); the Pokemon Center's ball sign without its rim, shut (pokeball: lit, the comp z4_emblem).
+tools/redraw_zones.py: the rooftop unit's fan (fan) and Ichiraku's front with its new signboard (ramen) its door (door) and the plaster below (base); the narrow pink-lit doorway left of it (pinkdoor, its shadowed right side pinkedge); the dojo's front (dojo); the oden's front (oden); the tobacco kiosk's plates and planks (kiosk, kiosktop), its cabin shut (kiosk: its lit cabin is the comp win_z7_kiosk); the Pokemon Center's ball sign without its rim, shut (pokeball: lit, the comp z4_emblem).
 
     python3 tools/bake_retouches.py
 
 Each patch (tools/src/retouches/) replaces the layer's pixels at its place, alpha included (as the street laid it on the GPU):
-layer_city_off.webp and street_unlit.webp take vend at (282, 523), fan at (1296, 160), ramen at (1090, 290), door at (1100, 390) base at (1100, 530), pinkdoor at (1064, 470), dojo at (0, 400), oden at (390, 462), kiosk at (224, 560) with its upper planks at (224, 420), and pokeball at (838, 440); z7_vending.webp (the machines' lit
+layer_city_off.webp and street_unlit.webp take vend at (282, 523), fan at (1296, 160), ramen at (1090, 290), door at (1100, 390) base at (1100, 530), pinkdoor at (1064, 470), pinkedge at (1110, 470), dojo at (0, 400), oden at (390, 462), kiosk at (224, 560) with its upper planks at (224, 420), and pokeball at (838, 440); z7_vending.webp (the machines' lit
 comp, now 91 x 205 at 280, 522) and z7_vendoff.webp (their stutter, 23 x 166 at 307, 552) are the patches themselves. Lossless,
 exact: run again after a tool rewrites a layer (build_zzzsec_unlit.py ...), then the ?v= of what changed and tools/poster.py.
 """
@@ -16,8 +16,8 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'tools', 'src', 'retouches')
-LAYERS = {'layer_city_off.webp': [('vend_city.webp', 282, 523), ('fan_city.webp', 1296, 160), ('ramen_city.webp', 1090, 290), ('door_city.webp', 1100, 390), ('base_city.webp', 1100, 530), ('pinkdoor_city.webp', 1064, 470), ('dojo_city.webp', 0, 400), ('oden_city.webp', 390, 462), ('kiosk_city.webp', 224, 560), ('kiosktop_city.webp', 224, 420), ('pokeball_city.webp', 838, 440)],
-          'street_unlit.webp': [('vend_unlit.webp', 282, 523), ('fan_unlit.webp', 1296, 160), ('ramen_unlit.webp', 1090, 290), ('door_unlit.webp', 1100, 390), ('base_unlit.webp', 1100, 530), ('pinkdoor_unlit.webp', 1064, 470), ('dojo_unlit.webp', 0, 400), ('oden_unlit.webp', 390, 462), ('kiosk_unlit.webp', 224, 560), ('kiosktop_unlit.webp', 224, 420), ('pokeball_unlit.webp', 838, 440)]}
+LAYERS = {'layer_city_off.webp': [('vend_city.webp', 282, 523), ('fan_city.webp', 1296, 160), ('ramen_city.webp', 1090, 290), ('door_city.webp', 1100, 390), ('base_city.webp', 1100, 530), ('pinkdoor_city.webp', 1064, 470), ('pinkedge_city.webp', 1110, 470), ('dojo_city.webp', 0, 400), ('oden_city.webp', 390, 462), ('kiosk_city.webp', 224, 560), ('kiosktop_city.webp', 224, 420), ('pokeball_city.webp', 838, 440)],
+          'street_unlit.webp': [('vend_unlit.webp', 282, 523), ('fan_unlit.webp', 1296, 160), ('ramen_unlit.webp', 1090, 290), ('door_unlit.webp', 1100, 390), ('base_unlit.webp', 1100, 530), ('pinkdoor_unlit.webp', 1064, 470), ('pinkedge_unlit.webp', 1110, 470), ('dojo_unlit.webp', 0, 400), ('oden_unlit.webp', 390, 462), ('kiosk_unlit.webp', 224, 560), ('kiosktop_unlit.webp', 224, 420), ('pokeball_unlit.webp', 838, 440)]}
 COPIES = {'z7_vending.webp': 'vend_z7_vending.webp', 'z7_vendoff.webp': 'vend_z7_vendoff.webp'}
 
 

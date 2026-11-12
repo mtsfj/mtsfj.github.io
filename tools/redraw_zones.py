@@ -94,6 +94,10 @@ ZONES = {
     # its before crops hold the painter's pixels there (theirs), and it runs after them
     'pinkdoor': dict(box=(1064, 470, 1110, 735), scale=5, reach=7, parts=[   # (the drawing set it 4 px left)
         dict(poly=[(1066, 470), (1110, 470), (1110, 735), (1066, 735)], method='detail', sigma=4.0, k=0.8, unlit='lf_ratio')]),
+    # the doorway's right side in shadow, between its frame and Ichiraku's corner (the black line at x 1117, kept):
+    # the painter's jagged black edge there made even (the owner: "tout le côté droit de la porte est bizarre")
+    'pinkedge': dict(box=(1110, 470, 1118, 735), scale=1, nodraft=True, parts=[
+        dict(poly=[(1110, 486), (1116, 486), (1116, 733), (1110, 733)], method='flat', pct=75, sigma_y=4.0)]),
     # the karate dojo at the street's left edge: its noren (four indigo panels on a rod), its shoji's lattice, its
     # signboard 心源流, its plaster strip and kick-panels, all cleaned of their grain. The dojo shuts by the hour (street.js
     # HRS: the unlit layer shown over it), so the unlit layer gets the new picture darkened as the painter darkened his.
@@ -216,8 +220,11 @@ def zone(name, cfg, city, unlit):
     box = cfg['box']; x0, y0, x1, y1 = box; w, h = x1 - x0, y1 - y0
     city0, unlit0 = city[y0:y1, x0:x1].copy(), unlit[y0:y1, x0:x1].copy()
     orig = city0[..., :3]
-    e = np.array(Image.open(os.path.join(EDITS, f'{name}_model.webp')).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
-    e = (e ** GAMMA) * 255.0
+    if cfg.get('nodraft'):                     # (a zone mended from its own pixels, no drawing asked for)
+        e = orig.copy()
+    else:
+        e = np.array(Image.open(os.path.join(EDITS, f'{name}_model.webp')).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
+        e = (e ** GAMMA) * 255.0
     masks, keeps = [], []
     for p in cfg['parts']:
         m = poly_mask(p['poly'], box)
@@ -239,7 +246,7 @@ def zone(name, cfg, city, unlit):
         ref = np.zeros_like(allm); ref[6:-6, 6:-6] = True
     if cfg.get('reg'):                         # (`reg`: where the drawing and the painting match, to register on)
         ref = poly_mask(cfg['reg'], box)
-    corr, dx, dy = register(e, on if on is not None else orig, ref, cfg.get('reach', 4))
+    corr, dx, dy = (1.0, 0, 0) if cfg.get('nodraft') else register(e, on if on is not None else orig, ref, cfg.get('reach', 4))
     e = shift(e, dy, dx)
     new, unew = orig.copy(), unlit0[..., :3].copy()
     glow = None
@@ -339,6 +346,15 @@ def zone(name, cfg, city, unlit):
                 new[m] = ec[m]; unew[m] = np.clip(ec * np.clip(dark, 0, 1.5), 0, 255)[m]
             else:
                 new[m] = ec[m]; unew[m] = ec[m]
+        elif p['method'] == 'flat':                # a strip in shadow, even: each row one value across the strip (its
+                                                   # pct percentile: above the black crumbs that broke its edge),
+            from scipy.ndimage import gaussian_filter1d   # then softened down the rows (sigma_y), both layers
+            for src, dst in ((O, new), (unlit0[..., :3], unew)):
+                rows = np.nonzero(m.any(1))[0]; fl = src.copy()
+                for y in rows:
+                    xs = np.nonzero(m[y])[0]; fl[y, xs] = np.percentile(src[y, xs], p.get('pct', 50), axis=0)
+                fl = gaussian_filter1d(fl, p.get('sigma_y', 1.5), axis=0)
+                dst[m] = fl[m]
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
             sx, sy = p['src']
             new[m] = np.roll(np.roll(O, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(unlit0[..., :3], -sy, 0), -sx, 1)[m]
