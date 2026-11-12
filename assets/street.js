@@ -6974,7 +6974,7 @@
   // (oden_lantern_off.webp: its paper a dark crimson, its ribs and rings, the dusk on it, and the wall where it hangs at
   // rest; every frame, the rest one too, as the oden unlit has them), over the lit one as much as that one has no light;
   // lit by the street, so the street's grade. lanDark(k): k 0..1 toward unlit, on top of its power and the oden's hours
-  const lanOffTex = odenTex('assets/oden_lantern_off.webp?v=1'); lanOffTex.repeat.set(1 / LAN_N, 1);
+  const lanOffTex = odenTex('assets/oden_lantern_off.webp?v=2'); lanOffTex.repeat.set(1 / LAN_N, 1);
   const lanOff = new THREE.Mesh(new THREE.PlaneGeometry(LAN.box[2], LAN.box[3]), new THREE.MeshBasicMaterial({ map: lanOffTex, transparent: true, depthWrite: false, opacity: 0 }));
   lanOff.position.set(LAN.box[0] + LAN.box[2] / 2, -(LAN.box[1] + LAN.box[3] / 2), 0.031); lanOff.visible = false; scene.add(lanOff);
   let lanPw = null, lanDk = 0;                 // the lit lantern's entry in the power cut's list (its power then); lanDark's k

@@ -42,6 +42,10 @@ street. Read this before redrawing any zone; add to it after every review.
   not patched: no polygon or method brings back what the draft lost.
 - **R18. Blotches set the low-pass.** The painter's light is kept below a scale (`sigma`); it must be wider than the
   noise it hides (Ichiraku's grain: 6; the oden's five-pixel blotches: 10) and narrower than the light's falloff.
+- **R20. Keep objects by their shape, not a box.** A box kept around a lantern or a lamp keeps the old wall inside it:
+  a square of grain on the clean wall. Keep the object's own pixels (its lit paper and its outline), clean the wall up
+  to it, leave the object out of the light taken from the painting and out of the drawing's detail (else it rings dark
+  around it), and fade a part's edge into the old painting over a few pixels.
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
@@ -64,4 +68,5 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Five light options in the street (red barrel, square andon, white chōchin, red ball, wall lamps) | The wall lamps, "à paralléliser" (not mirrored: one wall) | The lanterns never sat well at this size; mirrored arms read as two walls | R14, R15, R16 |
 | 2026-11-12 | Four options over the door (wooden eave, steel vent hood, tiled roof, lit lattice transom) | V3, the lattice transom without an awning | The simplest, lit from inside like the shop | R16 |
 | 2026-11-12 | (my own review) Closed shops by the pole, cleaned from a draft | Not shown: the draft had turned the glazed side door into shutter, the slatted door into a panel door, wiped the sign | The draft changed what the objects are | R17 |
-| 2026-11-12 | Oden front: walls in dark planks, crisp noren, clean eave and door wood, open and shut | (awaiting) | Same defects as Ichiraku's front: blotches, a blurred noren | R2, R9, R13, R18, R19 |
+| 2026-11-12 | Oden front: walls in dark planks, crisp noren, clean eave and door wood, open and shut | "vraiment pas clean sur les transitions entre façade et texture, trop abrupt, carré" | The lantern and the lamps kept in boxes of old grain; the eave cut straight under the roof | R20 |
+| 2026-11-12 | The oden's box by the window ("les boîtes aux lettres en bas, c'est quoi ?") | "peu importe" (remove it or redraw it) | A 12 x 36 px box nobody can read: two stacked capsule machines, or a menu? | R7 |

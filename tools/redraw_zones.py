@@ -41,12 +41,15 @@ OUT = os.path.join(ROOT, 'tools', 'src', 'retouches')
 GAMMA = 2.0
 MODEL = 'google/gemini-3-pro-image'
 
-ODEN_LANTERN = [(399, 538), (422, 538), (422, 571), (399, 571)]   # the oden's paper lantern at rest (it swings: oden_lantern*)
+ODEN_LANTERN = dict(warm=(398, 536, 424, 573))                    # the oden's paper lantern at rest (it swings: oden_lantern*)
+ODEN_KEEP = [ODEN_LANTERN, dict(rect=(409, 536, 412, 542)),          # and its hook
+             dict(rect=(424, 579, 460, 620)), dict(rect=(467, 564, 495, 619))]   # the door's and the window's glass (oden_interior)
 ODEN_BOARD = [(475, 482), (510, 482), (510, 540), (475, 528)]       # its roof light box (oden_sign_*: the light it loses, exact)
 # what street.js lays over the oden (R10) and copies its wall into: the lantern's frames (the wall behind it where it
 # hung at rest) and the door's sliding leaf (its painted wooden bottom, resampled at each step: tools/oden_interior.py);
 # their pixels that are the painter's wall take the same change as the layer under them
 ODEN_OVL = dict(lantern=[('oden_lantern', 'city'), ('oden_lantern_off', 'unlit')], lantern_box=(390, 528, 46, 56), lantern_n=23,
+                lantern_hook=(410.31, 537.0), lantern_angles=[-7.5 + 0.5 * i for i in range(23)],   # (street.js ODEN.lantern)
                 door='oden_door', pan_box=(421, 580, 40, 91), pan_wood=621,   # (its wood: below the glass, y 621)
                 pan_cells=[[0, 122], [41, 122], [82, 122], [0, 214], [41, 214], [82, 214], [0, 306], [41, 306], [82, 306],
                            [0, 398], [41, 398], [82, 398], [0, 490], [41, 490], [82, 490], [0, 582], [41, 582]])
@@ -89,13 +92,13 @@ ZONES = {
     'oden': dict(box=(390, 462, 525, 690), scale=5, parts=[
         dict(poly=[(398, 537), (463, 537), (503, 548), (503, 664), (398, 684)], method='detail', sigma=10.0, k=0.7, unlit='lf_ratio',   # its walls, the door's wood
              # (sigma 10: its blotches are five pixels wide, wider than Ichiraku's grain; its light falls off over twenty)
-             cut=[ODEN_LANTERN, [(422, 576), (462, 576), (462, 621), (422, 621)],              # the door's glass
-                  [(462, 557), (497, 557), (497, 619), (462, 619)],                                 # the window's glass
-                  [(466, 541), (476, 541), (476, 557), (466, 557)], [(484, 541), (494, 541), (494, 557), (484, 557)],   # its two lamps
-                  [(469, 631), (481, 631), (481, 667), (469, 667)]]),                               # the menu board
+             keep=ODEN_KEEP + [dict(warm=(463, 538, 500, 562)),                                  # the two lamps over the window
+                               dict(rect=(469, 630, 482, 667)), dict(warm=(482, 628, 502, 640))]),   # the menu board (square), the red lights by it
         dict(poly=[(420, 507), (465, 507), (465, 521), (514, 531), (514, 553), (463, 541), (420, 537)], method='detail',
-             sigma=4.0, k=0.8, unlit='lf_ratio', cut=[ODEN_BOARD, [(438, 521), (455, 521), (455, 538), (438, 538)]]),   # the eave (its lamp kept)
-        dict(poly=[(420, 537), (463, 537), (463, 580), (420, 580)], method='hist', unlit='lf_ratio', cut=[ODEN_LANTERN])]),   # the noren
+             sigma=4.0, k=0.8, unlit='lf_ratio', feather=3, cut=[ODEN_BOARD],                # the eave, faded into the roof
+             keep=[dict(warm=(436, 519, 457, 540))]),                                           # (the lamp over the noren)
+        dict(poly=[(420, 537), (463, 537), (463, 580), (420, 580)], method='hist', unlit='lf_ratio',
+             keep=ODEN_KEEP + [dict(warm=(436, 519, 457, 540))])]),                              # the noren
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -115,6 +118,22 @@ def poly_mask(P, box):
     m = Image.new('L', (x1 - x0, y1 - y0), 0)
     ImageDraw.Draw(m).polygon([(px - x0, py - y0) for px, py in P], fill=255)
     return np.array(m) > 127
+
+
+def obj_masks(specs, orig, box):
+    """What a part keeps as painted, by its shape rather than a box around it (R20): `rect` (x0, y0, x1, y1) as it is;
+    `warm` the lit things in that box (a lantern, a lamp, a board: red over blue), grown by a pixel and their holes
+    filled, so their dark ribs and outline go with them."""
+    from scipy.ndimage import binary_fill_holes
+    x0, y0, x1, y1 = box; k = np.zeros((y1 - y0, x1 - x0), bool)
+    for sp in specs:
+        if 'rect' in sp:
+            a, b, c, d = sp['rect']; k[max(b - y0, 0):d - y0, max(a - x0, 0):c - x0] = True
+        if 'warm' in sp:
+            a, b, c, d = sp['warm']; r = np.zeros_like(k); r[b - y0:d - y0, a - x0:c - x0] = True
+            w = r & (orig[..., 0] > 90) & (orig[..., 0] > orig[..., 2] + 30)
+            k |= binary_fill_holes(binary_dilation(w, iterations=sp.get('grow', 1))) & binary_dilation(r, iterations=1)
+    return k
 
 
 def grad(z):
@@ -152,17 +171,19 @@ def zone(name, cfg, city, unlit):
     orig = city0[..., :3]
     e = np.array(Image.open(os.path.join(EDITS, f'{name}_model.webp')).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
     e = (e ** GAMMA) * 255.0
-    masks = []
+    masks, keeps = [], []
     for p in cfg['parts']:
         m = poly_mask(p['poly'], box)
         for q in p.get('cut', []): m &= ~poly_mask(q, box)
-        masks.append(m)
+        k = obj_masks(p.get('keep', []), orig, box); m &= ~k
+        masks.append(m); keeps.append(k)
     allm = np.any(masks, 0); ref = ~binary_dilation(allm, iterations=3); ref[:6] = ref[-6:] = False; ref[:, :6] = ref[:, -6:] = False
     corr, dx, dy = register(e, orig, ref)
     e = np.roll(np.roll(e, dy, 0), dx, 1)
     new, unew = orig.copy(), unlit0[..., :3].copy()
     glow = None
-    for p, m in zip(cfg['parts'], masks):
+    for p, m, keep in zip(cfg['parts'], masks, keeps):
+        pn, pu = new.copy(), unew.copy()           # (what the part is laid over: its feathered edge fades into it)
         if p['method'] == 'hist':
             out = orig.copy()
             for c in range(3):
@@ -179,24 +200,27 @@ def zone(name, cfg, city, unlit):
             if p.get('keep_lit'):
                 Lo = lum(orig); warm = ((orig[..., 0] - orig[..., 2]) > 10) & (Lo > 30)
                 m &= ~(warm & ((Lo - gaussian_filter(Lo, 2.0)) > 4))
-            hole = np.zeros_like(m)
+            hole = keep.copy()                     # (what is kept, a lantern or a lit pane, lends the wall none of its light)
             for q in p.get('fill', []): hole |= poly_mask(q, box)
             lf = lowpass_filled(orig, hole, p['sigma'])
-            le = lum(e); hf = le - gaussian_filter(le, p['sigma'])
+            le = lum(e)
+            if keep.any():                         # the draft's own drawing of what is kept (a bright lamp, a pane) filled
+                he = binary_dilation(keep, iterations=2)   # from around, else its edge rings dark on the wall beside it
+                le = np.where(he, lowpass_filled(np.repeat(le[..., None], 3, -1), he, 2.0)[..., 0], le)
+            hf = le - gaussian_filter(le, p['sigma'])
             out = np.clip(lf + p['k'] * hf[..., None] * (lf + 1.0) / (lum(lf) + 1.0)[..., None], 0, 255)
             ratio = (out + 1.0) / (orig + 1.0)
             ul = unlit0[..., :3]
             if p.get('unlit') == 'lf_ratio':           # the painter's darkening, smoothed (a ratio pixel by pixel blows up
                 dark = np.stack([(gaussian_filter(ul[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
                 new[m] = out[m]; unew[m] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[m]   # where a blotch was black)
-                continue
-            if hole.any():                         # where the smear was, the unlit layer is rebuilt the same way
+            elif hole.any():                       # where the smear was, the unlit layer is rebuilt the same way
                 ulf = lowpass_filled(ul, hole, p['sigma'])
                 uout = np.clip(ulf + p['k'] * hf[..., None] * (ulf + 1.0) / (lum(ulf) + 1.0)[..., None], 0, 255)
                 ur = np.where(hole[..., None], uout, np.clip(ul * ratio, 0, 255))
+                new[m] = out[m]; unew[m] = ur[m]
             else:
-                ur = np.clip(ul * ratio, 0, 255)
-            new[m] = out[m]; unew[m] = ur[m]
+                new[m] = out[m]; unew[m] = np.clip(ul * ratio, 0, 255)[m]
         elif p['method'] == 'direct':
             A = [np.polyfit(e[..., c][ref], orig[..., c][ref], 1) for c in range(3)]
             ec = np.stack([np.clip(A[c][0] * e[..., c] + A[c][1], 0, 255) for c in range(3)], -1)
@@ -228,6 +252,10 @@ def zone(name, cfg, city, unlit):
                 new[m] = ec[m]; unew[m] = np.clip(ec * np.clip(dark, 0, 1.5), 0, 255)[m]
             else:
                 new[m] = ec[m]; unew[m] = ec[m]
+        if p.get('feather'):                       # its edge on the old painting: a ramp over `feather` pixels, no seam
+            from scipy.ndimage import distance_transform_edt
+            wgt = np.clip(distance_transform_edt(poly_mask(p['poly'], box)) / p['feather'], 0, 1)[..., None]
+            new[m] = (wgt * new + (1 - wgt) * pn)[m]; unew[m] = (wgt * unew + (1 - wgt) * pu)[m]
     print(f'{name}: registered dx={dx} dy={dy} (gradient correlation {corr:.2f}); pixels changed {int((np.abs(new - orig).sum(-1) > 0).sum())}')
     city[y0:y1, x0:x1, :3], unlit[y0:y1, x0:x1, :3] = new, unew
     return glow, masks
@@ -283,19 +311,41 @@ def shop_off(city, masks_by_zone):
     print('shop_off: cleared the old eave and vent, the lattice transom shut:', int(lit.sum()), 'px')
 
 
+def swung(mask, deg, hook, box):
+    """A mask turned by deg degrees about the hook (absolute x, y), in its box (nearest pixel)."""
+    x0, y0, x1, y1 = box; h, w = mask.shape; hx, hy = hook[0] - x0, hook[1] - y0
+    yy, xx = np.mgrid[0:h, 0:w]; t = np.deg2rad(deg); c, s = np.cos(t), np.sin(t)
+    X, Y = xx + 0.5 - hx, yy + 0.5 - hy
+    ix = np.floor(c * X + s * Y + hx).astype(int); iy = np.floor(-s * X + c * Y + hy).astype(int)
+    ok = (ix >= 0) & (ix < w) & (iy >= 0) & (iy < h); out = np.zeros_like(mask); out[ok] = mask[iy[ok], ix[ok]]
+    return out
+
+
 def oden_overlays(before, after):
-    """The oden's overlays brought to its new wall: in the lantern's frames and in the door's sliding leaf, the pixels that
-    are the wall (within WALL_TOL of the layer before) take the layer's change there (after - before), the lantern itself
+    """The oden's overlays brought to its new wall: in the lantern's frames, the wall it uncovers where it hung takes the
+    new wall (its planks continued from under it), the wall around (within WALL_TOL of the layer before) the layer's
+    change there (after - before); in the door's sliding leaf, its wood resampled from the new layer; the lantern itself
     and the drawn bars left as they are. From the overlays as tools/oden_interior.py and the lantern tool wrote them
     (tools/src/edits/<name>_before.webp)."""
-    o = ODEN_OVL; lx, ly, lw, lh = o['lantern_box']
+    from scipy.ndimage import binary_fill_holes
+    o = ODEN_OVL; lx, ly, lw, lh = o['lantern_box']; lbox = (lx, ly, lx + lw, ly + lh)
+    rest = obj_masks([ODEN_LANTERN], before['city'][ly:ly + lh, lx:lx + lw, :3], lbox)   # the lantern at rest
     for name, tag in o['lantern']:
         A = load(os.path.join(EDITS, name + '_before.webp')); b, a = before[tag], after[tag]
         old = b[ly:ly + lh, lx:lx + lw, :3]; d = a[ly:ly + lh, lx:lx + lw, :3] - old; n = 0
+        behind = a[ly:ly + lh, lx:lx + lw, :3].copy()   # the new wall behind it: its planks run down, so each column
+        for x in np.nonzero(rest.any(0))[0]:            # of the lantern takes the wall just under it
+            ys = np.nonzero(rest[:, x])[0]; yb = min(ys[-1] + 1, lh - 1); behind[ys, x] = behind[yb, x]
         for k in range(o['lantern_n']):
-            f = A[:, k * lw:(k + 1) * lw]
-            wall = (f[..., 3] > 250) & (np.abs(f[..., :3] - old).max(-1) <= WALL_TOL) & (np.abs(d).max(-1) > 0)
-            f[..., :3][wall] = np.clip(f[..., :3][wall] + d[wall], 0, 255); n += int(wall.sum())
+            f = A[:, k * lw:(k + 1) * lw]; R, B = f[..., 0], f[..., 2]
+            lit = ((R > 90) & (R > B + 30)) if tag == 'city' else ((R > 18) & (R > B + 5))   # (the paper, lit or dark crimson)
+            lan = binary_fill_holes(binary_dilation(lit, iterations=1))   # the lantern in this frame: its paper, and its
+            lan |= binary_dilation(swung(rest, -o['lantern_angles'][k], o['lantern_hook'], lbox), iterations=1)   # shape at rest swung
+            wall = (f[..., 3] > 250) & ~lan
+            under = wall & rest                       # where the lantern hung: the wall it uncovers as it swings
+            f[..., :3][under] = behind[under]
+            near = wall & ~rest & (np.abs(f[..., :3] - old).max(-1) <= WALL_TOL) & (np.abs(d).max(-1) > 0)
+            f[..., :3][near] = np.clip(f[..., :3][near] + d[near], 0, 255); n += int(under.sum() + near.sum())
         Image.fromarray(np.round(A).astype(np.uint8), 'RGBA').save(os.path.join(ROOT, 'assets', name + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
         print(name + ':', n, 'wall pixels brought to the new wall')
     A = load(os.path.join(EDITS, o['door'] + '_before.webp')); b, a = before['city'], after['city']
