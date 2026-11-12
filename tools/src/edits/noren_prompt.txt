@@ -1,0 +1,5 @@
+This is an enlarged pixel-art sprite (each sprite pixel is a 10 x 10 block) of the noren, the split shop curtain hanging in the doorway of a small ramen shop at night, on a flat pure green background. Its top edge hangs from a wooden rail that slopes with the street's perspective, exactly as drawn.
+
+Redraw it clean, with the same silhouette, size and position exactly (same outline, same rail, same hem): deep red cotton cloth in two panels with a narrow slit down the middle, the white dyed character 一 on the left panel and 楽 on the right panel, soft vertical folds, the dark wooden rail along the top with a thin highlight, and the warm light of the shop glowing through the lower part of the cloth. No random noise or speckles anywhere: even, clean fabric with a fine pixel-art texture.
+
+Keep the background flat pure green (#00FF00) everywhere around it. Crisp pixel-art pixels. Do not add anything else.
