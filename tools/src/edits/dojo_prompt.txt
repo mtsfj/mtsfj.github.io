@@ -1,0 +1,9 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is a 5 x 5 block). It shows the front of a small karate dojo at the left edge of the street: an indigo noren banner with 空手道場 in white, below it two sliding shoji doors glowing warm from inside, a vertical wooden signboard reading 心源流, a strip of plaster wall, and wooden kick-panels at the bottom.
+
+Everything there is covered in random speckle noise left by image generation. Clean it up and give it a little depth, without exaggerating, keeping every element's place, size and shape and the framing:
+- the noren: clean indigo cloth with soft vertical folds between its panels, its white characters 空手道場 crisp;
+- the shoji: a clean wooden lattice (thin dark bars with a slight thickness), the paper evenly lit from inside, warm, brighter in the middle;
+- the signboard: clean wood with a fine grain and a bevelled edge, 心源流 in dark ink;
+- the plaster strip and the kick-panels: clean, with a fine texture.
+
+Keep the tree foliage above, the dark gap and the shop on the right, the perspective, the palette and the pixel size as they are. Crisp pixel-art pixels. Do not add any object or text.

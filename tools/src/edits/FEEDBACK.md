@@ -29,6 +29,8 @@ street. Read this before redrawing any zone; add to it after every review.
   lit dash next to an object may be its fixing: look at what it touches before removing it.
 - **R12. Depth comes from light and shading, not outlines.** A round thing is darker at its turning edges; a lit thing
   lights the wall behind it (a soft pool). A halo hugging the outline reads as a sticker.
+- **R13. A redraw holds in every state.** A place that shuts (the dojo, the oden, Ichiraku) shows the unlit layer: give
+  it the new picture darkened as the painter darkened his, channel by channel (the night's blue, not a dim orange).
 
 ## Verdicts
 

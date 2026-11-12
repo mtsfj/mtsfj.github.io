@@ -63,6 +63,12 @@ ZONES = {
         dict(poly=[(1118, 556), (1157, 556), (1157, 729), (1118, 729)], method='detail', sigma=6.0, k=0.6,
              cut=[[(1125, 573), (1155, 573), (1155, 651), (1125, 651)]]),
         dict(poly=[(1232, 556), (1267, 556), (1267, 731), (1232, 731)], method='detail', sigma=6.0, k=0.6)]),
+    # the karate dojo at the street's left edge: its noren (four indigo panels on a rod), its shoji's lattice, its
+    # signboard 心源流, its plaster strip and kick-panels, all cleaned of their grain. The dojo shuts by the hour (street.js
+    # HRS: the unlit layer shown over it), so the unlit layer gets the new picture darkened as the painter darkened his.
+    'dojo': dict(box=(0, 400, 160, 720), scale=5, parts=[
+        dict(poly=[(0, 458), (100, 458), (100, 720), (0, 720)], method='direct', unlit='lf_ratio'),
+        dict(poly=[(0, 530), (80, 530), (80, 688), (0, 688)], method='hist', unlit='lf_ratio')]),   # the shoji: the painter's warm light
 }
 # What the lanterns hang from (the owner: they floated, as if behind the facade; the two lit dashes taken for strays
 # were their brackets). The left one hangs under the end of the wooden eave: its cord goes on up to the eave. The right
@@ -151,8 +157,12 @@ def zone(name, cfg, city, unlit):
             for c in range(3):
                 src, refv = e[..., c][m], orig[..., c][m]
                 order = np.argsort(src, kind='stable'); v = np.empty_like(src); v[order] = np.sort(refv); out[..., c][m] = v
-            ratio = (out + 1.0) / (orig + 1.0)
-            new[m] = out[m]; unew[m] = np.clip(unlit0[..., :3] * ratio, 0, 255)[m]
+            if p.get('unlit') == 'lf_ratio':           # the unlit layer: this picture times the painter's darkening
+                dark = np.stack([(gaussian_filter(unlit0[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
+                new[m] = out[m]; unew[m] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[m]
+            else:
+                ratio = (out + 1.0) / (orig + 1.0)
+                new[m] = out[m]; unew[m] = np.clip(unlit0[..., :3] * ratio, 0, 255)[m]
         elif p['method'] == 'detail':
             m = m.copy()
             if p.get('keep_lit'):
@@ -195,6 +205,12 @@ def zone(name, cfg, city, unlit):
                     disc = m & (((xx - cx) ** 2 + (yy - cy) ** 2) <= r * r)
                     base[disc] = 0.55 * ec[disc]; glow[disc] = 0.45 * ec[disc]
                 new[m] = base[m]; unew[m] = base[m]
+            elif p.get('unlit') == 'lf_ratio':
+                # the unlit layer: the new picture times the painter's own darkening there (unlit over lit, smoothed),
+                # so the lattice is the new one and the shut dojo as dark as the painter made it
+                sig = 4.0                              # (channel by channel: the shut colour too, not only the darkness)
+                dark = np.stack([(gaussian_filter(unlit0[..., c], sig) + 1.0) / (gaussian_filter(orig[..., c], sig) + 1.0) for c in range(3)], -1)
+                new[m] = ec[m]; unew[m] = np.clip(ec * np.clip(dark, 0, 1.5), 0, 255)[m]
             else:
                 new[m] = ec[m]; unew[m] = ec[m]
     print(f'{name}: registered dx={dx} dy={dy} (gradient correlation {corr:.2f}); pixels changed {int((np.abs(new - orig).sum(-1) > 0).sum())}')
