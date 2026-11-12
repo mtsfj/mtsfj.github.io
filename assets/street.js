@@ -171,7 +171,7 @@
   // task of its own (UP.fetch): the first fetch() made in the setup's own task held it a sixth of a second there on a phone,
   // wherever it was, and a few milliseconds in a task of its own ----
   UP.fetch = (src) => new Promise((res) => setTimeout(res, 0)).then(() => fetch(src));
-  UP.early = /\/(layer_city_off|street_unlit|street_sun|layer_sky|night_far|lights_rest|ichiraku_lanterns|fuji_aux|fuji_night|fuji_tree|fuji_front|fuji_flash_tree|fuji_flash_ridge|fuji_flash_glow|wet|om_flyer)\.webp/;
+  UP.early = /\/(layer_city_off|street_unlit|street_sun|layer_sky|night_far|lights_rest|ichiraku_lamps|fuji_aux|fuji_night|fuji_tree|fuji_front|fuji_flash_tree|fuji_flash_ridge|fuji_flash_glow|wet|om_flyer)\.webp/;
   function early(t, src, end, fail) {
     const plain = () => imgLoader.load(src, (img) => { t.image = img; t.format = THREE.RGBAFormat; t.needsUpdate = true; upload(t, src, end); }, undefined, fail);
     const pre = window.__early && window.__early[src]; if (pre) delete window.__early[src];   // (index.html's, asked for with the scripts)
@@ -6825,7 +6825,7 @@
   // as a little stage, by the hour (lumieres-07; openK('ramen'), eased over 6 min at 1:54-2:00 and 8:30-8:36): the neon first,
   // the lanterns one after the other, then Teuchi takes the noren in (behind it the doors' upper panes, the room still lit),
   // the kitchen last; in the morning the other way. A driven hour, the first frame or reduced motion: each part at once. The
-  // frames are pre-drawn at scene pixels (build_zzzr_ichiraku.py, ichiraku_lanterns.py: one per half degree, base | lit |
+  // frames are pre-drawn at scene pixels (build_zzzr_ichiraku.py; the wall lamps that replaced the lanterns: redraw_lamps.py; base | lit |
   // glow); the base is graded as the street, the lit and the glow as their own light (red in the red night); their light
   // follows the ramen zone's power (a power cut, the finale) ----
   const addTex = (src, x, y, w, h, z, additive) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
@@ -6842,9 +6842,9 @@
   const shopOff = addTex('assets/shop_off.webp?v=6', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
-  const IRA = { W: 1472, H: 600, cw: 64, ch: 100 };                              // the lanterns' atlas: 23 angles (-7.5..3.5 by 0.5) x 6 rows (tools/redraw_lanterns.py)
+  const IRA = { W: 1472, H: 600, cw: 64, ch: 100 };                              // the lights' atlas: 23 columns x 6 rows; wall lamps now, the same in every column (tools/redraw_lamps.py)
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
-  const irLanTex = irTex('assets/ichiraku_lanterns.webp?v=6'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
+  const irLanTex = irTex('assets/ichiraku_lamps.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
   function irUV(m, x, y, w, h, AW, AH) {         // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = x / AW, u1 = (x + w) / AW, v0 = 1 - y / AH, v1 = 1 - (y + h) / AH;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;

@@ -31,6 +31,8 @@ street. Read this before redrawing any zone; add to it after every review.
   lights the wall behind it (a soft pool). A halo hugging the outline reads as a sticker.
 - **R13. A redraw holds in every state.** A place that shuts (the dojo, the oden, Ichiraku) shows the unlit layer: give
   it the new picture darkened as the painter darkened his, channel by channel (the night's blue, not a dim orange).
+- **R14. When an object keeps failing, change the object.** After two redraws the paper lanterns still did not work;
+  plain wall lamps (an iron arm, a glass shade, their light on the wall) did. Prefer the simpler fixture.
 
 ## Verdicts
 
@@ -46,3 +48,4 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Ichiraku's wall cleaned to y 560 | "le bas du mur a full grain alors que le haut non, faut uniformiser" | Only my polygon was cleaned | R9 |
 | 2026-11-12 | Rooftop fan, sign B, clean plaster, wooden eave, round lanterns | Kept ("c'est ce style de détail que je veux") | Legible shapes, the painter's light, a little depth | R2, R5 |
 | 2026-11-12 | Round lanterns | "pb de calque, lanterne derrière la façade ; les lanternes font vraiment aplat 2D" | I had removed their brackets (taken for stray dashes), so they floated; flat fill, a halo hugging the outline | R11, R12 |
+| 2026-11-12 | Round lanterns with brackets, shading and a light pool | "les lanternes d'Ichiraku trop moches, remplace par une light normale" | A paper lantern drawn small never read well here | R14 |

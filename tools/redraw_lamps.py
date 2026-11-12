@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Ichiraku's two paper lanterns, redrawn (the owner's choice, package clean-3): assets/ichiraku_lanterns.webp from one
-clean drawing of the lantern (tools/src/edits/lantern_model.webp, from lantern_prompt.txt, on a flat green ground).
+"""Ichiraku's two wall lamps, one each side of its door (the owner: the paper lanterns, redrawn twice, were still not
+right; "une light normale"): assets/ichiraku_lamps.webp from one drawing (tools/src/edits/lamp_model.webp, from
+lamp_prompt.txt, on a flat green ground), mirrored for the left one so both arms reach out from the door.
 
-    python3 tools/redraw_lanterns.py        writes assets/ichiraku_lanterns.webp (then its ?v= in street.js)
+    python3 tools/redraw_lamps.py        writes assets/ichiraku_lamps.webp (then its ?v= in street.js)
 
-The atlas is street.js's (IRA): 23 columns, the swing from -7.5 to +3.5 degrees by half a degree (negative: the foot to
-the left, as the wind from the right carries it), 64 x 100 cells (wide enough for the round lantern's foot at full swing, tall enough for its light on the wall);
-rows 0-2 the left lantern (its 54 x 80 at the cell's top left), rows 3-5 the right one; in each, the lantern as the street lights it with the shop shut (base), lit from inside
-(lit) and the light it throws around it: a rim and a pool on the wall behind it (glow, added). Each lantern hangs from the old one's hook and reaches its
-old foot; its width follows the drawing (the owner: round is fine, it need not stay slender).
-Every frame is the drawing turned at 16 x (bicubic) and boxed down to scene pixels, its edge cut at half coverage, so
-the outline stays crisp; the cord to the hook is drawn a pixel wide. Same input, same bytes.
+The atlas is street.js's (IRA, the lanterns' system, kept: their light, the shop's closing one after the other, the
+power, the red night): 23 columns (the old swing's angles; a lamp fixed to the wall shows the same picture in each),
+64 x 100 cells; rows 0-2 the left lamp (its 54 x 80 at the cell's top left), rows 3-5 the right one; in each, the
+lamp as the street lights it with the shop shut (base), lit (lit) and the light it throws: a rim and a soft pool on the
+wall behind it (glow, added). Each lamp's arm starts at the old hook. The drawing is scaled at 16 x and boxed down to
+scene pixels, its edge cut at half coverage, so the outline stays crisp. Same input, same bytes.
 """
 import os
 import numpy as np
@@ -18,18 +18,18 @@ from PIL import Image
 from scipy.ndimage import gaussian_filter, binary_erosion
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC = os.path.join(ROOT, 'tools', 'src', 'edits', 'lantern_model.webp')
-OUT = os.path.join(ROOT, 'assets', 'ichiraku_lanterns.webp')
+SRC = os.path.join(ROOT, 'tools', 'src', 'edits', 'lamp_model.webp')
+OUT = os.path.join(ROOT, 'assets', 'ichiraku_lamps.webp')
 CW, CH, COLS = 64, 100, 23
 K = 16
-LANTERNS = [  # (first row, the cell's part used, the hook in it, the lantern's top and foot rows)
-    dict(row=0, size=(54, 80), pivot=(26.5, 5.0), span=(5, 59)),
-    dict(row=3, size=(64, 100), pivot=(31.5, 5.0), span=(5, 79))]
+LANTERNS = [  # (first row, the cell's part used, the hook in it, the lamp's top and foot rows, mirrored)
+    dict(row=0, size=(54, 80), pivot=(26.5, 5.0), span=(5, 31), mirror=True),
+    dict(row=3, size=(64, 100), pivot=(31.5, 5.0), span=(5, 33), mirror=False)]
 BASE = np.array([0.19, 0.17, 0.27])        # the paper unlit, as the old base row against its lit row
 GLOW = np.array([36.0, 16.0, 10.0])        # the old halo's strongest light, along the outline
-POOL = np.array([70.0, 30.0, 14.0])        # the light the lantern throws on the wall behind it, at its strongest
-POOL_SIGMA = 7.0                           # how far that light reaches (scene px)
-ROUND = (0.45, 0.6)                        # a row's light: ROUND[0] at its edges, ROUND[0] + ROUND[1] across its middle
+POOL = np.array([115.0, 62.0, 30.0])        # the light the lamp throws on the wall behind it, at its strongest
+POOL_SIGMA = 9.0                           # how far that light reaches (scene px)
+ROUND = (1.0, 0.0)                         # (the drawing has its own volume: no extra rounding)
 
 
 def drawing():
@@ -88,26 +88,14 @@ def rows(cc, ca):
     return base, lit, glow
 
 
-def cord(base, lit, L, angle):
-    """The cord from the hook to the cap, one pixel wide, along the lantern's axis (too thin to survive the boxing)."""
-    px, py = L['pivot']; on = lit[..., 3] > 0
-    top = np.nonzero(on.any(1))[0].min()
-    t = np.tan(np.radians(angle))
-    for y in range(int(py), top):
-        x = int(np.floor(px + (y + 0.5 - py) * t))
-        for im in (base, lit):
-            im[y, x] = (24.0, 17.0, 19.0, 255.0)
-
-
 def main():
     prem, alpha = drawing()
     atlas = np.zeros((6 * CH, COLS * CW, 4))
     for L in LANTERNS:
         w, h = L['size']
+        p, a = (prem[:, ::-1], alpha[:, ::-1]) if L['mirror'] else (prem, alpha)
+        base, lit, glow = rows(*frame(p, a, L, 0.0))            # fixed to the wall: one picture for every column
         for f in range(COLS):
-            ang = -7.5 + 0.5 * f
-            base, lit, glow = rows(*frame(prem, alpha, L, ang))
-            cord(base, lit, L, ang)
             for r, im in enumerate((base, lit, glow)):
                 y = (L['row'] + r) * CH; x = f * CW
                 atlas[y:y + h, x:x + w] = im

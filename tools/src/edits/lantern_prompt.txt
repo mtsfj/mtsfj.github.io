@@ -1,5 +1,0 @@
-This is an enlarged pixel-art sprite (each sprite pixel is a 10 x 10 block) of a red Japanese paper lantern (chōchin) hanging in front of a ramen shop at night, on a flat pure green background.
-
-Redraw it as a cleaner, more detailed and slightly more three-dimensional pixel-art lantern, without exaggerating: the same silhouette, size, proportions and position; black lacquered top and bottom caps seen slightly from below, drawn as ellipses with a thin highlight; a short black cord to the hook at the top; thin bamboo ribs as horizontal bands that bow gently in perspective, wrapping around the body; soft shading darker on the left and right edges, so the body reads as round; the katakana ラーメン brushed vertically in black ink down the middle; a warm light glowing from inside, brightest in the centre.
-
-Keep the background flat pure green (#00FF00) everywhere around the lantern, with no shadow and no glow on it. Crisp pixel-art pixels. Do not add anything else.

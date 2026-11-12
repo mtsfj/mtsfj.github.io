@@ -48,8 +48,8 @@ ZONES = {
         dict(poly=[(1119, 462), (1266, 407), (1266, 560), (1236, 560), (1236, 502), (1168, 502), (1168, 560), (1119, 560)],
              method='detail', sigma=6.0, k=0.6,
              fill=[[(1134, 426), (1166, 426), (1166, 506), (1134, 506)],          # the painted steam smear
-                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # the lanterns' brackets, drawn again
-                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),       # below (BRACKETS), cleaner
+                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # the paper lanterns' brackets: the
+                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),       # wall lamps bring their own arms
     # Ichiraku's door, after the owner's second look: the vent box above it removed (the plaster runs on), the wooden
     # eave over the curtain given depth (its thickness, its lit edge, its shadow). The doorway itself, its glass and its
     # frame stay as painted: the closed shop's overlay (shop_off) and the life behind the glass are laid on them.
@@ -70,22 +70,6 @@ ZONES = {
         dict(poly=[(0, 458), (100, 458), (100, 720), (0, 720)], method='direct', unlit='lf_ratio'),
         dict(poly=[(0, 530), (80, 530), (80, 688), (0, 688)], method='hist', unlit='lf_ratio')]),   # the shoji: the painter's warm light
 }
-# What the lanterns hang from (the owner: they floated, as if behind the facade; the two lit dashes taken for strays
-# were their brackets). The left one hangs under the end of the wooden eave: its cord goes on up to the eave. The right
-# one, past the eave, from an iron bracket: a plate on the wall, an arm over the hook, a drop to it. street.js IRL: the
-# hooks at 1136.5, 496 and 1246.5, 465. Drawn after the zones, in both layers (iron does not need the power).
-IRON, IRON_EDGE = np.array([22.0, 20.0, 26.0]), np.array([78.0, 70.0, 84.0])
-
-
-def brackets(city, unlit):
-    for a in (city, unlit):
-        for y in range(489, 496): a[y, 1136, :3] = IRON                  # the left cord, on up to the eave's underside
-        a[456:463, 1254:1256, :3] = IRON; a[456:463, 1254, :3] = IRON_EDGE   # the plate on the wall, its lit side
-        a[458, 1246:1254, :3] = IRON_EDGE; a[459, 1246:1254, :3] = IRON  # the arm, its top catching the light
-        for y in range(460, 465): a[y, 1246, :3] = IRON                  # the drop to the hook
-    print('lantern hangings drawn: the left cord to the eave, the right bracket')
-
-
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448),
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
                 lit_from='door', lit_part=1)                                   # the new eave's warm light, shut
@@ -278,7 +262,6 @@ def main():
         glow, masks = zone(name, cfg, city, unlit); masks_by_zone[name] = masks
         if name == NEON_ZONE and glow is not None:
             json.dump(write_glow(glow, cfg['box']), open(os.path.join(EDITS, 'neon_glow_box.json'), 'w'))
-    brackets(city, unlit)
     for name, cfg in ZONES.items():                # the patches, cut from the finished layers (any order lays the same)
         x0, y0, x1, y1 = cfg['box']
         for tag, a in (('city', city), ('unlit', unlit)):

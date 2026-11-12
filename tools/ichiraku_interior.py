@@ -335,7 +335,7 @@ def main():
     # la palette de la boutique : son verre allumé (BEFORE), le noren et les lanternes allumés
     P = [B[0][y, x, :3] for x, y in pix if y >= 599]
     nr = I.load(NOREN[0], 'RGBA'); n1 = nr[NOREN[4]:2 * NOREN[4], :NOREN[3]]; P += list(n1[n1[..., 3] > 250][:, :3])
-    la = I.load('ichiraku_lanterns.webp', 'RGBA')
+    la = I.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src', 'edits', 'lanterns_before.webp'), 'RGBA')   # (the paper lanterns' atlas this was built from)
     for r in (1, 4):
         c = la[r * 84:(r + 1) * 84, 15 * 48:16 * 48]; P += list(c[c[..., 3] > 250][:, :3])
     pal = palette(P, 40)

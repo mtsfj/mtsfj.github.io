@@ -197,7 +197,7 @@ def lumieres():
     unlit = np.asarray(Image.open(os.path.join(RACINE, 'assets', 'street_unlit.webp')).convert('RGB'), float)
     city = np.asarray(Image.open(os.path.join(RACINE, 'assets', 'layer_city_off.webp')).convert('RGB'), float)
     soir = np.median(unlit[590:635, 1133:1146].reshape(-1, 3), 0) / 255.0 / PANNEAU      # (le panneau peint, sans courant)
-    lan = np.asarray(Image.open(os.path.join(RACINE, 'assets', 'ichiraku_lanterns.webp')).convert('RGBA'), float)
+    lan = np.asarray(Image.open(os.path.join(RACINE, 'tools', 'src', 'edits', 'lanterns_before.webp')).convert('RGBA'), float)   # (les lanternes d'origine)
     c = lan[84:150, 15 * 48:15 * 48 + 38]; c = c[c[..., 3] > 200][:, :3].mean(0)           # la lanterne de gauche allumée (droite)
     v = (city - unlit)[595:640, 1152:1182].reshape(-1, 3).mean(0)                          # ce que la vitre de la porte ajoute
     teinte = 0.7 * c / c.max() + 0.3 * np.maximum(v, 0) / v.max()
