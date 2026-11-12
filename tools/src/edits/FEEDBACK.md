@@ -33,6 +33,10 @@ street. Read this before redrawing any zone; add to it after every review.
   it the new picture darkened as the painter darkened his, channel by channel (the night's blue, not a dim orange).
 - **R14. When an object keeps failing, change the object.** After two redraws the paper lanterns still did not work;
   plain wall lamps (an iron arm, a glass shade, their light on the wall) did. Prefer the simpler fixture.
+- **R15. A pair on one wall is one way round.** Two lamps on the same wall share their orientation (not mirrored) and
+  their height follows the wall's perspective line.
+- **R16. Show options in the real street, from real references.** When a choice is open, put three or four options in
+  the street at once (the owner picks in seconds), each grounded in what real places look like.
 
 ## Verdicts
 
@@ -49,3 +53,5 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Rooftop fan, sign B, clean plaster, wooden eave, round lanterns | Kept ("c'est ce style de détail que je veux") | Legible shapes, the painter's light, a little depth | R2, R5 |
 | 2026-11-12 | Round lanterns | "pb de calque, lanterne derrière la façade ; les lanternes font vraiment aplat 2D" | I had removed their brackets (taken for stray dashes), so they floated; flat fill, a halo hugging the outline | R11, R12 |
 | 2026-11-12 | Round lanterns with brackets, shading and a light pool | "les lanternes d'Ichiraku trop moches, remplace par une light normale" | A paper lantern drawn small never read well here | R14 |
+| 2026-11-12 | Five light options in the street (red barrel, square andon, white chōchin, red ball, wall lamps) | The wall lamps, "à paralléliser" (not mirrored: one wall) | The lanterns never sat well at this size; mirrored arms read as two walls | R14, R15, R16 |
+| 2026-11-12 | Four options over the door (wooden eave, steel vent hood, tiled roof, lit lattice transom) | V3, the lattice transom without an awning | The simplest, lit from inside like the shop | R16 |

@@ -6839,12 +6839,12 @@
   function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
   LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
-  const shopOff = addTex('assets/shop_off.webp?v=6', 1112, 448, 164, 248, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
+  const shopOff = addTex('assets/shop_off.webp?v=9', 1112, 420, 164, 276, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its glass and the doors' upper panes dark (the lanterns and the noren carry their own)
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
-  const IRA = { W: 1472, H: 600, cw: 64, ch: 100 };                              // the lights' atlas: 23 columns x 6 rows; wall lamps now, the same in every column (tools/redraw_lamps.py)
+  const IRA = { W: 1472, H: 600, cw: 64, ch: 100 };                              // the lights' atlas: 23 columns x 6 rows; the wall lamps, the same in every column, their arms on the wall's perspective line (tools/redraw_lamps.py)
   const irTex = (src) => { const t = loader.load(src); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; return t; };
-  const irLanTex = irTex('assets/ichiraku_lamps.webp?v=2'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
+  const irLanTex = irTex('assets/ichiraku_lamps.webp?v=4'), irNorTex = irTex('assets/ichiraku_noren.webp?v=1');
   function irUV(m, x, y, w, h, AW, AH) {         // a mesh's quad onto an atlas cell
     const a = m.geometry.attributes.uv, u0 = x / AW, u1 = (x + w) / AW, v0 = 1 - y / AH, v1 = 1 - (y + h) / AH;
     a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;

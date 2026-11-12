@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Ichiraku's two wall lamps, one each side of its door (the owner: the paper lanterns, redrawn twice, were still not
 right; "une light normale"): assets/ichiraku_lamps.webp from one drawing (tools/src/edits/lamp_model.webp, from
-lamp_prompt.txt, on a flat green ground), mirrored for the left one so both arms reach out from the door.
+lamp_prompt.txt, on a flat green ground), both the same way round: they are on one wall (the owner).
 
     python3 tools/redraw_lamps.py        writes assets/ichiraku_lamps.webp (then its ?v= in street.js)
 
@@ -13,17 +13,21 @@ wall behind it (glow, added). Each lamp's arm starts at the old hook. The drawin
 scene pixels, its edge cut at half coverage, so the outline stays crisp. Same input, same bytes.
 """
 import os
+import sys
 import numpy as np
 from PIL import Image
 from scipy.ndimage import gaussian_filter, binary_erosion
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# The owner's choice among five options (2026-11-12): the wall lamps, both the same way round (one wall). The tool can
+# still hang and swing a lantern drawing instead (--src FILE --style lantern --feet LEFT,RIGHT), to compare options.
 SRC = os.path.join(ROOT, 'tools', 'src', 'edits', 'lamp_model.webp')
+STYLE, FEET = 'lamp', (31, 33)
 OUT = os.path.join(ROOT, 'assets', 'ichiraku_lamps.webp')
 CW, CH, COLS = 64, 100, 23
 K = 16
 LANTERNS = [  # (first row, the cell's part used, the hook in it, the lamp's top and foot rows, mirrored)
-    dict(row=0, size=(54, 80), pivot=(26.5, 5.0), span=(5, 31), mirror=True),
+    dict(row=0, size=(54, 80), pivot=(26.5, 5.0), span=(5, 31), mirror=False),
     dict(row=3, size=(64, 100), pivot=(31.5, 5.0), span=(5, 33), mirror=False)]
 BASE = np.array([0.19, 0.17, 0.27])        # the paper unlit, as the old base row against its lit row
 GLOW = np.array([36.0, 16.0, 10.0])        # the old halo's strongest light, along the outline
@@ -88,14 +92,32 @@ def rows(cc, ca):
     return base, lit, glow
 
 
+def cord(base, lit, L, angle):
+    """(lantern style) the cord from the hook to the top, a pixel wide, along the swing (too thin to survive the boxing)"""
+    px, py = L['pivot']; on = lit[..., 3] > 0
+    top = np.nonzero(on.any(1))[0].min(); t = np.tan(np.radians(angle))
+    for y in range(int(py), top):
+        x = int(np.floor(px + (y + 0.5 - py) * t))
+        for im in (base, lit): im[y, x] = (24.0, 17.0, 19.0, 255.0)
+
+
 def main():
+    # --src FILE --out FILE --style lantern --feet LEFT,RIGHT: another drawing, hung and swinging (to compare options)
+    global SRC, OUT
+    arg = lambda k, d=None: sys.argv[sys.argv.index(k) + 1] if k in sys.argv else d
+    SRC, OUT = arg('--src', SRC), arg('--out', OUT)
+    style = arg('--style', STYLE)
+    for L, f in zip(LANTERNS, map(int, arg('--feet').split(',')) if arg('--feet') else FEET): L['span'] = (L['span'][0], f)
     prem, alpha = drawing()
     atlas = np.zeros((6 * CH, COLS * CW, 4))
     for L in LANTERNS:
         w, h = L['size']
-        p, a = (prem[:, ::-1], alpha[:, ::-1]) if L['mirror'] else (prem, alpha)
-        base, lit, glow = rows(*frame(p, a, L, 0.0))            # fixed to the wall: one picture for every column
+        mirror = L['mirror'] and style == 'lamp'
+        p, a = (prem[:, ::-1], alpha[:, ::-1]) if mirror else (prem, alpha)
+        if style == 'lamp': base, lit, glow = rows(*frame(p, a, L, 0.0))   # fixed to the wall: one picture for every column
         for f in range(COLS):
+            if style == 'lantern':                               # hung: its swing, its cord
+                ang = -7.5 + 0.5 * f; base, lit, glow = rows(*frame(p, a, L, ang)); cord(base, lit, L, ang)
             for r, im in enumerate((base, lit, glow)):
                 y = (L['row'] + r) * CH; x = f * CW
                 atlas[y:y + h, x:x + w] = im

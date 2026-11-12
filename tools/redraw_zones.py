@@ -48,15 +48,13 @@ ZONES = {
         dict(poly=[(1119, 462), (1266, 407), (1266, 560), (1236, 560), (1236, 502), (1168, 502), (1168, 560), (1119, 560)],
              method='detail', sigma=6.0, k=0.6,
              fill=[[(1134, 426), (1166, 426), (1166, 506), (1134, 506)],          # the painted steam smear
-                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # the paper lanterns' brackets: the
-                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),       # wall lamps bring their own arms
-    # Ichiraku's door, after the owner's second look: the vent box above it removed (the plaster runs on), the wooden
-    # eave over the curtain given depth (its thickness, its lit edge, its shadow). The doorway itself, its glass and its
-    # frame stay as painted: the closed shop's overlay (shop_off) and the life behind the glass are laid on them.
+                   [(1130, 490), (1142, 490), (1142, 498), (1130, 498)],          # the lanterns' painted brackets:
+                   [(1244, 459), (1256, 459), (1256, 467), (1244, 467)]])]),       # the wall lamps bring their own arms
+    # Ichiraku's door, after the owner's choice among four (2026-11-12): no awning, no vent box; over the doorway a wooden
+    # lattice transom lit from inside (V3), the plaster around it. The doorway itself, its glass and its frame stay as
+    # painted: the closed shop's overlay (shop_off) and the life behind the glass are laid on them.
     'door': dict(box=(1100, 390, 1280, 580), scale=5, parts=[
-        dict(poly=[(1132, 456), (1245, 414), (1245, 452), (1132, 477)], method='detail', sigma=6.0, k=0.6,
-             fill=[[(1132, 450), (1245, 410), (1245, 456), (1132, 480)]]),
-        dict(poly=[(1131, 476), (1240, 451), (1241, 468), (1133, 492)], method='direct')]),
+        dict(poly=[(1119, 452), (1266, 397), (1266, 472), (1119, 500)], method='direct')]),
     # the plaster below, on both sides of the door, down to the pavement (the owner: the bottom was all grain, the top
     # clean; one wall, one finish). The menu board and its frame stay as painted (Luffy's posters are laid in it).
     'base': dict(box=(1100, 530, 1280, 740), scale=5, parts=[
@@ -70,9 +68,9 @@ ZONES = {
         dict(poly=[(0, 458), (100, 458), (100, 720), (0, 720)], method='direct', unlit='lf_ratio'),
         dict(poly=[(0, 530), (80, 530), (80, 688), (0, 688)], method='hist', unlit='lf_ratio')]),   # the shoji: the painter's warm light
 }
-SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448),
+SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
-                lit_from='door', lit_part=1)                                   # the new eave's warm light, shut
+                lit_from='door', lit_part=0)                                   # the lattice transom's warm light, shut
 NEON_ZONE = 'ramen'
 NEON_OUT = os.path.join(ROOT, 'assets', 'ichiraku_neon_glow.webp')
 
@@ -235,18 +233,21 @@ def call(name):
 
 def shop_off(city, masks_by_zone):
     """The closed shop's overlay (street.js: shopOff, laid over the street as the kitchen shuts): its old pixels on the
-    eave and the vent cleared, the new eave's warm light added as it looks shut (the wood without the shop's light)."""
+    eave and the vent cleared, the lattice transom's warm light added as it looks shut (the wood without the shop's light)."""
     c = SHOP_OFF; ax, ay = c['at']
-    so = load(os.path.join(EDITS, c['src'])); H, W = so.shape[:2]; box = (ax, ay, ax + W, ay + H)
+    so = load(os.path.join(EDITS, c['src']))
+    g = c.get('grow_top', 0)                       # rows added above the old overlay (street.js lays it that much higher)
+    so = np.concatenate([np.zeros((g,) + so.shape[1:]), so], 0); ay -= g
+    H, W = so.shape[:2]; box = (ax, ay, ax + W, ay + H)
     so[poly_mask(c['clear'], box)] = 0
     zb = ZONES[c['lit_from']]['box']; m = masks_by_zone[c['lit_from']][c['lit_part']]
     full = np.zeros(city.shape[:2], bool); full[zb[1]:zb[3], zb[0]:zb[2]] = m
     sub = full[ay:ay + H, ax:ax + W]; px = city[ay:ay + H, ax:ax + W, :3]
     lit = sub & (px[..., 0] > px[..., 2] + 15) & (lum(px) > 40)
-    so[lit, :3] = px[lit] * np.array([0.42, 0.36, 0.42]); so[lit, 3] = 255
+    so[lit, :3] = px[lit] * np.array([0.2, 0.17, 0.24]); so[lit, 3] = 255     # (as dark as the painter's shut glass)
     Image.fromarray(np.clip(np.round(so), 0, 255).astype(np.uint8), 'RGBA').save(
         os.path.join(ROOT, 'assets', c['out']), 'WEBP', lossless=True, quality=100, method=6, exact=True)
-    print('shop_off: cleared the old eave and vent, the new eave shut:', int(lit.sum()), 'px')
+    print('shop_off: cleared the old eave and vent, the lattice transom shut:', int(lit.sum()), 'px')
 
 
 def main():
