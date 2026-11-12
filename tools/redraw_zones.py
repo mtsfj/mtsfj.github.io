@@ -41,6 +41,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
 OUT = os.path.join(ROOT, 'tools', 'src', 'retouches')
 GAMMA = 2.0
+VP = (700.0, 615.0)                            # the street's vanishing point (measured on the painting)
 MODEL = 'google/gemini-3-pro-image'
 
 ODEN_LANTERN = dict(warm=(398, 536, 424, 573))                    # the oden's paper lantern at rest (it swings: oden_lantern*)
@@ -88,16 +89,6 @@ ZONES = {
         dict(poly=[(1118, 556), (1157, 556), (1157, 729), (1118, 729)], method='detail', sigma=6.0, k=0.6,
              cut=[[(1125, 573), (1155, 573), (1155, 651), (1125, 651)]]),
         dict(poly=[(1232, 556), (1267, 556), (1267, 731), (1232, 731)], method='detail', sigma=6.0, k=0.6)]),
-    # the narrow doorway left of Ichiraku, lit pink from the left (its awning, its arched transom and its lamp, its
-    # paneled door, plaque and letter slot, its slatted wall, its step) cleaned in the painter's light; the pole and
-    # its sign in front (x < 1066) left out (the draft had made them a slatted wall). Its box overlaps Ichiraku's zones:
-    # its before crops hold the painter's pixels there (theirs), and it runs after them
-    'pinkdoor': dict(box=(1064, 470, 1110, 735), scale=5, reach=7, parts=[   # (the drawing set it 4 px left)
-        dict(poly=[(1066, 470), (1110, 470), (1110, 735), (1066, 735)], method='detail', sigma=4.0, k=0.8, unlit='lf_ratio')]),
-    # the doorway's right side in shadow, between its frame and Ichiraku's corner (the black line at x 1117, kept):
-    # the painter's jagged black edge there made even (the owner: "tout le côté droit de la porte est bizarre")
-    'pinkedge': dict(box=(1110, 470, 1118, 735), scale=1, nodraft=True, parts=[
-        dict(poly=[(1110, 486), (1116, 486), (1116, 733), (1110, 733)], method='flat', pct=75, sigma_y=4.0)]),
     # the karate dojo at the street's left edge: its noren (four indigo panels on a rod), its shoji's lattice, its
     # signboard 心源流, its plaster strip and kick-panels, all cleaned of their grain. The dojo shuts by the hour (street.js
     # HRS: the unlit layer shown over it), so the unlit layer gets the new picture darkened as the painter darkened his.
@@ -126,9 +117,12 @@ ZONES = {
         dict(poly=[(229, 561), (277, 561), (277, 690), (229, 690)], method='detail', sigma=6.0, k=0.6,       # the planks
              cut=[[(229, 574), (271, 574), (271, 649), (229, 649)], [(229, 650), (267, 650), (267, 679), (229, 679)]]),
         dict(poly=[(229, 650), (267, 650), (267, 670), (229, 670)], method='hist'),                        # the plates
-        dict(poly=[(229, 670), (267, 670), (267, 679), (229, 679)], method='hist')]),                      # the ledge
-        # (its lit cabin redrawn crisper was not kept: "je comprends pas ce qui a changé, je préfère l'ancien"; the
-        # cabin stays tools/tabako_window.py's, and other ways of it are shown in the street first)
+        dict(poly=[(229, 670), (267, 670), (267, 679), (229, 679)], method='hist'),                        # the ledge
+        # its lit cabin as the owner chose among three shown in the street (B): a Showa tobacco shop's service window,
+        # a low glass showcase of packs under a sliding pane, a cash tray on it (kiosk_optB_model.webp); the first
+        # redraw, crisper but the same, was not kept ("je comprends pas ce qui a changé")
+        dict(poly=[(230, 575), (270, 575), (270, 648), (230, 648)], method='direct', fit='self', lit=True, shut_k=0.6,
+             model='kiosk_optB_model.webp')]),
     'oden': dict(box=(390, 462, 525, 690), scale=5, parts=[
         dict(poly=[(398, 537), (463, 537), (503, 548), (503, 664), (398, 684)], method='detail', sigma=10.0, k=0.7, unlit='lf_ratio',   # its walls, the door's wood
              # (sigma 10: its blotches are five pixels wide, wider than Ichiraku's grain; its light falls off over twenty)
@@ -248,10 +242,33 @@ def zone(name, cfg, city, unlit):
         ref = poly_mask(cfg['reg'], box)
     corr, dx, dy = (1.0, 0, 0) if cfg.get('nodraft') else register(e, on if on is not None else orig, ref, cfg.get('reach', 4))
     e = shift(e, dy, dx)
+    if cfg.get('persp'):                       # (`persp`: x where the drawing stands right. A drawing made face on, put on
+        xc = cfg['persp']                      # a wall that runs to the vanishing point: each column's heights scaled
+        X = np.arange(x0, x1) + 0.5            # about the eye line by its distance to VP over xc's, so its horizontals
+        sc = (X - VP[0]) / (xc - VP[0])        # run to VP: the lintel rises, the step falls, toward the near side)
+        Y = np.arange(y0, y1) + 0.5
+        ysrc = VP[1] + (Y[:, None] - VP[1]) / sc[None, :] - y0 - 0.5
+        yi = np.clip(np.round(ysrc).astype(int), 0, h - 1)
+        e = e[yi, np.arange(w)[None, :]]
+    if cfg.get('floor'):                       # (`floor`: yf, slope, xr. A drawing's step made level, its front edge put on
+        yf, slope, xr = cfg['floor']           # the street's slope: below row yf each column pushed down by slope (x - xr),
+        e = e.copy(); e0 = e.copy()            # what it uncovers the drawing's sill row: the recess floor seen as a wedge)
+        for xi in range(w):
+            d = int(round(slope * (x0 + xi + 0.5 - xr)))
+            if d <= 0: continue
+            r0 = yf - y0
+            e[r0 + d:, xi] = e0[r0:h - d, xi]; e[r0:r0 + d, xi] = e0[r0, xi]
+    e_zone = e
+
+    def part_draft(fname):                     # (`model`: a part drawn from its own draft, the option chosen for it,
+        ep = np.array(Image.open(os.path.join(EDITS, fname)).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
+        return shift((ep ** GAMMA) * 255.0, dy, dx)   # made from the same crop: the zone's registration holds)
+
     new, unew = orig.copy(), unlit0[..., :3].copy()
     glow = None
     for p, m, keep in zip(cfg['parts'], masks, keeps):
         pn, pu = new.copy(), unew.copy()           # (what the part is laid over: its feathered edge fades into it)
+        e = part_draft(p['model']) if p.get('model') else e_zone
         is_lit = bool(p.get('lit')) and on is not None
         if is_lit: m = m & cov                       # (a lit part: the comp's pixels, taken lit)
         if p.get('outside_comp') and on is not None: m = m & ~cov   # (the street around a lit sign, not the sign)
@@ -349,12 +366,16 @@ def zone(name, cfg, city, unlit):
         elif p['method'] == 'flat':                # a strip in shadow, even: each row one value across the strip (its
                                                    # pct percentile: above the black crumbs that broke its edge),
             from scipy.ndimage import gaussian_filter1d   # then softened down the rows (sigma_y), both layers
-            for src, dst in ((O, new), (unlit0[..., :3], unew)):
+            fc = p.get('from_cols')                # (`from_cols`: x0, x1: each row's value taken there instead, the wall
+            for src, dst in ((O, new), (unlit0[..., :3], unew)):   # beside carried across the strip, row by row)
                 rows = np.nonzero(m.any(1))[0]; fl = src.copy()
                 for y in rows:
-                    xs = np.nonzero(m[y])[0]; fl[y, xs] = np.percentile(src[y, xs], p.get('pct', 50), axis=0)
+                    xs = np.nonzero(m[y])[0]; xsrc = np.arange(fc[0] - x0, fc[1] - x0) if fc else xs
+                    fl[y, xs] = np.percentile(src[y, xsrc], p.get('pct', 50), axis=0)
                 fl = gaussian_filter1d(fl, p.get('sigma_y', 1.5), axis=0)
                 dst[m] = fl[m]
+        elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
+            new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
             sx, sy = p['src']
             new[m] = np.roll(np.roll(O, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(unlit0[..., :3], -sy, 0), -sx, 1)[m]

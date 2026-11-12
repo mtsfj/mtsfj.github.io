@@ -52,6 +52,11 @@ street. Read this before redrawing any zone; add to it after every review.
 - **R22. What is behind a foreground object goes on behind it.** Next to a pole, a sign or a tree in front, an object
   is cut by its edge and continues out of sight; it is never shrunk to fit the part that shows (the owner: "tu as voulu
   tout faire rentrer alors qu'une partie est cachée derrière le poteau, ce qui donne cette impression de comprimé").
+- **R23. Follow the neighbours' drawing, and fix perspective at the outline.** Where the painter drew a stretch face on
+  (the menu board and Ichiraku's frames by the pink door), a redrawn object there stays face on: warped alone onto the
+  vanishing point, it seems to sink into the wall. What must follow the street's lines is its outline: its step on the
+  sidewalk's slope, its meeting with the next facade. A recess in a facade on the right shows its left side (toward the
+  vanishing point), never its right one: there the frame meets the facade with a shadow line, not a pillar.
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
@@ -87,4 +92,8 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Pink doorway: its right side | "tout le côté droit de la porte est bizarre" | The painter's jagged black edge just outside the zone, next to a clean door, read as a tear: made an even strip in shadow | R9 |
 | 2026-11-12 | The pink strip left of the pole, option B: a tall lit signboard drawn by the draft | "wtf, c'est face à nous, aucune perspective, tout est faux" | Drawn face on, on a wall that recedes to the vanishing point; far too bright. Never show a draft's object before checking it is foreshortened like its wall | R3 |
 | 2026-11-12 | (same) | "tu as voulu tout faire rentrer alors qu'une partie est cachée derrière le poteau : impression de comprimé" | The whole sign squeezed into the visible strip instead of running on behind the pole | R22 |
+| 2026-11-12 | Pink door: lit warm or pink, warped onto the vanishing point | "aucune, wtf la perspective, elle s'enfonce ; prends le temps, utilise les outils des anciens agents" | Warped alone while its neighbours are drawn face on; the real faults were at its outline (a false pillar by Ichiraku, a level step) | R23 |
+| 2026-11-12 | Kiosk window options | B, the Showa showcase counter | | R16 |
+| 2026-11-12 | Pink strip left of the pole: plain wall, or a sign in perspective cut by the pole | "aucune des deux, c'est désastreux" | Kept as painted | R6, R22 |
+| 2026-11-12 | Pink door corrected: face on like its neighbours, Ichiraku's wall up to its frame, its step on the sidewalk's slope, pink or warm | "toujours désastreux" | Three passes on it made it worse: put back exactly as painted. A spot that resists twice is left as painted unless a clearly better way is found (R14) | R14 |
 
