@@ -49,7 +49,7 @@
       try { if (sessionStorage.getItem('mtsfj-opened')) open = false; } catch (e) { }
       var w = innerWidth, hh = Math.min(Math.max(innerHeight, 540), Math.max(540, 2.6 * w)), vw = w / Math.max(w / 1456, hh / 816), m = !(w >= 900 && w > innerHeight * 1.2) && vw <= 560;   // (a phone: the middle columns only, x 448 to 1008)
       var name = 'assets/poster_' + (open ? 'open' : 'settled') + (m ? '_m' : ''), P = window.__poster = { on: true, open: open, bm: null, x0: m ? 448 : 0, xw: m ? 560 : 1456 };
-      var get = function (ext) { return fetch(name + '.' + ext + '?v=2', { priority: 'high' }).then(function (r) { if (r.ok) { P.got = true; if (P.go) P.go(); } return r.ok ? r.blob() : Promise.reject(r.status); }).then(function (b) { return createImageBitmap(b); }); };   // (its answer in, its bytes coming: the street's scripts may be asked for, theirs come after)
+      var get = function (ext) { return fetch(name + '.' + ext + '?v=3', { priority: 'high' }).then(function (r) { if (r.ok) { P.got = true; if (P.go) P.go(); } return r.ok ? r.blob() : Promise.reject(r.status); }).then(function (b) { return createImageBitmap(b); }); };   // (its answer in, its bytes coming: the street's scripts may be asked for, theirs come after)
       P.ready = get('avif').catch(function () { return get('webp'); }).then(function (bm) { P.bm = bm; if (P.draw) P.draw(); }, function () { P.on = false; });
     } catch (e) { }
   })();
@@ -598,8 +598,8 @@
      false), as two scripts here would be */
   (function () {
     var go = function () { if (go.done) return; go.done = true;
-      var c = 'assets/layer_city_off.webp?v=72', E = window.__early = {}; if (window.fetch) E[c] = fetch(c);   // (the street's biggest layer, with them: street.js takes it, at the same address as its ASSETS.city)
-      ['assets/three.min.js', 'assets/street.min.js?v=4'].forEach(function (src) { var e = document.createElement('script'); e.src = src; e.async = false; document.body.appendChild(e); }); };
+      var c = 'assets/layer_city_off.webp?v=73', E = window.__early = {}; if (window.fetch) E[c] = fetch(c);   // (the street's biggest layer, with them: street.js takes it, at the same address as its ASSETS.city)
+      ['assets/three.min.js', 'assets/street.min.js?v=5'].forEach(function (src) { var e = document.createElement('script'); e.src = src; e.async = false; document.body.appendChild(e); }); };
     var P = window.__poster;
     if (P && P.on && P.ready && !P.got) { P.go = go; P.ready.then(go, go); setTimeout(go, 800); } else go();
   })();

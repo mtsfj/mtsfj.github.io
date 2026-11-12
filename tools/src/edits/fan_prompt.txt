@@ -1,0 +1,5 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is a 6 x 6 block). Edit only the rooftop outdoor air-conditioning unit in the centre: its left side face is an illegible smudge, and the panels to its right are blurry.
+
+Repaint that unit as a clean, legible pixel-art air-conditioner condenser: on its left side face, one round fan guard seen at an angle, an ellipse that follows that face's perspective (the face recedes, its top edge slopes exactly as painted), with a few concentric grille rings, spokes and a hub; crisp the edges of the rectangular panels on the right without changing their layout. Keep the unit's silhouette, size, position, front face and the orange rim light along its top edge exactly as they are.
+
+Keep everything else in the image identical: same framing, same perspective, same dark blue night palette and lighting, same pixel size, crisp pixel-art pixels with the painting's subtle dithering. Do not add any new object, text or label.

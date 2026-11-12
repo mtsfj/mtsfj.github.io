@@ -1,0 +1,9 @@
+This is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is a 5 x 5 block). It shows the front of a small ramen shop, Ichiraku, with its signboard above the door.
+
+Edit it as follows, keeping the framing, the street perspective (the signboard and the eave run toward a vanishing point far to the left, sloping down to the left exactly as painted), the dark night palette and the pixel size:
+1. Signboard: redesign it into a nicer, slightly three-dimensional wooden signboard seen from below: a dark lacquered wooden board with a framed edge, and its underside visible as a narrow strip of wood (we look up at it), not exaggerated, no neon outline around the board. On its left end, a round emblem painted on the board: a simple ramen bowl with chopsticks and a little steam, inside a circle, in warm cream and red. Then the shop name 一楽ラーメン in clean, evenly spaced orange-red neon tube letters mounted on the board, glowing softly. Same position and about the same overall size as the current board.
+2. Remove the vertical bluish steam smear on the wall to the left of the vent: the wall simply continues behind it.
+3. Wall: a clean dark plaster with fine pixel-art dithering, no random noise; keep its light falloff and the warm glow near the door.
+4. The dark box above the door is a kitchen vent hood: make its louvres legible and straight, following the perspective.
+
+Keep the lit doorway, its warm light and everything else exactly as it is. Crisp pixel-art pixels. Do not add any other object or text.
