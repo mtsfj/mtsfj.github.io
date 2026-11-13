@@ -99,7 +99,11 @@ ZONES = {
     # clean; one wall, one finish). The menu board and its frame stay as painted (Luffy's posters are laid in it).
     'base': dict(box=(1100, 530, 1280, 740), scale=5, parts=[
         dict(poly=[(1118, 556), (1157, 556), (1157, 729), (1118, 729)], method='detail', sigma=6.0, k=0.6,
-             cut=[[(1125, 573), (1155, 573), (1155, 651), (1125, 651)]]),
+             cut=[[(1128, 576), (1151, 576), (1151, 647), (1128, 647)]],          # (its wooden frame: the grain round it
+             fill=[[(1125, 573), (1155, 573), (1155, 652), (1125, 652)]]),         # cleaned too, the board none of its light)
+        # the board's shadow on the plaster under it and on its right (the lamp is above it)
+        dict(poly=[(1129, 647), (1153, 647), (1153, 649), (1129, 649)], method='shade', f=0.72),
+        dict(poly=[(1151, 579), (1152.5, 579), (1152.5, 647), (1151, 647)], method='shade', f=0.85),
         dict(poly=[(1232, 556), (1267, 556), (1267, 731), (1232, 731)], method='detail', sigma=6.0, k=0.6)]),
     # the karate dojo at the street's left edge: its noren (four indigo panels on a rod), its shoji's lattice, its
     # signboard 心源流, its plaster strip and kick-panels, all cleaned of their grain. The dojo shuts by the hour (street.js
@@ -219,6 +223,18 @@ ZONES = {
         # right of the doors, the cleaned plaster (base, to y 730) carried down to the sidewalk's line (v -0.267 there)
         dict(poly=[(1232, 731), (1267, 731), (1267, ray(1267, -0.267) + 1), (1232, ray(1232, -0.267) + 1)], method='copy',
              src=(0, -36), from_new=True)]),
+    # a blob of light behind the railing at the crossroads (the only light of the valley at 3 h): one window of the far
+    # city, its rails in front (the owner: "si seul allumé, c'est une fenêtre de la ville du fond")
+    'farwin': dict(box=(640, 622, 668, 642), nodraft=True, parts=[
+        dict(poly=[(650, 629), (658, 629), (658, 631), (650, 631)], method='from_unlit', ref=(640, 629, 645, 636)),   # (edges inclusive)
+        dict(poly=[(650, 633), (658, 633), (658, 635), (650, 635)], method='from_unlit', ref=(640, 629, 645, 636)),
+        dict(poly=[(652, 629), (654, 629), (654, 631), (652, 631)], method='paint', rgb=(226, 136, 98)),        # (the rail at
+        dict(poly=[(652, 633), (654, 633), (654, 635), (652, 635)], method='paint', rgb=(214, 124, 92))]),      # y 632 in front)
+    # the two flat shadows by the arcade (between Ichiraku and the downpipe, between the post and the arcade): the
+    # painter's green-black there made the navy of the street's deep shadows (as the dojo's gap)
+    'arcgap': dict(box=(1265, 410, 1355, 790), nodraft=True, parts=[
+        dict(poly=[(1265, 410), (1302, 410), (1302, 790), (1265, 790)], method='navy', rgb=(1, 3, 11)),
+        dict(poly=[(1319, 410), (1355, 410), (1355, 790), (1319, 790)], method='navy', rgb=(1, 3, 11))]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -516,6 +532,18 @@ def zone(name, cfg, city, unlit):
                 sb = src[y0:y1, x0:x1]; dst[wp] = sb[wp]
                 if fl.any(): dst[fl] = lowpass_filled(sb, ~wp | fl, p.get('fill_sigma', 3.0))[fl]
             m = wp | fl
+        elif p['method'] == 'from_unlit':          # (the street as the power cut has it, brought to the lit street's level:
+            r0 = p['ref']; rr = (slice(r0[1] - y0, r0[3] - y0), slice(r0[0] - x0, r0[2] - x0))   # a light that only the lit
+            g = np.median((O[rr] + 1.0) / (unlit0[..., :3][rr] + 1.0), axis=(0, 1))          # layer had, gone; `ref` a box
+            new[m] = np.clip(unlit0[..., :3] * g, 0, 255)[m]                                # where both are the same scene)
+        elif p['method'] == 'paint':               # (one colour, lit layer only: a small thing drawn on the pixel grid)
+            new[m] = np.array(p['rgb'], float)
+            if p.get('unlit_rgb'): unew[m] = np.array(p['unlit_rgb'], float)
+        elif p['method'] == 'navy':                # (the painter's green-black of a deep shadow made the night's navy, its own
+            for arr in (new, unew):                # values kept as ratios: what is that dark and greener than blue)
+                L = lum(arr); gb = m & (arr[..., 1] >= arr[..., 0] + 1) & (arr[..., 1] >= arr[..., 2] + 1) & (L < p.get('below', 10))
+                ref = np.array(p['rgb'], float); k = np.clip(L / max(lum(ref[None, None, :])[0, 0], 1e-3), 0.5, 2.0)
+                arr[gb] = (ref[None, None, :] * k[..., None])[gb]
         elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
             new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers

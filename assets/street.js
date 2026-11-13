@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=80", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=81", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=80') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=81') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -672,7 +672,7 @@
   const LC = { x: 883, top: 165, foot: 767, walk: 752 };   // foot: the road under the glass (row 767, the lowest ground: the drops' wrap row, the cone's height); walk: the sidewalk at the pole's foot (752)
   const lcFoot = (x) => x >= 1002 ? LC.walk : x <= 972 ? LC.foot : 615 + (x - 700) / 1.986;   // the ground under column x: the sidewalk right of the curb's top line, the road left of the curb's foot, the curb's face between (zone 10's curb: x = 700 + 1.986 (y - 615))
   const lampComp = comps.find((c) => c.userData.name === 'lamp');
-  const lcPool = plane('assets/lamp_pool.webp', 673, 707, 420, 90, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });   // on the road, over the water's sheet: its shape without zone 10's puddles (build_zzzanim_lamppool.py), faint over the light zone 10 paints there
+  const lcPool = plane('assets/lamp_pool.webp?v=2', 673, 707, 420, 90, 1.16, { opacity: 0, blending: THREE.AdditiveBlending });   // on the road, over the water's sheet: its shape without zone 10's puddles (build_zzzanim_lamppool.py), faint over the light zone 10 paints there
   // the lit rain: the rain's own drops, lit where they cross the cone. Each is a crisp line, 1 px wide and 4-8 px long, on whole pixels,
   // slanted as the rain falls (its fall and its wind, gust.k), its tail stepping down three alpha steps (no gradient). Every pixel is a
   // 1 x 1 quad of one mesh, so nothing is filtered or smoothed. They fill the cone from the glass (42 px wide) down to the ground,
@@ -714,6 +714,7 @@
     const d = new Uint8Array(W * H * 4), t = new THREE.DataTexture(d, W, H, THREE.RGBAFormat); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.needsUpdate = true;
     later(() => {                                // (its pixels just after the first frame: FIRST)
     const L = new Float32Array(BW * BH), S = AIR.sky, sl = S[S.length - 1];
+    const inPole = (x, y) => { for (const r of COCC.pole.runs) if (y >= r[0] && y <= r[1]) return x >= r[2] && x <= r[3]; return false; };   // (COCC: the pole's trace)
     const hs = (x, y, z) => { let h = Math.imul(x ^ Math.imul(y, 0x27d4eb2d) ^ Math.imul(z, 0x165667b1), 0x9e3779b1); h ^= h >>> 15; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };   // a stable draw, 0..1
     const skyX = (y) => { if (y >= sl[0]) return y <= sl[0] + 6 ? sl[1] : -1e9; let k = 1; while (S[k][0] < y) k++; return y <= S[0][0] ? S[0][1] : S[k - 1][1] + (S[k][1] - S[k - 1][1]) * (y - S[k - 1][0]) / (S[k][0] - S[k - 1][0]); };   // where the sky ends, by row
     for (let j = 0; j < BH; j++) for (let i = 0; i < BW; i++) L[j * BW + i] = lcLit(2 * (bx0 + i) + 1, 2 * (by0 + j) + 1);   // the light at each block's centre
@@ -728,6 +729,7 @@
         let b = r < f[0] ? 0 : r < f[1] ? 1 : r < f[2] ? 2 : r < f[3] ? 3 : -1; if (b < 0) continue;
         if (b < 3 && hs(bx, by, 20 + key) < sky) b = 3;   // (over the sky: the faintest band)
         const x = 2 * bx + (q & 1) - X0, y = 2 * by + (q >> 1) - LC.top; if (x < 0 || x >= W || y < 0 || y >= H) continue;
+        if (inPole(X0 + x, LC.top + y)) continue;   // (the pole stands in front of the lit air: no dabs on it, it reads solid)
         const o = ((H - 1 - y) * W + x) * 4; d[o] = 255; d[o + 1] = 220; d[o + 2] = 188; d[o + 3] = AIR.a[b];
       }
     }
@@ -4058,7 +4060,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=59', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=60', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
