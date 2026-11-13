@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=78", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=4", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=79", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=78') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=79') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -286,7 +286,7 @@
   // a light's stutter on the clock, not a coin flipped each frame: true with probability p in each slot of `step` seconds (a hash
   // of its seed and the slot), so it reads the same at 60 and 144 Hz (lumieres-02)
   function stutOn(t, seed, step, p) { const x = Math.sin(seed * 12.9898 + Math.floor(t / step) * 78.233) * 43758.5453; return x - Math.floor(x) < p; }
-  const COMP_KIND = { win_dojo: 'home', win_z1_violet: 'tv', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study' };
+  const COMP_KIND = { win_dojo: 'home', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name === 'z5_spill' || name === 'win_z4_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
     const kind = COMP_KIND[name] || (name.startsWith('win') ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
@@ -4058,7 +4058,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=57', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=58', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6075,7 +6075,7 @@
     return box;
   }
   // the switch box: 9 x 14 px on the hall's wall (x 1010-1018, y 597-610, about 1.4-1.6 m over its floor), drawn a
-  // pixel at a time in the painting's own values (the air's haze over it, as over the pillar): its outline, its bottom stepping down to the right (the facade's lines toward 700, 615), its wet
+  // pixel at a time in the painting's own values (the air's haze over it): no outline, its bottom stepping down to the right (the facade's lines toward 700, 615), its wet
   // top, its lit side, two toggles in their recesses (up: on), two pilot lights' sockets; lit as the street is (the
   // hours' grade, the red night's) and by the hall's pink light over its face, out with the street's power there
   const SWB = { x: 1010, y: 597, w: 9, h: 14, st: -1, graded: false, panel: null };
@@ -6084,8 +6084,8 @@
   const swTex = swPx(swC);
   const swMesh = new THREE.Mesh(new THREE.PlaneGeometry(SWB.w, SWB.h), new THREE.MeshBasicMaterial({ map: swTex, transparent: true, depthWrite: false }));
   swMesh.position.set(SWB.x + SWB.w / 2, -(SWB.y + SWB.h / 2), 0.04); scene.add(swMesh);
-  const swRim = new THREE.Mesh(new THREE.PlaneGeometry(SWB.w - 2, SWB.h - 2), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.15, 0.06, 0.1), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-  swRim.position.set(SWB.x + SWB.w / 2, -(SWB.y + SWB.h / 2), 0.041); scene.add(swRim);   // (the hall's pink light on its face)
+  const swRim = new THREE.Mesh(new THREE.PlaneGeometry(SWB.w, SWB.h - 1), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.15, 0.06, 0.1), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  swRim.position.set(SWB.x + SWB.w / 2, -(SWB.y + (SWB.h - 1) / 2), 0.041); scene.add(swRim);   // (the hall's pink light on its face)
   const swLedC = document.createElement('canvas'); swLedC.width = swLedC.height = 3;
   (function () { const g = swLedC.getContext('2d'); g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(1, 0, 1, 3); g.fillRect(0, 1, 3, 1); g.fillStyle = '#fff'; g.fillRect(1, 1, 1, 1); })();
   const swLed = [[2, new THREE.Color(1, 0.2, 0.14)], [6, new THREE.Color(1, 0.88, 0.7)]].map(([x, c]) => {   // the pilot lights: the red night's, the moon's
@@ -6095,11 +6095,11 @@
   function swDraw(red, moon) {
     const g = swg, P = (c, x, y, w, h) => { g.fillStyle = c; g.fillRect(x, y, w || 1, h || 1); };
     g.clearRect(0, 0, SWB.w, SWB.h);
-    P('#06090e', 0, 0, 9, 13); P('#06090e', 5, 13, 4, 1);           // the outline; the bottom a pixel lower on the right
-    P('#151926', 1, 1, 7, 11); P('#151926', 5, 12, 3, 1);           // the body (a shade off the pillar's own navy, as painted)
-    P('#1a1d2c', 1, 2, 1, 9);                                       // its side toward the Center
-    P('#202436', 1, 1, 7, 1);                                       // the wet top
-    P('#0c0f18', 1, 11, 4, 1); P('#0c0f18', 5, 12, 3, 1);           // the shade under it
+    P('#151926', 0, 0, 9, 13); P('#151926', 5, 13, 4, 1);           // the body, no outline (the painter draws none: its
+                                                                    // edges are its light), its bottom a pixel lower on the right
+    P('#1a1d2c', 0, 1, 1, 11);                                      // its lit side
+    P('#202436', 0, 0, 9, 1);                                       // the wet top
+    P('#0f121c', 0, 12, 5, 1); P('#0f121c', 5, 13, 4, 1);           // the shade under it
     P('#080a0f', 2, 3); P('#080a0f', 6, 3);                         // the pilot lights' sockets
     for (const [x, up] of [[2, red], [5, moon]]) {                  // the toggles in their recesses
       P('#07090e', x, 5, 2, 5);
@@ -8533,7 +8533,6 @@
     { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=1', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
     { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=2', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
     { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=2', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
-    { src: 'win_z1_violet', url: 'assets/gl_win_z1_violet.webp?v=2', box: [204, 688, 815, 85], comp: 'win_z1_violet' },   // 1.1 % of the ground's light, +9 at most
     { src: 'ramen', url: 'assets/gl_ramen.webp?v=6', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
     { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=2', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
     { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most

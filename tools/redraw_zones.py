@@ -73,6 +73,7 @@ ODEN_OVL = dict(lantern=[('oden_lantern', 'city'), ('oden_lantern_off', 'unlit')
 POLE_RUNS = [[50, 52, 1026, 1063], [53, 53, 1024, 1063], [54, 57, 1023, 1063], [58, 65, 1025, 1063], [66, 90, 1025, 1064],
              [91, 93, 1024, 1064], [94, 454, 1023, 1064], [455, 529, 1023, 1068], [530, 665, 1022, 1068],
              [666, 719, 1023, 1068], [720, 742, 1023, 1065], [743, 749, 1024, 1065], [750, 751, 1036, 1065]]
+B_PLASTER = dict(face=1.0, tone=(210, 210, 222), ch=0.3)   # (the building left of the pole: its one plaster)
 WALL_TOL = 24                                  # (a frame's pixel within this of the layer's is its wall, maybe lit by the lantern)
 PAN_TOL = 40                                   # (the leaf's, resampled at each step: its lit edges are much further)
 
@@ -185,12 +186,19 @@ ZONES = {
         # from under the shop's ledge (zone5's ray) to the foot of the wall, past it under the bicycle and the bucket
         # (their wheels and base on the sidewalk); its lit left arris (x 941) and the hall (x 1004 on) left as they are
         dict(poly=[(942, ray(942, 0.390)), (1004, ray(1004, 0.390)), (1004, ray(1004, -0.283) + 1), (996, ray(996, -0.283) + 1),
-                   (996, 704), (948, 704), (948, ray(948, -0.283) + 1), (942, ray(942, -0.283) + 1)], method='direct', unlit='rel')]),
+                   (996, 704), (948, 704), (948, ray(948, -0.283) + 1), (942, ray(942, -0.283) + 1)], method='direct', unlit='rel',
+             # its wall the plaster's tint over the ledge (the owner: "pas la même teinte"); the shop window's frame and
+             # room as drawn, the sidewalk under the bicycle as the painter's
+             match=dict(plaster=B_PLASTER, src=(943, 1000, 0.43, 0.47), dst=(947, 1000, 0.25, 0.38), v_min=-0.283,
+                        skip=[[(956, ray(956, 0.2245)), (1000, ray(1000, 0.2245)), (1000, ray(1000, -0.105)), (956, ray(956, -0.105))]]))]),
     # the same building's floors above it in the plain plaster of its ground floor, the whole front one material (the
     # owner, choosing the shop window: "unifier sa texture sur tout le bât"; zone5 had given it weatherboards); its two lit
     # windows' overlays, which carry the wall beside them, take the same change (`comps`, from <name>_before.webp)
-    'bwall': dict(box=(940, 60, 1023, 522), nodraft=True, comps=[('win_z1_top', 963, 226), ('win_z1_violet', 1006, 358)], parts=[
-        dict(poly=[(941, 60), (1023, 60), (1023, 522), (941, 522)], method='zone5', v0=0.390, face=1.0, tone=(210, 210, 222), ch=0.3)]),
+    # its two narrow windows right of the big ones go (the owner: "vire les petites fenêtres à droite des grosses"),
+    # plaster over them, filled from round them (the violet one's lit overlay and its light on the ground go with it)
+    'bwall': dict(box=(940, 60, 1023, 522), nodraft=True, comps=[('win_z1_top', 963, 226)], parts=[
+        dict(poly=[(941, 60), (1023, 60), (1023, 522), (941, 522)], method='zone5', v0=0.390, **B_PLASTER,
+             fill=[(1006, 1022, 0.991, 1.283), (1006, 1022, 0.5235, 0.801)])]),   # (zone5's boxes for them, sills included)
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -418,6 +426,16 @@ def zone(name, cfg, city, unlit):
                 wgt = np.clip(1 - np.hypot(xx + 0.5 - gx, yy + 0.5 - gy) / gr, 0, 1)[..., None]
                 gl = np.stack([gaussian_filter(O[..., c], 1.5) - gaussian_filter(ec[..., c], 1.5) for c in range(3)], -1)
                 ec = np.clip(ec + wgt * np.clip(gl, 0, 255), 0, 255)
+            if p.get('match'):                     # (`match`: its wall brought to the tint of the plaster over it, channel by
+                q = p['match']                     # channel: the mean of `src` (x0, x1, v0, v1) in zone5_plaster over the mean
+                c5, _, ch5, V5 = zone5_plaster(**q['plaster'])   # of `dst` here, on the part off `skip` and above v_min)
+                Vb = V5[y0:y1, x0:x1]; Xb = np.arange(x0, x1)[None, :] + np.zeros((h, 1))
+                box_ = lambda r: (Xb >= r[0]) & (Xb <= r[1]) & (Vb >= r[2]) & (Vb <= r[3])
+                sk = np.any([poly_mask(k, box) for k in q.get('skip', [])], 0) if q.get('skip') else np.zeros_like(m)
+                gm = m & ~sk & (Vb >= q.get('v_min', -9))
+                tgt = c5[y0:y1, x0:x1][box_(q['src']) & ch5[y0:y1, x0:x1]].mean(0); own = ec[box_(q['dst']) & gm].mean(0)
+                ec = ec.copy(); ec[gm] = np.clip(ec[gm] * (tgt / np.maximum(own, 1e-3)), 0, 255)
+                print(f'{name}: wall tint matched to the plaster, gains {np.round(tgt / np.maximum(own, 1e-3), 3).tolist()}')
             if p.get('neon'):
                 # the tubes and their light: warm, saturated, brighter than the board around them
                 L = lum(ec); sat = ec.max(-1) - ec.min(-1)
@@ -467,8 +485,17 @@ def zone(name, cfg, city, unlit):
                 dst[m] = fl[m]
         elif p['method'] == 'zone5':               # (B's facade in plaster: zone5_plaster, above the ray v0 (its ground floor
             c5, u5, ch5, V5 = zone5_plaster(p['face'], tuple(p['tone']), p['ch'])   # a zone of its own))
-            m = m & ch5[y0:y1, x0:x1] & (V5[y0:y1, x0:x1] >= p['v0'])
-            new[m] = c5[y0:y1, x0:x1][m]; unew[m] = u5[y0:y1, x0:x1][m]
+            m = m.copy()
+            Vb = V5[y0:y1, x0:x1]; Xb = np.arange(x0, x1)[None, :] + np.zeros((h, 1))
+            wp = m & ch5[y0:y1, x0:x1] & (Vb >= p['v0'])
+            fl = np.zeros_like(m)                  # (`fill`: what goes into the plaster too, boxes on the rays (x0, x1, v0,
+            for a, b, va, vb in p.get('fill', []):   # v1): a window taken out, the plaster from round it)
+                fl |= (Xb >= a) & (Xb <= b) & (Vb >= va) & (Vb <= vb)
+            fl &= m
+            for src, dst in ((c5, new), (u5, unew)):
+                sb = src[y0:y1, x0:x1]; dst[wp] = sb[wp]
+                if fl.any(): dst[fl] = lowpass_filled(sb, ~wp | fl, p.get('fill_sigma', 3.0))[fl]
+            m = wp | fl
         elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
             new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
