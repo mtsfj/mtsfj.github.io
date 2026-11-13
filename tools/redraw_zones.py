@@ -245,6 +245,9 @@ ZONES = {
         dict(poly=[(796, 572), (828, 572), (828, 592), (796, 592)], method='hand', fn='end_house.lantern', comp='win_z9_lantern')]),
     'z9win': dict(box=(800, 496, 866, 536), nodraft=True, parts=[
         dict(poly=[(800, 496), (866, 496), (866, 536), (800, 536)], method='hand', fn='end_house.window', comp='win_z9_window')]),
+    # the right pole's foot planted in the sidewalk (the owner: "la transition poteau trottoir pas dingue"): solid to the
+    # ground, its foot an ellipse, its contact shadow; drawn by tools/pole_foot.py, after pole and bfloor (it overlaps them)
+    'polefoot': dict(box=(995, 690, 1100, 800), tool='pole_foot'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -338,6 +341,12 @@ def zone5_plaster(face, tone, ch, at='cd2d002^'):
 
 
 def zone(name, cfg, city, unlit):
+    if cfg.get('tool'):                        # (`tool`: a zone drawn by its own module, tools/<tool>.py: its draw(city,
+        import importlib                       # unlit, box), on the layers as the zones before it left them)
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        ch = importlib.import_module(cfg['tool']).draw(city, unlit, cfg['box'])
+        print(f'{name}: drawn by tools/{cfg["tool"]}.py; pixels changed {int(ch.sum())}')
+        return None, []
     box = cfg['box']; x0, y0, x1, y1 = box; w, h = x1 - x0, y1 - y0
     city0, unlit0 = city[y0:y1, x0:x1].copy(), unlit[y0:y1, x0:x1].copy()
     orig = city0[..., :3]
