@@ -295,6 +295,18 @@ ZONES = {
         dict(poly=BOARD, method='detail', sigma=6.0, k=1.0, fill=[BOARD], lf_fill=[(1121, 566, 1152, 655)],
              tex=[([(1121, 566), (1152, 566), (1152, 615), (1121, 615)], (0, 104)),
                   ([(1121, 616), (1152, 616), (1152, 655), (1121, 655)], (0, 54))])]),
+    # the right pole's concrete (the owner: "texture poto"): a near black green column with a lit stripe, an outline, an
+    # orange rim with gaps and a stack of smeared bands, now a concrete cylinder in the painter's light (its lit side
+    # round from the left, its shade the night's navy, his rim continuous, a fine even grain on its own surface), its
+    # bands, bolt and conduits crisp; its cap, its sign and its foot's shape kept. Drawn by tools/pole_texture.py, after
+    # pole, bfloor, bwall and polefoot (it overlaps them); it also writes the rim's sun mask (assets/street_sun.webp)
+    'poletex': dict(box=(1005, 44, 1070, 757), tool='pole_texture'),
+    # the street lamp the pole carries (the owner: "luminaire du poteau"): its head a model in the street's camera (a
+    # steel hood, a milky lens under it, lit in its comp, off and in the power cut in the layers), its arm one clean
+    # tube, its bracket two straps to the pole's bands; the old head and arm gone from the sky, the wall behind them
+    # carried along its rays. Drawn by tools/pole_lamp.py, after poletex; it also writes assets/lamp.webp (its lit comp)
+    # and assets/night_far.webp over its box
+    'polelamp': dict(box=(845, 128, 1023, 230), tool='pole_lamp'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
