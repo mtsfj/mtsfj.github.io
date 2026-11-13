@@ -45,6 +45,12 @@ VP = (700.0, 615.0)                            # the street's vanishing point (m
 MODEL = 'google/gemini-3-pro-image'
 
 ODEN_LANTERN = dict(warm=(398, 536, 424, 573))                    # the oden's paper lantern at rest (it swings: oden_lantern*)
+def ray(x, v):
+    """The row of the ray v at column x: a line on a right facade running to VP (v = (615 - y) / (x - 700), as
+    tools/zone5_facades.py: its ledges, the foot of its walls at v = -0.283)."""
+    return VP[1] - v * (x + 0.5 - VP[0]) - 0.5
+
+
 def circle(cx, cy, r, n=48):
     """A round polygon (a sign seen face on)."""
     return [(cx + r * np.cos(2 * np.pi * i / n), cy + r * np.sin(2 * np.pi * i / n)) for i in range(n)]
@@ -62,6 +68,11 @@ ODEN_OVL = dict(lantern=[('oden_lantern', 'city'), ('oden_lantern_off', 'unlit')
                 door='oden_door', pan_box=(421, 580, 40, 91), pan_wood=621,   # (its wood: below the glass, y 621)
                 pan_cells=[[0, 122], [41, 122], [82, 122], [0, 214], [41, 214], [82, 214], [0, 306], [41, 306], [82, 306],
                            [0, 398], [41, 398], [82, 398], [0, 490], [41, 490], [82, 490], [0, 582], [41, 582]])
+# the right pole as street.js traces it (COCC.pole: rows y0..y1, columns x0..x1, from the painting): what stands in front
+# of a zone redrawn whole behind it (`front`), laid back over the drawing as painted
+POLE_RUNS = [[50, 52, 1026, 1063], [53, 53, 1024, 1063], [54, 57, 1023, 1063], [58, 65, 1025, 1063], [66, 90, 1025, 1064],
+             [91, 93, 1024, 1064], [94, 454, 1023, 1064], [455, 529, 1023, 1068], [530, 665, 1022, 1068],
+             [666, 719, 1023, 1068], [720, 742, 1023, 1065], [743, 749, 1024, 1065], [750, 751, 1036, 1065]]
 WALL_TOL = 24                                  # (a frame's pixel within this of the layer's is its wall, maybe lit by the lantern)
 PAN_TOL = 40                                   # (the leaf's, resampled at each step: its lit edges are much further)
 
@@ -137,6 +148,34 @@ ZONES = {
              keep=[dict(warm=(436, 519, 457, 540))]),                                           # (the lamp over the noren)
         dict(poly=[(420, 537), (463, 537), (463, 580), (420, 580)], method='hist', unlit='lf_ratio',
              keep=ODEN_KEEP + [dict(warm=(436, 519, 457, 540))])]),                              # the noren
+    # the ground floors on either side of the right pole, drawn whole behind it (the owner: "fais un truc global
+    # derrière le poteau et après tu repasses le poteau devant"): the draft asked of the street with the pole taken
+    # out (its crop 9:16, not stretched), the pole laid back over it as painted (`front`, its trace in street.js), so
+    # the walls run on behind it and nothing is squeezed into the strips beside it. Left, the apartment building's lit
+    # hall (its lamp, intercom and panels, mush at this size, gone: its wall alone, lit); right, the house's entrance
+    # (its awning, its frosted transom and sidelight lit, a dark door with a slit window, its step on the sidewalk's
+    # line) and its planked wall up to the pole (no more "garage"). From the ledges (zone5's rays) to the foot of the
+    # walls (v -0.283); after Ichiraku's zones, whose box it overlaps.
+    'pole': dict(box=(990, 425, 1170, 745), scale=6, front=POLE_RUNS, fringe=15,
+                 reg=[[(992, 428), (1020, 428), (1020, 470), (992, 470)],               # (what the draft kept: the floors
+                      [(1072, 428), (1110, 428), (1110, 440), (1072, 440)],             # above, Ichiraku)
+                      [(1122, 430), (1168, 430), (1168, 740), (1122, 740)]], parts=[
+        dict(poly=[(1004, ray(1004, 0.390)), (1022, ray(1022, 0.390)), (1069, ray(1069, 0.3955)), (1117, ray(1117, 0.3955)),
+                   (1117, ray(1117, -0.283) + 1), (1004, ray(1004, -0.283) + 1)], method='direct', unlit='rel',
+             erase=[[(1006, 563), (1022, 563), (1022, 665), (1006, 665)]],              # (the hall's lamp, intercom, panels)
+             erase_from=[(1006, 540), (1022, 540), (1022, 699), (1006, 699)]),          # (its lit wall)
+        # a post at the awning's right end, under Ichiraku's sign (a bracket? it reads as a stray thing): the awning
+        # and the ledge over it continued from 10 px to its left, along their ray (4 rows down)
+        dict(poly=[(1103, 448), (1112, 448), (1112, 479), (1103, 479)], method='copy', src=(-10, 4), from_new=True),
+        dict(poly=[(1112, 455), (1117, 455), (1117, 479), (1112, 479)], method='copy', src=(-10, 4), from_new=True),
+        # (and on to Ichiraku's wall, from what the first copy laid)
+        # the foot of Ichiraku's wall beside the step (the owner: "moche, trottoir à côté d'Ichiraku"): a speckled band
+        # under its cleaned plaster (base, to y 728). The plaster down to the facades' foot (v -0.283, as the step), its
+        # rows from higher up; under that line the sidewalk, the painter's own from 30 px to the left along the line
+        dict(poly=[(1116, 729), (1157, 729), (1157, ray(1157, -0.283) + 1), (1116, ray(1116, -0.283) + 1)], method='copy',
+             src=(0, -16), from_new=True),
+        dict(poly=[(1117, ray(1117, -0.283) + 1), (1157, ray(1157, -0.283) + 1), (1157, 743), (1117, 743)], method='copy',
+             src=(-30, -8))]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -219,11 +258,15 @@ def zone(name, cfg, city, unlit):
     else:
         e = np.array(Image.open(os.path.join(EDITS, f'{name}_model.webp')).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0
         e = (e ** GAMMA) * 255.0
+    front = np.zeros((h, w), bool)             # (`front`: runs of what stands in front, as street.js traces it: the zone
+    for ya, yb, xa, xb in cfg.get('front', []):    # drawn whole behind it, it laid back over the drawing as painted)
+        front[max(ya - y0, 0):max(yb + 1 - y0, 0), max(xa - x0, 0):max(xb + 1 - x0, 0)] = True
     masks, keeps = [], []
     for p in cfg['parts']:
         m = poly_mask(p['poly'], box)
         for q in p.get('cut', []): m &= ~poly_mask(q, box)
         k = obj_masks(p.get('keep', []), orig, box); m &= ~k
+        m &= ~front
         masks.append(m); keeps.append(k)
     on = None                                  # a lit window's zone (`comp`: its comp's name and place): the draft was
     if cfg.get('comp'):                        # made of it lit, the street with the comp laid on it
@@ -238,8 +281,10 @@ def zone(name, cfg, city, unlit):
     allm = np.any(masks, 0); ref = ~binary_dilation(allm, iterations=3); ref[:6] = ref[-6:] = False; ref[:, :6] = ref[:, -6:] = False
     if ref.sum() < 200:                        # (a zone redrawn whole: registered on all of it, its margins aside)
         ref = np.zeros_like(allm); ref[6:-6, 6:-6] = True
-    if cfg.get('reg'):                         # (`reg`: where the drawing and the painting match, to register on)
-        ref = poly_mask(cfg['reg'], box)
+    if cfg.get('reg'):                         # (`reg`: where the drawing and the painting match, to register on: a
+        regs = cfg['reg'] if isinstance(cfg['reg'][0][0], (list, tuple)) else [cfg['reg']]   # polygon, or several)
+        ref = np.any([poly_mask(q, box) for q in regs], 0)
+    ref = ref & ~binary_dilation(front, iterations=3)   # (a drawing made without what stands in front: not there)
     corr, dx, dy = (1.0, 0, 0) if cfg.get('nodraft') else register(e, on if on is not None else orig, ref, cfg.get('reach', 4))
     e = shift(e, dy, dx)
     if cfg.get('persp'):                       # (`persp`: x where the drawing stands right. A drawing made face on, put on
@@ -319,6 +364,10 @@ def zone(name, cfg, city, unlit):
             else:
                 new[m] = out[m]; unew[m] = np.clip(ul * ratio, 0, 255)[m]
         elif p['method'] == 'direct':
+            if p.get('erase'):                     # (`erase`: what the drawing put there that reads as mush, gone: the wall
+                er = np.any([poly_mask(q, box) for q in p['erase']], 0)   # (`erase_from`) continued through it, its
+                wl = poly_mask(p['erase_from'], box) if p.get('erase_from') else m   # low frequencies from around)
+                e = np.where(er[..., None], lowpass_filled(e, er | ~wl, p.get('erase_sigma', 3.0)), e)
             fit = m if p.get('fit') in ('self', 'self_red') else ref   # (`fit='self'`: the tint fitted on the part
             A = [np.polyfit(e[..., c][fit], O[..., c][fit], 1) for c in range(3)]   # itself, a sign's colours on the
             ec = np.stack([np.clip(A[c][0] * e[..., c] + A[c][1], 0, 255) for c in range(3)], -1)   # painter's own;
@@ -355,6 +404,14 @@ def zone(name, cfg, city, unlit):
                     disc = m & (((xx - cx) ** 2 + (yy - cy) ** 2) <= r * r)
                     base[disc] = 0.55 * ec[disc]; glow[disc] = 0.45 * ec[disc]
                 new[m] = base[m]; unew[m] = base[m]
+            elif p.get('unlit') == 'rel':
+                # (a drawing whose lights are not where the painter's were: the power cut is the painter's own dark there,
+                # his unlit layer smoothed over the part, with the drawing's shapes on it as ratios to their surroundings,
+                # softened (urel): its frames and panes faint in the dark, none of its glow)
+                s = p.get('usigma', 6.0); hole = ~m
+                ulf = lowpass_filled(unlit0[..., :3], hole, s)
+                Le = lum(ec); rel = (Le + 1.0) / (lum(lowpass_filled(ec, hole, s)) + 1.0)
+                new[m] = ec[m]; unew[m] = np.clip(ulf * (rel ** p.get('urel', 0.6))[..., None], 0, 255)[m]
             elif p.get('unlit') == 'lf_ratio':
                 # the unlit layer: the new picture times the painter's own darkening there (unlit over lit, smoothed),
                 # so the lattice is the new one and the shut dojo as dark as the painter made it
@@ -377,8 +434,9 @@ def zone(name, cfg, city, unlit):
         elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
             new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
-            sx, sy = p['src']
-            new[m] = np.roll(np.roll(O, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(unlit0[..., :3], -sy, 0), -sx, 1)[m]
+            sx, sy = p['src']                      # (`from_new`: the zone's new pixels there, an earlier part's, instead)
+            cs, cu = (new.copy(), unew.copy()) if p.get('from_new') else (O, unlit0[..., :3])
+            new[m] = np.roll(np.roll(cs, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(cu, -sy, 0), -sx, 1)[m]
         if p.get('feather'):                       # its edge on the old painting: a ramp over `feather` pixels, no seam
             from scipy.ndimage import distance_transform_edt
             wgt = np.clip(distance_transform_edt(poly_mask(p['poly'], box)) / p['feather'], 0, 1)[..., None]
@@ -396,6 +454,16 @@ def zone(name, cfg, city, unlit):
             comp = COMP_OUT.setdefault(name, [cname, cb.copy(), csl])[1]
             sub = m[csl]; comp[..., :3][sub] = litp[csl][sub]; comp[..., 3][sub] = 255
             new[m] = offp[m]; unew[m] = np.clip(unlit0[..., :3] * (offp + 1.0) / (orig + 1.0), 0, 255)[m]
+    if front.any() and cfg.get('fringe'):      # (`fringe`: the edge pixel of what stands in front, where it was a blend of its
+        done = np.any(masks, 0)                # outline and the old background (brighter than its outline by more than
+        for arr, src in ((new, orig), (unew, unlit0[..., :3])):   # `fringe`), blended again, half its outline, half the
+            L = lum(src)                       # new background beside it
+            for y in range(h):
+                xs = np.nonzero(front[y])[0]
+                if len(xs) < 3: continue
+                for xe, inner, out in ((xs[0], xs[0] + 1, xs[0] - 1), (xs[-1], xs[-1] - 1, xs[-1] + 1)):
+                    if 0 <= out < w and done[y, out] and L[y, xe] - L[y, inner] > cfg['fringe']:
+                        arr[y, xe] = 0.5 * src[y, inner] + 0.5 * arr[y, out]
     if cfg.get('despeckle'):                   # (`despeckle` on the zone: what its parts laid side by side left as a lone
         from scipy.ndimage import median_filter   # bright pixel, the street's and the power cut's, takes its neighbours')
         done = np.any(masks, 0) | (cov if on is not None else False)
@@ -422,21 +490,25 @@ def write_glow(glow, box):
 
 def call(name):
     import base64, urllib.request
+    name, _, opt = name.partition(':')         # (NAME:OPT: an option, from <zone>_opt<OPT>_prompt.txt to its own model)
+    tag = f'_opt{opt}' if opt else ''
     cfg = ZONES[name]; x0, y0, x1, y1 = cfg['box']; s = cfg['scale']
     src = os.path.join(EDITS, f'{name}_before_on.webp')    # (a lit window's zone: the draft is asked of it lit)
+    din = os.path.join(EDITS, f'{name}_draft_in.webp')     # (a zone over cleaned neighbours: asked of the street as
+    if os.path.exists(din): src = din                      # it is now, the zones before it done)
     z = load(src if os.path.exists(src) else os.path.join(EDITS, f'{name}_before_city.webp'))[..., :3] / 255.0
     im = Image.fromarray((np.clip(z ** (1 / GAMMA), 0, 1) * 255).astype(np.uint8)).resize(((x1 - x0) * s, (y1 - y0) * s), Image.NEAREST)
     import io; buf = io.BytesIO(); im.save(buf, 'PNG')
     body = {"model": MODEL, "modalities": ["image", "text"], "usage": {"include": True}, "messages": [{"role": "user", "content": [
-        {"type": "text", "text": open(os.path.join(EDITS, f'{name}_prompt.txt')).read().strip()},
+        {"type": "text", "text": open(os.path.join(EDITS, f'{name}{tag}_prompt.txt')).read().strip()},
         {"type": "image_url", "image_url": {"url": "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()}}]}]}
     key = os.environ.get('OPENROUTER_API_KEY', 'proxy-injected')
     req = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', data=json.dumps(body).encode(),
                                  headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
     d = json.loads(urllib.request.urlopen(req, timeout=600).read())
     url = d['choices'][0]['message']['images'][0]['image_url']['url']
-    Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).save(os.path.join(EDITS, f'{name}_model.webp'), 'WEBP', lossless=True, quality=100, method=6)
-    print(name, 'model answer saved; cost', d.get('usage', {}).get('cost'), '$')
+    Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).save(os.path.join(EDITS, f'{name}{tag}_model.webp'), 'WEBP', lossless=True, quality=100, method=6)
+    print(name + tag, 'model answer saved; cost', d.get('usage', {}).get('cost'), '$')
 
 
 def shop_off(city, masks_by_zone):

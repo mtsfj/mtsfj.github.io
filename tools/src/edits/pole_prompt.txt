@@ -1,0 +1,9 @@
+This is an enlarged crop (each painting pixel is a 6 x 6 block) of a pixel-art painting of a narrow Japanese residential street at night. These houses stand on the right-hand side of the street: their fronts recede toward a vanishing point far to the LEFT, out of the frame, so their horizontal lines (ledges, eaves, the foot of the walls on the sidewalk) slope gently toward the left.
+
+Remove the dark concrete utility pole in the middle and the red sign on it entirely, and paint the ground floors of the two houses behind it as one continuous street front, from the left edge of the image to the ramen shop on the right. (The pole will be put back in front afterwards: what is behind it must simply be complete and coherent.)
+- On the left, the lit entrance of the small apartment building: a narrow recessed hall lit pink-violet by its ceiling light; on its side wall a small wall lamp, an intercom panel and a column of small metal mailboxes.
+- Then the plain wall where this building ends and the next house begins.
+- The next house's ground floor in dark vertical wooden planks, and its entrance (genkan) where it is now: the small corrugated metal awning; under it a frosted glass transom lit from inside; a narrow frosted glass sidelight glowing softly pink-violet; a plain dark door with a narrow frosted window and a lever handle; a concrete step, its front edge on the sidewalk.
+No garage, no shutter, nothing squeezed: the walls simply run on behind where the pole was.
+
+Everything else stays exactly as it is, pixel for pixel: the upper floors and their ledges, the ramen shop on the right (its dark plaster wall, its framed menu board, its lit doors), the sidewalk. Keep the painter's palette and light: deep night blues, the pink-violet glow of the two entrances, dark walls. Same pixel size, crisp pixels, clean straight edges, no speckle noise, no blur. Do not add any text, person or object.

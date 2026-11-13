@@ -57,6 +57,12 @@ street. Read this before redrawing any zone; add to it after every review.
   vanishing point, it seems to sink into the wall. What must follow the street's lines is its outline: its step on the
   sidewalk's slope, its meeting with the next facade. A recess in a facade on the right shows its left side (toward the
   vanishing point), never its right one: there the frame meets the facade with a shadow line, not a pillar.
+- **R24. Behind what stands in front, draw the whole at once, then lay it back.** Next to a pole, a sign or a tree in
+  front, the strips on either side are not redrawn apart (each squeezes its own logic into too little room: a "garage"
+  in ten pixels): the draft is asked of the street with the object taken out, the walls run on behind it as one front,
+  and the object is laid back over them as painted (its trace, its edge pixel blended again with the new background).
+  The owner: "fais un truc global derrière le poteau et après tu repasses le poteau devant : au moins t'as pas à
+  réfléchir à la logique physique et au POV".
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
@@ -96,4 +102,8 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-12 | Kiosk window options | B, the Showa showcase counter | | R16 |
 | 2026-11-12 | Pink strip left of the pole: plain wall, or a sign in perspective cut by the pole | "aucune des deux, c'est désastreux" | Kept as painted | R6, R22 |
 | 2026-11-12 | Pink door corrected: face on like its neighbours, Ichiraku's wall up to its frame, its step on the sidewalk's slope, pink or warm | "toujours désastreux" | Three passes on it made it worse: put back exactly as painted. A spot that resists twice is left as painted unless a clearly better way is found (R14) | R14 |
-
+| 2026-11-13 | (the owner on the site) the Pokemon Center's ball "with a black rim" | "my bad, mon site était pas à jour" | His browser's copy was old: no change | |
+| 2026-11-13 | (draft, in my scratch) the house's door right of the pole, a Japanese entrance this time (the old draft had drawn an English door with a fanlight: a style the street has nowhere) | "ce morceau de garage entre la porte et le poteau n'a pas de sens, pas assez d'espace ; fais un truc global derrière le poteau" | Ten pixels of wall between the pole and the frame, drawn on their own, read as a shutter | R24 |
+| 2026-11-13 | (draft) the ground floors redrawn whole with the pole taken out | "vire le truc ; améliore le rapport des deux ; vire cette bouillie IA" | A post at the awning's end under Ichiraku's sign, gone (the awning continued along its ray); the hall's lamp, intercom and panels, mush at this size, gone (its lit wall alone); the two buildings' corner lies wholly behind the pole once it is back | R7, R24 |
+| 2026-11-13 | (same) | "moche : trottoir à côté d'Ichiraku" | A speckled band under Ichiraku's cleaned plaster, beside the new step: the plaster carried down to the facades' foot line (as the step), the sidewalk continued under it | R9, R23 |
+| 2026-11-13 | Both entrances by the pole, the pole laid back, in every state | (awaiting) | | R24 |
