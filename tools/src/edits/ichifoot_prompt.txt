@@ -1,0 +1,5 @@
+This is an enlarged crop (each painting pixel is a 7 x 7 block) of a pixel-art painting of a Japanese ramen shop at night, seen from the street. It shows the bottom of the shop's two sliding glass doors, with the shop's warm lit room behind the glass at the top, its dark plaster wall on both sides, and the sidewalk at the bottom.
+
+Redraw only the bottom part of the two doors, under their glass, which is a speckled red and blue mush now: a slim horizontal wooden rail under the glass with a small recessed handle on each door, then the doors' lower wooden kick panels, dark red-brown lacquered wood in a few vertical boards, clean and even, the warm light from the room falling softly on their top, down to the threshold where the doors meet the sidewalk. The two doors meet in the middle with a thin vertical joint.
+
+Everything else stays exactly as it is, pixel for pixel: the glass and the lit room behind it, the door frames' sides, the plaster walls, the sidewalk. Keep the painter's palette and light. Same pixel size, crisp pixels, clean straight edges, no speckle noise, no blur. Do not add any text, person or object.

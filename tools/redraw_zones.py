@@ -199,6 +199,26 @@ ZONES = {
     'bwall': dict(box=(940, 60, 1023, 522), nodraft=True, comps=[('win_z1_top', 963, 226)], parts=[
         dict(poly=[(941, 60), (1023, 60), (1023, 522), (941, 522)], method='zone5', v0=0.390, **B_PLASTER,
              fill=[(1006, 1022, 0.991, 1.283), (1006, 1022, 0.5235, 0.801)])]),   # (zone5's boxes for them, sills included)
+    # the dojo's foot, its right corner post and the dark gap between it and the dagashi-ya (a survey, 2026-11-13: the
+    # dojo's zone stopped at y 720 over speckled kick panels and a grainy threshold; the gap a flat black-green)
+    'dojofoot': dict(box=(0, 440, 180, 760), scale=6, reg=[(5, 445), (95, 445), (95, 560), (5, 560)], parts=[   # (the dojo's top)
+        # its kick panels down to the threshold, the threshold on its ray (v 0.197 to 0.229, the painter's line), as the
+        # dojo's front above them (direct, darkened as the painter's when it shuts); from y 720, where the dojo's zone ends
+        dict(poly=[(0, 720), (96, 720), (96, ray(96, 0.229) + 1), (0, ray(0, 0.229) + 1)], method='direct', unlit='lf_ratio'),
+        dict(poly=[(96, 470), (110, 470), (110, ray(110, 0.229) + 1), (96, ray(96, 0.229) + 1)], method='direct', unlit='lf_ratio'),   # its post
+        # the gap: a passage in deep navy shadow, the sidewalk a little way into it (its downpipe, x 132-137, and the
+        # tree's leaves over it as painted); the same in the power cut (no light of its own)
+        dict(poly=[(110, 471), (132, 471), (132, 752), (110, 752)], method='direct')]),   # (down to the sidewalk: the olive slab went to y 750)
+    # the bottom of Ichiraku's two sliding doors and the foot of its wall right of them (a survey, 2026-11-13: the doors'
+    # kick panels a red and blue mush, a square of old grain under the cleaned plaster); after base and pole
+    'ichifoot': dict(box=(1150, 676, 1280, 780), scale=7,
+                     reg=[[(1150, 680), (1156, 680), (1156, 740), (1150, 740)], [(1235, 680), (1265, 680), (1265, 728), (1235, 728)],
+                          [(1165, 676), (1225, 676), (1225, 685), (1165, 685)]], parts=[      # (the plaster, the glass)
+        # the doors' rail and kick panels: the drawing's boards in the painter's light and wood (detail), to the threshold
+        dict(poly=[(1157, 688), (1232, 688), (1232, 757), (1157, 745)], method='detail', sigma=6.0, k=0.5, unlit='lf_ratio'),
+        # right of the doors, the cleaned plaster (base, to y 730) carried down to the sidewalk's line (v -0.267 there)
+        dict(poly=[(1232, 731), (1267, 731), (1267, ray(1267, -0.267) + 1), (1232, ray(1232, -0.267) + 1)], method='copy',
+             src=(0, -36), from_new=True)]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

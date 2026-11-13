@@ -1,0 +1,8 @@
+This is an enlarged crop (each painting pixel is a 6 x 6 block) of a pixel-art painting of a narrow Japanese street at night. These houses stand on the LEFT-hand side of the street: their fronts recede toward a vanishing point far to the RIGHT, out of the frame, so their horizontal lines (the foot of the walls, the threshold stones, the sidewalk's edge) slope gently up toward the right.
+
+Redraw only three things, which are speckled or flat now; everything else stays exactly as it is, pixel for pixel (the karate dojo's lit shoji, its indigo noren and signboard, its dark wooden kick panels above the bottom, the tree at the top, the sweet shop on the right with its lit window and its signboard, the light-blue downpipe in the gap, the sidewalk):
+1. The foot of the dojo's front, on the left: its dark vertical wooden kick panels run on cleanly down to a long stone threshold lying along the sidewalk; the threshold clean and even, its top edge catching a little light, its line sloping toward the vanishing point. No speckles.
+2. The dojo's right corner post: one plain dark wooden post, straight and plumb, down to the threshold.
+3. The narrow gap between the dojo and the sweet shop: a narrow passage between the two houses in deep night shadow, dark navy blue rather than pure black, a little darker toward its back, the sidewalk running a short way into it; the downpipe in it kept exactly as it is. No green, no olive slab at its foot.
+
+Keep the painter's palette and light: deep night blues, the warm light of the shoji. Same pixel size, crisp pixels, clean straight edges, no speckle noise, no blur. Do not add any text, person or object.
