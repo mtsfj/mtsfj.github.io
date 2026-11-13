@@ -7127,19 +7127,22 @@
   function stepOden(dt, t) { stepOdenBox(dt); stepLantern(dt); stepOdenSteam(dt, t); stepOdenDoor(dt, t); }
   // ---- Luffy (One Piece), the fourth of the four heroes: sat cross-legged on the oden's roof sign (おでん: Wano's Kozuki Oden),
   // a meat on the bone in his hands, out in the rain. tools/luffy_oden.py cut his frames from a sheet drawn for him, at the
-  // street's scale there (44 px a metre: 43 px from his hat to his soles), lit as that place is: the dusk alone in the base
-  // row (the night on what faces us, the sunset's terracotta on what faces the far end, the zenith's violet on top), the
-  // painter's grain, his face drawn by hand; the sign's red on his soles, shins and cuffs in the second row, added at the
+  // street's scale there (51 px a metre: 50 px from his hat to his soles), sat ON the box: its near top edge hides his seat
+  // and the backs of his legs pressed on it, his lap leaning with it, a sandal over its front, his shadow on its rim. Lit as
+  // that place is: the dusk alone in the base row (the night on what faces us, the zenith's violet on what faces up, the
+  // sunset's terracotta rim on what faces the far end, his undersides darker), the straw's weave and the band, the vest's
+  // buttons, the meat's sheen, the painter's grain, his face by hand (the scar under his left eye); the sign's red on what
+  // faces down, his knees and soles the most, a little under his chin, in the second row, added at the
   // sign's own level (its tube's stutters), the shop's hours (its signs go out first), the zone's power, half drowned by
   // day, red in the red night. His life: he breathes; every 6-14 s a bite (the meat up, a bite, two, then he chews, his
   // cheeks full); a hard gust and his hand goes to his hat until it drops; the fireworks and the finale, he grins at them;
   // from 1:30 to 6, asleep sitting up, a bubble at his nose swelling and shrinking with his breath: now and then it pops and
   // he starts awake a moment. Clicked (the four heroes): he laughs and his arm stretches up, rubber, to wave (a second).
   // Reduced motion: still (asleep at night, at rest otherwise), the star alone ----
-  const LFO = {"cell":[40,66],"seat":[489,491],"anchor":[20,65],"names":["rest","rest_b","lift","bite","chew","chew_b","hat","grin","wave","wave_2","wave_3","wave_3b","doze","doze_1","doze_2","doze_3"]};   // (tools/luffy_oden.py: the cell, his seat on the sign, its anchor in the cell, the frames)
+  const LFO = {"cell":[56,92],"seat":[490,492],"anchor":[28,85],"names":["rest","rest_b","lift","bite","chew","chew_b","hat","grin","wave","wave_2","wave_3","wave_3b","doze","doze_1","doze_2","doze_3"]};   // (tools/luffy_oden.py: the cell, his seat on the sign, its anchor in the cell, the frames)
   const LF = { f: -1, cur: false, seq: [], ft: 0, br: 0, next: 6 + Math.random() * 8, grin: 40 + Math.random() * 50, pop: 25 + Math.random() * 30,
     hat: false, dead: false, graded: false };
-  const lfTex = crisp('assets/luffy_oden.webp?v=1', null, () => { LF.dead = true; });
+  const lfTex = crisp('assets/luffy_oden.webp?v=2', null, () => { LF.dead = true; });
   const LFX = LFO.seat[0] - LFO.anchor[0], LFY = LFO.seat[1] - LFO.anchor[1];   // (the cell's top left in the street)
   const LFM = [0, 1].map((r) => {                // his picture in the dusk, then the sign's light on him
     const m = new THREE.Mesh(new THREE.PlaneGeometry(LFO.cell[0], LFO.cell[1]), new THREE.MeshBasicMaterial({ map: lfTex, transparent: true, depthWrite: false,
@@ -7186,7 +7189,7 @@
     if ((LF.grin -= dt) < 0) { LF.grin = 40 + Math.random() * 50; lfPlay([['grin', 1.4 + Math.random()]]); return; }
     lfShow((LF.br % 3.4) < 1.5 ? 'rest_b' : 'rest');   // (his breath: in, out)
   }
-  const lfBox = () => LF.cur && LF.f >= 0 && LFO.names[LF.f].startsWith('wave') ? [LFO.seat[0] - 18, LFO.seat[1] - 66, 40, 67] : [LFO.seat[0] - 18, LFO.seat[1] - 45, 36, 46];   // (waving: his arm up)
+  const lfBox = () => LF.cur && LF.f >= 0 && LFO.names[LF.f].startsWith('wave') ? [LFO.seat[0] - 20, LFO.seat[1] - 76, 46, 78] : [LFO.seat[0] - 20, LFO.seat[1] - 51, 40, 53];   // (waving: his arm up)
   // ---- zone 1's lit windows live (right side, behind the street lamp). Behind the curtained window of the narrow
   // building (win_z1_warm) someone crosses the room now and then: his shadow slides over the lit curtain, in the
   // facade's plane (squeezed across, its lines to the vanishing point), bigger than him and soft. Rarely Red, Pokémon's
@@ -7692,7 +7695,7 @@
   function overLuffy(ev) { return !LF.dead && heroIn(heroPt(ev), lfBox(), 2); }   // (on the oden's sign: always there)
   function heroAt(k) {                           // where his star shows: by his head
     if (k === 'kirua') return [331, 134];
-    if (k === 'luffy') return [LFO.seat[0] + 10, LFO.seat[1] - 41];
+    if (k === 'luffy') return [LFO.seat[0] + 12, LFO.seat[1] - 46];
     const b = k === 'naruto' ? heroNar() : heroRed();
     return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
   }
