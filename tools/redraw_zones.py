@@ -19,7 +19,8 @@ from layers already edited, so a second run writes the same bytes. Per zone:
     detail  the painter's light, shading and colour (low frequencies, gaussian SIGMA, computed without the polygons of
             `fill`, which are filled from around them: what is removed there, like a smear, leaves no light behind) carry
             the model's fine structure (its luminance minus its own low frequencies, times K) in the painter's hue;
-            `keep_lit` keeps the painter's crisp lit strokes as painted;
+            `keep_lit` keeps the painter's crisp lit strokes as painted; `tex` takes the fine structure from beside where
+            an object is taken away (a board: its wall run on through);
     copy    the painter's own pixels from beside (`src`: dx, dy), to continue a pavement where an object stood;
     tool    a drawing made on the pixel grid by a module of its own (`tool`: tools/<tool>.py, its draw()), no model;
     direct  the model's pixels, their global tint brought back to the painting's (a per-channel line fitted on the
@@ -64,6 +65,7 @@ def circle(cx, cy, r, n=48):
     return [(cx + r * np.cos(2 * np.pi * i / n), cy + r * np.sin(2 * np.pi * i / n)) for i in range(n)]
 
 
+BOARD = [(1121, 566), (1152, 566), (1152, 655), (1121, 655)]   # Ichiraku's menu board and the ring round it (board; edges inclusive)
 ODEN_UNDER_BOX = [(468, 661), (485, 661), (485, 670), (468, 670)]   # the pavement under the box removed from the oden's front
 ODEN_KEEP = [ODEN_LANTERN, dict(rect=(409, 536, 412, 542)),          # and its hook
              dict(rect=(424, 579, 460, 620)), dict(rect=(467, 564, 495, 619))]   # the door's and the window's glass (oden_interior)
@@ -104,7 +106,7 @@ ZONES = {
     'door': dict(box=(1100, 390, 1280, 580), scale=5, parts=[
         dict(poly=[(1119, 452), (1266, 397), (1266, 472), (1119, 500)], method='direct')]),
     # the plaster below, on both sides of the door, down to the pavement (the owner: the bottom was all grain, the top
-    # clean; one wall, one finish). The menu board and its frame stay as painted (Luffy's posters are laid in it).
+    # clean; one wall, one finish). The menu board left of the door, its frame and its shadow: taken away last (board).
     'base': dict(box=(1100, 530, 1280, 740), scale=5, parts=[
         dict(poly=[(1118, 556), (1157, 556), (1157, 729), (1118, 729)], method='detail', sigma=6.0, k=0.6,
              cut=[[(1128, 576), (1151, 576), (1151, 647), (1128, 647)]],          # (its wooden frame: the grain round it
@@ -281,6 +283,18 @@ ZONES = {
     # eave's shadow; lit, the lantern's light on it a soft pool (its comp, on from z9lan's: after it, whose box it overlaps)
     'z9base': dict(box=(760, 566, 870, 641), nodraft=True, parts=[
         dict(poly=[(760, 566), (870, 566), (870, 641), (760, 641)], method='hand', fn='end_house.ground', comp='win_z9_lantern')]),
+    # Ichiraku's menu board gone (the owner, 2026-11-13: "juste le mur"; Luffy's posters were in it): its wooden frame
+    # (x 1128-1151, y 576-649) and the ring base drew round it from its draft (the board's edges and shadow, the plaster
+    # darker beside it: BOARD) made the cleaned plaster round it. Its light: the wall's round it run through it (`fill`:
+    # the board lends it none; `lf_fill`: down each column from the plaster above it to the plaster below, so the
+    # doorway's warm glow on the plaster runs on through as the stripe it is above and below, made good against the wall
+    # on its left; the doorway's lit frame on its right lends it nothing); its fine grain each layer's own plaster from
+    # under it (`tex`: the high frequencies of the rows 104 and 54 below, taken without the board). Last, so the zones
+    # before it (pole: its draft's registration and tint are fitted on Ichiraku's front) see the street as they were made on.
+    'board': dict(box=(1110, 548, 1172, 736), nodraft=True, parts=[
+        dict(poly=BOARD, method='detail', sigma=6.0, k=1.0, fill=[BOARD], lf_fill=[(1121, 566, 1152, 655)],
+             tex=[([(1121, 566), (1152, 566), (1152, 615), (1121, 615)], (0, 104)),
+                  ([(1121, 616), (1152, 616), (1152, 655), (1121, 655)], (0, 54))])]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -352,6 +366,38 @@ def lowpass_filled(img, hole, sigma):
         s *= 1.6
         num = np.stack([gaussian_filter(img[..., c] * w, s) for c in range(3)], -1); den = gaussian_filter(w, s)[..., None]
     return num / np.maximum(den, 1e-6)
+
+
+def wall_fill(img, rects, box, sigma, n=3):
+    """`lf_fill`: in each rect (x0, y0, x1, y1, edges inclusive) the light of the wall round it run through it: down each
+    column from the wall just above it to the wall just below it (n rows each side, low-passed along the row as the
+    zone's light is, sigma), so a light that runs down the wall beside a doorway runs on through as a stripe; and what
+    that leaves against the wall on its left, made good by a membrane fading from there (zero above and below, its right
+    side free: the doorway's lit frame on the right lends it nothing). Returns the light in the box (the rects' only)."""
+    from scipy.ndimage import gaussian_filter1d, uniform_filter1d
+    from scipy.sparse import lil_matrix
+    from scipy.sparse.linalg import spsolve
+    x0, y0 = box[0], box[1]; out = np.zeros_like(img); Hs = gaussian_filter1d(img, sigma, axis=1)
+    for a, b, c, d in rects:
+        r0, r1, c0, c1 = b - y0, d - y0, a - x0, c - x0; h, w = r1 - r0 + 1, c1 - c0 + 1
+        t = ((np.arange(h) + (n + 1) / 2) / (h + n + 1))[:, None, None]
+        lerp = lambda A: (1 - t) * A[r0 - n:r0, c0 - 1:c1 + 1].mean(0)[None] + t * A[r1 + 1:r1 + 1 + n, c0 - 1:c1 + 1].mean(0)[None]
+        base, raw = lerp(Hs), lerp(img)
+        res = uniform_filter1d(img[r0:r1 + 1, c0 - n:c0].mean(1), 5, axis=0) - raw[:, 0]   # (the wall on its left)
+        A = lil_matrix((h * w, h * w)); rhs = np.zeros((h * w, img.shape[2]))
+        for i in range(h):
+            for j in range(w):
+                k = i * w + j
+                for di, dj in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                    ii, jj = i + di, j + dj
+                    if jj >= w: continue                    # (the right side: free)
+                    A[k, k] += 1.0
+                    if jj < 0: rhs[k] += res[i]
+                    elif 0 <= ii < h: A[k, ii * w + jj] -= 1.0   # (above and below: zero)
+        A = A.tocsr()
+        u = np.stack([spsolve(A, rhs[:, ch]) for ch in range(img.shape[2])], -1)
+        out[r0:r1 + 1, c0:c1 + 1] = base[:, 1:] + u.reshape(h, w, -1)
+    return out
 
 
 _Z5 = {}
@@ -541,6 +587,7 @@ def zone(name, cfg, city, unlit):
             for q in p.get('erase', []): er |= poly_mask(q, box)   # of its own, and the drawing's planks run down
             hole |= er                             # over it from the rows above (the draft drew the object there too)
             lf = lowpass_filled(O, hole, p['sigma'])
+            if p.get('lf_fill'): lf = np.where(hole[..., None], wall_fill(O, p['lf_fill'], box, p['sigma']), lf)
             le = lum(e)
             for x in np.nonzero(er.any(0))[0]:
                 ys = np.nonzero(er[:, x])[0]; le[ys, x] = le[max(ys[0] - 1, 0), x]
@@ -548,6 +595,13 @@ def zone(name, cfg, city, unlit):
                 he = binary_dilation(keep, iterations=2)   # from around, else its edge rings dark on the wall beside it
                 le = np.where(he, lowpass_filled(np.repeat(le[..., None], 3, -1), he, 2.0)[..., 0], le)
             hf = le - gaussian_filter(le, p['sigma'])
+            uhf = hf                               # (`tex`: inside q, the fine structure from (sx, sy) away, the wall under an
+            if p.get('tex'):                       # object taken away: each layer's own, its low frequencies taken without
+                hp = lambda Lm: Lm - lowpass_filled(np.repeat(Lm[..., None], 3, -1), hole, p['sigma'])[..., 0]   # the object)
+                hs, uhs = hp(le), hp(lum(unlit0[..., :3])); uhf = hf.copy()
+                for q, (sx, sy) in p['tex']:
+                    tm = poly_mask(q, box); sh = lambda a: np.roll(np.roll(a, -sy, 0), -sx, 1)
+                    hf = np.where(tm, sh(hs), hf); uhf = np.where(tm, sh(uhs), uhf)
             out = np.clip(lf + p['k'] * hf[..., None] * (lf + 1.0) / (lum(lf) + 1.0)[..., None], 0, 255)
             ratio = (out + 1.0) / (O + 1.0)
             ul = unlit0[..., :3]
@@ -559,7 +613,8 @@ def zone(name, cfg, city, unlit):
                 new[m] = out[m]; unew[m] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[m]   # where a blotch was black)
             elif hole.any():                       # where the smear was, the unlit layer is rebuilt the same way
                 ulf = lowpass_filled(ul, hole, p['sigma'])
-                uout = np.clip(ulf + p['k'] * hf[..., None] * (ulf + 1.0) / (lum(ulf) + 1.0)[..., None], 0, 255)
+                if p.get('lf_fill'): ulf = np.where(hole[..., None], wall_fill(ul, p['lf_fill'], box, p['sigma']), ulf)
+                uout = np.clip(ulf + p['k'] * uhf[..., None] * (ulf + 1.0) / (lum(ulf) + 1.0)[..., None], 0, 255)
                 ur = np.where(hole[..., None], uout, np.clip(ul * ratio, 0, 255))
                 new[m] = out[m]; unew[m] = ur[m]
             else:

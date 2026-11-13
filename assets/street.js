@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=88", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=9", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=89", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=9", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=88') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=89') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4093,7 +4093,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=67', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=68', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6516,52 +6516,6 @@
   }
   try { FIN.api.on('stand', nfStart); FIN.api.on('dying', nfDying); FIN.api.on('dawn', nfDawn); FIN.api.on('end', nfEnd); } catch (e) {}
 
-  // ---- Luffy on the ramen shop's menu board: the owner's WANTED posters, paper pasted in its painted frame (its face LB,
-  // in the facade's perspective). tools/luffy_wanted.py draws each straight into that quad at scene pixels
-  // (perspective-correct, each pixel the area of the poster under it, 16 colours and the hat's red band, hard edges:
-  // assets/luffy_wanted.webp), drawn 1:1, nearest: crisp at any zoom. Paper, not a screen: its picture in the dusk alone
-  // (the power cut's), graded as the wall round it (the hour, the red night), and Ichiraku's light on it added (the left
-  // lantern just above it, the door's glass: the lit picture less the other) by their light (the lantern's level and the
-  // kitchen's, the zone's power; half drowned by day; red in the red night, as the street's painted light on its facade). No
-  // glow round it. The classic poster; the Gear 5 one for the street's big events (the finale while it plays, the firework
-  // shows, the red night) and a few seconds when Luffy is clicked (the four heroes). The swap: one frame of the paper
-  // lifting (its foot up), then the other poster ----
-  const LB = [[1130.6, 585.9], [1148.5, 584.7], [1148.5, 639.3], [1130.6, 638.4]];   // top-left, top-right, bottom-right, bottom-left
-  const LWP = {"box":[1130,584,19,56],"cols":4,"star":[1146,598]};   // (tools/luffy_wanted.py: its box, the atlas's columns, the four heroes' star by his hat)
-  const LWS = { cur: 0, want: 0, cell: -1, flip: -1, g5: 0, dead: false, graded: false };   // the poster up (0 classic, 1 Gear 5), the one asked, the frame drawn, the swap's clock, the click's Gear 5 (s)
-  const lwTex = crisp('assets/luffy_wanted.webp?v=1', null, () => { LWS.dead = true; });
-  const LWM = [0, 1].map((r) => {                // its picture in the dusk, then Ichiraku's light on it
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(LWP.box[2], LWP.box[3]), new THREE.MeshBasicMaterial({ map: lwTex, transparent: true, depthWrite: false, opacity: 1 - r,
-      blending: r ? THREE.AdditiveBlending : THREE.NormalBlending }));
-    m.position.set(LWP.box[0] + LWP.box[2] / 2, -(LWP.box[1] + LWP.box[3] / 2), 0.5 + 0.0002 * r); scene.add(m); return m;
-  });
-  function lwUV(m, c, r) {                       // a mesh's quad onto its atlas cell (column c, row r)
-    const a = m.geometry.attributes.uv, u0 = c / LWP.cols, u1 = (c + 1) / LWP.cols, v0 = 1 - r / 2, v1 = 1 - (r + 1) / 2;
-    a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true;
-  }
-  function lwIn(p, m) {                          // a scene point on the poster's quad (m px of slack)
-    for (let i = 0; i < 4; i++) { const a = LB[i], b = LB[(i + 1) % 4], ex = b[0] - a[0], ey = b[1] - a[1];
-      if ((ex * (p[1] - a[1]) - ey * (p[0] - a[0])) / Math.hypot(ex, ey) < -m) return false; }
-    return true;
-  }
-  function lwWant() {                            // Gear 5: the finale, a firework show, the red night (as it reaches the board), a click
-    if (LWS.g5 > 0 || FINS.t >= 0 || FWK.active) return 1;
-    return (REDN.wave ? twAt(1139, 0)[0] : nightSys() ? CLOCK.rouge : REDN.k) > 0.5 ? 1 : 0;
-  }
-  function stepLuffy(dt) {
-    if (LWS.dead) { for (const m of LWM) m.visible = false; return; }
-    if (!LWS.graded) { LWS.graded = true; gradeSprite(LWM[0].material, 'street'); gradeSprite(LWM[1].material, 'self'); }
-    LWS.g5 = Math.max(0, LWS.g5 - dt);
-    const w = lwWant();
-    if (w !== LWS.want) { LWS.want = w; LWS.flip = reduced || w === LWS.cur || LWS.cell < 0 ? -1 : 0; if (LWS.flip < 0) LWS.cur = w; }   // (the first frame: at once)
-    if (LWS.flip >= 0 && (LWS.flip += dt) >= 0.08) { LWS.flip = -1; LWS.cur = LWS.want; }
-    const c = LWS.flip >= 0 ? 2 + LWS.want : LWS.cur;   // (the lifting frame: the incoming poster, its foot up)
-    if (c !== LWS.cell) { LWS.cell = c; LWM.forEach((m, r) => lwUV(m, c, r)); }
-    let k = 1;
-    try { k = (0.7 * IRL[0].lv + 0.3 * SHOP.k) * irPow() * SKYF.dayL; } catch (e) {}
-    LWM[1].material.opacity = k; LWM[1].visible = k > 0.004;
-  }
-
   // ---- life in the ramen shop: behind the lit glass under the noren the light breathes, the cook moves about, a customer leans over his bowl, the bowls steam ----
   const RL = { x: 1150, y: 520, w: 80, h: 170, K: 1 };                         // (from the doors' upper panes, seen once the noren is in, to the counter's foot; a scene pixel a texel)
   const rlC = document.createElement('canvas'); rlC.width = RL.w * RL.K; rlC.height = RL.h * RL.K; const rlg = rlC.getContext('2d');
@@ -7170,6 +7124,68 @@
     }
   }
   function stepOden(dt, t) { stepOdenBox(dt); stepLantern(dt); stepOdenSteam(dt, t); stepOdenDoor(dt, t); }
+  // ---- Luffy (One Piece), the fourth of the four heroes: sat cross-legged on the oden's roof sign (おでん: Wano's Kozuki Oden),
+  // a meat on the bone in his hands, out in the rain. tools/luffy_oden.py cut his frames from a sheet drawn for him, at the
+  // street's scale there (44 px a metre: 43 px from his hat to his soles), lit as that place is: the dusk alone in the base
+  // row (the night on what faces us, the sunset's terracotta on what faces the far end, the zenith's violet on top), the
+  // painter's grain, his face drawn by hand; the sign's red on his soles, shins and cuffs in the second row, added at the
+  // sign's own level (its tube's stutters), the shop's hours (its signs go out first), the zone's power, half drowned by
+  // day, red in the red night. His life: he breathes; every 6-14 s a bite (the meat up, a bite, two, then he chews, his
+  // cheeks full); a hard gust and his hand goes to his hat until it drops; the fireworks and the finale, he grins at them;
+  // from 1:30 to 6, asleep sitting up, a bubble at his nose swelling and shrinking with his breath: now and then it pops and
+  // he starts awake a moment. Clicked (the four heroes): he laughs and his arm stretches up, rubber, to wave (a second).
+  // Reduced motion: still (asleep at night, at rest otherwise), the star alone ----
+  const LFO = {"cell":[40,66],"seat":[489,491],"anchor":[20,65],"names":["rest","rest_b","lift","bite","chew","chew_b","hat","grin","wave","wave_2","wave_3","wave_3b","doze","doze_1","doze_2","doze_3"]};   // (tools/luffy_oden.py: the cell, his seat on the sign, its anchor in the cell, the frames)
+  const LF = { f: -1, cur: false, seq: [], ft: 0, br: 0, next: 6 + Math.random() * 8, grin: 40 + Math.random() * 50, pop: 25 + Math.random() * 30,
+    hat: false, dead: false, graded: false };
+  const lfTex = crisp('assets/luffy_oden.webp?v=1', null, () => { LF.dead = true; });
+  const LFX = LFO.seat[0] - LFO.anchor[0], LFY = LFO.seat[1] - LFO.anchor[1];   // (the cell's top left in the street)
+  const LFM = [0, 1].map((r) => {                // his picture in the dusk, then the sign's light on him
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(LFO.cell[0], LFO.cell[1]), new THREE.MeshBasicMaterial({ map: lfTex, transparent: true, depthWrite: false,
+      blending: r ? THREE.AdditiveBlending : THREE.NormalBlending }));
+    m.position.set(LFX + LFO.cell[0] / 2, -(LFY + LFO.cell[1] / 2), 0.035 + 0.0002 * r); scene.add(m); return m;   // (over the sign's own states, z 0.03: mirrored by the water)
+  });
+  function lfShow(name) {                        // a frame (the atlas: a column a frame, the base row over the light's)
+    const i = LFO.names.indexOf(name); if (i < 0 || i === LF.f) return; LF.f = i;
+    const n = LFO.names.length, u0 = i / n, u1 = (i + 1) / n;
+    LFM.forEach((m, r) => { const a = m.geometry.attributes.uv, v0 = 1 - r / 2, v1 = 1 - (r + 1) / 2;
+      a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true; });
+  }
+  const LF_BITE = [['lift', 0.22], ['bite', 0.3], ['lift', 0.12], ['bite', 0.3], ['chew', 0.32], ['chew_b', 0.28], ['chew', 0.32], ['chew_b', 0.28], ['chew', 0.45]];
+  const LF_WAVE = [['wave', 0.1], ['wave_2', 0.05], ['wave_3', 0.12], ['wave_3b', 0.14], ['wave_3', 0.14], ['wave_3b', 0.14], ['wave_3', 0.1], ['wave_2', 0.05], ['wave', 0.12], ['grin', 0.7]];
+  function lfPlay(seq) { LF.seq = seq.slice(); LF.cur = true; LF.ft = 0; }
+  const lfAsleep = () => { const h = ((CLOCK.h % 24) + 24) % 24; return h >= 1.5 && h < 6 && FINS.t < 0; };
+  function lfLight() {                           // the sign's light on him, 0..1: its tube, its hours, the zone's power, the day
+    let k = OBOX.lvl * HRS.ks;
+    try { k *= (PW.on ? pwShade.material.uniforms.uPow.value[HRS.z.oden] : 1) * SKYF.dayL; } catch (e) {}
+    return Math.max(0, Math.min(1, k));
+  }
+  function stepLuffy(dt) {
+    if (LF.dead) { for (const m of LFM) m.visible = false; return; }
+    if (!LF.graded) { LF.graded = true; gradeSprite(LFM[0].material, 'street'); gradeSprite(LFM[1].material, 'self'); }
+    const k = lfLight(); LFM[1].material.opacity = k; LFM[1].visible = k > 0.004;
+    const sleep = lfAsleep();
+    if (reduced) { lfShow(sleep ? 'doze_2' : 'rest'); return; }
+    if (LF.cur) {                                // a sequence: each frame its time
+      LF.ft -= dt;
+      while (LF.ft <= 0 && LF.cur) { const s = LF.seq.shift(); if (s) { lfShow(s[0]); LF.ft += s[1]; } else LF.cur = false; }
+      if (LF.cur) return;
+    }
+    LF.br += dt;
+    if (sleep) {                                 // asleep sitting up: the bubble with his breath (3.2 s); at its biggest, now and then, it pops
+      const ph = (LF.br % 3.2) / 3.2, s = ph < 0.5 ? 2 * ph : 2 - 2 * ph;
+      lfShow(['doze', 'doze_1', 'doze_2', 'doze_3'][Math.min(3, Math.floor(s * 4))]);
+      if ((LF.pop -= dt) < 0 && s > 0.9) { LF.pop = 25 + Math.random() * 30; LF.br = 0; lfPlay([['doze', 0.3], ['rest', 0.8], ['rest_b', 0.7], ['rest', 0.6]]); }
+      return;
+    }
+    if ((gust.k > 0.6 && (gust.kind === 'rafale' || gust.kind === 'bourrasque')) || (LF.hat && gust.k > 0.35)) { LF.hat = true; lfShow('hat'); return; }
+    LF.hat = false;
+    if (FWK.active || FINS.t >= 0) { lfShow('grin'); return; }
+    if ((LF.next -= dt) < 0) { LF.next = 6 + Math.random() * 8; lfPlay(LF_BITE); return; }
+    if ((LF.grin -= dt) < 0) { LF.grin = 40 + Math.random() * 50; lfPlay([['grin', 1.4 + Math.random()]]); return; }
+    lfShow((LF.br % 3.4) < 1.5 ? 'rest_b' : 'rest');   // (his breath: in, out)
+  }
+  const lfBox = () => LF.cur && LF.f >= 0 && LFO.names[LF.f].startsWith('wave') ? [LFO.seat[0] - 18, LFO.seat[1] - 66, 40, 67] : [LFO.seat[0] - 18, LFO.seat[1] - 45, 36, 46];   // (waving: his arm up)
   // ---- zone 1's lit windows live (right side, behind the street lamp). Behind the curtained window of the narrow
   // building (win_z1_warm) someone crosses the room now and then: his shadow slides over the lit curtain, in the
   // facade's plane (squeezed across, its lines to the vanishing point), bigger than him and soft. Rarely Red, Pokémon's
@@ -7629,12 +7645,12 @@
     gsMesh.visible = true;
   }
   // ---- the four heroes (the secret 'killua': its id and its line in the list kept). Kirua on his roof, Naruto behind
-  // the balcony's lit glass, Red at the balcony door above the shop, Luffy on his poster by the ramen shop: each clicked (or
+  // the balcony's lit glass, Red at the balcony door above the shop, Luffy on the oden's roof sign: each clicked (or
   // tapped) once while he is there, in any order. Each answers at once, a second at most, in the scene's own light: the
   // same small star (pixel steps, its light added) and the same soft chime for all four, and a touch of his own: Kirua's
   // lightning crackles on him; a shadow clone pops beside Naruto in a puff (his hand seal too if he faces the glass: a
-  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy's poster turns to his Gear 5 for four
-  // seconds. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
+  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy laughs, his arm stretched up, rubber, to
+  // wave. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
   // then the list's line keeps a ✧ a hero. Clicked again: a faint star only. Kept in this browser ('mtsfj-four'). No
   // cursor, no hint. Reduced motion: no animation, a still star a second ----
   const HEROK = ['kirua', 'naruto', 'red', 'luffy'];
@@ -7672,10 +7688,10 @@
   }
   function overNaruto(ev) { const b = heroNar(); return !!b && heroIn(heroPt(ev), b, 2); }
   function overRedHero(ev) { const b = heroRed(); return !!b && heroIn(heroPt(ev), b, 2); }
-  function overLuffy(ev) { return !LWS.dead && lwIn(heroPt(ev), 2); }   // (his poster's quad: paper, always there)
+  function overLuffy(ev) { return !LF.dead && heroIn(heroPt(ev), lfBox(), 2); }   // (on the oden's sign: always there)
   function heroAt(k) {                           // where his star shows: by his head
     if (k === 'kirua') return [331, 134];
-    if (k === 'luffy') return LWP.star;
+    if (k === 'luffy') return [LFO.seat[0] + 10, LFO.seat[1] - 41];
     const b = k === 'naruto' ? heroNar() : heroRed();
     return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
   }
@@ -7705,7 +7721,7 @@
         const f = NAR.fig; if (f) { const away = nU(f.s - 1.1) >= WL.x + 12; NAR.puffs.push({ s: f.s + (away ? -1.1 : 1.1), t: 0, h: 1.3 }); if (f.row === 'look' || f.row === 'seal') NAR.rx = 0.55; }
       }
       else if (k === 'red') heroToss();
-      else LWS.g5 = 4;
+      else lfPlay(LF_WAVE);
     }
     paintSecrets(false);
     if (all) { XI_AT.killua = FOUR.at; foundSecret('killua'); }
@@ -10048,7 +10064,7 @@
     stepBBus(dt, t); stepGlide(dt);
     stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
     stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
-    stepLuffy(dt);                                   // Luffy's poster: which one, its light
+    stepLuffy(dt);                                   // Luffy on the oden's sign: his frame, the sign's light on him
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
     stepSwitch();                                    // the switch box by the Center: its toggles, its light
     // Konami fireworks: launch the queued shells on time, step every burst, stop when the sky is clear again
