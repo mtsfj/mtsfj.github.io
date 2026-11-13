@@ -41,8 +41,9 @@ et l'écran au milieu, le bureau et ses tiroirs dans l'angle de l'appui, la lamp
 corniche contre le plafond, CEIL au-dessus du haut de la baie. Le plafond, vu d'en dessous, entre le haut de la baie
 (un rayon) et celui du mur (horizontal), plus large vers le montant proche : le ton de l'image, plus sombre vers la
 fenêtre (CEIL_TONES), son spot net au-dessus du cône de lumière de l'image sur le mur, sa lueur en quelques marches
-(SPOTS). Pas de sol : l'appui le cache. Le voilage reste sur le plan de la vitre, dans la partie près du meneau (INNER :
-le côté gauche de l'image, le long des rayons vers FVP), devant la pièce et derrière le meneau. Sa profondeur : une
+(SPOTS). Pas de sol : l'appui le cache. Le voilage reste sur le plan de la vitre, dans la partie près du meneau,
+devant la pièce et derrière le meneau (le voilage de l'image, pris là jadis par INNER, s'y lisait en flammes jaunes entre
+les feuilles de l'arbre : il est dessiné, voir plus bas). Sa profondeur : une
 ligne sombre douce au plafond contre le mur (JUNCTION), le mur plus sombre dans l'angle de la fenêtre (CORNER_AO) ;
 allumée, le mur plus sombre loin de la lampe (FALL) et toute la pièce un peu plus sombre que les arêtes claires
 (ROOM_DIM) ; l'ombre du linteau et du chambranle sur elle.
@@ -58,7 +59,18 @@ pixels prend le ton qui l'entoure, ses fines lignes gardées (en diagonale aussi
 la géométrie de l'image et de sa couleur (LINES) : la corniche, le cadre de l'affiche, le bord de l'écran, le dessus du
 bureau, son dessous et son caisson, les planches et les montants de l'étagère (sur le mur : horizontaux ou d'aplomb),
 deux plis du voilage (le long des rayons vers FVP), le Fuji, sa neige et la pagode de l'affiche, la poignée du tiroir
-(des formes) ; le spot au plafond. Éteinte, comme elle est dans les calques : le verre sombre du peintre (celui de sa
+(des formes) ; le spot au plafond. Allumés, le mur et le plafond n'ont pas ces tons en marches : là où l'image est lisse
+(hors des lignes, de l'écran, de l'affiche, du spot ; WALL_SMOOTH), chaque pixel la couleur moyenne de ses points,
+adoucie avec ses voisins, allumée comme la palette ; au bord d'un objet, le pixel qui a la couleur du mur la prend aussi.
+
+Le voilage, dessiné (VOILE) : un rideau léger aux quelques plis d'aplomb doux, plus serrés en haut, éclairé par la pièce
+derrière lui (l'image très floue au point du mur qu'il cache : plus chaud en bas, où la lampe est derrière lui), passé
+vers le crème d'un tissu clair, jamais plus clair que la pièce ; éteint, un tissu clair dans le verre sombre. La fenêtre
+est entrouverte : dans le vent, il est poussé dans la pièce (SWAY : vers la gauche, tenu à sa tringle, son bord libre
+découvrant la pièce derrière lui) ; ses SWAY['n'] images, côte à côte dans assets/win_z7_curtain.webp (chacune le comp
+dans la boîte du voilage, celle de s = 0 le comp même), que street.js (BAYC) pose dans l'image du comp sur les rafales.
+
+Éteinte, comme elle est dans les calques : le verre sombre du peintre (celui de sa
 petite fenêtre), les grandes formes de la pièce à peine lisibles dedans (leur clarté seule, les taches de moins de
 MIN_OFF pixels fondues, l'écran éteint). Allumée, le sprite de la fenêtre d'habitation (le comp win_z7_up de
 assets/street.js, celui de la petite fenêtre : allumée longtemps, éteinte un moment, éteinte dans la coupure de
@@ -74,7 +86,9 @@ tools/kirua_house_side.py les refait : chaque pixel sa planche sur son rayon ver
 (SRC_X), un pixel différent de cette planche par colonne, en miroir, pour que le grain reste. Dans layer_city_off,
 street_unlit (les mêmes, moins la lumière de la rue qui tombait là, du rapport des deux calques au commit BEFORE : celle
 que la nuit rouge dessine en rouge), night_far (0, celui de la rue) et street_sun ; écrit aussi assets/win_z7_up.webp et
-sa boîte dans assets/street.js. Il faut git, Pillow, numpy.
+sa boîte dans assets/street.js, assets/win_z7_curtain.webp et sa boîte (BAYC). Ensuite : cd tools && python3
+redraw_zones.py, python3 tools/bake_retouches.py (leurs zones kiosktop et dojofoot sont sous la sienne), python3
+tools/build_street.py. Il faut git, Pillow, numpy.
 """
 import io
 import os
@@ -166,10 +180,29 @@ CASE_SH = (0.75, 0.8)                # l'ombre du chambranle : sur la vitre à s
 SILL_SH = (0.55, 0.8)                 # l'ombre de l'appui sur les planches, rangée par rangée
 OFF_Z, OFF_K = (-2.0, 0.8), 0.14     # éteinte : la clarté de la pièce (en écarts, bornée) et sa part dans le verre
 GLOW_MIN = 6                         # (sa lumière où les feuilles s'ouvrent sur tant de pixels ensemble, au moins)
-UP, UP_V = 'win_z7_up', 5            # sa lumière : le comp de la petite fenêtre, sa version
+UP, UP_V = 'win_z7_up', 7            # sa lumière : le comp de la petite fenêtre, sa version
+CURT_V = 1                           # (la version des images du voilage, CURT)
 SCR_PX = (231, 321, 268, 344)        # (x0, y0, x1, y1, dans la scène) : la face de l'écran ; son bord de deux pixels en haut,
                                      # à droite et en bas (à gauche, le meneau le cache), net et sans trou
 LEAF = 45                            # (une feuille : plus sombre que ça, là où le changement de l'arbre a mis un pixel)
+WALL_SMOOTH = (0.6, 1.2, 22)         # les murs et le plafond sans marches : un pixel de mur où l'image est lisse en moyenne sous
+                                     # ses points (au moins tant), sa couleur la moyenne de ses points, adoucie de ce rayon (px) ;
+                                     # au bord d'un objet, le pixel dont la couleur allumée est à moins de tant de celle du mur
+VOILE = dict(folds=2.5, gather=0.35, warp=0.07, crest=0.94, trough=0.78, edge=0.85, cream=(1.08, 1.0, 0.86), desat=0.35,
+             blur=40.0, top=300, off=(0.5, 2.0))
+                                     # le voilage : ses plis d'aplomb (tant sur sa largeur, plus serrés en haut, froncés sur la
+                                     # tringle, inégaux de warp), sa lumière celle de la pièce derrière lui (son image très floue,
+                                     # de ce rayon, au point du mur qu'il cache, pas plus haut que top dans l'image : la lumière
+                                     # du mur à mi-hauteur ; allumée) passée vers le crème d'un tissu clair (desat), tant à la
+                                     # crête et au creux d'un pli (jamais plus clair que la pièce), son bord libre près du meneau
+                                     # (son ourlet) un peu plus sombre ; éteint, un tissu clair un peu plus clair que la pièce
+                                     # sombre (off : sa clarté, en écarts, et celle de ses plis)
+SWAY = dict(amp=2.5, s=(-0.25, 1.0), n=11, v0=0.15)
+                                     # le voilage dans le vent (la fenêtre entrouverte) : poussé dans la pièce, vers la gauche, de
+                                     # tant de pixels au plus, tenu à la tringle (le tissu s'en écarte sur v0 de la hauteur de la
+                                     # vitre : 1 - exp(-v / v0)), son bord libre découvrant la pièce derrière lui ; n images de
+                                     # s0 à s1 (0 : au repos, le comp). Le haut seul se voit, l'arbre cache le bas
+CURT = 'win_z7_curtain'              # (ses images, côte à côte : assets/win_z7_curtain.webp ; sa boîte dans assets/street.js)
 LUM = np.array([0.299, 0.587, 0.114])
 
 
@@ -370,7 +403,8 @@ def main():
     # chaque pixel de vitre : SUB x SUB points sur ce qu'il voit (le voilage sur le plan de la vitre, le mur du fond, le
     # plafond) ; la couleur de la moitié de ces points s'il y en a une, sinon la plus proche de leur moyenne
     q, scr, surf = {}, set(), {}
-    sx0, sy0, sx1, sy1 = SCREEN
+    cont, smooth = {}, {}                                                   # (la couleur moyenne de ses points ; l'image lisse
+    sx0, sy0, sx1, sy1 = SCREEN                                              # sous eux, en moyenne : les murs sans marches)
     for (y, x) in zip(*np.where(cls == 7)):
         cols, pts = [], []
         kind = 'rideau' if near_sec(x) else ('mur' if y >= WT else 'plafond')
@@ -390,6 +424,9 @@ def main():
         ks = np.bincount(np.argmin(((cs[:, None, :] - pal[None]) ** 2).sum(2), 1))
         q[y, x] = int(ks.argmax()) if ks.max() >= len(cs) / 2 else int(np.argmin(((pal - cs.mean(0)) ** 2).sum(1)))
         surf[y, x] = kind
+        if kind != 'rideau': cont[y, x] = cs.mean(0)
+        if kind == 'mur': smooth[y, x] = float(np.mean([w_[int(yr), int(xr), 0] for xr, yr in pts]))
+        elif kind == 'plafond': smooth[y, x] = 1.0
         if pts and np.mean([sx0 <= xr < sx1 and sy0 <= yr < sy1 for xr, yr in pts]) >= 0.5: scr.add((y, x))
 
     def regions(q, least, keep=frozenset()):                                 # (les taches de moins de least pixels : le ton
@@ -503,6 +540,83 @@ def main():
     ON = {k: (onq if (k in scr or t >= NPAL) else onp)[t] for k, t in q.items()}
     room = sorted({q[k] for k in lit if k not in scr and q[k] < NPAL}, key=lambda k: lum[k])
     sill = np.array(EDGE) + SILL_LIT * (onp[room[-1]] - np.array(EDGE))
+    pm, ps, lr = pal[ks].mean(0), pal[ks].std(0), (upl @ LUM).std() / lum[ks].std()
+    def onmap(c):                                                            # (la palette allumée, pour toute couleur de l'image)
+        c = np.asarray(c, float)
+        return (np.clip(upl.mean(0) + (c - pm) / ps * upl.std(0), 0, 255) + np.clip(upl.mean(0) + (c - pm) * lr, 0, 255)) / 2
+    assert np.allclose(onmap(pal), onp)
+
+    # les murs et le plafond sans marches : là où l'image est lisse sous ses points (ses murs, la lumière des spots sur eux,
+    # le plafond), hors des lignes, de l'écran, de l'affiche et du spot, chaque pixel la couleur moyenne de ses points,
+    # adoucie avec ses voisins de la même surface (WALL_SMOOTH), allumée comme la palette : des dégradés de lumière au lieu
+    # d'aplats en marches
+    frames_ = [bx[:4] for kind, bx in LINES if kind == 'cadre']             # (ce qu'un cadre entoure reste tel quel : l'affiche)
+    framed = {k for k in cont if surf[k] == 'mur' and any(a_ <= wall_xy(k[1], k[0])[0] < c_ and b_ <= wall_xy(k[1], k[0])[1] < d_
+                                                         for a_, b_, c_, d_ in frames_)}
+    flat = [k for k in sorted(cont) if smooth[k] >= WALL_SMOOTH[0] and k not in lines and k not in scr and k not in framed]
+    if flat:
+        ys_, xs_ = np.array([k[0] for k in flat]), np.array([k[1] for k in flat])
+        oy, ox = ys_.min() - 4, xs_.min() - 4; hh, ww = ys_.max() + 5 - oy, xs_.max() + 5 - ox
+        r_ = int(np.ceil(3 * WALL_SMOOTH[1])); kern = np.exp(-0.5 * (np.arange(-r_, r_ + 1) / WALL_SMOOTH[1]) ** 2)
+        def gb(a):                                                           # (un flou gaussien, sans sortir de la boîte)
+            a = np.pad(a, ((r_, r_), (r_, r_)) + ((0, 0),) * (a.ndim - 2))
+            a = sum(kern[i] * a[i:i + a.shape[0] - 2 * r_] for i in range(2 * r_ + 1))
+            return sum(kern[i] * a[:, i:i + a.shape[1] - 2 * r_] for i in range(2 * r_ + 1))
+        for kind in ('mur', 'plafond'):                                      # (chaque surface à part : la corniche entre elles)
+            m_ = np.zeros((hh, ww)); c_ = np.zeros((hh, ww, 3))
+            for k in flat:
+                if surf[k] == kind: m_[k[0] - oy, k[1] - ox] = 1; c_[k[0] - oy, k[1] - ox] = cont[k]
+            wm_ = gb(m_); cb_ = gb(c_ * m_[..., None]) / np.maximum(wm_, 1e-9)[..., None]
+            for k in flat:
+                if surf[k] == kind: ON[k] = onmap(cb_[k[0] - oy, k[1] - ox])
+            for k in sorted(cont):                                           # (et le pixel de mur au bord d'un objet, où l'image
+                j_ = (k[0] - oy, k[1] - ox)                                  # n'est plus lisse, si sa couleur est celle du mur à
+                if surf[k] != kind or k in lines or k in scr or k in framed or not (0 <= j_[0] < hh and 0 <= j_[1] < ww):
+                    continue                                                 # côté : sans liseré)
+                if not m_[j_] and wm_[j_] >= 1 and np.linalg.norm(ON[k] - onmap(cb_[j_])) < WALL_SMOOTH[2]: ON[k] = onmap(cb_[j_])
+
+    # le voilage, sur le plan de la vitre, du tableau proche au meneau : un rideau léger aux plis d'aplomb (VOILE : plus
+    # serrés en haut, froncé sur la tringle), éclairé par la pièce derrière lui (l'image très floue au point du mur qu'il
+    # cache : plus chaud en bas, où la lampe est derrière lui, plus sombre en haut), allumé, passé vers le crème ; un pli à sa
+    # crête à peine moins clair que la pièce, à son creux un peu moins, jamais plus clair qu'elle. Éteint, sa clarté seule
+    # dans le verre sombre (comme le reste de la pièce). Dans le vent (SWAY), poussé dans la pièce : le pixel montre le tissu
+    # venu de plus à droite, ou, passé son bord libre, la pièce derrière lui (le mur ou le plafond, allumés comme eux)
+    im_b = R_.astype(float)
+    for _ in range(3): im_b = np.stack([box(im_b[..., c], int(VOILE['blur'])) for c in range(3)], -1)
+    vu0, vu1 = U(XL + 0.5), MULLIONS[0][0]
+    u_edge = 1 - 0.9 * (U(min(mcols)) - U(min(mcols) - 1)) / (vu1 - vu0)   # (son bord libre : son dernier pixel)
+    lamp_d = (CORNER[0] - LAMP) / PPM
+    def dep_lit(x, y):                                                       # (un pixel du mur allumé : sa profondeur, comme DEP)
+        d = (1 - CORNER_AO * max(0.0, 1 - (dm(x) - d0) / AO_W)) * (1 - FALL * min(1.0, abs(dm(x) - lamp_d) / FALL_D))
+        return d * (JUNCTION[y - (WT - 1)] if 0 <= y - (WT - 1) < 3 else 1) * ROOM_DIM
+    def behind(xs, ys):                                                      # (la pièce derrière le voilage : sa lumière)
+        ix, iy = wall_xy(xs, ys)
+        return im_b[int(np.clip(iy, VOILE['top'], IH - 1)), int(np.clip(ix, 0, R_.shape[1] - 1))]
+    def cloth(xs, ys, s):                                                    # (le tissu à ce point : sa part de la lumière,
+        v = min(1.0, max(0.0, V(xs, ys)))                                    # ou None : la pièce, passé son bord libre)
+        u = (U(xs + s * SWAY['amp'] * (1 - np.exp(-v / SWAY['v0']))) - vu0) / (vu1 - vu0)
+        if u >= 1: return None
+        g = u * (1 + VOILE['gather'] * (1 - v)); g += VOILE['warp'] * np.sin(2 * np.pi * 1.3 * g + 0.7)
+        f = VOILE['trough'] + (VOILE['crest'] - VOILE['trough']) * (0.5 + 0.5 * np.cos(2 * np.pi * VOILE['folds'] * g))
+        return f * (VOILE['edge'] if u > u_edge else 1)
+    def tint(c):                                                             # (sa lumière passée vers le crème : le tissu, pas le
+        return c + VOILE['desat'] * ((c @ LUM) * np.array(VOILE['cream']) / (np.array(VOILE['cream']) @ LUM) - c)   # mur)
+    def voile(y, x, s):                                                      # (un pixel du voilage : allumé, et sa clarté éteint)
+        lit_, img_ = [], []
+        for a in range(SUB):
+            xs = x - 0.5 + (a + 0.5) / SUB
+            for b in range(SUB):
+                ys = y - 0.5 + (b + 0.5) / SUB
+                f = cloth(xs, ys, s)
+                if f is None:
+                    xr, yr = wall_xy(xs, ys); c = wall(xr, yr) if 0 <= yr < IH else ceiling(xs, ys)
+                    lit_.append(onmap(c) * dep_lit(x, y)); img_.append(0.0)
+                else:
+                    lit_.append(tint(onmap(behind(xs, ys))) * f * ROOM_DIM); img_.append(VOILE['off'][0] + VOILE['off'][1] * (f - 1))
+        return np.mean(lit_, 0), float(np.mean(img_))
+    curt = sorted(k for k in q if surf[k] == 'rideau')                      # (ses tons de palette d'avant restent dans ks : la
+    for k in curt:                                                           # pièce allumée garde les siens)
+        ON[k], z_ = voile(*k, 0.0); OFF[k] = hg.mean(0) * (1 + OFF_K * np.clip(z_, *OFF_Z))
 
     # le bois du peintre pour les faces de la baie : le corps d'une de ses planches (entre ses joints), pris le long de
     # son rayon (le chambranle du haut, la sous-face, l'appui : leur fil vers FVP) ou en travers (les montants, le
@@ -554,10 +668,28 @@ def main():
     ys, xs = np.where(spr[..., 3] > 0)
     bx, by, bw, bh = int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)
     save(spr[by:by + bh, bx:bx + bw], UP + '.webp', 'RGBA')
+
+    # le voilage dans le vent : ses SWAY['n'] images, chacune le comp tel quel dans la boîte du voilage allumé, le voilage
+    # poussé de s (celle de s = 0 : le comp même), côte à côte ; street.js (BAYC) les pose dans l'image du comp
+    lits = set(lit); cl = [k for k in curt if k in lits]
+    fy0, fx0 = min(k[0] for k in cl), min(k[1] for k in cl)
+    fh, fw = max(k[0] for k in cl) + 1 - fy0, max(k[1] for k in cl) + 1 - fx0
+    S_ = np.linspace(*SWAY['s'], SWAY['n']); assert np.isclose(S_, 0).sum() == 1, 'SWAY : s = 0 parmi ses images'
+    sheet = np.zeros((fh, fw * SWAY['n'], 4))
+    for i, s in enumerate(S_):
+        fr = spr[fy0:fy0 + fh, fx0:fx0 + fw].copy()
+        if not np.isclose(s, 0):
+            for (y, x) in cl: fr[y - fy0, x - fx0, :3] = voile(y, x, s)[0] * MUL[y, x, 1]
+        sheet[:, i * fw:(i + 1) * fw] = fr
+    save(sheet, CURT + '.webp', 'RGBA')
     s_ = open(A('street.js'), encoding='utf-8').read()
     s_, n_s = re.subn(r'"%s": \{"src": "assets/%s\.webp\?v=\d+", "x": \d+, "y": \d+, "w": \d+, "h": \d+\}' % (UP, UP),
                       f'"{UP}": {{"src": "assets/{UP}.webp?v={UP_V}", "x": {bx}, "y": {by}, "w": {bw}, "h": {bh}}}', s_)
     assert n_s == 1, 'street.js : le comp de la petite fenêtre est introuvable'
+    s_, n_c = re.subn(r"const BAYC = \{ src: 'assets/%s\.webp\?v=\d+', box: \[[\d, ]+\], n: \d+, s: \[[-\d., ]+\]" % CURT,
+                      f"const BAYC = {{ src: 'assets/{CURT}.webp?v={CURT_V}', box: [{fx0 - bx}, {fy0 - by}, {fw}, {fh}], "
+                      f"n: {SWAY['n']}, s: [{SWAY['s'][0]}, {SWAY['s'][1]}]", s_)
+    assert n_c == 1, 'street.js : le voilage (BAYC) est introuvable'
     open(A('street.js'), 'w', encoding='utf-8').write(s_)
     sp = spr[spr[..., 3] > 0][:, :3]
     print('baie', XR - XL + 1, 'colonnes,', n_w, 'px | planches refaites', n_b, 'px | meneau', sorted(mcols),
