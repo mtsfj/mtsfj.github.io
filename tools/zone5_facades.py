@@ -12,6 +12,8 @@ with the battens behind their seams (the owner's tex_wood_planks: its ten boards
 VARIANTS: B tiled with A in weatherboards; A in plaster; B in plaster. The dark wood on B, the largest and the most
 seen, makes the block the traditional street of the references, and the light tiles on the narrow A set it apart;
 plaster read as the old concrete, only paler.)
+Since 2026-11-13 B is one plaster from its roof to the sidewalk (the owner): tools/redraw_zones.py, zone bwall, runs
+walls() here for B alone with plaster() and lays it over these weatherboards.
 
 Where a building's wall was one concrete, it is one material now: every pixel of the wall, the parapet, the strips
 between the openings and the floors, the lintels and the spandrels, carries the pattern; the projecting elements

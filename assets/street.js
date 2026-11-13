@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=77", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=3", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=3", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=78", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=3", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_z1_violet": {"src": "assets/win_z1_violet.webp?v=4", "x": 1006, "y": 358, "w": 17, "h": 95}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=9", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=11", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=6", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=7", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=77') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=78') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4058,7 +4058,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=56', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=57', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6020,8 +6020,8 @@
     raf = requestAnimationFrame(loop);
     return G;
   }
-  // ---- the eleventh's controls and records. The red night and the moon on a small switch box on the narrow pillar
-  // between the two rolling shutters right of the Pokémon Center: always there, a detail of the street (a meter box,
+  // ---- the eleventh's controls and records. The red night and the moon on a small switch box on the wall of the lit
+  // hall of the apartment building by the right pole: always there, a detail of the street (a meter box,
   // its two toggles down); once the eleventh is found it works: its toggles show the red night and the moon (up: on,
   // a pilot light each), a click (or a tap) opens its two switches. The trophies (the eleven, when each was found, the
   // visitor's way through the street on a small map) and the Pokédex: the Pokémon PC's apps (PKPC, below) ----
@@ -6074,18 +6074,18 @@
     xpMapDraw(g, S, MH);                         // the agent's map beside the visitor's (secrets-09: when it has run)
     return box;
   }
-  // the switch box: 9 x 14 px on the pillar's face (x 948-956, y 604-617, about 1.35-1.7 m up: 35 px/m there), drawn a
+  // the switch box: 9 x 14 px on the hall's wall (x 1010-1018, y 597-610, about 1.4-1.6 m over its floor), drawn a
   // pixel at a time in the painting's own values (the air's haze over it, as over the pillar): its outline, its bottom stepping down to the right (the facade's lines toward 700, 615), its wet
-  // top, its side toward the Center's light, two toggles in their recesses (up: on), two pilot lights' sockets; lit as
-  // the street is (the hours' grade, the red night's) and by the Center's spill on its left side while the shop is lit
-  const SWB = { x: 948, y: 604, w: 9, h: 14, st: -1, graded: false, panel: null };
+  // top, its lit side, two toggles in their recesses (up: on), two pilot lights' sockets; lit as the street is (the
+  // hours' grade, the red night's) and by the hall's pink light over its face, out with the street's power there
+  const SWB = { x: 1010, y: 597, w: 9, h: 14, st: -1, graded: false, panel: null };
   const swC = document.createElement('canvas'); swC.width = SWB.w; swC.height = SWB.h; const swg = swC.getContext('2d');
   const swPx = (t) => { const x = new THREE.CanvasTexture(t); x.magFilter = x.minFilter = THREE.NearestFilter; x.generateMipmaps = false; return x; };
   const swTex = swPx(swC);
   const swMesh = new THREE.Mesh(new THREE.PlaneGeometry(SWB.w, SWB.h), new THREE.MeshBasicMaterial({ map: swTex, transparent: true, depthWrite: false }));
   swMesh.position.set(SWB.x + SWB.w / 2, -(SWB.y + SWB.h / 2), 0.04); scene.add(swMesh);
-  const swRim = new THREE.Mesh(new THREE.PlaneGeometry(1, 11), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.08, 0.045, 0.055), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-  swRim.position.set(SWB.x + 1.5, -(SWB.y + 1 + 5.5), 0.041); scene.add(swRim);   // (the Center's spill on its left side)
+  const swRim = new THREE.Mesh(new THREE.PlaneGeometry(SWB.w - 2, SWB.h - 2), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.15, 0.06, 0.1), transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+  swRim.position.set(SWB.x + SWB.w / 2, -(SWB.y + SWB.h / 2), 0.041); scene.add(swRim);   // (the hall's pink light on its face)
   const swLedC = document.createElement('canvas'); swLedC.width = swLedC.height = 3;
   (function () { const g = swLedC.getContext('2d'); g.fillStyle = 'rgba(255,255,255,.14)'; g.fillRect(1, 0, 1, 3); g.fillRect(0, 1, 3, 1); g.fillStyle = '#fff'; g.fillRect(1, 1, 1, 1); })();
   const swLed = [[2, new THREE.Color(1, 0.2, 0.14)], [6, new THREE.Color(1, 0.88, 0.7)]].map(([x, c]) => {   // the pilot lights: the red night's, the moon's
@@ -6178,8 +6178,8 @@
     if (!SWB.graded) { SWB.graded = true; gradeSprite(swMesh.material, 'street'); for (const m of [swRim, ...swLed]) gradeSprite(m.material, 'self'); }
     const live = !!eleven, red = live && REDN.on, moon = live && !REDN.gone, key = (red ? 1 : 0) + (moon ? 2 : 0);
     if (key !== SWB.st) { SWB.st = key; swDraw(red, moon); swTex.needsUpdate = true; swLed[0].visible = red; swLed[1].visible = moon; }
-    const pz = (x) => pwShade.material.uniforms.uPow.value[PW_ZONES.findIndex((z) => z[4] === x)];
-    swRim.material.opacity = (busShop ? busShop.material.opacity : 1) * (PW.on ? pz(870) : 1);
+    const U = pwShade.material.uniforms, t = Math.min(1, Math.max(0, (SWB.x + 4.5 - U.uFront.value + 60) / 120));   // (the street's power
+    swRim.material.opacity = PW.on ? U.uAmb.value * t * t * (3 - 2 * t) : 1;                                       // there, as pwShade has it)
     swRim.visible = swRim.material.opacity > 0.01;
   }
   // the Pokémon PC's apps (the Pokémon PC itself, its object and its window: the PC agent's). Each { id, label: { fr,

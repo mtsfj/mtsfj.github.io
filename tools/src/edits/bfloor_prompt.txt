@@ -1,0 +1,11 @@
+This is an enlarged crop (each painting pixel is a 6 x 6 block) of a pixel-art painting of a narrow Japanese residential street at night. These buildings stand on the right-hand side of the street: their fronts recede toward a vanishing point far to the LEFT, out of the frame, so their horizontal lines (ledges, balcony rails, the slats of a shutter, the foot of the walls on the sidewalk) slope gently toward the left. A dark concrete utility pole with a red sign stands in front on the right.
+
+Redraw only the ground floor of the small apartment building in the middle, between the narrow building on the left and the pole, from the ledge under its first-floor balcony down to the sidewalk. Make it simple and logical:
+- one plain smooth wall, a single dark material (smooth plaster), with no boards, no sign, no box, no pipe;
+- in it, one large shop window of clear glass: it takes most of the ground floor's width, from a low sill near the sidewalk up to well under the ledge, in a thin dark aluminium frame with one or two vertical mullions;
+- behind the glass, the interior of a small shop, closed for the night but softly lit by a warm lamp: a counter, a few shelves on its back wall, a hanging lamp; seen at an angle through the glass as from the street, its back wall face on; a faint reflection on the glass;
+- the city bicycle stays parked along the wall where it is;
+- on the far right, the building's entrance hall lit pink-violet: keep it exactly as it is.
+Nothing else on that ground floor: no signboard, no side door, no bucket.
+
+Everything else stays exactly as it is, pixel for pixel: the upper floors and their balconies, the ledge under them, the narrow building on the left with its lit windows and its potted plant, the Pokemon Center sign at the top left, the pole and its red sign, the sidewalk. Keep the painter's palette and light: deep night blues, dark walls. Same pixel size, crisp pixels, clean straight edges, no speckle noise, no blur. Do not add any text, person or object.

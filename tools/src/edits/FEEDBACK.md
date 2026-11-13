@@ -63,6 +63,11 @@ street. Read this before redrawing any zone; add to it after every review.
   and the object is laid back over them as painted (its trace, its edge pixel blended again with the new background).
   The owner: "fais un truc global derrière le poteau et après tu repasses le poteau devant : au moins t'as pas à
   réfléchir à la logique physique et au POV".
+- **R25. A plain building stays simple and logical.** One building, one material from its roof to the sidewalk, and a
+  few large openings that say what it is (a garage, a shop window with its room behind); small accessories drawn at this
+  size (a thin side door, a sign band, a shutter box, a bucket, an intercom) read as clutter. The owner: "pas cohérent,
+  porte trop fine, trop de trucs inutiles ; fais simple et logique : mur uni, grand garage, baie vitrée + intérieur",
+  then "unifier sa texture sur tout le bâtiment".
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
@@ -106,4 +111,7 @@ street. Read this before redrawing any zone; add to it after every review.
 | 2026-11-13 | (draft, in my scratch) the house's door right of the pole, a Japanese entrance this time (the old draft had drawn an English door with a fanlight: a style the street has nowhere) | "ce morceau de garage entre la porte et le poteau n'a pas de sens, pas assez d'espace ; fais un truc global derrière le poteau" | Ten pixels of wall between the pole and the frame, drawn on their own, read as a shutter | R24 |
 | 2026-11-13 | (draft) the ground floors redrawn whole with the pole taken out | "vire le truc ; améliore le rapport des deux ; vire cette bouillie IA" | A post at the awning's end under Ichiraku's sign, gone (the awning continued along its ray); the hall's lamp, intercom and panels, mush at this size, gone (its lit wall alone); the two buildings' corner lies wholly behind the pole once it is back | R7, R24 |
 | 2026-11-13 | (same) | "moche : trottoir à côté d'Ichiraku" | A speckled band under Ichiraku's cleaned plaster, beside the new step: the plaster carried down to the facades' foot line (as the step), the sidewalk continued under it | R9, R23 |
-| 2026-11-13 | Both entrances by the pole, the pole laid back, in every state | (awaiting) | | R24 |
+| 2026-11-13 | Both entrances by the pole, the pole laid back, in every state | "mieux porte" | The house's entrance reads; the building left of the pole now stood out | R24 |
+| 2026-11-13 | (the owner on the site) the apartment building's ground floor left of the pole | "pour moi ce rdc est à refaire complet" | The shop front was a dark void over a shutter, a sign band of mush, a door specked with pink | R4 |
+| 2026-11-13 | (draft, in my scratch) its shop shut: shutter, its box, a sign band, a thin side door, the bucket | "non, pas cohérent, porte trop fine, trop de trucs inutiles ; fais simple et logique : mur uni, grand garage, baie vitrée + intérieur" | Each accessory faithful, the whole cluttered | R25 |
+| 2026-11-13 | Two options in the street: a plain wall with a big garage shutter, or with a shop window and its lit room | "le plus beau c'est la fenêtre ; vire l'interrupteur (dans le hall) ; unifier sa texture sur tout le bâtiment" | The shop window kept; the eleventh's switch box (it stood on the old pier, now plain wall by the window) moved onto the hall's wall, lit by the hall; the building's weatherboards (zone5) made plaster like its ground floor, from roof to sidewalk, its two lit windows' overlays with it | R16, R25 |

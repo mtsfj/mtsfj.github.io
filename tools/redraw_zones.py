@@ -176,6 +176,21 @@ ZONES = {
              src=(0, -16), from_new=True),
         dict(poly=[(1117, ray(1117, -0.283) + 1), (1157, ray(1157, -0.283) + 1), (1157, 743), (1117, 743)], method='copy',
              src=(-30, -8))]),
+    # the apartment building's ground floor left of the pole (the owner: "ce rdc est à refaire complet"): its shop shut
+    # for the night (the shutter, its box, its signboard, its side door), its weatherboards and downpipe, the bicycle and
+    # the bucket, up to the lit hall (the pole zone's); after it and the Pokemon Center's ball, whose boxes it overlaps
+    'bfloor': dict(box=(880, 415, 1070, 753), scale=6,
+                   reg=[[(942, 430), (1020, 430), (1020, 490), (942, 490)], [(900, 705), (1020, 705), (1020, 750), (900, 750)],
+                        [(1026, 430), (1064, 430), (1064, 740), (1026, 740)]], parts=[      # (floors above, sidewalk, pole)
+        # from under the shop's ledge (zone5's ray) to the foot of the wall, past it under the bicycle and the bucket
+        # (their wheels and base on the sidewalk); its lit left arris (x 941) and the hall (x 1004 on) left as they are
+        dict(poly=[(942, ray(942, 0.390)), (1004, ray(1004, 0.390)), (1004, ray(1004, -0.283) + 1), (996, ray(996, -0.283) + 1),
+                   (996, 704), (948, 704), (948, ray(948, -0.283) + 1), (942, ray(942, -0.283) + 1)], method='direct', unlit='rel')]),
+    # the same building's floors above it in the plain plaster of its ground floor, the whole front one material (the
+    # owner, choosing the shop window: "unifier sa texture sur tout le bât"; zone5 had given it weatherboards); its two lit
+    # windows' overlays, which carry the wall beside them, take the same change (`comps`, from <name>_before.webp)
+    'bwall': dict(box=(940, 60, 1023, 522), nodraft=True, comps=[('win_z1_top', 963, 226), ('win_z1_violet', 1006, 358)], parts=[
+        dict(poly=[(941, 60), (1023, 60), (1023, 522), (941, 522)], method='zone5', v0=0.390, face=1.0, tone=(210, 210, 222), ch=0.3)]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -247,6 +262,25 @@ def lowpass_filled(img, hole, sigma):
         s *= 1.6
         num = np.stack([gaussian_filter(img[..., c] * w, s) for c in range(3)], -1); den = gaussian_filter(w, s)[..., None]
     return num / np.maximum(den, 1e-6)
+
+
+_Z5 = {}
+def zone5_plaster(face, tone, ch, at='cd2d002^'):
+    """The apartment building left of the pole (B) in one plain plaster (the owner: "unifier sa texture sur tout le
+    bâtiment", 2026-11-13): tools/zone5_facades.py's own walls() on the layers as they were before it (git `at`), B alone,
+    its material plaster on the painter's light (its drift, weathering, ledges and cap in the same material); its
+    windows, balconies, downpipe, the lamp's arm and the pole as they are. Returns its street, its power cut and what it
+    changed, whole-scene arrays (cached)."""
+    key = (face, tone, ch, at)
+    if key not in _Z5:
+        import io, subprocess
+        sys.path.insert(0, os.path.join(ROOT, 'tools')); import zone5_facades as Z
+        old = lambda f: np.array(Image.open(io.BytesIO(subprocess.run(['git', 'show', f'{at}:assets/{f}'], cwd=ROOT,
+                                 capture_output=True, check=True).stdout)).convert('RGBA')).astype(float)
+        Z.VARIANTS['b_plaster'] = {'B': lambda: Z.plaster(face=face, amp=0.03, tone=tone, ch=ch)}
+        c2, u2, chg, _, _ = Z.walls(old('layer_city_off.webp'), old('street_unlit.webp'), 'b_plaster')
+        _Z5[key] = (c2[..., :3], u2[..., :3], chg, Z.V)
+    return _Z5[key]
 
 
 def zone(name, cfg, city, unlit):
@@ -431,6 +465,10 @@ def zone(name, cfg, city, unlit):
                     fl[y, xs] = np.percentile(src[y, xsrc], p.get('pct', 50), axis=0)
                 fl = gaussian_filter1d(fl, p.get('sigma_y', 1.5), axis=0)
                 dst[m] = fl[m]
+        elif p['method'] == 'zone5':               # (B's facade in plaster: zone5_plaster, above the ray v0 (its ground floor
+            c5, u5, ch5, V5 = zone5_plaster(p['face'], tuple(p['tone']), p['ch'])   # a zone of its own))
+            m = m & ch5[y0:y1, x0:x1] & (V5[y0:y1, x0:x1] >= p['v0'])
+            new[m] = c5[y0:y1, x0:x1][m]; unew[m] = u5[y0:y1, x0:x1][m]
         elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
             new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
@@ -606,6 +644,16 @@ def main():
                 os.path.join(OUT, f'{name}_{tag}.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
     shop_off(city, masks_by_zone)
     oden_overlays(before, dict(city=city, unlit=unlit))
+    for name, cfg in ZONES.items():                # (`comps`: lit windows' overlays that carry the wall a zone changed:
+        x0, y0, x1, y1 = cfg['box']                # their pixels times the change the layer took there, as zone5 did)
+        for cname, cx, cy in cfg.get('comps', []):
+            A = load(os.path.join(EDITS, cname + '_before.webp')); h, w = A.shape[:2]
+            b, a = before['city'][cy:cy + h, cx:cx + w, :3], city[cy:cy + h, cx:cx + w, :3]
+            inz = np.zeros((h, w), bool); inz[max(y0 - cy, 0):max(y1 - cy, 0), max(x0 - cx, 0):max(x1 - cx, 0)] = True
+            mm = (A[..., 3] > 0) & inz & (np.abs(a - b).max(-1) > 0)
+            A[..., :3][mm] = np.clip(A[..., :3][mm] * ((a + 1) / (b + 1))[mm], 0, 255)
+            Image.fromarray(np.round(A).astype(np.uint8), 'RGBA').save(os.path.join(ROOT, 'assets', cname + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+            print(cname + ':', int(mm.sum()), 'pixels of its wall brought to the new one')
     for name, (cname, comp, _) in COMP_OUT.items():   # a lit window's comp, its new picture where it lit before
         Image.fromarray(np.clip(np.round(comp), 0, 255).astype(np.uint8), 'RGBA').save(
             os.path.join(ROOT, 'assets', cname + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
