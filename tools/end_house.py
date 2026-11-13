@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""The house at the street's end (zone 9, x 762-870): its paper lantern by the door and its upstairs lit window, drawn on
-the pixel grid (the owner's picks, 2026-11-13). Two zones of tools/redraw_zones.py (z9lan, z9win: method 'hand') call
-this module; run that tool, then tools/bake_retouches.py. Same input, same bytes.
+"""The house at the street's end (zone 9, x 762-870): its paper lantern by the door, its upstairs lit window and its ground
+floor, drawn on the pixel grid (the owner's picks, 2026-11-13). Three zones of tools/redraw_zones.py (z9lan, z9win,
+z9base, in that order: method 'hand') call this module; run that tool, then tools/bake_retouches.py. Same input, same bytes.
 
 The lantern (x 801-807, y 579-587, by the doorway's left jamb; lit it is the comp win_z9_lantern, from 8:30 to 0:30;
 off, at 3 h and in the power cut, the street's layers show): off, the painter had a flat red disc there. Now one paper
@@ -25,11 +25,27 @@ in both states, as the painter's elements: its top rail (a lit row over its face
 bars on the balcony's own rhythm, every 9.5 px between the posts (813, 822, 832, 841, 851: the middle one on the panes'
 meeting stiles); the Pokemon Center's awning stays in front of its lower right corner. The comp is clear over the railing
 (the street's railing shows, lit or not) and takes the new curtains over the glass; its frame pixels stay the painter's.
+
+The ground floor (x 760-869, y 566-640; the zone z9base, after z9lan: the owner, "la maison, refaire le bas, pas hyper
+clean"): blotches nobody could read as doors. The house faces the street at its end, so it is drawn face on, its lines
+level and plumb as the painter's head line (577), mid rail (610) and sill (634) are. Now, on the painter's light (his
+picture's low frequencies over each part, SIG; R2, R18): left of the lantern a lattice window over a wainscot of three
+boards, the jamb the lantern hangs by, and the two sliding doors, each a lattice over a plain kick panel; one rail line
+across the front (the window's sill and the doors' mid rail, its shadow on the painter's dark line at 610); slats every
+3 px, symmetric in each opening; members lit on their left edge and their top, a shade on their right and under them.
+The right leaf is open a little: the gap between the leaves (x 832-836) the dark inside, the sill running under it (the
+cat's eyes show there, street.js CAT). The posts each column evened down (the left one's ledge along its rows), the
+boards under the balcony and the lintel each row evened along it, the sill a lit top and its face, the sidewalk in the
+eave's shadow evened along its rows; the curb under it, the meter box, the banner and the plaque (tools/e33_banner.py:
+its shadow on the boards laid again) and the lantern (z9lan) as they are. The power cut: the same picture times the
+painter's darkening there, smoothed. Lit, the lantern's light (its comp, win_z9_lantern, taken on from z9lan's): the
+painter's streaks made a soft pool (his lit over unlit picture, smoothed over POOL, its light in total his), laid on the
+new front, taken more by the slats and the frames that face it than by the dark behind them (SPREAD).
 """
 import os
 import numpy as np
 from PIL import Image
-from scipy.ndimage import gaussian_filter
+from scipy.ndimage import gaussian_filter, gaussian_filter1d
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
@@ -57,6 +73,25 @@ POSTS = [(803, 804, 805), (860, 861, None)]   # (lit columns, its shade column),
 BARS = [813, 822, 832, 841, 851]          # one px each, rows 520-530: 9.5 px apart between the posts' centres
 BAR_Y = (520, 530)
 SHUT_K = 0.5                               # the folds' relief kept behind the dark glass
+
+# the ground floor (scene px, inclusive)
+GROUND_BOX = (760, 566, 870, 641)
+POST_L, LEDGE = (761, 774), (610, 611)     # the corner post (its ledge's rows)
+POST_R = (861, 869)                        # the right post (its shade line at 861)
+METER = (865, 603, 872, 624)               # the meter box on it, as painted (x0, y0, x1, y1)
+BAND = (566, 577)                          # the boards under the balcony, the lintel, its shadow on 577
+FRONT, ROWS = (775, 860), (578, 633)       # the window, the jamb, the leaves: drawn
+WINDOW, JAMB = (775, 802), (803, 807)
+LEAVES = [(808, 831), (837, 860)]
+GAP = (832, 836)                           # the right leaf open a little: the dark inside
+MID = (606, 609)                           # the window's sill and the doors' mid rail (its shadow on 610)
+BOARDS = [(611, 616), (618, 623), (625, 630)]   # the wainscot's boards under the window
+SILL, STEP = (634, 635), (636, 640)        # the sill; the sidewalk in the eave's shadow (the curb, 641-645, as painted)
+SIG = 6.0                                  # the painter's light kept over this (his blotches: 3 to 5 px)
+LIT, FACE, SHADE, DEEP, BACK, SLAT, PANEL = 1.32, 1.0, 0.84, 0.62, 0.70, 1.22, 0.95   # (reliefs, on his light)
+POOL = 2.5                                 # the lantern's light on the wall: the painter's, smoothed over this
+SPREAD = {0: 1.0, 1: 1.25, 2: 0.8, 3: 0.85, 4: 0.15}   # the share of it each kind takes: face, lit, shade, behind, gap
+_LAST = {}                                 # (the lantern's comp as z9lan left it: the ground floor's light goes on it)
 
 
 def _comp(name):
@@ -138,6 +173,7 @@ def lantern(box, orig, unlit, new, unew, m):
     for x, y in corners: lay(x, y, at(lit_wall, x, y))
     print('z9lan: the painter\'s darkening', np.round(dark, 3).tolist(), 'paper lit', np.round(litp.mean(0)).tolist(),
           'off', np.round(offp.mean(0)).tolist(), 'caps off', np.round(night).tolist())
+    _LAST['lantern'] = comp
     return comp
 
 
@@ -227,4 +263,128 @@ def window(box, orig, unlit, new, unew, m):
     comp[..., 3][csub(rail)] = 0; comp[..., :3][csub(rail)] = 0
     print('z9win: railing', {k: np.round(v).astype(int).tolist() for k, v in ref.items()},
           'curtains lit', np.round(litc[glass].mean(0)).tolist(), 'off', np.round(offc[glass].mean(0)).tolist(), 'foot', prof)
+    return comp
+
+
+def _nconv(img, wgt, sig, axis=None):
+    """img smoothed over the pixels of wgt only (normalised convolution): along one axis (a row or a column evened) or
+    both (axis None)."""
+    w = wgt.astype(float)
+    f = (lambda a: gaussian_filter(a, sig)) if axis is None else (lambda a: gaussian_filter1d(a, sig, axis=axis))
+    num = np.stack([f(img[..., c] * w) for c in range(3)], -1)
+    return num / np.maximum(f(w), 1e-6)[..., None]
+
+
+def _front():
+    """The front drawn (x FRONT, rows ROWS): its relief on the painter's light, its parts (each keeps his light on average:
+    1 the window, 2 its wainscot, 3 the jamb, 4 and 5 the leaves, 6 the gap) and each pixel's kind (0 a face, 1 lit, 2 in
+    shade, 3 the dark behind a lattice, 4 the gap)."""
+    X0, Y0 = FRONT[0], ROWS[0]; h, w = ROWS[1] - Y0 + 1, FRONT[1] - X0 + 1
+    rel = np.ones((h, w)); part = np.zeros((h, w), int); kind = np.zeros((h, w), int)
+    def r(xa, xb, ya, yb, v, k, p=None):
+        s = (slice(ya - Y0, yb - Y0 + 1), slice(xa - X0, xb - X0 + 1)); rel[s] = v; kind[s] = k
+        if p is not None: part[s] = p
+    def rails(xa, xb):                         # the head rail in the lintel's shadow, the mid rail, the bottom rail
+        r(xa, xb, 578, 578, SHADE, 2); r(xa, xb, 579, 580, FACE, 0)
+        r(xa, xb, MID[0], MID[0], LIT, 1); r(xa, xb, MID[0] + 1, MID[1] - 1, FACE, 0); r(xa, xb, MID[1], MID[1], SHADE, 2)
+        r(xa, xb, MID[1] + 1, MID[1] + 1, DEEP, 2)
+        r(xa, xb, ROWS[1] - 2, ROWS[1] - 2, LIT, 1); r(xa, xb, ROWS[1] - 1, ROWS[1], FACE, 0)
+    def lattice(xa, xb):                       # slats every 3 px over the dark behind, symmetric in the opening
+        r(xa, xb, 581, MID[0] - 1, BACK, 3)
+        for x in range(xa + 2, xb - 1, 3): r(x, x, 581, MID[0] - 1, SLAT, 1)
+    a, b = WINDOW                              # the lattice window over its wainscot
+    r(a, b, ROWS[0], MID[1], FACE, 0, 1); r(a, b, MID[1] + 1, ROWS[1], FACE, 0, 2)
+    rails(a + 1, b); lattice(a + 3, b - 2)
+    for ya, yb in BOARDS:
+        r(a + 1, b, ya, ya, 1.08, 1); r(a + 1, b, yb, yb, 0.93, 0)
+        if yb + 1 < ROWS[1] - 2: r(a + 1, b, yb + 1, yb + 1, DEEP, 2)
+    r(a, a, ROWS[0], ROWS[1], LIT, 1)
+    r(b - 1, b - 1, 579, MID[0] - 1, FACE, 0); r(b, b, 579, MID[0] - 1, SHADE, 2)
+    a, b = JAMB
+    r(a, b, ROWS[0], ROWS[1], FACE, 0, 3); r(a, a, ROWS[0], ROWS[1], LIT, 1); r(b, b, ROWS[0], ROWS[1], SHADE, 2)
+    for p, (a, b) in enumerate(LEAVES, 4):     # the leaves: a lattice over a plain kick panel, their stiles lit on the left
+        r(a, b, ROWS[0], ROWS[1], FACE, 0, p)
+        rails(a + 2, b - 2); lattice(a + 2, b - 2); r(a + 2, b - 2, MID[1] + 2, ROWS[1] - 3, PANEL, 0)
+        r(a, a, ROWS[0], ROWS[1], LIT, 1); r(a + 1, a + 1, 579, ROWS[1], FACE, 0)
+        r(b - 1, b - 1, 579, ROWS[1], FACE, 0); r(b, b, 579, ROWS[1], SHADE, 2)
+    r(GAP[0], GAP[1], ROWS[0], ROWS[1], 1.0, 4, 6)
+    return rel, part, kind
+
+
+def ground(box, orig, unlit, new, unew, m):
+    import e33_banner as E33
+    x0, y0, x1, y1 = box; h, w = orig.shape[:2]
+    X = np.arange(x0, x1)[None, :] + np.zeros((h, 1), int); Y = np.arange(y0, y1)[:, None] + np.zeros((1, w), int)
+    inb = lambda xa, xb, ya, yb: (X >= xa) & (X <= xb) & (Y >= ya) & (Y <= yb)
+    # what stays as it is: the lantern (z9lan), the banner, its shadow and the plaque (tools/e33_banner.py), the meter box
+    lantern = np.zeros((h, w), bool)
+    for x, y in [(x, y) for y, (a, b) in list(PAPER.items()) + list(CAPS.items()) for x in range(a, b + 1)] + BRACKET:
+        lantern[y - y0, x - x0] = True
+    keep = lantern.copy(); shade = np.zeros((h, w), bool)
+    for rows, (bx, by) in ((E33.BANNER, E33.ROD), (E33.PLQ, E33.PLAQUE)):
+        for j, row in enumerate(rows):
+            for i, ch in enumerate(row):
+                x, y = bx + i, by + j
+                if x0 <= x < x1 and y0 <= y < y1 and ch in E33.PAL: keep[y - y0, x - x0] = True
+                elif x0 <= x < x1 and y0 <= y < y1 and ch == 'z': shade[y - y0, x - x0] = True
+    keep |= inb(*METER[0::2], *METER[1::2])
+    out = orig.copy()
+    def even(src, dst, sig, axis):
+        sm = _nconv(out, src, sig, axis); out[dst] = sm[dst]
+    # 1. the posts, each column evened down its parts (the left one's ledge along its rows)
+    pl = inb(*POST_L, BAND[0], SILL[1]) & ~keep
+    for part in (pl & (Y < LEDGE[0]), pl & (Y > LEDGE[1])): even(part, part, 4.0, 0)
+    le = pl & (Y >= LEDGE[0]) & (Y <= LEDGE[1]); even(le, le, 3.0, 1)
+    pr = inb(*POST_R, ROWS[0], SILL[1]) & ~keep; even(pr, pr, 4.0, 0)
+    # 2. the boards under the balcony and the lintel, each row evened along itself; the banner's shadow on them again
+    band = inb(FRONT[0], POST_R[1], *BAND) & ~keep & ~shade
+    sh = shade & inb(FRONT[0], POST_R[1], *BAND)
+    even(band, band | sh, SIG, 1); out[sh] *= E33.SHADE
+    # 3. the front drawn on the painter's light (his low frequencies over it, the gap and the lantern aside), each part
+    # keeping his light on average; the gap his dark inside
+    rel, part, kind = _front()
+    fr = inb(*FRONT, *ROWS)
+    REL, PART, KIND = np.ones((h, w)), np.zeros((h, w), int), np.full((h, w), -1)
+    s = (slice(ROWS[0] - y0, ROWS[1] - y0 + 1), slice(FRONT[0] - x0, FRONT[1] - x0 + 1))
+    REL[s], PART[s], KIND[s] = rel, part, kind
+    gap = fr & (KIND == 4)
+    lf = _nconv(orig, fr & ~gap & ~lantern, SIG)
+    for p in range(1, 6):
+        pm = fr & (PART == p) & ~keep; REL[pm] /= REL[pm].mean()
+    fm = fr & ~gap & ~keep
+    out[fm] = np.clip(lf * REL[..., None], 0, 255)[fm]
+    out[gap & ~keep] = np.median(orig[gap], 0)
+    # 4. the sill (its lit top, its face) and the sidewalk in the eave's shadow, evened along its rows
+    sr = inb(FRONT[0], POST_R[1], *SILL)
+    sm = _nconv(orig, sr, 10.0, 1); smean = (sm[SILL[0] - y0] + sm[SILL[1] - y0]) / 2
+    for y, k in ((SILL[0], 1.16), (SILL[1], 0.84)):
+        rr = sr[y - y0] & ~keep[y - y0]; out[y - y0][rr] = np.clip(smean[rr] * k, 0, 255)
+    st = inb(POST_L[0], POST_R[1], *STEP); even(st, st, SIG, 1)
+    ch = m & ~keep & (np.abs(out - orig).max(-1) > 0)
+    # the power cut: the same picture times the painter's darkening there (smoothed, channel by channel)
+    dark = np.stack([(gaussian_filter(unlit[..., c], 4.0) + 1.0) / (gaussian_filter(orig[..., c], 4.0) + 1.0) for c in range(3)], -1)
+    new[ch] = out[ch]; unew[ch] = np.clip(out * np.clip(dark, 0, 1.5), 0, 255)[ch]
+    # 5. lit: the lantern's light (its comp as z9lan left it), the painter's streaks made a soft pool on the new front
+    comp = _LAST.get('lantern')
+    if comp is None: comp = _comp(LANTERN_COMP[0])
+    _, cx, cy = LANTERN_COMP; ch_, cw_ = comp.shape[:2]
+    r0, r1 = y0 - cy, min(y1 - cy, ch_)        # (the comp's rows in the box; its columns all in it)
+    bs = (slice(0, r1 - r0), slice(cx - x0, cx - x0 + cw_)); cs = (slice(r0, r1), slice(0, cw_))
+    on = orig.copy(); a = comp[cs][..., 3:4] / 255.0; on[bs] = on[bs] * (1 - a) + comp[cs][..., :3] * a
+    hole = lantern | keep
+    gain = (_fill(on, hole, POOL) + 1.0) / (_fill(orig, hole, POOL) + 1.0) - 1.0
+    take = np.ones((h, w))
+    for k, v in SPREAD.items(): take[KIND == k] = v
+    off = new.copy(); total = (lum(on) - lum(orig))[~hole].sum(); g = 1.0
+    for _ in range(3):                         # (its light in total the painter's)
+        litc = np.clip(off * (1 + g * (gain * take[..., None])), 0, 255)
+        g *= total / max((lum(litc) - lum(off))[~hole].sum(), 1e-6)
+    litc = np.clip(off * (1 + g * (gain * take[..., None])), 0, 255)
+    pool = (np.abs(litc - off).max(-1) >= 0.5) & ~keep
+    cb = comp[cs]; lb, pb, kb = litc[bs], pool[bs], keep[bs]
+    cb[..., 3][~kb] = 0; cb[..., :3][~kb] = off[bs][~kb]
+    cb[..., :3][pb] = lb[pb]; cb[..., 3][pb] = 255
+    comp[cs] = cb
+    print('z9base: the front drawn,', int(ch.sum()), 'px; the gap', np.round(np.median(orig[gap], 0)).tolist(),
+          '; the lantern\'s pool', int(pb.sum()), 'px, its light the painter\'s in total (x %.3f)' % g)
     return comp

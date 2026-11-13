@@ -274,6 +274,13 @@ ZONES = {
     # gutter with its hangers, the downpipe at the corner carried up to it; the wall camera moved under it in street.js)
     'arceave': dict(box=(1232, 262, 1456, 430), nodraft=True, parts=[
         dict(poly=[(1232, 262), (1456, 262), (1456, 430), (1232, 430)], method='tool', tool='arcade_eave')]),
+    # the house at the street's end, its ground floor (the owner: "la maison, refaire le bas, pas hyper clean"): blotches
+    # drawn as what they are, face on as the house is (tools/end_house.py, ground): a lattice window over its wainscot, the
+    # jamb the lantern hangs by, two sliding lattice doors over plain kick panels, the right one open a little (the cat's
+    # gap), on the painter's light; the boards and the lintel over them and the posts evened, the sill, the sidewalk in the
+    # eave's shadow; lit, the lantern's light on it a soft pool (its comp, on from z9lan's: after it, whose box it overlaps)
+    'z9base': dict(box=(760, 566, 870, 641), nodraft=True, parts=[
+        dict(poly=[(760, 566), (870, 566), (870, 641), (760, 641)], method='hand', fn='end_house.ground', comp='win_z9_lantern')]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
