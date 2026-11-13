@@ -277,7 +277,7 @@ ZONES = {
     'arceave': dict(box=(1232, 262, 1456, 430), nodraft=True, parts=[
         dict(poly=[(1232, 262), (1456, 262), (1456, 430), (1232, 430)], method='tool', tool='arcade_eave')]),
     # the house at the street's end, its ground floor (the owner: "la maison, refaire le bas, pas hyper clean"): blotches
-    # drawn as what they are, face on as the house is (tools/end_house.py, ground): a lattice window over its wainscot, the
+    # drawn as what they are, face on as the house is (tools/end_house.py, ground): a frosted glass window on its sill, the
     # jamb the lantern hangs by, two sliding lattice doors over plain kick panels, the right one open a little (the cat's
     # gap), on the painter's light; the boards and the lintel over them and the posts evened, the sill, the sidewalk in the
     # eave's shadow; lit, the lantern's light on it a soft pool (its comp, on from z9lan's: after it, whose box it overlaps)

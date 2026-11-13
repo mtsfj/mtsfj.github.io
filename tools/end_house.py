@@ -29,10 +29,12 @@ meeting stiles); the Pokemon Center's awning stays in front of its lower right c
 The ground floor (x 760-869, y 566-640; the zone z9base, after z9lan: the owner, "la maison, refaire le bas, pas hyper
 clean"): blotches nobody could read as doors. The house faces the street at its end, so it is drawn face on, its lines
 level and plumb as the painter's head line (577), mid rail (610) and sill (634) are. Now, on the painter's light (his
-picture's low frequencies over each part, SIG; R2, R18): left of the lantern a lattice window over a wainscot of three
-boards, the jamb the lantern hangs by, and the two sliding doors, each a lattice over a plain kick panel; one rail line
-across the front (the window's sill and the doors' mid rail, its shadow on the painter's dark line at 610); slats every
-3 px, symmetric in each opening; members lit on their left edge and their top, a shade on their right and under them.
+picture's low frequencies over each part, SIG; R2, R18): left of the lantern a window of its own (the owner, on a first
+version where it was the doors' lattice: "j'aurais pas dupliqué, j'aurais fait un autre truc, fenêtre ou quoi"): two
+sliding sashes of frosted glass, a glazing bar across, four panes with the room dark behind (a faint cool sheen, lighter
+at each pane's top), on a sill, over a wall of three boards; the jamb the lantern hangs by; the two sliding doors, each a
+lattice over a plain kick panel (slats every 3 px, symmetric in each opening; the painter's dark line at 610 under their
+mid rail and along the wall); members lit on their left edge and their top, a shade on their right and under them.
 The right leaf is open a little: the gap between the leaves (x 832-836) the dark inside, the sill running under it (the
 cat's eyes show there, street.js CAT). The posts each column evened down (the left one's ledge along its rows), the
 boards under the balcony and the lintel each row evened along it, the sill a lit top and its face, the sidewalk in the
@@ -86,11 +88,16 @@ LEAVES = [(808, 831), (837, 860)]
 GAP = (832, 836)                           # the right leaf open a little: the dark inside
 MID = (606, 609)                           # the window's sill and the doors' mid rail (its shadow on 610)
 BOARDS = [(611, 616), (618, 623), (625, 630)]   # the wainscot's boards under the window
+SASH = dict(x=(778, 800), meet=(788, 790), panes=[(779, 787), (791, 799)], rows=[(582, 590), (592, 600)],
+            top=581, bar=591, bottom=(601, 602))   # the window's two sashes: their frames, their four panes
+WSILL = (603, 606)                         # its sill: lit top, face, underside; its shadow on the wall (606)
+GLASS = (1.04, 0.80, 0.70)                 # frosted glass, the room dark behind: at a pane's top, its foot, its top row
+GLASS_TINT = (0.9, 0.97, 1.12)             # (the night's cool on it)
 SILL, STEP = (634, 635), (636, 640)        # the sill; the sidewalk in the eave's shadow (the curb, 641-645, as painted)
 SIG = 6.0                                  # the painter's light kept over this (his blotches: 3 to 5 px)
 LIT, FACE, SHADE, DEEP, BACK, SLAT, PANEL = 1.32, 1.0, 0.84, 0.62, 0.70, 1.22, 0.95   # (reliefs, on his light)
 POOL = 2.5                                 # the lantern's light on the wall: the painter's, smoothed over this
-SPREAD = {0: 1.0, 1: 1.25, 2: 0.8, 3: 0.85, 4: 0.15}   # the share of it each kind takes: face, lit, shade, behind, gap
+SPREAD = {0: 1.0, 1: 1.25, 2: 0.8, 3: 0.85, 4: 0.15, 5: 0.6}   # its share each kind takes: face, lit, shade, behind, gap, glass
 _LAST = {}                                 # (the lantern's comp as z9lan left it: the ground floor's light goes on it)
 
 
@@ -277,8 +284,8 @@ def _nconv(img, wgt, sig, axis=None):
 
 def _front():
     """The front drawn (x FRONT, rows ROWS): its relief on the painter's light, its parts (each keeps his light on average:
-    1 the window, 2 its wainscot, 3 the jamb, 4 and 5 the leaves, 6 the gap) and each pixel's kind (0 a face, 1 lit, 2 in
-    shade, 3 the dark behind a lattice, 4 the gap)."""
+    1 the window, 2 the boards under it, 3 the jamb, 4 and 5 the leaves, 6 the gap) and each pixel's kind (0 a face, 1 lit,
+    2 in shade, 3 the dark behind a lattice, 4 the gap, 5 the window's glass)."""
     X0, Y0 = FRONT[0], ROWS[0]; h, w = ROWS[1] - Y0 + 1, FRONT[1] - X0 + 1
     rel = np.ones((h, w)); part = np.zeros((h, w), int); kind = np.zeros((h, w), int)
     def r(xa, xb, ya, yb, v, k, p=None):
@@ -292,14 +299,27 @@ def _front():
     def lattice(xa, xb):                       # slats every 3 px over the dark behind, symmetric in the opening
         r(xa, xb, 581, MID[0] - 1, BACK, 3)
         for x in range(xa + 2, xb - 1, 3): r(x, x, 581, MID[0] - 1, SLAT, 1)
-    a, b = WINDOW                              # the lattice window over its wainscot
-    r(a, b, ROWS[0], MID[1], FACE, 0, 1); r(a, b, MID[1] + 1, ROWS[1], FACE, 0, 2)
-    rails(a + 1, b); lattice(a + 3, b - 2)
+    a, b = WINDOW                              # a window of its own (not the doors' lattice: the owner), on its sill
+    r(a, b, ROWS[0], WSILL[1], FACE, 0, 1); r(a, b, WSILL[1] + 1, ROWS[1], FACE, 0, 2)
+    r(a, b, 578, 578, SHADE, 2)                # its head in the lintel's shadow
+    sa, sb = SASH['x']; st, sbar, (sb0, sb1) = SASH['top'], SASH['bar'], SASH['bottom']
+    for pa, pb in SASH['panes']:               # two sliding sashes of frosted glass, the room dark behind: a faint cool
+        for ya, yb in SASH['rows']:            # sheen, lighter at the top of each pane, its top row in its rail's shadow
+            for y in range(ya, yb + 1): r(pa, pb, y, y, GLASS[0] + (GLASS[1] - GLASS[0]) * (y - ya) / (yb - ya), 5)
+            r(pa, pb, ya, ya, GLASS[2], 5)
+    r(sa, sb, st, st, FACE, 0); r(sa, sb, sbar, sbar, LIT, 1)            # the sashes' top rail, the glazing bar across
+    r(sa, sb, sb0, sb0, FACE, 0); r(sa, sb, sb1, sb1, SHADE, 2)          # their bottom rail
+    r(sa, sa, st, sb1, LIT, 1); r(sb, sb, st, sb1, FACE, 0)
+    ma, mb = SASH['meet']                      # the meeting stiles: the back sash's in the front one's shadow
+    r(ma, ma, st, sb1, SHADE, 2); r(ma + 1, ma + 1, st, sb1, LIT, 1); r(mb, mb, st, sb1, FACE, 0)
+    r(a, a, ROWS[0], ROWS[1], LIT, 1); r(b, b, 579, sb1, SHADE, 2)       # its casing
+    r(a, b, WSILL[0], WSILL[0], LIT, 1); r(a, b, WSILL[0] + 1, WSILL[0] + 1, FACE, 0)   # the sill: its lit top, its face,
+    r(a, b, WSILL[0] + 2, WSILL[0] + 2, SHADE, 2); r(a + 1, b, WSILL[1], WSILL[1], DEEP, 2)   # its underside, its shadow
+    r(a + 1, b, MID[1] + 1, MID[1] + 1, DEEP, 2)   # the wall under it, its boards (the doors' kick panels' rows)
     for ya, yb in BOARDS:
         r(a + 1, b, ya, ya, 1.08, 1); r(a + 1, b, yb, yb, 0.93, 0)
         if yb + 1 < ROWS[1] - 2: r(a + 1, b, yb + 1, yb + 1, DEEP, 2)
-    r(a, a, ROWS[0], ROWS[1], LIT, 1)
-    r(b - 1, b - 1, 579, MID[0] - 1, FACE, 0); r(b, b, 579, MID[0] - 1, SHADE, 2)
+    r(a + 1, b, ROWS[1] - 2, ROWS[1] - 2, LIT, 1)
     a, b = JAMB
     r(a, b, ROWS[0], ROWS[1], FACE, 0, 3); r(a, a, ROWS[0], ROWS[1], LIT, 1); r(b, b, ROWS[0], ROWS[1], SHADE, 2)
     for p, (a, b) in enumerate(LEAVES, 4):     # the leaves: a lattice over a plain kick panel, their stiles lit on the left
@@ -353,6 +373,7 @@ def ground(box, orig, unlit, new, unew, m):
         pm = fr & (PART == p) & ~keep; REL[pm] /= REL[pm].mean()
     fm = fr & ~gap & ~keep
     out[fm] = np.clip(lf * REL[..., None], 0, 255)[fm]
+    gl = fm & (KIND == 5); out[gl] = np.clip(out[gl] * np.array(GLASS_TINT), 0, 255)
     out[gap & ~keep] = np.median(orig[gap], 0)
     # 4. the sill (its lit top, its face) and the sidewalk in the eave's shadow, evened along its rows
     sr = inb(FRONT[0], POST_R[1], *SILL)
