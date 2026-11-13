@@ -235,6 +235,16 @@ ZONES = {
     'arcgap': dict(box=(1265, 410, 1355, 790), nodraft=True, parts=[
         dict(poly=[(1265, 410), (1302, 410), (1302, 790), (1265, 790)], method='navy', rgb=(1, 3, 11)),
         dict(poly=[(1319, 410), (1355, 410), (1355, 790), (1319, 790)], method='navy', rgb=(1, 3, 11))]),
+    # the house at the street's end (the owner's picks, drawn by tools/end_house.py): its paper lantern by the door, off a
+    # flat red disc (no caps, no shading, no hook): a barrel with its caps and its bracket, the same lit (the comp
+    # win_z9_lantern) and off (darkened as the painter darkened his); its upstairs window, its right pane dark blocks and
+    # its railing's bars irregular: a curtain across each pane, lit (the comp win_z9_window) and off, the railing's bars on
+    # the balcony's own rhythm in both. (z9win: after the Pokemon Center's ball, whose box it overlaps; it changes none of
+    # the ball's rows)
+    'z9lan': dict(box=(796, 572, 828, 592), nodraft=True, parts=[
+        dict(poly=[(796, 572), (828, 572), (828, 592), (796, 592)], method='hand', fn='end_house.lantern', comp='win_z9_lantern')]),
+    'z9win': dict(box=(800, 496, 866, 536), nodraft=True, parts=[
+        dict(poly=[(800, 496), (866, 496), (866, 536), (800, 536)], method='hand', fn='end_house.window', comp='win_z9_window')]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -544,6 +554,11 @@ def zone(name, cfg, city, unlit):
                 L = lum(arr); gb = m & (arr[..., 1] >= arr[..., 0] + 1) & (arr[..., 1] >= arr[..., 2] + 1) & (L < p.get('below', 10))
                 ref = np.array(p['rgb'], float); k = np.clip(L / max(lum(ref[None, None, :])[0, 0], 1e-3), 0.5, 2.0)
                 arr[gb] = (ref[None, None, :] * k[..., None])[gb]
+        elif p['method'] == 'hand':                # (drawn on the pixel grid by a tool of its own, `fn`: module.function in
+            import importlib                       # tools/; it changes the street and the power cut in place and gives back
+            mod, fn = p['fn'].rsplit('.', 1)       # the lit comp laid over them (`comp`: its name), or None)
+            c = getattr(importlib.import_module(mod), fn)(box, O, unlit0[..., :3], new, unew, m)
+            if c is not None: COMP_OUT[name] = [p['comp'], c, None]
         elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
             new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
