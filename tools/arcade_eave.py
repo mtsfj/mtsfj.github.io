@@ -14,10 +14,21 @@ pale tufts on top of them, and under the unit a blurred box (its stand). Now, in
   top, darker as it turns under (the painter's tones, dithered a row where they meet), its far end a dome whose rim
   catches the light, laid over the farther tile, which is in its shadow there; no two quite the same shade; the row ends
   where the painter's did;
-- above it, no tufts: the dark behind (the tall building's wall), from the dark round them;
-- the unit's stand: a plain steel frame, a rail under each bottom edge of the unit (the side one on the unit's ray, the
-  front one level), a leg at each corner in sight down behind the tiles, the rails' lit top edge and the legs' lit side
-  (the unit's metal); the unit's side face carried down to its bottom edge (its plain metal under the fan guard);
+- above it, no tufts: the roof's surface. The eave is the foot of a canopy along the arcade's front, a lean-to up to
+  the building's wall, at a kawara roof's 6/10 pitch: steeper than the eye's line to the eave (0.411), so from the
+  street its surface shows over the tiles (as the painter's tufts and higher row said), from their top line up to the
+  wall's foot, and as far as the arcade goes (its end, where the row ends, a slope rising from the last tile: in front
+  of Ichiraku's sign too); lit by the sky, as much of it as the unit and its stand leave (their contact shadow under
+  them, soft round it); past the arcade's end and above the wall's foot, the dark (from the dark round them);
+- what holds the unit (the owner: "la ventilation, c'est quoi dessous ?"; it stood on an empty dark frame whose feet
+  were hidden behind the tiles): a roof-mounted stand, as units on a canopy's slope stand in Japan, of 3 cm angle
+  irons: at each end of the unit a frame, its leg at the front (downhill, 20 cm), a short one at the back, the top bar
+  the unit's foot is bolted to, standing on a bar that lies on the roof down its slope; a rail under the unit's face
+  ties the two. Each pixel's ray from the eye followed into that model: the irons' faces toward the street lit as the
+  unit's face (darker toward the roof), those toward us dark as the unit's end, those facing down darker; the unit's
+  underside seen from below in its own shadow; the roof through and round the stand. The unit's face carried down to
+  its bottom edge on its ray (to y 312 at its far edge, as its top's ray demands: the painter's casing, under the fan
+  guard, each column his metal there, its last row in the base's shadow);
 - the gutter: half-round (9.4 cm), hung in front of the tiles' lip (its rim 1 cm under the eave, 3 cm in front): seen from
   below, its rolled rim lit by the sky (its top edge, one pixel), its round belly darker as it turns under (its shadow
   side, against the black under the eave), a hanger every 60 cm (a dark strap round the belly, hooked over the rim: its
@@ -25,9 +36,10 @@ pale tufts on top of them, and under the unit a blurred box (its stand). Now, in
   building's corner carried up the wall to it (the wall camera, street.js R6C, laid 6 px right and 4 down from where
   tools/r6_sprites.py puts it: beside the pipe, 2 px under the gutter, as it was under the eave's lip);
 - at the row's end, in front of Ichiraku's sign: what the painter's higher row covered is the sign's underside again (its
-  maroon, from round it) and, right of the sign, the dark.
+  maroon, from round it), but for the roof's last wedge over the row.
 Colours are the painter's: each element takes pixels of his row (the lit tops, the faces, the lip), of the unit's metal
-and of his downpipe. The power cut: the same picture times the painter's own darkening there (unlit over lit, smoothed,
+and of his downpipe; the roof and the stand ramps of his tones, the roof's mixed by a 2x2 ordered dither, the thin irons
+flat. The power cut: the same picture times the painter's own darkening there (unlit over lit, smoothed,
 channel by channel), which is about 1 here (no light of the street reaches it).
 """
 import numpy as np
@@ -46,20 +58,114 @@ G_END = 1246                                   # the gutter's closed end (its ax
 PIPE = (1302, 1308)                            # the painter's downpipe's columns (its dark edges included), up from its top
 PIPE_TOP = 418
 SIGN_EDGE = 1266                               # Ichiraku's sign's right edge (what is cleared left of it is its underside)
-UNIT_V = 0.4684                                # the unit's bottom edges: its side (a ray) meets its front (level, y 292)
-UNIT_CORNER = (1388, 292)                      # at its near corner; its far edge at x 1359
-UNIT_FAR = 1359
-BOX_V = 0.505                                  # (the painter's box under it rose to this ray, left of the unit)
+BOX_V = 0.505                                  # (the painter's box under the unit rose to this ray, left of it)
 TUFT_V = 0.455                                 # (his tufts and his higher row, to this ray)
+
+# the unit and what holds it, in metres (X right of the street's axis, Y up, Z ahead; the eye at (0, EYE, 0)). The
+# painter's unit: its face with the fan along the street (its top edge on the ray 0.594), its near vertical edge between
+# columns 1404 and 1405, its far one at x 1359, its end toward us dark (his service panel, to x 1441); its bottom edges
+# from its near bottom corner (1405, 291): the face's on a ray (down to y 312 at its far edge, as its top's ray demands),
+# the end's level. A 0.65 m unit: its face 4.78 m from the axis, 17 cm behind the eave's front, its bottom 3.61 m up.
+UC = (1405.0, 291.0)                           # (continuous: right of column 1404, under row 290)
+UF = 1359.0
+XU, DU = 4.78, 0.244                           # its face, its depth
+VB = (VP[1] - UC[1]) / (UC[0] - VP[0])         # its bottom edges' ray (0.4596)
+VTOP = 0.5943                                  # its top's
+ZC, ZF = F * XU / (UC[0] - VP[0]), F * XU / (UF - VP[0])   # its near and far ends (6.51, 6.96 m)
+YB = EYE + VB * XU                             # its bottom
+UNIT_TOP = 289                                 # (rows the painter's face ends at: the casing drawn from here, the grille's
+GRILLE = (1361, 1388, 291)                     # columns from its bottom; his near end's from y 291)
+# the roof under it: the eave is a lean-to roof's foot (a canopy along the arcade's front, up to the building's wall
+# behind the unit), at a kawara roof's 6/10 pitch: steeper than the eye's line to the eave (0.411), so its surface shows
+# over the tiles, from their top line up to the wall, and as far as the arcade goes (the row's far end, X_END); steep
+# enough that under the unit it is the roof that shows, not the dark past the arcade's end
+S = 0.6                                        # its pitch (rise over run)
+YR0 = EYE + VT * XE                            # it runs on from the tiles' top line (3.30 m at XE)
+XW = 5.45                                      # the wall behind (the canopy 84 cm deep; the unit's back 43 cm from it)
+AI = 0.03                                      # the stand's angle irons (3 cm)
+
+
+def roof_y(X):
+    return YR0 + S * (np.asarray(X, float) - XE)
+
+
+def parts():
+    """The unit and its stand, as boxes ((x0, y0, z0), (x1, y1, z1), what it is); a 'sled' box's Y is over the roof's
+    plane (Y - S X), so it lies on it. The stand is a roof-mounted one, as units on a canopy's slope sit: at each end of
+    the unit a frame of angle irons (its leg at the front, the downhill side, a short one at the back, the top bar the
+    unit's foot is bolted to), standing on a bar that lies on the roof down its slope; a rail under the unit's face
+    joins the two."""
+    c = YR0 - S * XE                               # (the roof's plane: Y - S X = c)
+    P = [((XU, YB, ZC), (XU + DU, EYE + VTOP * XU, ZF), 'unit')]
+    for z0, z1 in ((ZC, ZC + AI), (ZF - AI, ZF)):
+        P += [((XU - 0.02, c, z0), (XU + DU + 0.02, c + AI, z1), 'sled'),
+              ((XU, float(roof_y(XU + AI / 2)) + AI, z0), (XU + AI, YB, z1), 'leg'),
+              ((XU + DU - AI, float(roof_y(XU + DU - AI / 2)) + AI, z0), (XU + DU, YB, z1), 'leg'),
+              ((XU, YB - AI, z0), (XU + DU, YB, z1), 'bar')]
+    P += [((XU, YB - AI, ZC), (XU + AI, YB, ZF), 'rail')]
+    return P
+
+
+def enter(o, d, lo, hi, shear=0.0):
+    """Where rays o + t d enter the box lo..hi (its Y taken as Y - shear X): (t, the axis they enter by), t inf if
+    they miss it. o, d: (3, n) arrays."""
+    oo = (o[0], o[1] - shear * o[0], o[2]); dd = (d[0], d[1] - shear * d[0], d[2])
+    tmin = np.full(d[0].shape, -np.inf); tmax = np.full(d[0].shape, np.inf); ax = np.zeros(d[0].shape, int)
+    for k in range(3):
+        with np.errstate(divide='ignore', invalid='ignore'):
+            t1 = (lo[k] - oo[k]) / dd[k]; t2 = (hi[k] - oo[k]) / dd[k]
+        a = np.where(np.isnan(t1), -np.inf, np.minimum(t1, t2)); b = np.where(np.isnan(t1), np.inf, np.maximum(t1, t2))
+        ax = np.where(a > tmin, k, ax); tmin = np.maximum(tmin, a); tmax = np.minimum(tmax, b)
+    return np.where((tmax >= tmin) & (tmin > 1e-6), tmin, np.inf), ax
+
+
+def sky(p, n, skip, m=96):
+    """How much of the sky the points p (3, n) see over their face (normal n): the share of m directions (cosine-
+    weighted round n, fixed: a Fibonacci spiral) that leave past the unit and its stand (the part `skip` aside)."""
+    n = np.asarray(n, float) / np.linalg.norm(n)
+    t1 = np.cross(n, (0.0, 0.0, 1.0)); t1 /= np.linalg.norm(t1); t2 = np.cross(n, t1)
+    seen = np.zeros(p.shape[1])
+    for i in range(m):
+        u, ph = (i + 0.5) / m, i * np.pi * (3 - np.sqrt(5))
+        r = np.sqrt(u); d = r * np.cos(ph) * t1 + r * np.sin(ph) * t2 + np.sqrt(1 - u) * n
+        D = np.repeat(d[:, None], p.shape[1], 1); free = np.ones(p.shape[1], bool)
+        for j, (lo, hi, kind) in enumerate(parts()):
+            if j == skip: continue
+            t, _ = enter(p + 1e-4 * n[:, None], D, lo, hi, S if kind == 'sled' else 0.0)
+            free &= ~np.isfinite(t)
+        seen += free
+    return seen / m
+
+
+BAYER = np.array([[0.125, 0.625], [0.875, 0.375]])
+
+
+def ramp(t, cols, x, y):
+    """A colour of the ramp cols at t (0 its first, 1 its last), two neighbours mixed by a 2x2 ordered dither (the
+    painter's way between two tones), no new colour."""
+    k = np.clip(t, 0, 1) * (len(cols) - 1); i = int(np.floor(k)); f = k - i
+    if i >= len(cols) - 1: return np.array(cols[-1], float)
+    return np.array(cols[i + 1] if f > BAYER[y % 2, x % 2] else cols[i], float)
+
+
+def flat(t, cols):
+    """The ramp's nearest tone (thin irons: one flat tone, a dither there reads as grain)."""
+    return np.array(cols[int(np.round(np.clip(t, 0, 1) * (len(cols) - 1)))], float)
 
 # the painter's colours (picked from his row, the unit's side face and the black round them, in the street as it is)
 C = dict(
     tile_top=(34, 44, 72), tile_up=(21, 31, 55), tile_mid=(14, 23, 40), tile_low=(6, 15, 22), tile_lip=(13, 22, 38),
     joint=(2, 8, 12),
     bead=(58, 66, 104), g_face=(30, 38, 64), g_mid=(20, 27, 47), g_low=(11, 17, 30), g_belly=(5, 9, 17), strap=(2, 5, 9),
-    rail_top=(40, 42, 76), rail=(14, 17, 33), leg_lit=(26, 29, 54), leg=(10, 12, 24),
-    face=(12, 21, 39), face_edge=(28, 42, 74),
 )
+# the roof, the stand and the unit's underside: ramps from dark to lit, in the painter's tones (the tiles' navy for the
+# roof, a little under their lit top; the unit's lit metal for the stand's faces toward the street, its dark end's tone
+# for those toward us; its shadow's for what faces down)
+R_ROOF = [(4, 8, 14), (8, 13, 24), (13, 20, 35), (18, 26, 45), (23, 32, 55), (27, 37, 62)]
+R_LIT = [(10, 13, 25), (17, 21, 39), (25, 29, 53), (33, 38, 67), (40, 44, 78)]
+R_END = [(5, 8, 15), (9, 12, 23), (13, 17, 31)]
+R_SLED = [(6, 9, 17), (13, 17, 31), (22, 27, 48), (31, 36, 63), (38, 43, 75)]
+UNDER = [(6, 9, 18), (9, 12, 23)]
 LUMA = np.array([0.299, 0.587, 0.114])
 
 
@@ -128,9 +234,10 @@ def draw(O, U, box):
                 p = O[y - y0, xi]
                 if p[2] > p[0] + 4 and p[1] > p[0]: role[y - y0, xi] = 'sign'
             continue
-        if x < UNIT_FAR: hi = row(x, TUFT_V if x < 1330 else BOX_V)
-        elif x <= UNIT_CORNER[0]: hi = row(x, UNIT_V) + 1
-        else: hi = UNIT_CORNER[1] + 1
+        if x < UF: hi = row(x, TUFT_V if x < 1330 else BOX_V)
+        elif x < UC[0]: hi = UNIT_TOP if x >= GRILLE[1] else GRILLE[2]   # (the unit's face: from under the grille)
+        else:                                          # (under its end; past it, from where the roof meets the wall)
+            hi = int(UC[1]) if x < VP[0] + F * (XU + DU) / ZC else min(int(UC[1]), row(x, (float(roof_y(XW)) - EYE) / XW))
         for y in range(max(hi, y0), top): role[y - y0, xi] = 'clear'
     cl = role == 'clear'                               # the dark behind: from the dark round what goes
     new[cl] = fill(O, cl, ~cl & (Lo < 5) & (O[..., 1] >= O[..., 2]) & (role == ''))[cl]
@@ -143,24 +250,63 @@ def draw(O, U, box):
             if x >= X_END - 2: src[row(x, 0.47) - y0:row(x, VL) - y0 + 2, xi] = False
         new[sg] = fill(O, sg, src, 2.5)[sg]
 
-    # 2. the unit's side face down to its bottom edge (its plain metal, its far edge lit), the stand under it
-    cx, cy = UNIT_CORNER
-    for xi, x in enumerate(X):
-        if UNIT_FAR <= x <= cx:
-            for y in range(cy + 1, row(x, UNIT_V) + 1):
-                put(y, xi, 'face_edge' if x <= UNIT_FAR + 1 else 'face', 'face')
-    for xi, x in enumerate(X):
-        top = row(x, VT)
-        if UNIT_FAR <= x <= cx:                        # the side rail, under the unit's ray
-            yb = row(x, UNIT_V) + 1
-        elif x > cx:                                   # the front rail, level
-            yb = cy + 1
-        else: continue
-        for k, c in ((0, 'rail_top'), (1, 'rail'), (2, 'rail')):
-            if yb + k < top: put(yb + k, xi, c, 'stand')
-        for lx in ((UNIT_FAR, UNIT_FAR + 1), (cx - 1, cx)):   # a leg at each corner in sight: 2 px, its left side lit
-            if x in lx:
-                for y in range(yb + 3, top): put(y, xi, 'leg_lit' if x == lx[0] else 'leg', 'stand')
+    # 2. the unit's foot, what holds it and what it stands on: each pixel cleared above the tiles (and under the painter's
+    # unit), its ray from the eye followed into the scene. What it meets first: the unit's face (its casing under the
+    # grille, down to its bottom edge: each column the painter's own metal there, its last row in the shadow of the
+    # base), its underside (seen from below, in its own shadow), the stand's angle irons (their faces toward the street
+    # lit as the unit's face, darker toward the roof; toward us dark as the unit's end; facing down darker still), the
+    # bars lying on the roof (their top as lit as the sky leaves it), the roof (lit by the sky as much as the unit and
+    # the stand leave it: under them their contact shadow, soft round it), else the dark behind (the wall, past the
+    # arcade's end: what step 1 filled)
+    P = parts(); c0 = YR0 - S * XE; zend = F * XE / (X_END - 0.5 - VP[0])
+    strip = np.median(O[280 - y0:289 - y0, 1390 - x0:1399 - x0].reshape(-1, 3), 0)   # (his casing's metal, the grille's
+    cand = role == 'clear'                                                            # right)
+    for xi, x in enumerate(X):                            # (and, in front of Ichiraku's sign, the roof's last wedge over
+        if X_END <= x < SIGN_EDGE: cand[row(x, VT) - 12 - y0:row(x, VT) - y0, xi] = True   # the row: only where hit)
+    ys, xs = np.nonzero(cand)
+    px, py = xs + x0, ys + y0; n = len(px)
+    d = np.stack([(px + 0.5 - VP[0]) / F, (VP[1] - (py + 0.5)) / F, np.ones(n)]); o = np.zeros_like(d); o[1] = EYE
+    best = np.full(n, np.inf); what = np.full(n, -1); axis = np.zeros(n, int)
+    for j, (lo, hi, kind) in enumerate(P):
+        t, ax = enter(o, d, lo, hi, S if kind == 'sled' else 0.0)
+        nb = t < best; best[nb] = t[nb]; what[nb] = j; axis[nb] = ax[nb]
+    with np.errstate(divide='ignore', invalid='ignore'):  # the roof's plane (Y - S X = c0), from the eave to the wall, as
+        tr = (c0 - EYE) / (d[1] - S * d[0])                # far as the arcade goes
+    nb = (tr > 0) & (tr * d[0] >= XE) & (tr * d[0] <= XW) & (tr <= zend) & (tr < best)
+    best[nb] = tr[nb]; what[nb] = len(P)
+    hp = o + np.where(np.isfinite(best), best, 0) * d    # (where each ray meets what it meets)
+    nrm = (-S, 1.0, 0.0)
+    lit = np.ones(n)                                      # the sky each roof point, each bar's top, sees
+    on_roof = what == len(P)
+    if on_roof.any(): lit[on_roof] = sky(hp[:, on_roof], nrm, -1)
+    for j, (lo, hi, kind) in enumerate(P):
+        sel = (what == j) & (axis == 1) & (kind == 'sled')
+        if sel.any(): lit[sel] = sky(hp[:, sel], nrm, j)
+    last = {}                                             # (each column's last row of casing: the base's shadow line)
+    for i in np.nonzero((what == 0) & (axis == 0))[0]: last[px[i]] = max(last.get(px[i], 0), py[i])
+    for i in range(n):
+        x, y, j, a = int(px[i]), int(py[i]), int(what[i]), int(axis[i])
+        if j < 0 or (j < len(P) and px[i] < SIGN_EDGE): continue   # (the dark behind, as filled; by the sign, as it is)
+        X_, Y_, Z_ = hp[:, i]
+        if j == len(P):                                   # the roof: the sky it sees, a touch darker at the wall's foot
+            t = 0.08 + 0.92 * lit[i] ** 0.8
+            if X_ > XW - 0.05: t *= 0.7
+            put(y, x - x0, ramp(t, R_ROOF, x, y), "roof"); continue
+        kind = P[j][2]
+        if kind == 'unit':
+            if a == 0:                                    # its face: the painter's metal of the column (the grille's
+                col = strip if GRILLE[0] <= x < GRILLE[1] else np.median(O[280 - y0:289 - y0, x - x0], 0)   # own: his
+                if y == last.get(x): col = col * 0.72     # casing's), its last row in the base's shadow
+                put(y, x - x0, col, 'casing')
+            else: put(y, x - x0, flat(0.0, UNDER), 'stand')
+            continue
+        hgt = np.clip((Y_ - float(roof_y(X_))) / max(YB - float(roof_y(X_)), 1e-3), 0, 1)   # (0 at the roof, 1 up)
+        if kind == 'sled':
+            c = flat(0.1 + 0.9 * lit[i], R_SLED) if a == 1 else flat(0.5, R_END) if a == 2 else flat(0.3, R_LIT)
+        elif a == 0: c = flat(0.45 + 0.55 * hgt if kind == 'leg' else 0.85, R_LIT)   # (toward the street: lit)
+        elif a == 2: c = flat(0.3 + 0.7 * hgt, R_END)                             # (toward us)
+        else: c = np.array(R_END[0], float)                                              # (facing down)
+        put(y, x - x0, c, 'stand')
 
     # 3. the tiles: their front band between the two rays, a tile every TILE metres (foreshortened toward the vanishing
     # point), each a round tile lying along the eave: lit along its top, darker as it turns under, its far end a dome a
