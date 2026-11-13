@@ -21,6 +21,7 @@ from layers already edited, so a second run writes the same bytes. Per zone:
             the model's fine structure (its luminance minus its own low frequencies, times K) in the painter's hue;
             `keep_lit` keeps the painter's crisp lit strokes as painted;
     copy    the painter's own pixels from beside (`src`: dx, dy), to continue a pavement where an object stood;
+    tool    a drawing made on the pixel grid by a module of its own (`tool`: tools/<tool>.py, its draw()), no model;
     direct  the model's pixels, their global tint brought back to the painting's (a per-channel line fitted on the
             surroundings); with `neon` they are split into the board as it is unlit (the base, in both layers) and the
             light the tubes add (the glow texture, additive, which street.js switches with the shop, the power and the
@@ -267,6 +268,12 @@ ZONES = {
         dict(poly=[(142, 525), (227, 525), (227, 745), (142, 745)], method='night', room='dagashi_interior',
              fit=(0, 530, 80, 688), knee=(140.0, 0.3), lamp_out=(60.0, 0.15), door=(17.0, 27.0, 1.2),
              src=dict(rect=(146, 649, 155, 675), tint=(0.84, 1.0, 1.1), k=0.85, amp=0.6, r=9.0))]),
+    # the arcade's low roof under the rooftop unit (the owner's pick #11, "+ gouttière": blotches nobody could name on its
+    # edge, a blurred box under the unit): drawn on the pixel grid in the street's perspective by tools/arcade_eave.py
+    # (its eave tiles on the painter's rays, foreshortened; the tufts gone; a steel stand under the unit; a half-round
+    # gutter with its hangers, the downpipe at the corner carried up to it; the wall camera moved under it in street.js)
+    'arceave': dict(box=(1232, 262, 1456, 430), nodraft=True, parts=[
+        dict(poly=[(1232, 262), (1456, 262), (1456, 430), (1232, 430)], method='tool', tool='arcade_eave')]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -658,6 +665,10 @@ def zone(name, cfg, city, unlit):
             mod, fn = p['fn'].rsplit('.', 1)       # the lit comp laid over them (`comp`: its name), or None)
             c = getattr(importlib.import_module(mod), fn)(box, O, unlit0[..., :3], new, unew, m)
             if c is not None: COMP_OUT[name] = [p['comp'], c, None]
+        elif p['method'] == 'tool':                # (a part drawn on the pixel grid by its own module in tools/ (`tool`): its
+            import importlib                       # draw(street, power cut, box) gives both layers and what it changed)
+            tn, tu, tm = importlib.import_module(p['tool']).draw(O, unlit0[..., :3].copy(), box)
+            m = m & tm; new[m] = tn[m]; unew[m] = tu[m]
         elif p['method'] == 'shade':               # a shadow line: what is there darkened by f, both layers
             new[m] = new[m] * p['f']; unew[m] = unew[m] * p['f']
         elif p['method'] == 'copy':                # the painter's own pixels from beside (src: dx, dy), both layers
