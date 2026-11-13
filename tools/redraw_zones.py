@@ -307,6 +307,12 @@ ZONES = {
     # carried along its rays. Drawn by tools/pole_lamp.py, after poletex; it also writes assets/lamp.webp (its lit comp)
     # and assets/night_far.webp over its box
     'polelamp': dict(box=(845, 128, 1023, 230), tool='pole_lamp'),
+    # Naruto's floor over Ichiraku (the owner: "à refaire : fenêtre, rambarde, appart Naruto, façade premier"): its window,
+    # its balcony's railing, its walls and slabs redrawn on the pixel grid in the street's perspective by
+    # tools/naruto_floor.py, from under the roof's lip down to the sign's top edge (the sign, 'ramen', and the arcade's
+    # eave, 'arceave', whose boxes it overlaps, as they leave them); it writes the window's lit overlay too
+    # (assets/window_panes.webp, window_lit_ukki.webp)
+    'narufloor': dict(box=(1120, 55, 1279, 390), tool='naruto_floor'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
