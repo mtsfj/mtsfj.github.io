@@ -25,12 +25,19 @@ from layers already edited, so a second run writes the same bytes. Per zone:
             surroundings); with `neon` they are split into the board as it is unlit (the base, in both layers) and the
             light the tubes add (the glow texture, additive, which street.js switches with the shop, the power and the
             red night): lit, base + glow is the model's picture; out, only the base;
+    night   a lit window's room shut for the night (night_room, no drawing asked for): its comp's lit picture darkened as
+            the painter darkens a shut neighbour, one light left on in it (the dagashi-ya's cooler), out in the power cut;
+            what is what in the room from its own tool's model (room_model: tools/dagashi_interior.py);
 - the unlit layer (the power cut) takes the same change as a ratio (unlit x new / old), the direct parts their base;
   `unlit='lf_ratio'` (the places that shut): the new picture times the painter's darkening, smoothed channel by channel.
 The overlays street.js lays on a zone follow it (R10): the closed shop's (shop_off), the oden's lantern frames and its
 door's sliding leaf (oden_overlays: from tools/src/edits/<name>_before.webp; after tools/oden_interior.py rewrites
 assets/oden_door.webp, copy it there and run this again); a lit window's comp (the kiosk's win_z7_kiosk, `comp` and
-`lit` parts: its new lit picture in the comp, the street under it the same darkened as the painter's shut one).
+`lit` parts: its new lit picture in the comp, the street under it the same darkened as the painter's shut one); a figure
+in a room shut by `night` (the dagashi-ya's obaa-chan, `atlas`: her dark row, seen in a power cut while the shop is open,
+in the same dark; from tools/src/edits/dagashi_obaachan_before.webp: after tools/dagashi_obaachan.py rewrites
+assets/dagashi_obaachan.webp, copy it there and run this again; after tools/dagashi_interior.py, its zone's before crops
+and dagashi_comp_before.webp too).
 """
 import json, os, sys
 import numpy as np
@@ -248,6 +255,18 @@ ZONES = {
     # the right pole's foot planted in the sidewalk (the owner: "la transition poteau trottoir pas dingue"): solid to the
     # ground, its foot an ellipse, its contact shadow; drawn by tools/pole_foot.py, after pole and bfloor (it overlaps them)
     'polefoot': dict(box=(995, 690, 1100, 800), tool='pole_foot'),
+    # the dagashi-ya shut (the owner: "petite lumière de nuit ? et fermé"): its room, seen through the open door and the
+    # left door's glass, was a mauve ghost of the lit one (tools/dagashi_interior.py's dark: the painter's own shut room,
+    # its pale end), the crate of balls by the door a pale mass. Now the lit room (its comp, win_z7_shop, as it is)
+    # darkened as the painter darkens a shut place (the dojo's shoji, lit and shut: the night's blue), a little lighter by
+    # the door (the crate a box), its lamp out; the ramune cooler behind the glass left on, its cold light on the jars
+    # and the counter by it; in the power cut, out with the rest. The obaa-chan's dark (her in a power cut while it is
+    # open) in the same room's dark (`atlas`)
+    'dagashi': dict(box=(142, 525, 227, 745), nodraft=True, comp=('win_z7_shop', (142, 537)),
+                    atlas=dict(name='dagashi_obaachan', dark=112, w=730, z=26.45), parts=[
+        dict(poly=[(142, 525), (227, 525), (227, 745), (142, 745)], method='night', room='dagashi_interior',
+             fit=(0, 530, 80, 688), knee=(140.0, 0.3), lamp_out=(60.0, 0.15), door=(17.0, 27.0, 1.2),
+             src=dict(rect=(146, 649, 155, 675), tint=(0.84, 1.0, 1.1), k=0.85, amp=0.6, r=9.0))]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -338,6 +357,77 @@ def zone5_plaster(face, tone, ch, at='cd2d002^'):
         c2, u2, chg, _, _ = Z.walls(old('layer_city_off.webp'), old('street_unlit.webp'), 'b_plaster')
         _Z5[key] = (c2[..., :3], u2[..., :3], chg, Z.V)
     return _Z5[key]
+
+
+_ROOM = {}
+def room_model(tool, box):
+    """A shop's room as its own tool models it (tools/dagashi_interior.py: its Model, from its commit BEFORE, the rays it
+    casts from the street's eye through the door and the glass): on the zone's box, each pixel's surface (the most of its
+    rays), its depth (their median Z, m), the glass and the sheen the tool lays on it, and its light sources (its
+    picture's lamp and cooler, KNEE: most of its rays end there). Cached."""
+    key = (tool, box)
+    if key not in _ROOM:
+        import importlib
+        sys.path.insert(0, os.path.join(ROOT, 'tools')); T = importlib.import_module(tool)
+        on = T.before()[4]; M = T.Model(T.measure_sill(on)[0])
+        pix, glass = M.pixels(); _, sid, Zh = M.render(pix)
+        surf = np.array([np.bincount(r).argmax() for r in sid])
+        x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
+        R = dict(inside=np.zeros((h, w), bool), surf=np.full((h, w), -1), Z=np.full((h, w), np.inf),
+                 sheen=np.zeros((h, w)), light=np.zeros((h, w), bool))
+        ok = (pix[:, 0] >= x0) & (pix[:, 0] < x1) & (pix[:, 1] >= y0) & (pix[:, 1] < y1)
+        for i in np.nonzero(ok)[0]:
+            yy, xx = pix[i, 1] - y0, pix[i, 0] - x0; s = surf[i]; on_s = sid[i] == s
+            R['inside'][yy, xx] = True; R['surf'][yy, xx] = s
+            if s: R['Z'][yy, xx] = np.median(Zh[i][on_s])
+            R['light'][yy, xx] = ((M.glow[i] > 0) & (sid[i] == 1)).mean() > 0.5
+        R['sheen'][pix[ok, 1] - y0, pix[ok, 0] - x0] = T.sheen(pix[ok, 0], pix[ok, 1]) * glass[ok]
+        _ROOM[key] = R
+    return _ROOM[key]
+
+
+NIGHT = {}                                     # zone -> its night_room's darkening (for the figures laid in the room)
+def night_room(name, p, m, box, on, cin, city, unlit, new, unew):
+    """A lit window's room shut for the night (the owner on the dagashi-ya: "petite lumière de nuit ? et fermé"): its
+    comp's lit picture (`on`), the room its tool models (`room`, room_model), the surfaces in `keep_surf` left as they
+    are (the jamb, the lintel's underside: the painter's wood; the sill). The room darkened as the painter darkens what is
+    off (R13): channel by channel, a line fitted on `fit` (x0, y0, x1, y1: a shut neighbour, its street lit and shut), its
+    lit highlights tamed first (`knee`: above that luminance, that share kept), the model's other lights (its lamp: bulb,
+    shade and halo) out (`lamp_out`: the same, lower and harder: an unlit lamp, its shape kept); a little of the street's
+    light through the door (`door`: Z near, Z far, the gain at the door: what stands near it a little lighter, the back
+    wall as dark as the fit); the sheen on its glass kept. One light left on (`src`: `rect`, x0, y0, x1, y1, the glass of
+    a cooler as the comp draws it, in a cold light (`tint`), `k` of its lit luminance; and its light on what is round it,
+    `amp` falling off over `r` px: each thing's own colour, half grey, in that cold light). The power cut: the same room,
+    that light out too. Writes new and unew in place; returns the pixels it laid."""
+    from scipy.ndimage import distance_transform_edt
+    x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
+    R = room_model(p['room'], box)
+    m = m & cin & R['inside'] & ~np.isin(R['surf'], p.get('keep_surf', (0, 7, 8)))
+    fx0, fy0, fx1, fy1 = p['fit']
+    A = [np.polyfit(city[fy0:fy1, fx0:fx1, c].ravel(), unlit[fy0:fy1, fx0:fx1, c].ravel(), 1) for c in range(3)]
+    zn, zf, gain = p['door']
+    def tame(lit, kn, ks):
+        L = lum(lit); return lit * (np.where(L > kn, kn + (L - kn) * ks, L) / np.maximum(L, 1e-3))[..., None]
+    def dark(lit, Z):                          # (the lit picture as the night has it: tamed, the fitted line, the door's light)
+        lit = tame(lit, *p['knee'])
+        d = np.stack([A[c][0] * lit[..., c] + A[c][1] for c in range(3)], -1)
+        return d * (1 + gain * np.clip((zf - Z) / (zf - zn), 0, 1))[..., None], lit
+    sp = p['src']; src = np.zeros((h, w), bool)
+    a0, b0, a1, b1 = sp['rect']; src[b0 - y0:b1 - y0, a0 - x0:a1 - x0] = True; src &= m
+    lit = np.clip(on - R['sheen'][..., None], 0, 255)
+    lamp = R['light'] & m & ~binary_dilation(src, iterations=4)
+    lit = np.where(lamp[..., None], tame(lit, *p['lamp_out']), lit)
+    dk, tamed = dark(lit, np.where(np.isfinite(R['Z']), R['Z'], zf)); sh = R['sheen'][..., None]
+    unew[m] = np.clip(dk + sh, 0, 255)[m]
+    t = np.array(sp['tint'], float)
+    wgt = sp['amp'] * np.exp(-(distance_transform_edt(~src) / sp['r']) ** 2)
+    lt = dk + wgt[..., None] * (0.5 * tamed + 0.5 * lum(tamed)[..., None]) * t
+    lt[src] = (lum(on)[..., None] * sp['k'] * t)[src]
+    new[m] = np.clip(lt + sh, 0, 255)[m]
+    NIGHT[name] = dict(dark=dark)
+    print(f'{name}: the room shut for the night, {int(m.sum())} px (the line {[tuple(np.round(a, 3)) for a in A]}); '
+          f'its night light {int(src.sum())} px; its lamp out, {int(lamp.sum())} px')
+    return m
 
 
 def zone(name, cfg, city, unlit):
@@ -574,6 +664,8 @@ def zone(name, cfg, city, unlit):
             sx, sy = p['src']                      # (`from_new`: the zone's new pixels there, an earlier part's, instead)
             cs, cu = (new.copy(), unew.copy()) if p.get('from_new') else (O, unlit0[..., :3])
             new[m] = np.roll(np.roll(cs, -sy, 0), -sx, 1)[m]; unew[m] = np.roll(np.roll(cu, -sy, 0), -sx, 1)[m]
+        elif p['method'] == 'night':               # (a lit window's room shut for the night: night_room)
+            m = night_room(name, p, m, box, on, cin, city, unlit, new, unew)
         if p.get('feather'):                       # its edge on the old painting: a ramp over `feather` pixels, no seam
             from scipy.ndimage import distance_transform_edt
             wgt = np.clip(distance_transform_edt(poly_mask(p['poly'], box)) / p['feather'], 0, 1)[..., None]
@@ -753,6 +845,15 @@ def main():
             A[..., :3][mm] = np.clip(A[..., :3][mm] * ((a + 1) / (b + 1))[mm], 0, 255)
             Image.fromarray(np.round(A).astype(np.uint8), 'RGBA').save(os.path.join(ROOT, 'assets', cname + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
             print(cname + ':', int(mm.sum()), 'pixels of its wall brought to the new one')
+    for name, cfg in ZONES.items():                # (`atlas`: a figure in a room night_room shut, her dark row (a power cut
+        a = cfg.get('atlas')                       # while it is open) its lit row in that room's dark, at her depth; from
+        if not a or name not in NIGHT: continue    # tools/src/edits/<name>_before.webp: rerun after her tool rewrites it)
+        A = load(os.path.join(EDITS, a['name'] + '_before.webp')); r, W = a['dark'], a['w']; H = A.shape[0] - r
+        lit = A[:H, :W]; op = lit[..., 3] > 0
+        dk = NIGHT[name]['dark'](lit[..., :3], np.full(op.shape, float(a['z'])))[0]
+        A[r:r + H, :W, :3][op] = np.clip(dk, 0, 255)[op]
+        Image.fromarray(np.round(A).astype(np.uint8), 'RGBA').save(os.path.join(ROOT, 'assets', a['name'] + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+        print(a['name'] + ':', int(op.sum()), 'pixels of her dark row in the shut room\'s dark')
     for name, (cname, comp, _) in COMP_OUT.items():   # a lit window's comp, its new picture where it lit before
         Image.fromarray(np.clip(np.round(comp), 0, 255).astype(np.uint8), 'RGBA').save(
             os.path.join(ROOT, 'assets', cname + '.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
