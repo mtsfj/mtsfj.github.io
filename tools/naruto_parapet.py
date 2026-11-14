@@ -31,15 +31,32 @@ floor under it, the window, the railing and the garden stay where they are).
   the near corner and toward its lower arris but for the arris itself (the street's light catches it); thin rain streaks
   from the coping's joints. Round the near corner (plumb at P's corner, its arris a lit column) the same rows run level
   across the near side, which faces us a step darker (turned from the street), down over the balcony's opening to the
-  soffit, then as the near wall (one face, the same grain) down to the awning: under the slab in shadow, a little
-  lighter lower down (the street's light), darker into the corner with the arcade.
+  soffit, then as the near wall (one face, the same grain) down to the arcade's canopy. The owner on it: "cette façade
+  face à nous, bizarre : on dirait qu'il y a un bâtiment entre Ichiraku et celui de l'arcade". So the near side is the
+  front's own concrete (W's last pier's, by the corner) at 0.82 of its light, its corner with the front one crisp lit
+  column from the roof slab down to the canopy, the roof slab's lower arris and the balcony's slab (its lit edge, its
+  face, its lower arris, as over the opening) running round the corner across it at their own rows, a little lighter
+  lower down, a touch darker into the inside corner with the arcade; the painter's dark box over the canopy is that wall
+  (and, left of the corner, the front's) carried down to the canopy, a flashing where the canopy's roof meets them, and
+  where the arcade's roof meets the side wall over its tiles' far end.
 - The planters: the roof garden's shrubs, hedge and maple stand in concrete planters behind the parapet, their rims just
   showing over the coping under the plants (a lit top, its edge, the planter's face in shade over the coping's lit edge); the leaves the rims cover leave the garden's
   wind data (roof_sway.webp: no longer leaves, never shown there).
-- The water: one scupper through the parapet at the far end, just over the terrace, its short spout over a rain head
-  on the pillar's face; from its funnel one round downpipe (12 cm, 2 cm off the wall) straight down the pillar behind
-  the sign, on the painter's downpipe line, a bracket every 1.2 m (a ring, its strap to the wall), the rain head's and
-  the pipe's shadows on the wall; lit from the street (its side toward the street axis and toward us). The street
+- The water (the owner on the first one: "cette gouttière pas ouf", a flat grey bar with a blob on a flat wall): one
+  scupper through the parapet at the far end, just over the terrace, its short spout (its dark mouth) over a rain head
+  on the pillar's face (a small box: its lit top and rolled rim, its end to us lit, its face to the street, its funnel);
+  from it one round downpipe of 6.6 cm, 1.5 cm off the wall, straight down the pillar into the sign's top, on the
+  painter's downpipe line: 3 px at that depth, its lit side toward the street, a thin highlight line, its dark side,
+  its shadow on the wall beside it; a clamp every 1.2 m (a ring lit on top, its strap and its plate on the wall, the
+  plate's edge on the facade's ray), the rain head's shadow under it. Then (the owner's R28: what is detailed is drawn by
+  the image model, not by hand) the pipe as google/gemini-3-pro-image drew it in its context crop (PIPE_CROP x4,
+  brightened; tools/src/edits/naruroof_pipe_model.webp from naruroof_pipe_prompt.txt): a hopper rain head with its lit
+  rim under the scupper's dark mouth, the slim pipe with its lit side and highlight, four clamps with their ears, their
+  shadows; boxed down to the street's pixels, brought to this wall's colours by a gain per channel, and only what is the
+  pipe's laid over the wall this model draws without its own (drawn_pipe). Its wall, the pillar's face, in the painter's
+  grain on the cleaned pillar's light (its rows' light smoothed down the wall, darker into C's corner), a faint trace
+  of the overflow under the rain head; the pillar's side face beside it, in the balcony's recess, the painter's grain
+  too, a little lighter lower down. The street
   lamp's light on the far end as before (tools/naruto_roof.lamp's warm share, the lit layer only). The near corner's
   second downpipe (the painter's conduit, made a downpipe by tools/naruto_roof.py) is gone.
 - The arcade's building, the right neighbour: the painter's top kept (his tiled eave's edge against the sky, as
@@ -49,7 +66,9 @@ floor under it, the window, the railing and the garden stay where they are).
   farther one's shadow, the row's far end a dome; its shadow on the wall under it; the stray lines round the old row gone. Its walls
   (the painter's flat green black, x 1297 on, the AC unit, its stand, the conduits and the corner's trims left as they
   are) given their material and light: vertical boards along the street face (18 cm, foreshortened, a dark seam, each
-  board its own tone, a grain along it), dark under the eaves and lighter lower down. Naruto's near side shows over its
+  board its own tone, a grain along it), dark under the eaves and lighter lower down, down to its canopy, its far
+  corner (the painter's lit trims there, which read as another building's edge) an inside corner in shade against
+  Naruto's side wall. Naruto's near side shows over its
   tiles at their far end only (x 1297..1303), drawn as round the corner.
 Colours are the painting's (Naruto's concrete from his pillar and the near strip, the arcade's tiles from the painter's
 row, its wall his green black lifted a little so its boards read). The power cut (street_unlit): the same, but the
@@ -89,12 +108,14 @@ DEEP = 15.0                                    # (the building's back: out of th
 JOINTS_P = [ZN + k * (ZF - ZN) / 3 for k in (1, 2)]   # the coping's joints along P (three lengths)
 JOINTS_N = [XP + 1.6]                          # and on the near side
 # the downpipe on the pillar (the painter's line, x 1145..1151): its axis, its radius, its rain head and scupper
-PR = 0.06
-PZ = 21.50                                     # (its axis's depth: on the pillar, by its edge)
-PX = XP - 0.02 - PR
+PR = 0.033                                     # (a 6.6 cm pipe: 3 px at that depth)
+PZ = 21.55                                     # (its axis's depth: on the pillar, 11 cm from its edge)
+PX = XP - 0.015 - PR
 BRACKET = 1.2                                  # a bracket every BRACKET m from the funnel down
-METAL = ('pipe', 'ring', 'strap', 'rh', 'fun', 'spout')
-NEAR_K = 0.72                                  # the near side's light over the street face's (turned from the street)
+METAL = ('pipe', 'ring', 'strap', 'plate', 'rh', 'fun', 'spout')
+NEAR_K = 0.82                                  # the near side's light over the front's (turned from the street)
+SLAB_ROWS = (262, 275)                         # the balcony's slab at the near corner (tools/naruto_floor.py's YFL, YSB)
+CANOPY_X = (1270, 1352)                        # where the arcade's canopy meets the walls under it (its flashing)
 STRIP = (1279, 1297, 312)                      # the near wall beside the window: its columns, down to the box over the awning
 # the planters behind the parapet: where the garden's plants stand over the coping (from roof_sway.webp's leaves), their
 # rims two rows over the coping's top
@@ -122,6 +143,14 @@ WALL_LOW, WALL_TOP = np.array((5.0, 11.0, 12.0)), np.array((2.0, 6.0, 6.0))   # 
 GRAIN = 0.05
 
 
+NO_PIPE = [False]                              # (the model without its downpipe: the wall behind it, for the drawn one)
+PIPE_MODEL = 'naruroof_pipe_model.webp'        # the downpipe drawn by the image model in its context crop (R28), from
+PIPE_CROP = (1083, 112, 1229, 372)             # naruroof_pipe_prompt.txt, on this crop of the street (x4, brightened; the
+                                               # pipe carried down from its last row to the sign's top)
+PIPE_BAND = (1138, 1159)                       # the columns it is laid in (the pipe, its rain head, its clamps, shadows)
+PIPE_GAMMA = 2.0
+
+
 def boxes():
     """the model: (name, lo, hi) boxes, axis-aligned"""
     B = [('par', (XP, Y_LB, ZN), (XP + 0.25, Y_CT - COP, ZF)),                     # the parapet and the slab on P
@@ -130,16 +159,18 @@ def boxes():
          ('near', (XW, 0.0, ZN), (XP + DEEP, Y_LB, ZN + 3.0)),                     # the near wall under the slab
          ('cop', (XP - OVH, Y_CT - COP, ZN - OVH), (XP + 0.25 + OVH, Y_CT, ZF)),   # the coping on P
          ('cop', (XP - OVH, Y_CT - COP, ZN - OVH), (XP + DEEP, Y_CT, ZN + 0.25 + OVH)),   # on the near side
-         ('spout', (XP - 0.08, Y_T, PZ - 0.045), (XP, Y_T + 0.07, PZ + 0.045)),    # the scupper's spout, the rain head,
-         ('rh', (XP - 0.17, Y_T - 0.30, PZ - 0.09), (XP, Y_T - 0.06, PZ + 0.09)),  # its funnel
-         ('fun', (PX - PR * 0.9, Y_T - 0.36, PZ - 0.06), (XP, Y_T - 0.30, PZ + 0.06))]
-    for yb in brackets():                                                           # the brackets' straps
-        B.append(('strap', (PX, yb, PZ - 0.012), (XP, yb + 0.035, PZ + 0.012)))
+         ('spout', (XP - 0.07, Y_T, PZ - 0.04), (XP, Y_T + 0.06, PZ + 0.04)),      # the scupper's spout, the rain head,
+         ('rh', (XP - 0.13, Y_T - 0.25, PZ - 0.075), (XP, Y_T - 0.04, PZ + 0.075)),  # its funnel into the pipe
+         ('fun', (PX - PR * 1.3, Y_T - 0.30, PZ - 0.045), (XP, Y_T - 0.25, PZ + 0.045))]
+    for yb in brackets():                                                           # the brackets: a strap from the
+        B.append(('strap', (PX, yb, PZ - 0.006), (XP, yb + 0.025, PZ + 0.006)))    # ring to the wall, its plate on it
+        B.append(('plate', (XP - 0.006, yb - 0.015, PZ - 0.035), (XP, yb + 0.04, PZ + 0.035)))
+    if NO_PIPE[0]: B = [b for b in B if b[0] not in METAL]
     return B
 
 
 def brackets():
-    y = Y_T - 0.36 - 0.55
+    y = Y_T - 0.30 - 0.45
     out = []
     while y > Y_LB - 6.0:
         out.append(y); y -= BRACKET
@@ -148,7 +179,8 @@ def brackets():
 
 def cylinders():
     """(name, X, Z, r, ylo, yhi): the downpipe, its brackets' rings"""
-    return [('pipe', PX, PZ, PR, 0.0, Y_T - 0.36)] + [('ring', PX, PZ, PR + 0.012, yb, yb + 0.035) for yb in brackets()]
+    if NO_PIPE[0]: return []
+    return [('pipe', PX, PZ, PR, 0.0, Y_T - 0.30)] + [('ring', PX, PZ, PR + 0.006, yb, yb + 0.025) for yb in brackets()]
 
 
 def cast(box):
@@ -205,8 +237,7 @@ def mask(box, sign):
     for x in range(1124, x1):
         i = x - x0
         ct, pf, lt, lb = NF.edge_rows(x)
-        if x < 1140: M[ct - y0:pf + 1 - y0, i] = True                 # over the pillar: the coping, its shadow
-        elif x < NF.XPF: M[ct - y0:sign[x] - y0, i] = True             # the old downpipe's columns, to the sign
+        if x < NF.XPF: M[ct - y0:sign[x] - y0, i] = True               # the pillar's face, its downpipe, to the sign
         elif x < NF.XPN: M[ct - y0:lb - y0, i] = True                  # P: the parapet and the slab's edge
         elif x < STRIP[0]: M[ct - y0:86 - y0, i] = True                # the near side over the balcony's opening
         elif x < STRIP[1]: M[ct - y0:STRIP[2] - y0, i] = True          # the near wall, its downpipe gone, to the awning
@@ -218,10 +249,10 @@ def palette(city):
     """the painting's colours for the model's surfaces, sampled on the layers as the zones before leave them"""
     med = lambda a, xs, ys: np.median(a[ys[0]:ys[1], xs[0]:xs[1], :3].reshape(-1, 3), 0)
     par = med(city, (1128, 1141), (176, 236))           # Naruto's concrete: his pillar's face (under the parapet)
-    strip = med(city, (1290, 1297), (100, 200))          # his near wall: the painter's strip
-    return dict(par=par, near=par * NEAR_K, strip=strip,
+    pier = med(city, (1269, 1278), (120, 250))           # his front's concrete by the corner: W's last pier
+    return dict(par=par, near=pier * NEAR_K, pier=pier,
                 cop=par * 1.45, cop_top=par * 2.8, cop_low=par * 1.2, rim=par * 1.15, rim_top=par * 1.9, rim_face=par * 0.6,
-                pipe=np.array((15.0, 22.0, 38.0)), hole=np.array((1.0, 3.0, 6.0)))
+                pipe=np.array((17.0, 25.0, 44.0)), hole=np.array((1.0, 3.0, 6.0)))
 
 
 def grain(shape, seed, s=0.7):
@@ -301,13 +332,13 @@ def shade(box, name, nrm, P, pal, M, city, unlit):
     k = np.where(onp, k * kp, k)
     onn = name == 'near'
     k = np.where(onn & (Yr < 86), k * (1.1 - 0.12 * np.clip((Yr - 49) / 36.0, 0, 1)), k)
-    k = np.where(onn & (X >= NF.XPN) & (X < NF.XWN) & (Yr == 85), k * 1.25, k)   # (the slab's lower arris over the opening)
-    k = np.where(onn & (X == int(NF.XPN)) & (Yr < 86), k * 1.25, k)          # (the corner's arris)
-    # the near wall beside the window: in the slab's shadow under it, a little lighter lower down, darker into the corner
-    # with the arcade (its right edge)
+    k = np.where(onn & (X >= NF.XPN) & (Yr == 85), k * 1.25, k)       # (the roof slab's lower arris, round the corner on)
+    k = np.where(onn & (X == int(NF.XPN)) & (Yr < 86), k * 1.3, k)           # (the corner's arris over the opening)
+    # the near wall beside the window, the same face down to the arcade's canopy: its corner with the front (W's) one lit
+    # column all the way down, a little lighter lower down, a touch darker into the corner with the arcade; the balcony's
+    # slab round the corner at its own rows (its edge's lit line, its face, its lower arris, a shade under it)
     sw = onn & (X >= STRIP[0]) & (X < STRIP[1]) & (Yr >= 86)
-    ks = (1 - 0.35 * np.exp(-(Yr - 86) / 5.0)) * (0.92 + 0.14 * np.clip((Yr - 90) / 200.0, 0, 1)) \
-        * (1 - 0.25 * np.exp(-(STRIP[1] - 1 - X) / 3.0))
+    ks = (0.94 + 0.12 * np.clip((Yr - 90) / 220.0, 0, 1)) * (1 - 0.12 * np.exp(-(STRIP[1] - 1 - X) / 1.5))
     k = np.where(sw, k * ks, k)
     # rain streaks from the coping: thin, each its own length and depth, fading down, longer under the joints and the corner
     rng = np.random.default_rng(31)
@@ -324,8 +355,6 @@ def shade(box, name, nrm, P, pal, M, city, unlit):
             fade = np.clip(1 - s_ / L, 0, 1) * (s_ >= 0)
             k[:, i] = np.where(wall[:, i] & (Yr[:, i] < 86 + 30 * (x >= STRIP[0])), k[:, i] * (1 - dk * fade), k[:, i])
     base = np.where(onn[..., None], pal['near'], pal['par'])
-    f = np.clip((Yr - 70) / 16.0, 0, 1)[..., None]                    # (the near wall: to the painter's strip's light)
-    base = np.where((onn & (X >= NF.XWN))[..., None], pal['near'] * (1 - f) + pal['strip'] * f, base)
     colu = col.copy()
     col[wall] = (base * k[..., None] * pg[..., None] * (1 + 0.3 * GRAIN * n[..., None]))[wall]
     # over the pillar (left of its edge) the wall is the pillar's own light as tools/naruto_floor.py cleaned it, in each
@@ -333,53 +362,69 @@ def shade(box, name, nrm, P, pal, M, city, unlit):
     # pillar's clean columns (x 1130..1141); the same shading; no lamp's share added (it is in the pillar's own light)
     pm = wall & (X < NF.XPF)
     lampable &= ~pm
+    # (the pillar's face: its light from tools/naruto_floor.py's cleaned pillar, each row's mean over its clean columns,
+    # smoothed down the wall; a little darker into C's corner; the painter's grain on it; under the rain head a faint trace
+    # of its overflow down the wall beside the pipe)
+    stain = np.zeros((h, w))
+    rh_rows = np.nonzero((name == 'fun').any(1))[0]
+    if len(rh_rows):
+        r0 = rh_rows.max() + 1
+        for x in (1142, 1143):
+            stain[r0:r0 + 60, x - x0] = 0.12 * np.clip(1 - np.arange(min(60, h - r0)) / 60.0, 0, 1)
     for lay, out in ((city, col), (unlit, colu)):
+        rowm = np.array([lay[y, 1126:1142, :3].mean(0) for y in range(y0, y1)])
+        rowm = np.stack([gaussian_filter(rowm[:, c], 3.0, mode='nearest') for c in range(3)], -1)
         ref = np.zeros((h, w, 3))
         for x in range(x0, min(x1, int(NF.XPF))):
             i = x - x0
             if not pm[:, i].any(): continue
             pf = NF.edge_rows(x)[1]
-            xa, xb = (x, x + 1) if x < 1140 else (1130, 1142)
-            top = lay[pf + 2:pf + 8, xa:xb, :3].reshape(-1, 3).mean(0)
             for r in np.nonzero(pm[:, i])[0]:
-                yy = y0 + r
-                if yy <= pf + 1: ref[r, i] = top
-                elif x < 1140: ref[r, i] = lay[yy, x, :3]
-                else: ref[r, i] = lay[max(yy - 2, 0):yy + 3, 1130:1142, :3].reshape(-1, 3).mean(0)
-        own = (X < 1140) & (Yr > np.array([NF.edge_rows(x)[1] + 1 for x in range(x0, x1)])[None, :])
-        g = np.where(own[..., None], 1.0, pg[..., None])
-        out[pm] = (ref * k[..., None] * g)[pm]
+                ref[r, i] = rowm[max(r, pf + 3 - y0)] * (1 - 0.15 * np.exp(-(x - 1124) / 2.0))
+        out[pm] = (ref * k[..., None] * pg[..., None] * (1 - stain)[..., None])[pm]
     other = M & ~pm
     colu[other] = col[other]
     # the downpipe: round, lit from the street's side and from us, its far side in shade; the rings, the straps
     m = ((name == 'pipe') | (name == 'ring')) & M
     Ld = np.array((-0.8, 0.0, -0.6)); Ld = Ld / np.linalg.norm(Ld)
+    Pf = np.where(np.isfinite(P), P, 1.0)
+    V = -Pf / np.maximum(np.linalg.norm(Pf, axis=0), 1e-6)
+    Hh = Ld[:, None, None] + V; Hh = Hh / np.maximum(np.linalg.norm(Hh, axis=0), 1e-6)
     lam = np.clip(nrm[0] * Ld[0] + nrm[2] * Ld[2], 0, 1)
-    kq = 0.5 + 0.75 * lam
+    spec = np.clip(nrm[0] * Hh[0] + nrm[2] * Hh[2], 0, 1) ** 24
+    kq = 0.3 + 0.75 * lam + 0.9 * spec                                # (its lit side, a dark core, a thin highlight line)
     rkr, lnr = runs_from_top((name == 'ring') & M)
-    kq = np.where(name == 'ring', kq * np.where((rkr == lnr - 1) & (lnr > 1), 0.6, 1.3), kq)
-    col[m] = (pal['pipe'] * kq[..., None] * (1 + 0.04 * n[..., None]))[m]
-    m = (name == 'strap') & M; col[m] = pal['pipe'] * 0.85
+    kq = np.where(name == 'ring', np.where(rkr == 0, 1.45, 0.85) * (0.6 + 0.5 * lam), kq)   # (a clamp: its lit top)
+    col[m] = (pal['pipe'] * kq[..., None] * (1 + 0.03 * n[..., None]))[m]
+    m = (name == 'strap') & M; col[m] = pal['pipe'] * 0.9
+    m = (name == 'plate') & M                                          # (its plate on the wall, its top edge on the ray)
+    rkp, _ = runs_from_top(m)
+    col[m] = (pal['pipe'] * np.where(rkp == 0, 1.25, 0.95)[..., None])[m]
     # the rain head: its face to the street and its end to us lit, its top rim the sky's, the funnel darker; the spout
     for nm, kk in (('rh', 1.0), ('fun', 0.8), ('spout', 1.05)):
         m = (name == nm) & M
         if not m.any(): continue
         rk2, _ = runs_from_top(m)
-        k2 = np.where(nrm[2] < -0.5, 1.2, np.where(nrm[1] < -0.5, 0.7, 1.0)) * kk
-        if nm == 'rh': k2 = np.where(rk2 == 0, k2 * 1.4, k2)
+        k2 = np.where(nrm[2] < -0.5, 1.25, np.where(nrm[1] < -0.5, 0.7, 0.95)) * kk
+        if nm == 'rh': k2 = np.where(rk2 == 0, 1.6, np.where(rk2 == 1, k2 * 1.1, k2))   # (its lit top, its rolled rim)
         c = pal['pipe'] * k2[..., None]
         if nm == 'spout': c = np.where((nrm[0] < -0.5)[..., None], pal['hole'], c)   # (its mouth)
         col[m] = (c * (1 + 0.04 * n[..., None]))[m]
     metal = np.isin(name, METAL) & M
     colu[metal] = col[metal] * 0.8                                     # (the street lamps' share off the metal)
-    # the rain head's and the pipe's shadows on the pillar's face: under the rain head, right of the pipe
-    for x in range(1140, 1152):
+    # the rain head's and the pipe's shadows on the pillar's face (the light from the street, its left): under the rain
+    # head two rows, right of the pipe a dark column and a lighter one, a little under each clamp's plate
+    for x in range(1138, 1152):
         i = x - x0
         for r in range(2, h):
             if not pm[r, i]: continue
-            if name[r - 1, i] in ('rh', 'fun') or name[r - 2, i] in ('rh', 'fun') or \
-                    (x >= 1148 and (name[r, i - 1] in ('pipe', 'ring') or name[r, i - 2] in ('pipe', 'ring'))):
-                col[r, i] *= 0.7; colu[r, i] *= 0.7
+            kk = 1.0
+            if name[r - 1, i] in ('rh', 'fun', 'spout'): kk = 0.62
+            elif name[r - 2, i] in ('rh', 'fun', 'spout'): kk = 0.8
+            if name[r, i - 1] in ('pipe', 'ring', 'strap'): kk *= 0.6
+            elif name[r, i - 2] in ('pipe', 'ring', 'strap'): kk *= 0.85
+            if name[r - 1, i] == 'plate': kk *= 0.75
+            col[r, i] *= kk; colu[r, i] *= kk
     return col, colu, lampable
 
 
@@ -430,7 +475,8 @@ def arcade(city, unlit, box):
     region = np.zeros((h, w), bool)
     for x in range(WALL_X[0], min(WALL_X[1], x1)):
         i = x - x0
-        region[max(eave_row(x) + EAVE_T, 0) - y0:STRIP[2] - y0, i] = True   # (under the eave's tiles, EAVE_T rows from its edge)
+        region[max(eave_row(x) + EAVE_T, 0) - y0:y1 - y0, i] = True   # (under the eave's tiles, EAVE_T rows from its edge,
+                                                                       # down to its canopy: the painter's dark box over it)
     # (in the AC unit's box and along the conduits their own dark pixels stay: green black next to anything else is an edge)
     near_thing = binary_dilation(~gb, structure=np.ones((3, 3), bool)) & gb
     ax0, ay0, ax1, ay1 = AC_BOX
@@ -445,7 +491,10 @@ def arcade(city, unlit, box):
         b = max(b, int(np.ceil(ROW_BOT(x))) + 2 if x >= X_HL else 0)
         if x < X_HL: b = max(b, 64)                                   # (the stray line under the eave's far end)
         clear[max(a, 0) - y0:max(b, 0) - y0, i] = True
-    wallm = region & ((gb & ~(near_thing & acb)) | clear)
+    # (its far corner's trims, x 1297..1316, the painter's lit boards there: the wall's own boards, the corner an inside
+    # one against Naruto's side wall, in its shade: no lit edge that would read as another building's)
+    trims = np.zeros((h, w), bool); trims[:STRIP[2] - y0, 1297 - x0:1317 - x0] = True
+    wallm = region & ((gb & ~(near_thing & acb)) | clear | trims)
     # the boards: vertical, along the street face (seams at Z = ZN - k BOARD, foreshortened), each its own tone, a grain
     # along it; dark under the eaves (the tiles' edge, the pent roof's row) and lighter lower down
     X = np.arange(x0, x1)[None, :] + 0.5 + np.zeros((h, 1)); Yr = np.arange(y0, y1)[:, None] + 0.5 + np.zeros((1, w))
@@ -462,6 +511,7 @@ def arcade(city, unlit, box):
     c = WALL_TOP * (1 - lt[..., None]) + WALL_LOW * lt[..., None]
     c = c * (tone * g * np.where(seam, 0.6, 1.0))[..., None]
     c = np.where((under_row & (Yr - rowb < 4))[..., None], c * (0.55 + 0.1 * (Yr - rowb))[..., None], c)   # (the row's shadow)
+    c = c * (1 - 0.35 * np.exp(-(X - 1297.5) / 1.5))[..., None]       # (the inside corner with Naruto's side wall)
     city[y0:y1, x0:x1, :3][wallm] = c[wallm]; unlit[y0:y1, x0:x1, :3][wallm] = c[wallm]
     city[y0:y1, x0:x1, 3][wallm] = 255; unlit[y0:y1, x0:x1, 3][wallm] = 255
     done |= wallm
@@ -493,6 +543,55 @@ def arcade(city, unlit, box):
     return done
 
 
+def drawn_pipe(city, unlit, box, sign, pal, name):
+    """the downpipe as the image model drew it in its context crop (R28: tools/src/edits/naruroof_pipe_model.webp), laid
+    into the street: boxed down to the street's pixels (its x4 brightened input undone), its colours brought to the
+    painting's by a gain per channel (the model's wall round it in the band to this zone's: their medians), then
+    only what is the pipe's (its rain head, the scupper's mouth, the pipe, its clamps, their shadows: where it differs
+    from the wall this zone draws without its own pipe) laid over that wall, in the band, from under the coping to the
+    sign; in the power cut its metal at the street lamps' share off (0.8), its shadows as they are"""
+    src = os.path.join(EDITS, PIPE_MODEL)
+    if not os.path.exists(src): return
+    x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
+    cx0, cy0, cx1, cy1 = PIPE_CROP
+    d = np.asarray(Image.open(src).convert('RGB').resize((cx1 - cx0, cy1 - cy0), Image.BOX)).astype(float) / 255.0
+    d = (d ** PIPE_GAMMA) * 255.0
+    # the wall this zone draws without its own downpipe (the model cast again without it)
+    NO_PIPE[0] = True
+    try:
+        nm0, nrm0, P0 = cast(box)
+        M0 = mask(box, sign)
+        c0w, u0w, _ = shade(box, nm0, nrm0, P0, pal, M0 & (nm0 != ''), city, unlit)
+    finally:
+        NO_PIPE[0] = False
+    lampk = np.array([[NR.lamp(x, y) for x in range(x0, x1)] for y in range(y0, y1)])
+    bx0, bx1 = PIPE_BAND
+    rows = {x: (NF.edge_rows(x)[1] + 2, sign[x]) for x in range(bx0, bx1)}
+    # the colours: a gain per channel, the model's wall in the band (away from both pipes) to this zone's
+    wa, wb = [], []
+    for x in range(bx0, bx1):
+        if 1143 <= x <= 1152: continue
+        for y in range(*rows[x]):
+            if name[y - y0, x - x0] not in ('pil', 'par') or not M0[y - y0, x - x0]: continue
+            wa.append(d[min(y, cy1 - 1) - cy0, x - cx0]); wb.append(c0w[y - y0, x - x0])
+    wa, wb = np.array(wa), np.array(wb)
+    gain = np.median(wb, 0) / np.maximum(np.median(wa, 0), 1.0)
+    dfit = d * gain[None, None, :]
+    for x in range(bx0, bx1):
+        for y in range(*rows[x]):
+            i, j = y - y0, x - x0
+            if not M0[i, j] or nm0[i, j] == '': continue
+            wall_c, wall_u = c0w[i, j] * (1 + (lampk[i, j] if x >= NF.XPF else 0.0)), u0w[i, j]
+            q = dfit[min(y, cy1 - 1) - cy0, x - cx0]                  # (under the crop's last row, the pipe carried down)
+            obj = np.abs(q - wall_c).max() > 3.0
+            if obj:
+                metal = q @ LUMA > wall_c @ LUMA
+                city[y, x, :3] = q; unlit[y, x, :3] = q * (0.8 if metal else wall_u @ LUMA / max(wall_c @ LUMA, 1.0))
+            else:
+                city[y, x, :3] = wall_c; unlit[y, x, :3] = wall_u
+            city[y, x, 3] = unlit[y, x, 3] = 255
+
+
 def draw(city, unlit, box=BOX, write=True):
     """The zone (redraw_zones.py): the layers changed in place (whole-scene float RGBA); street_sun written (0 on what is
     redrawn; beyond the zone 'narufloor' from this zone's before crop) and roof_sway.webp's planters; returns what changed
@@ -501,6 +600,11 @@ def draw(city, unlit, box=BOX, write=True):
     sign = NF.sign_top((x0, y0, x1, y1))
     name, nrm, P = cast(box)
     M = mask(box, sign)
+    gbx = lambda x, y: city[y, x, :3].max() <= 12 and city[y, x, 1] >= city[y, x, 0]
+    for x in range(STRIP[0], STRIP[1]):                # (the near wall on down to the canopy: the dark box over it)
+        for y in range(STRIP[2], y1):
+            if not gbx(x, y): break
+            M[y - y0, x - x0] = True
     sky = M & (name == '')
     pal = palette(city)
     col, colu, lampable = shade(box, name, nrm, P, pal, M & ~sky, city, unlit)
@@ -511,10 +615,57 @@ def draw(city, unlit, box=BOX, write=True):
     unlit[y0:y1, x0:x1, :3][lit] = colu[lit]
     city[y0:y1, x0:x1, 3][lit] = 255; unlit[y0:y1, x0:x1, 3][lit] = 255
     city[y0:y1, x0:x1][sky] = 0; unlit[y0:y1, x0:x1][sky] = 0
+    drawn_pipe(city, unlit, box, sign, pal, name)
     done = arcade(city, unlit, box) | M
+    # the front by the corner, between the sign's end and the corner, over the canopy (the dark box): the front's own wall
+    # there carried down (each column's light just over it), the painter's grain
+    pg2 = tile(painter_grain(), h, w, 41, 3)
+    for x in range(CANOPY_X[0], STRIP[0]):
+        ref = c0[300 - y0:304 - y0, x - x0, :3].mean(0); refu = u0[300 - y0:304 - y0, x - x0, :3].mean(0)
+        for y in range(STRIP[2], y1):
+            q = c0[y - y0, x - x0, :3]
+            if not (q.max() <= 12 and q[1] >= q[0]): break
+            city[y, x, :3] = ref * pg2[y - y0, x - x0]; unlit[y, x, :3] = refu * pg2[y - y0, x - x0]
+            city[y, x, 3] = unlit[y, x, 3] = 255; done[y - y0, x - x0] = True
+    # the canopy's flashing where its roof meets the walls (the first row over its tiles), the arcade's roof's against
+    # Naruto's side wall over its tiles' far end; a shade on the wall over the flashing
+    for x in range(CANOPY_X[0], CANOPY_X[1]):
+        for y in range(STRIP[2], y1 - 1):
+            if done[y - y0, x - x0] and not done[y + 1 - y0, x - x0]:
+                for lay in (city, unlit):
+                    lay[y, x, :3] = np.array((15.0, 22.0, 38.0)); lay[y - 1, x, :3] *= 0.8
+                break
+    for x in range(1297, 1300):
+        y = eave_row(x) - 1
+        if y > NF.edge_rows(x)[0] + 3:
+            for lay in (city, unlit): lay[y, x, :3] = np.array((15.0, 22.0, 38.0))
+    # the near wall's corner with the front (W's last pier) one crisp lit column from the roof slab down to the canopy; the
+    # balcony's slab round the corner at its own rows, as tools/naruto_floor.py draws its end over the opening (its edge's
+    # lit line, its face, its lower arris), a step dimmer turned from the street, a shade under it
+    sa, sb = SLAB_ROWS
+    for y in range(86, y1):
+        if not done[y - y0, STRIP[0] - x0]: break
+        if sa <= y < sb: continue
+        for lay, ref in ((city, pal['pier']), (unlit, pal['pier'])): lay[y, STRIP[0], :3] = ref * 1.35
+    band = [NF.C['edge'] * 0.62, NF.C['edge2'] * 0.85] + [NF.C['end']] * (sb - sa - 4) + [NF.C['slab_arris'] * 0.9, pal['near'] * 0.5]
+    for x in range(STRIP[0], STRIP[1]):
+        g = 1 + 0.03 * ((x * 7 + 3) % 5 - 2)
+        for j, y in enumerate(range(sa, sb)):
+            for lay in (city, unlit): lay[y, x, :3] = band[j] * g * (0.9 if x == STRIP[1] - 1 else 1.0)
     swp = os.path.join(ASSETS, 'roof_sway.webp')
     sw_ = np.asarray(Image.open(swp).convert('RGBA')).copy()
     for x, y in planters(city, unlit, box, pal, sw_): done[y - y0, x - x0] = True
+    # the pillar's side face beside the pipe (tools/naruto_floor.py's 'side', in the balcony's recess, as it leaves it): the
+    # painter's grain on it, a little lighter lower down (the street's light from below)
+    nb = NF.BOX
+    R = NF.roles(nb, NF.lip_bottom(nb), NF.sign_top(nb))[0]
+    pg = tile(painter_grain(), h, w, 29, 11)
+    for yy, xx in zip(*np.nonzero(np.isin(R, ('side', 'side_low')))):
+        x, y = nb[0] + xx, nb[1] + yy
+        if not (x0 <= x < x1 and y0 <= y < y1): continue
+        f = pg[y - y0, x - x0] * (0.94 + 0.12 * min(1.0, max(0.0, (y - 160) / 120.0)))
+        for lay in (city, unlit): lay[y, x, :3] = lay[y, x, :3] * f
+        done[y - y0, x - x0] = True
     for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
     changed = (city[y0:y1, x0:x1] != c0).any(-1) | (unlit[y0:y1, x0:x1] != u0).any(-1)
     # street_sun: as 'narufloor' wrote it in its box, this zone's before crop beyond it; 0 on what is redrawn

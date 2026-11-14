@@ -378,7 +378,9 @@ ZONES = {
     # un rectangle ; pareil pour les autres toits"), by tools/naruto_parapet.py: Naruto's from a small model in the
     # street's camera, a concrete parapet flush with his facade (no lit lip) in the painter's grain and light, its
     # aluminium coping's crisp lit edge, drip shadow and joints, plumb round the near corner and level across the near
-    # side, the planters' rims over it under the garden, one scupper, rain head and downpipe on the pillar (the near
+    # side, the planters' rims over it under the garden, one scupper, rain head and a slim round downpipe with its clamps
+    # on the pillar ("cette gouttière pas ouf"), the near side the front's concrete round a lit corner ("on dirait un
+    # bâtiment entre Ichiraku et l'arcade": its slabs turning the corner, down to the canopy, a flashing) (the near
     # corner's second pipe gone, the near wall one face with its light); the arcade's the painter's own (his tiled eave,
     # his row of round tiles redrawn clean on its ray), its walls' green black now vertical boards in their light. Last:
     # over narufloor (whose roof edge it redraws: its rows and the garden kept, the planters' rims written into its wind
