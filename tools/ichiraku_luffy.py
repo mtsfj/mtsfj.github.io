@@ -25,8 +25,8 @@ sourire gardé (le blanc des dents que la découpe prendrait pour le fond, rendu
 (SCAR) ; le bras tendu, en caoutchouc (stretch : de sa main au bol, poussés de STRETCH pixels, l'avant-bras étiré entre) ; la
 main qui salue d'un pixel de côté (wave_b).
 
-La pile : ses bols vides sur le comptoir, à sa gauche, entre lui et le client (STACK : leur colonne, la rangée du comptoir à
-leur profondeur) : derrière leurs dos le matin, elle monte entre leurs deux têtes le soir ; des bols de faïence claire à la
+La pile : ses bols vides sur le comptoir, à sa gauche, devant le tabouret du coin, vide (STACK : leur colonne, la rangée du
+comptoir à leur profondeur) : derrière son épaule le matin, elle monte au-dessus d'elle le soir ; des bols de faïence claire à la
 bande rouge (BOWL), emboîtés (un bol de plus : son bord STEP pixels plus haut) ; le bol du haut montre son dedans. Il faut Pillow, numpy (et ce qu'il faut à tools/ichiraku_figures.py).
 """
 import json
@@ -71,8 +71,8 @@ FACE = {'grin': (2, 12), 'wave': (3, 14)}     # (son visage tourné vers nous, t
 STRETCH = (9, 18)                             # (le bras tendu, en caoutchouc : de tant de pixels de la scène, puis de tant)
 BOWL = ((186, 170, 142), (150, 52, 40), (110, 84, 66), (92, 70, 56), (60, 36, 28))   # (des bols de faïence claire à la bande rouge,
                                              #  dans la clarté de la peinture : le bord, la bande, son ombre, le pied, le dedans)
-STACK = (1179.5, 641)                         # la pile : la colonne de son milieu (à sa gauche, entre lui et le client : derrière la deuxième
-                                              #  vitre, elle monte entre leurs deux têtes), la rangée du comptoir sous elle
+STACK = (1179.5, 641)                         # la pile : la colonne de son milieu (à sa gauche, devant le tabouret du coin, vide : derrière la
+                                              #  deuxième vitre), la rangée du comptoir sous elle
 STEP = 2                                      # (un bol emboîté de plus : son bord tant de rangées plus haut)
 FAMILIES = 20
 SEED = 7

@@ -199,8 +199,7 @@ def crew_cell(who, move, i=0):
 
 
 Z_T = float(IRF['Tz'] if 'Tz' in IRF else IRF['T']['z'])
-Z_S = float(IRF['W']['from'][1])
-Z_E = float(IRF['W']['to'][1])
+Z_S = float(IRF['Sz'])                           # (les tabourets d'Ichiraku ; le client en costume n'y est plus)
 Z_OA = float(OMF['A']['z'])
 k_red = lambda w: (1400 / (ZR['zs'] - w)) / ZR['ppm']
 GGK = jsnum(r'box: \[[\d, ]+\], k: ([\d.]+)') or 0.5      # (Gengar : px de la scène par px de sa planche)
@@ -225,10 +224,6 @@ CHARS = [
     dict(id='teuchi', nom='Teuchi (Ichiraku) — en cours', outil='tools/ichiraku_figures.py', asset='ramen_figures.webp', js='IRF.T, TCH, stepTeuchi',
          modele='A', H=1.78, tete=7.0, ref=IRF['T']['idle'][0] if 'idle' in IRF['T'] else IRF['T']['cells'][0], head=11, full=1.753 * 1400 / Z_T,
          places=[('au comptoir, Z %.2f m (A) ; le comptoir le coupe' % Z_T, 1.0, 1400 / Z_T * FIX_A, None)]),
-    dict(id='regular', nom='le client (Ichiraku) qui sort — en cours', outil='tools/ichiraku_figures.py', asset='ramen_figures.webp', js='IRF.W, REG, regWalk',
-         modele='A', H=1.82, tete=7.0, ref=IRF['W']['cells'][-1][0], head=14,
-         places=[('au tabouret, Z %.2f m' % Z_S, IRF['W']['h0'] / IRF['W']['cells'][-1][0][3], 1400 / Z_S * FIX_A, None),
-                 ('à la porte, Z %.2f m' % Z_E, 1.0, 1400 / Z_E * FIX_A, None)]),
     dict(id='naruto_ramen', nom='Naruto au comptoir (Ichiraku) — en cours', outil='tools/ichiraku_figures.py (naruto_ramen.webp)', asset='ramen_figures.webp',
          js='IRF.N, NRM', modele='A', H=0.77, tete=None, ref=IRF['N']['cells'][0], head=None, note='assis : du sommet au coussin (0,53 de 1,45 m)',
          places=[('sur le tabouret, Z %.2f m' % Z_S, 1.0, 1400 / Z_S * FIX_A, None)]),
@@ -368,7 +363,6 @@ SHOTS = {
     'naruto_win': ('p1_a.png', (1180, 120, 1275, 300), None),
     'killua': ('p1_a.png', (282, 128, 362, 232), (230, 150, 290, 232)),
     'ichiraku': ('p1_a.png', (1148, 560, 1236, 720), None),
-    'regular': ('p1_c.png', (1148, 560, 1236, 745), None),
     'e33': ('p1_a.png', (598, 594, 660, 646), (660, 594, 722, 646)),
     'e33_retour': ('p1_d.png', (690, 594, 752, 646), None),
     'climber': ('p1_a.png', (600, 244, 645, 276), None),
