@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=108", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=13", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=15", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=2", "x": 908, "y": 441, "w": 33, "h": 237}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=109", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=13", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=15", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=2", "x": 908, "y": 441, "w": 33, "h": 237}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=108') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=109') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -3769,6 +3769,49 @@
     }
     atex.needsUpdate = true;
   }
+  // ---- the game centre's sign on the arcade's fascia, between its eave and its doorway (the owner: "un petit logo / devanture
+  // arcade animé"; drawn by the image model, put in the facade's perspective and pixelated by tools/arcade_sign.py: the board
+  // unlit in the layers, its light here): GAME
+  // in pink tubes, a cyan invader stepping (its two poses, 0.55 s each), a marquee of bulbs chasing round the board (every
+  // third bright, 0.16 s a step), their light soft on the wall, the eave and the shutter's box round it (its glow, additive as
+  // Ichiraku's neon). With the arcade's hours (HRS.k.arcade: its tubes catch as it opens, sputter out as it shuts), out in a
+  // power cut (in pwList: the unlit street shows the board dark, the wave brings it back), red in the red night as every light;
+  // now and then its tubes stutter a moment. The water mirrors it as it mirrors the street. Reduced motion: lit, still ----
+  const ASGN = { box: [1320, 356, 136, 90], rows: 5, glow: [1276, 326, 180, 144], on: true, onT: 10, chase: 0, pose: 0, ct: 0, pt: 0,
+    hold: 0, next: 20 + Math.random() * 40, pf: -1, cf: -1, tubes: null, bulbs: null, glowM: null };
+  (function () {
+    const mk = (map, b, z) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(b[2], b[3]), new THREE.MeshBasicMaterial({ map, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      m.position.set(b[0] + b[2] / 2, -(b[1] + b[3] / 2), z); scene.add(m); return m;
+    };
+    const tex = crisp('assets/arcade_sign.webp?v=1');
+    ASGN.glowM = mk(crisp('assets/arcade_sign_glow.webp?v=1'), ASGN.glow, 0.965);
+    ASGN.tubes = mk(tex, ASGN.box, 0.966); ASGN.bulbs = mk(tex, ASGN.box, 0.967);
+    asgUV(ASGN.tubes, 0); asgUV(ASGN.bulbs, 2); ASGN.pf = 0; ASGN.cf = 0;
+  })();
+  function asgUV(m, r) {                         // a mesh onto its row of the atlas (the board's box, ASGN.rows of them)
+    const a = m.geometry.attributes.uv, n = ASGN.rows, v0 = 1 - r / n, v1 = 1 - (r + 1) / n;
+    a.setXY(0, 0, v0); a.setXY(1, 1, v0); a.setXY(2, 0, v1); a.setXY(3, 1, v1); a.needsUpdate = true;
+  }
+  function stepArcSign(dt, t) {
+    const S = ASGN, want = HRS.k.arcade > 0.5;
+    if (S.first !== false) { S.first = false; S.on = want; }   // (as the hour finds it at load: no sputter)
+    if (want !== S.on) { S.on = want; S.onT = 0; } S.onT += dt;
+    const f = Math.floor(S.onT / 0.06);          // (a tube catching, or sputtering out)
+    const k = S.on ? (reduced || f >= FLICK.length ? 1 : FLICK[f]) : (reduced || f >= 3 ? 0 : [0.6, 0.15, 0.4][f]);
+    if (!reduced) {
+      if ((S.ct += dt) > 0.16) { S.ct = 0; S.chase = (S.chase + 1) % 3; }
+      if ((S.pt += dt) > 0.55) { S.pt = 0; S.pose ^= 1; }
+      if ((S.next -= dt) < 0 && S.hold <= 0) { S.hold = 0.2 + Math.random() * 0.3; S.next = 30 + Math.random() * 60; }
+    }
+    let tube = k * (reduced ? 1 : lightLife(t, 5.3, 0.03));
+    if (S.hold > 0) { S.hold -= dt; if (stutOn(t, 5.3, 0.045, 0.5)) tube *= 0.35; }
+    S.tubes.material.opacity = tube; S.bulbs.material.opacity = k; S.glowM.material.opacity = 0.3 * k + 0.7 * tube;
+    S.tubes.visible = tube > 0.004; S.bulbs.visible = k > 0.004; S.glowM.visible = S.glowM.material.opacity > 0.004;
+    if (S.pose !== S.pf) { S.pf = S.pose; asgUV(S.tubes, S.pose); }
+    if (S.chase !== S.cf) { S.cf = S.chase; asgUV(S.bulbs, 2 + S.chase); }
+  }
+  FEAT.push(stepArcSign);
   // ---- the fuses (2003, the last of three secrets hiding a date): the grey electrical box on the arcade's far wall (scene
   // x 1377-1389, y 553-585, beside the claw machine, over the first cabinet: on 16:9 screens) has a little display on its
   // vents, dark but for a prompt in dim amber, FUSE running across it and a ? in turn (phones, 3:2 and 16:10 screens never see it: the grey fuse box on the
@@ -3997,6 +4040,7 @@
     add(() => z1Cur.mesh, 1096); add(() => z1Door.mesh, 984);
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
     add(() => ODOOR.mesh, 442); add(() => ODOOR.win, 474); add(() => lanMesh, 413);
+    add(() => ASGN.tubes, 1400); add(() => ASGN.bulbs, 1400); add(() => ASGN.glowM, 1400);   // (the game centre's sign: the arcade's power)
     try { for (const o of OBST) for (const m of o.m) add(() => m, -1); } catch (e) {}
     add(() => farQuad, -1, 'vis');
     scene.traverse((o) => {                    // the far skyline layer, a copy of the street's pixels there: with the far city
@@ -4094,7 +4138,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=89', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=90', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }

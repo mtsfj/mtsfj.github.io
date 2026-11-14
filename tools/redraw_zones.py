@@ -387,6 +387,11 @@ ZONES = {
     # data, assets/roof_sway.webp), fan, arceave and ramen (their pixels it does not draw, as they leave them);
     # street_sun beyond narufloor's box from tools/src/edits/naruroof_before_sun.webp
     'naruroof': dict(box=(1120, 0, 1456, 376), tool='naruto_parapet'),
+    # the game centre's sign on the arcade's fascia, between the eave and the doorway (the owner: "un petit logo / devanture
+    # arcade animé"): the board unlit in the layers, in the facade's perspective, by tools/arcade_sign.py, which also writes
+    # its light (assets/arcade_sign.webp: the tubes, the invader's two poses, the bulbs' chase; arcade_sign_glow.webp), laid
+    # on it by street.js (ASGN) with the arcade's hours and power; the last zone (it overlaps arceave's and naruroof's boxes)
+    'arcsign': dict(box=(1320, 356, 1456, 446), tool='arcade_sign'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
