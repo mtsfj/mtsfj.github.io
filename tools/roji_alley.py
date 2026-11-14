@@ -31,10 +31,13 @@ pixel by pixel (4 x 4 rays a pixel, each pixel the surface most of its rays meet
   sky's from above (a little lighter up), the contact shade at its foot, the exit sign's light (the comp), a fine grain within
   that value. On it one thing only (the owner, 2026-11-14: "petite rue surchargée : mets juste une sortie de secours avec
   l'indicateur vert au-dessus ; le reste rien, mur lisse"): the emergency exit, a plain steel door in its frame (a lever),
-  recessed a little, on a low concrete step, whole between the two corners; above it the green exit sign (避難口誘導灯:
-  its lit panel, the white running figure and its door). R28: both drawn by the image model in their context
-  (tools/src/edits/alley_exit_model.webp from alley_exit_in.webp and _prompt.txt), each one's picture there laid on this
-  tool's model of it (its place, its size), its colours brought to the street's and quantised;
+  recessed a little, on a low concrete step; above it the green exit sign (避難口誘導灯: its lit panel, the white running
+  figure and its door); half of both behind B's corner (the owner: "je l'aurais mis qu'à moitié visible": the alley goes
+  on past what one sees of it; B's is the only corner that can hide part of the Center's side, which starts at the
+  Center's own corner): a slice of the door with its lever, the sign's half with its figure. R28: both drawn whole by the
+  image model in their context (tools/src/edits/alley_exit_model.webp from alley_exit_in.webp and _prompt.txt), each
+  one's picture there laid on this tool's model of it (its whole place, its size), its colours brought to the street's
+  and quantised;
 - the alley's floor at the sidewalk's level (the painter's foot line of the old building, v -0.2555: 13 cm over the
   ground model), concrete, a gutter's grate across the alley's mouth along the sidewalk's edge;
 - above the Center's roof: nothing (transparent: the cherry and the sky of the far layers, night_far 0 as it was); the
@@ -67,13 +70,15 @@ HT = EYE + (VPY - TOP_ROW) * ZF / F              # the far wall's top (5.59 m)
 BOX = (896, 300, 944, 690)                       # the zone (redraw_zones.py 'alley')
 SS = 4                                           # rays a pixel, each way
 # the far wall's things, in metres: X across the alley from the street, h up, d out of the wall toward the street
-DOOR = dict(x=(5.07, 5.73), h=(HS + 0.15, HS + 2.10), d=0.07, frame=0.045)   # the emergency exit, whole between the
-                                                 # Center's corner and B's (the far wall shows X 5.0 .. 5.79)
-HANDLE = dict(x=(5.14, 5.24), h=(HS + 1.0, HS + 1.03))           # its lever, on the leaf
-SIGN = ((5.20, 5.60), (2.32, 2.48), (0.0, 0.05))  # the exit sign over it (非常口: a green box, its running figure): X, h, d
-SIGN_AT = (5.40, 2.40, 0.07)                     # its light's source (X, h, d)
+XB = (GX1 - VPX) * ZF / F                        # where B's corner hides the far wall (5.79 m: it shows X 5.0 .. XB)
+DOOR = dict(x=(XB - 0.33, XB + 0.33), h=(HS + 0.15, HS + 2.10), d=0.07, frame=0.045)   # the emergency exit, half of it
+                                                 # behind B's corner (the owner: "je l'aurais mis qu'à moitié visible")
+HANDLE = dict(x=(XB - 0.26, XB - 0.16), h=(HS + 1.0, HS + 1.03))   # its lever, on the leaf's visible half
+SIGN = ((XB - 0.20, XB + 0.20), (2.32, 2.48), (0.0, 0.05))   # the exit sign over it (非常口: a green box, its running
+                                                 # figure; its half with the figure in sight): X, h, d
+SIGN_AT = (XB, 2.40, 0.07)                       # its light's source (X, h, d)
 BOXES = {                                        # what stands out of the wall: X range, h range, d range
-    'step': ((5.03, 5.77), (HS, HS + 0.15), (0.0, 0.28)),
+    'step': ((XB - 0.37, XB + 0.37), (HS, HS + 0.15), (0.0, 0.28)),
     'sign': SIGN,
 }
 SIDE = 0.80                                      # the side's light against the front's, at the same height (one factor, the
@@ -357,11 +362,26 @@ def draft(street):
     return out
 
 
-def draft_thing(D, g, bbox):
-    """Thing g as the answer draws it (its box there), resampled (box filter) to bbox on the street (x0, y0, x1, y1)."""
-    mx0, my0, mx1, my1 = DRAFT['boxes'][g]; x0, y0, x1, y1 = bbox
-    return np.stack([np.asarray(Image.fromarray(D[my0:my1, mx0:mx1, c].astype(np.float32), 'F').resize(
-        (x1 - x0, y1 - y0), Image.BOX)) for c in range(3)], -1).astype(float)
+def thing_rect(g):
+    """Thing g's place on the street, whole (what B's corner hides included): the box of its corners seen from the eye
+    (x0, y0, x1, y1, in pixel-edge coordinates)."""
+    if g == 'door': (xa, xb), (ha, hb), (da, db) = DOOR['x'], DOOR['h'], (0.0, 0.0)
+    else: (xa, xb), (ha, hb), (da, db) = BOXES[g]
+    pts = [(VPX + F * X / (ZF - d), VPY - F * (h - EYE) / (ZF - d)) for X in (xa, xb) for h in (ha, hb) for d in (da, db)]
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    return min(xs), min(ys), max(xs), max(ys)
+
+
+def draft_thing(D, g):
+    """Thing g as the answer draws it (its box there, the thing whole), laid on its whole place on the street (thing_rect)
+    and resampled (box filter) to the street's pixels there: (picture, its first column, its first row)."""
+    mx0, my0, mx1, my1 = DRAFT['boxes'][g]; x0, y0, x1, y1 = thing_rect(g)
+    px0, py0, px1, py1 = int(np.floor(x0)), int(np.floor(y0)), int(np.ceil(x1)), int(np.ceil(y1))
+    sx, sy = (mx1 - mx0) / (x1 - x0), (my1 - my0) / (y1 - y0)
+    src = (mx0 + (px0 - x0) * sx, my0 + (py0 - y0) * sy, mx0 + (px1 - x0) * sx, my0 + (py1 - y0) * sy)
+    P = np.stack([np.asarray(Image.fromarray(D[..., c].astype(np.float32), 'F').resize(
+        (px1 - px0, py1 - py0), Image.BOX, box=src)) for c in range(3)], -1).astype(float)
+    return P, px0, py0
 
 
 def kq(px, k, seed=0, it=20):
@@ -424,9 +444,9 @@ def draw_layers(city, unlit, box=BOX):
             lt = cs + I * (GLIFT * cs + GLOW * np.clip(lum3(c) / lum3(C['wall']), 0.15, 1.3))
         city[y, x, :3] = cs; unlit[y, x, :3] = c; city[y, x, 3] = unlit[y, x, 3] = 255
         lit[y, x] = lt; ch[y, x] = True; took[y, x] = True; Iat[y, x] = I
-    # the wall's things as the image model draws them (R28): each one's picture there (its box in the answer) resampled onto
-    # this tool's model of it (its place, its size: the box of its pixels), quantised to a few of its own tones (crisp, no
-    # model mush). The answer is the street at night, the sign lit: the sign's picture is its lit one (the comp's; dimmer
+    # the wall's things as the image model draws them (R28): each one's picture there (its box in the answer, the thing
+    # whole) resampled onto this tool's model of it (its whole place and size, what B's corner hides included), its pixels
+    # in sight quantised to a few of their own tones (crisp, no model mush). The answer is the street at night, the sign lit: the sign's picture is its lit one (the comp's; dimmer
     # in the street, on its battery in the power cut). On the door the answer's green light is taken off first: the
     # street's door is without it, then the sign's light on it as on the plaster (the comp); the power cut's over the
     # plane's gain
@@ -438,14 +458,13 @@ def draw_layers(city, unlit, box=BOX):
         for gi, (g, ns) in enumerate(GROUPS.items()):
             m = np.isin(sid, ns); ys, xs = np.nonzero(m)
             if len(ys) < 4: continue
-            bx = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
-            P = draft_thing(D, g, bx)
+            P, px0, py0 = draft_thing(D, g)
             if g == 'door':                                         # (its difference to its column's lower half: a grey
                 d = P - np.median(P[P.shape[0] // 2:], 0)[None]     # part, its frame, its lever, kept; a green one, the
                 Bm = np.stack([np.ones(3), GLOW], 1)               # light, taken off)
                 gl = np.maximum((d.reshape(-1, 3) @ np.linalg.pinv(Bm).T)[:, 1], 0.0).reshape(P.shape[:2])
                 P = P - gl[..., None] * GLOW
-            P = P[ys - bx[1], xs - bx[0]]
+            P = P[np.clip(ys - py0, 0, P.shape[0] - 1), np.clip(xs - px0, 0, P.shape[1] - 1)]
             for y, x, cq in zip(ys, xs, kq(P, DRAFT['k'][g], seed=gi)):
                 cq = np.maximum(cq, 0.0)
                 if g == 'sign':

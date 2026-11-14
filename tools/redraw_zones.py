@@ -325,10 +325,10 @@ ZONES = {
     # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940) taken away: a roji
     # in its place (the owner, 2026-11-14: "trop comprimé : soit le refaire entièrement, soit le supprimer et créer une
     # rue"), drawn in the street's camera by tools/roji_alley.py: the alley's far wall (the Center's side, face on, its
-    # front's bands round the corner, then one smooth plaster with only an emergency exit on it, its steel door on a step
-    # and the green exit sign over it: its lit comp z5_alley), its floor at the sidewalk's level with a grate across its
-    # mouth, the sky above the Center's roof (transparent); B's corner evened, the old mailbox off it; zone5's plant on
-    # the sidewalk taken off (its wet too). After pokeball, bfloor and bwall, whose boxes it overlaps
+    # front's bands round the corner, then one smooth plaster with only an emergency exit on it, half behind B's corner,
+    # its steel door on a step and the green exit sign over it: its lit comp z5_alley), its floor at the sidewalk's level
+    # with a grate across its mouth, the sky above the Center's roof (transparent); B's corner evened, the old mailbox off
+    # it; zone5's plant on the sidewalk taken off (its wet too). After pokeball, bfloor and bwall, whose boxes it overlaps
     'alley': dict(box=(896, 300, 944, 690), tool='roji_alley'),
     # the roofs on the left (the owner: "gouttière et finition toit sous Kirua et dojo : tuile ancienne, gouttière clean
     # et vraie perspective du toit"): Kirua's eave, the one he sits on over the dagashi-ya, and the dojo's house's eave end
