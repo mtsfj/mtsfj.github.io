@@ -29,12 +29,15 @@ from the street's axis; a line across the street is level), each pixel the colou
   soffit on the painter's ray (s 0.983), its corners at x 158 and x 325, its eave 44 cm out (the house's scale under
   Kirua, 78 px/m at his seat); round the near corner (tucked under the dojo's eave) the level hip eave in the shade, its
   tiles' ends face on, small and flush in the row (a pixel's bump), mitred into the front's; at the far end the eave runs
-  on K_OVER past the far wall and turns the far corner, the far hip's gutter level along it (seen from behind and below),
-  the overhang's soffit dark over it; at that corner a collecting box under the gutter and a swan neck (two bends, a
-  short slanting run back to the wall) into the painter's downpipe against the far corner (tools/kirua_gutter.py's),
-  which goes on down as he painted it; the ridge and the hips are behind the eaves from the street. The beam the
+  on K_OVER past the far wall and turns the far corner: there the hip's fascia board seen from below (its inner face, its
+  foot lit), the gutter hung on its far side (its belly under the board's foot), the street's gutter mitred into it; the
+  overhang's underside in a soft shade, lighter toward the corner, the rafters' feet square to each eave and the hip
+  rafter on the diagonal; on the hip's gutter, over the wall's corner, the rain head (K_HEAD) and a short neck down to
+  the painter's downpipe on that corner (tools/kirua_gutter.py's), which goes on down as he painted it (the owner, on a
+  first far end: a long level bar floating under the eave, sky over it, a swan neck under it, a flat black wedge); the
+  ridge and the hips are behind the eaves from the street. The beam the
   painter drew under the soffit, clean on its ray (his tones across it). Kirua's seat (KM.seat in assets/street.js) is
-  on the tiles' tops, his feet over the gutter; the drips (DRIPS 'kirua') fall from the corner's box;
+  on the tiles' tops, his feet over the gutter; the drips (DRIPS 'kirua') fall from the gutter's far corner;
 - the dojo's house: the same tiles and gutter, the gutter's rim catching the dusk as the painter had it (his pink,
   marked in street_sun as his was, so the hours read it the same), its far end the gutter's circle; under it the
   painter's soffit cleaned whole (his dark, the beam along the wall a little lighter, on its ray), its end edge level;
@@ -105,6 +108,9 @@ K_CORNER_X = 325                                 # (the house's far corner: from
 K_SIDE = (59, 84)                                # (the painter's band round the corner: its rows, its end wall under it)
 K_BEAM = (1.0425, 1.0560, 202, 324)              # the beam under the soffit (the painter's, on its ray: s from, to; x)
 BEAM_K = [(10, 16, 26), (13, 21, 36), (10, 19, 34), (7, 16, 30), (6, 13, 22), (4, 10, 15)]   # (his, from its lower edge)
+K_FASC = (0.075, 0.02)                           # the hip's fascia: its height under the soffit, the gutter's gap to it
+K_RAFT = 0.45                                    # the rafters' spacing under the overhang
+K_HEAD = 5.22                                    # the rain head on the hip's gutter: m from the axis (over the wall's corner)
 RET_D = (0.042, 0.010)                           # the near return's tile ends, face on: their radius, their rise over the lip
 # the downpipes: the painter's (Kirua's: tools/kirua_gutter.py's, x 326..330 against the far corner; the dojo's, x 137..140
 # on its corner), each now fed from its gutter by a collecting box under the gutter's end and a swan neck (yobi-toi:
@@ -123,7 +129,7 @@ DP = dict(x=5.15, cx=139.0, r=0.019, top=6.51, cols=(137, 140), ref=66, box=(0.0
           ramp=[(14, 1, 1), (11, 8, 13), (58, 24, 26), (102, 38, 38), (102, 47, 49)], sun=(0, 0, 255, 255, 255))
 for _P in (KP, DP): _P['z'] = F * _P['x'] / (VP[0] - _P['cx'])
 
-TILE, LIP, GUT, HANGER, SOFF, DISC, VPIPE, PIPEK, VPIPE_D, WALL = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+TILE, LIP, GUT, HANGER, SOFF, DISC, VPIPE, PIPEK, VPIPE_D, WALL, FASC = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 KP['vk'], DP['vk'] = VPIPE, VPIPE_D
 
 
@@ -267,11 +273,12 @@ def front(H, E, dx, dy, par, z0, z1, gz0, gz1=None):
     return zg, okg, ang
 
 
-def pipe(H, dx, dy, par, P, gutter, zbox):
+def pipe(H, dx, dy, par, P, gutter, zbox, xbox=None):
     """A downpipe fed from its gutter: the collecting box under the gutter (its bottom at the gutter's, centred at Z
     zbox), the swan neck from the box down and back to the wall (one straight run, its two bends rounded), the pipe down
     the wall from the lower bend (VPIPE: in the painter's pipe's own columns), a bracket round it (P bracket)."""
     xg, gb = gutter
+    xg = xg if xbox is None else xbox
     bw, bh = P['box']
     zb, nb = box_hit(dx, dy, (xg - bw, gb - bh, zbox - bw), (xg + bw, gb, zbox + bw))
     Lbx = 0.45 + 0.45 * nb[..., 1] - 0.35 * nb[..., 0] - 0.25 * nb[..., 2]   # (its face to the street lit, its side to us
@@ -297,7 +304,7 @@ def pipe(H, dx, dy, par, P, gutter, zbox):
 def kirua(H, dx, dy, par):
     E = K
     zs, ze = E['zs'], E['ze']
-    front(H, E, dx, dy, par, zs, ze, zs - E['gout'] - E['rg'], ze + E['gout'] + E['rg'])
+    front(H, E, dx, dy, par, zs, ze, zs - E['gout'] - E['rg'], ze + K_FASC[1] + 2 * E['rg'])
     X, yc, rd, P = E['X'], E['yc'], E['rd'], E['pitch']
     lo, hi = yc + E['lip'][0], yc + E['lip'][1]
     # the near hip's eave, face on and in the shade: its lip, its tiles' ends (round, small, flush in the row: a bump of
@@ -323,22 +330,40 @@ def kirua(H, dx, dy, par):
     oks = (Xs >= E['xg'] - E['rg']) & (Ys <= E['yr'] + 1e-4)
     angs = np.degrees(np.arctan2(-(Ys - E['yr']), -(zgs - (zs - E['gout']))))
     H.put(zgs, oks, tone(N[0:6], np.clip(0.82 - angs / 105.0, 0, 1), par, 0.09), GUT)
-    # the far hip's eave: its gutter level along the far end (seen from behind and below: its belly, its near side in the
-    # shade, its far rim against the bright sky), the soffit under the overhang, from the front's eave back under the house
-    zgf = ze + E['gout']
+    # the far hip's eave, seen from below: its fascia board (its inner face toward us, its foot lit), the gutter hung on
+    # its far side (only its belly under the board's foot), mitred into the street's at the corner
+    fh, fo = K_FASC
+    zf_ = np.full(dx.shape, ze); xf_ = ze * dx; yf_ = EYE + ze * dy
+    okb = (xf_ >= E['X'] - 0.004) & (yf_ <= E['yso']) & (yf_ >= E['yso'] - fh)
+    near = np.clip((xf_ - E['X']) / 0.55, 0, 1)                           # (the light from the corner, fading in)
+    Lf = np.where(yf_ < E['yso'] - fh + 0.012, 0.62, 0.36) - 0.22 * near
+    H.put(zf_, okb, tone(N[0:6], Lf, par, 0.08), FASC)
+    zgf = ze + fo + E['rg']
     zgx = cyl_x(dx, dy, E['yr'], zgf, E['rg'])
     Xf, Yf = zgx * dx, EYE + zgx * dy
     okf = (Xf >= E['xg'] - E['rg']) & (Yf <= E['yr'] + 1e-4)
     af = np.degrees(np.arctan2(-(Yf - E['yr']), (zgx - zgf)))           # (0 its far rim, 90 under it, 180 its near rim)
-    H.put(zgx, okf, tone(N[0:6], np.clip(0.55 - (af - 40) / 160.0, 0, 1), par, 0.09), GUT)
+    H.put(zgx, okf, tone(N[0:6], np.clip(0.62 - (af - 40) / 150.0, 0, 1), par, 0.09), GUT)
+    # the soffit under the overhang: its boards in a soft shade, lighter toward the eaves' corner; the rafters' feet, square
+    # to each eave (the street's run back to the wall, the hip's toward us), the hip rafter on the diagonal
     zso = (E['yso'] - EYE) / dy; xso = zso * dx
     oks = (xso >= E['X'] - 0.002) & (zso >= zs) & (zso <= ze) & ((xso <= E['xw']) | (zso >= E['zf']))
-    H.put(zso, oks, np.array(SOFFIT_K, float), SOFF)
+    u, v = xso - E['X'], ze - zso                                          # (in from the street's eave, in from the hip's)
+    t = np.clip(1.0 - np.hypot(u, v) / 0.75, 0, 1) ** 1.3                 # (the soft light, from the corner)
+    hipd = u - v
+    zk = ze - 0.12 - np.round((ze - 0.12 - zso) / K_RAFT) * K_RAFT
+    xk = E['X'] + 0.12 + np.round((xso - E['X'] - 0.12) / K_RAFT) * K_RAFT
+    raft = ((hipd < 0) & (np.abs(zso - zk) < 0.024)) | ((hipd >= 0) & (np.abs(xso - xk) < 0.024))
+    hip = np.abs(hipd) < 0.03
+    lo_, hi_ = np.array(SOFFIT_K, float), np.array(BEAM_K[1], float)
+    rgb = lo_ + (hi_ - lo_) * (0.55 * t)[..., None]
+    rgb = np.where((raft | hip)[..., None], lo_ * 0.6 + (np.array(N[3], float) - lo_ * 0.6) * (0.25 + 0.75 * t)[..., None], rgb)
+    H.put(zso, oks, rgb, SOFF)
     # his front wall (the painter's): in front of what lies behind its far corner
     zw = E['xw'] / dx; yw = EYE + zw * dy
     H.put(zw, (zw >= E['zn']) & (zw <= E['zf']) & (yw <= E['yso']), np.zeros(3), WALL)
-    # the collecting box at the far corner, the swan neck back to the painter's pipe against the far wall's corner
-    pipe(H, dx, dy, par, KP, (E['xg'], E['ys']), ze - 0.01)
+    # the rain head under the hip's gutter at the wall's corner, a short neck down to the painter's pipe on that corner
+    pipe(H, dx, dy, par, KP, (E['xg'], E['ys']), zgf, xbox=K_HEAD)
 
 
 def dojo(H, dx, dy, par):
