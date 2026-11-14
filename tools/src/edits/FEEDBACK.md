@@ -74,6 +74,11 @@ street. Read this before redrawing any zone; add to it after every review.
   mask or a curtain over him). The owner: "plus personne en ombre, ramen visible comme les autres, faudra fenêtre de
   Naruto transparente et Naruto visible aussi"; on Luffy on the oden's sign: "il vole", "gros un peu à cette distance",
   "l'emplacement nul".
+- **R27. Redo rather than patch.** When a piece reads badly and a fresh start (a new draft or sheet from the image API,
+  a new tool, the thing rebuilt in 3D) will clearly do better, start afresh instead of mending the old one; a building's
+  top is a real building's top with its parts, not a band ("faut penser le haut comme un vrai haut d'immeuble avec
+  détail, pas juste un rectangle ; pareil pour les autres toits"). The owner: "ils ont tous le droit, qu'ils n'hésitent
+  pas au lieu de rafistoler s'ils savent que ça sera mieux", "regen l'image si besoin".
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
