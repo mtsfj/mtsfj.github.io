@@ -387,7 +387,8 @@ ZONES = {
     # Naruto's near side, the building deep ("l'immeuble de
     # Naruto fait 50 cm de profondeur": the frontal wall runs past the frame, its coping and slabs level across it, a
     # face redrawn from a draft, tools/src/edits/naruroof_face_draft.webp, "Améliore cette façade": its concrete's
-    # streaks, its slab lines, a window lit through a curtain (its light the comp win_naru_side), a frosted one, a vent,
+    # streaks, its slab lines, a window lit through a curtain and a frosted one, lived in from a draft of their light and
+    # their figures (street.js NWIN: assets/win_naru_side*.webp, win_naru_bath*.webp), a vent,
     # the ramen shop's kitchen hood); the AC unit on the lean-to whole ("il manque la moitié de la ventilation"), redrawn
     # from a draft (tools/src/edits/naruroof_ac_draft.webp), its pipes in a cover into the roof). Last:
     # over narufloor (whose roof edge it redraws: its rows kept; its garden redrawn from a draft, "Améliore le jardin de

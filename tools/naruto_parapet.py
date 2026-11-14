@@ -56,6 +56,15 @@ floor under it, the window, the railing and the garden stay where they are).
   the ground floor, over the arcade's roof, the ramen shop's kitchen hood. Boxed down to the street's pixels (at 22 h
   the street's grade leaves the layer as it is), brought to the painter's concrete by a gain per channel (the near
   side's own median: the building keeps its one tone), laid on the near side's face, two pixels clear of the AC unit.
+  The two windows lived in (the owner: "Faudra animer la fenêtre, celle-là, et la salle de bain, comme si quelqu'un
+  vivait là"), their light as the image model painted it in their context crop at 22 h (R28: WIN_CROP x8, brightened;
+  tools/src/edits/naruroof_windows_draft.webp, then naruroof_windows_fig_draft.webp painted on it; lay_windows): the
+  room's window lit warm, its curtain half drawn on a glimpse of the lit room (a pendant lamp, a picture, a table), the
+  bathroom's frosted pane lit warm-white, each street.js's to show (assets/win_naru_side.webp, win_naru_bath.webp: its
+  NWIN block, on and off by their own clocks); a person's soft shadow on the curtain and a blurred figure behind the
+  frosted pane (what the second draft darkens of the first: win_naru_side_fig.webp, win_naru_bath_fig.webp), which
+  NWIN moves over the lit glass; in the layers the room's glass off as it now is (its curtain and room faint on dark
+  glass), the bathroom's as the face's draft left it.
 - The planters: the roof garden's shrubs, hedge and maple stand in concrete planters behind the parapet, their rims just
   showing over the coping under the plants (a lit top, its edge, the planter's face in shade over the coping's lit edge); the leaves the rims cover leave the garden's
   wind data (roof_sway.webp: no longer leaves, never shown there).
@@ -183,6 +192,21 @@ FACE_CROP = (1216, 0, 1456, 360)
 LIT = (1300, 128, 1358, 188)
 FROST = (1393, 121, 1419, 136)
 LIT_COMP = 'win_naru_side.webp'
+# the two windows lived in (the owner: "Faudra animer la fenêtre, celle-là, et la salle de bain, comme si quelqu'un vivait
+# là"; R28): their light as the image model painted it in their context crop at 22 h (WIN_CROP x8, brightened, on this
+# zone's drawing; tools/src/edits/naruroof_windows_draft.webp from naruroof_windows_prompt.txt): the room's window lit
+# warm, its curtain half drawn, a glimpse of the lit room; the bathroom's frosted pane lit warm-white; then on that
+# (naruroof_windows_fig_draft.webp from naruroof_windows_fig_prompt.txt) a person's soft shadow on the curtain and a
+# blurred figure behind the frosted pane: what each darkens of the lit glass, the figures street.js moves (NWIN). The room
+# window's light over ROOM (LIT_COMP), its figure over ROOM_FIG; the bathroom's over BATH (BATH_COMP), its figure over
+# BATH_FIG
+WIN_CROP = (1296, 96, 1424, 224)
+WIN_DRAFT, WIN_FIG_DRAFT = 'naruroof_windows_draft.webp', 'naruroof_windows_fig_draft.webp'
+ROOM = LIT
+ROOM_FIG = (1332, 146, 1355, 182)
+BATH = (1389, 118, 1424, 140)
+BATH_FIG = (1388, 122, 1406, 137)
+BATH_COMP = 'win_naru_bath.webp'
 # the roof garden over the parapet (the owner: "Améliore le jardin de toit de droite"; R28): the image model's painting
 # of it in its context crop at 22 h (GARDEN_CROP x8, brightened, on this zone's drawing; tools/src/edits/
 # naruroof_garden_draft.webp from naruroof_garden_prompt.txt; lay_garden): the red-leafed tree's tiered pads, a pruned
@@ -742,6 +766,52 @@ def lay_garden(city, unlit, box, sway0):
     return out
 
 
+def lay_windows(city, unlit, box):
+    """the two windows' light and figures from their drafts (WIN_DRAFT, WIN_FIG_DRAFT, R28), boxed down to the street's
+    pixels (their x8 brightened input undone: at 22 h the layer's colours): the room's lit glass (the draft's warm pixels in
+    ROOM) and the bathroom's (in BATH), as street.js shows them over the layers (their own light: as painted); in the layers
+    the room's glass off as it now is (the draft's curtain and room, their light over its mean, on the frosted pane's dark
+    glass); each figure what the second draft darkens of the first over its box (smoothed a little, on the lit glass only),
+    one colour (its core's) and that darkening as its opacity. Returns {asset name: RGBA}"""
+    s1, s2 = (os.path.join(EDITS, f) for f in (WIN_DRAFT, WIN_FIG_DRAFT))
+    if not (os.path.exists(s1) and os.path.exists(s2)): return {}
+    wx0, wy0, wx1, wy1 = WIN_CROP
+    W, H = wx1 - wx0, wy1 - wy0
+    d1, d2 = ((np.asarray(Image.open(f).convert('RGB').resize((W, H), Image.BOX)).astype(float) / 255.0) ** 2.0 * 255.0
+              for f in (s1, s2))
+    warm = (d1[..., 0] > d1[..., 2] + 8) & (d1[..., 0] > 20)
+    out = {}
+
+    def box_mask(b):
+        m = np.zeros((H, W), bool); m[b[1] - wy0:b[3] - wy0, b[0] - wx0:b[2] - wx0] = True
+        return m
+    room, bath = warm & box_mask(ROOM), warm & box_mask(BATH)
+    for nm, b, gl in ((LIT_COMP, ROOM, room), (BATH_COMP, BATH, bath)):
+        a = np.zeros((b[3] - b[1], b[2] - b[0], 4))
+        sl = (slice(b[1] - wy0, b[3] - wy0), slice(b[0] - wx0, b[2] - wx0))
+        a[..., :3] = d1[sl]; a[..., 3] = np.where(gl[sl], 255.0, 0.0)
+        out[nm] = np.clip(np.round(a), 0, 255).astype(np.uint8)
+    # the room's glass off in the layers
+    fx0, fy0, fx1, fy1 = FROST
+    dark = np.median(city[fy0:fy1, fx0:fx1, :3].reshape(-1, 3), 0)
+    Lg = d1 @ LUMA
+    fold = np.clip(Lg / max(np.mean(Lg[room]), 1.0), 0.6, 1.4)
+    ys, xs = np.nonzero(room)
+    for lay in (city, unlit):
+        lay[wy0 + ys, wx0 + xs, :3] = dark * (0.75 + 0.35 * fold[ys, xs])[:, None]
+    # the figures
+    l1, l2 = gaussian_filter(d1 @ LUMA + 1, 0.7), gaussian_filter(d2 @ LUMA + 1, 0.7)
+    dk = np.clip(1 - l2 / l1, 0, 1)
+    for nm, b, gl in (('win_naru_side_fig.webp', ROOM_FIG, room), ('win_naru_bath_fig.webp', BATH_FIG, bath)):
+        sl = (slice(b[1] - wy0, b[3] - wy0), slice(b[0] - wx0, b[2] - wx0))
+        a = np.where(gl[sl], dk[sl], 0.0); a = np.where(a < 0.06, 0.0, a)
+        core = a > 0.6 * a.max()
+        col = np.median(d2[sl][core], 0)
+        f = np.zeros(a.shape + (4,)); f[..., :3] = col; f[..., 3] = 255 * np.clip(a / max(a.max(), 1e-3), 0, 1)
+        out[nm] = np.clip(np.round(f), 0, 255).astype(np.uint8)
+    return out
+
+
 def draw(city, unlit, box=BOX, write=True):
     """The zone (redraw_zones.py): the layers changed in place (whole-scene float RGBA); street_sun written (0 on what is
     redrawn; beyond the zone 'narufloor' from this zone's before crop) and roof_sway.webp's planters; returns what changed
@@ -839,6 +909,8 @@ def draw(city, unlit, box=BOX, write=True):
     for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
     laid = lay_draft(city, unlit, box, name, M, done)
     comp = lay_face(city, unlit, box, name, M, done, laid | acm)
+    wins = lay_windows(city, unlit, box)
+    if wins: comp = None                                              # (the room's light: the windows' draft's now)
     for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
     changed = (city[y0:y1, x0:x1] != c0).any(-1) | (unlit[y0:y1, x0:x1] != u0).any(-1)
     # street_sun: as 'narufloor' wrote it in its box, this zone's before crop beyond it; 0 on what is redrawn
@@ -851,6 +923,8 @@ def draw(city, unlit, box=BOX, write=True):
         if comp is not None:
             Image.fromarray(comp, 'RGBA').save(os.path.join(ASSETS, LIT_COMP), 'WEBP', lossless=True, quality=100, method=6,
                                                exact=True)
+        for nm, a in wins.items():
+            Image.fromarray(a, 'RGBA').save(os.path.join(ASSETS, nm), 'WEBP', lossless=True, quality=100, method=6, exact=True)
         Image.fromarray(np.clip(np.round(sun), 0, 255).astype(np.uint8), 'RGB').save(
             os.path.join(ASSETS, 'street_sun.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
         Image.fromarray(sw_, 'RGBA').save(swp, 'WEBP', lossless=True, quality=100, method=6, exact=True)

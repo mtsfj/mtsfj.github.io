@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=122", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=14", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=17", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_naru_side": {"src": "assets/win_naru_side.webp?v=1", "x": 1300, "y": 128, "w": 58, "h": 60}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=2", "x": 264, "y": 422, "w": 57, "h": 84}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=123", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=14", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=17", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=2", "x": 264, "y": 422, "w": 57, "h": 84}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=122') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=123') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -276,7 +276,7 @@
   // what each light is (else by its name: 'win…' a window, 'lamp', else a neon): zone 7's dagashi-ya open ('shop', steady,
   // its tubes wavering a moment now and then), the tabako window ('tube', steady), the drinks machines ('vend', always on;
   // the right one's tube fails a moment, rarely), the windows of homes ('home', on and off a long while: Kirua's room behind
-  // the bay, its monitor alive (BAY, below); the one over the dojo, tools/dojo_window.py; Naruto's on his end wall over the arcade, tools/naruto_parapet.py), zone 9's paper lantern ('lantern', breathing),
+  // the bay, its monitor alive (BAY, below); the one over the dojo, tools/dojo_window.py; Naruto's two on his end wall have their own block, NWIN), zone 9's paper lantern ('lantern', breathing),
   // the roji's emergency exit sign by the Center (z5_alley, tools/roji_alley.py: a 'tube' on its hours 'exit', lit all day and
   // all night, steady, never a flicker; in the power cut on its battery, dimmer, in the layer)
   // a light's own life: a slow, faint drift of its level (two slow waves at its own rates and phases, from its seed: no
@@ -288,7 +288,7 @@
   // a light's stutter on the clock, not a coin flipped each frame: true with probability p in each slot of `step` seconds (a hash
   // of its seed and the slot), so it reads the same at 60 and 144 Hz (lumieres-02)
   function stutOn(t, seed, step, p) { const x = Math.sin(seed * 12.9898 + Math.floor(t / step) * 78.233) * 43758.5453; return x - Math.floor(x) < p; }
-  const COMP_KIND = { win_dojo: 'home', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', z7_adscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_naru_side: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube' };
+  const COMP_KIND = { win_dojo: 'home', win_z7_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', z7_adscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name.startsWith('z5_') || name === 'win_z4_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
     const kind = COMP_KIND[name] || (name.startsWith('win') ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
@@ -4043,6 +4043,7 @@
     for (const E of DRIPS) add(() => E.pw, E.px);   // the eaves' drips: their eave's power (a stand-in each)
     add(() => lcCone, 882); add(() => lcPool, 882); add(() => lcRain, 882); add(() => wlMesh, 1228); add(() => neonMesh, 1196); add(() => rlMesh, 1190);
     add(() => z1Cur.mesh, 1096); add(() => z1Door.mesh, 984);
+    add(() => nwRoom.mesh, 1329); add(() => nwBath.mesh, 1406);   // (Naruto's two windows on his end wall: NWIN)
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
     add(() => ODOOR.mesh, 442); add(() => ODOOR.win, 474); add(() => lanMesh, 413);
     add(() => ASGN.tubes, 1400); add(() => ASGN.bulbs, 1400); add(() => ASGN.glowM, 1400);   // (the game centre's sign: the arcade's power)
@@ -4143,7 +4144,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=103', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=104', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -11378,6 +11379,102 @@
   }
   FEAT.push(stepRoof);
   // ==== end of ROOF ====
+  // ==== feature: Naruto's two windows on his end wall, lived in (NWIN) — its own block ====
+  // (tools/naruto_parapet.py: their light and their figures painted by the image model in context, pixelated: the room's
+  // window lit warm, its curtain half drawn on the lit room, win_naru_side.webp; a person's soft shadow on it,
+  // win_naru_side_fig.webp; the bathroom's frosted pane lit warm-white, win_naru_bath.webp, a blurred figure behind it,
+  // win_naru_bath_fig.webp; in the layers both dark.) The room's window: a home's light, on a while (4-15 min), off a while
+  // (2-6), out at its bedtime (its own rank on NIGHT.home) and by day (lit from 17.5 h to 2 h at most); while it is on, now
+  // and then someone crosses behind the curtain (their shadow over the lit glass, 4-7 s, one way or the other), and some
+  // evenings (three in ten) its light is a television's instead (cool, dimmer, jumping from shot to shot, shimmering). The
+  // bathroom's frosted pane: dark most of the time, lit now and then a few minutes (from 18.5 h to 1:30 at most), a
+  // blurred figure drifting behind it, coming and going, the steam fogging it a little while it stays lit. Their own clocks,
+  // never in step. Each a plane over the street (z 1.1, as the windows' comps), its canvas drawn again only while it moves;
+  // the power cut and the red night take them as the other lights (pwList). Under reduced motion: on and off, no figure,
+  // no flicker ----
+  const NWIN = { list: [] };
+  const nwEve = (a, b) => { const h = CLOCK.h + CLOCK.wake; return (h >= a && h < b) || (h + 24 >= a && h + 24 < b); };
+  function nwMake(name, src, figSrc, box, figBox, hours, onT, offT) {
+    const [x, y, w, h] = box;
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h; const g = cv.getContext('2d');
+    const tex = new THREE.CanvasTexture(cv); tex.magFilter = tex.minFilter = THREE.NearestFilter; tex.generateMipmaps = false;
+    const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, opacity: 0 });
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); mesh.position.set(x + w / 2, -(y + h / 2), 1.1); scene.add(mesh);
+    const im = new Image(), fig = new Image(); lateImg(im, src); lateImg(fig, figSrc);
+    const W = { name, kind: 'nwin', box, figBox, hours, onT, offT, cv, g, tex, mesh, im, fig, ready: false, on: false,
+      next: 5 + Math.random() * 40, t: 0, lvl: 1, tv: false, tvNext: 0, cool: false, cross: -1, crossDur: 5, crossDir: 1,
+      crossNext: 20, figA: 0, figOn: false, figNext: 8, fog: 0, fogCol: 'rgb(230,215,180)', seed: Math.random() * 100, dirty: true };
+    NWIN.list.push(W); return W;
+  }
+  const nwRoom = nwMake('naru_room', 'assets/win_naru_side.webp?v=2', 'assets/win_naru_side_fig.webp?v=1', [1300, 128, 58, 60],
+    [1332, 146, 23, 36], [17.5, 26], [240, 660], [120, 240]);
+  const nwBath = nwMake('naru_bath', 'assets/win_naru_bath.webp?v=1', 'assets/win_naru_bath_fig.webp?v=1', [1389, 118, 35, 22],
+    [1388, 122, 18, 15], [18.5, 25.5], [120, 240], [300, 900]);
+  function nwAllowed(W) { return nwEve(W.hours[0], W.hours[1]) && nightLit(W); }
+  function nwPaint(W, t) {                         // the window's canvas: its lit glass, its figure on it, its steam
+    const { g, cv, im, fig, box, figBox } = W;
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.clearRect(0, 0, cv.width, cv.height); g.drawImage(im, 0, 0);
+    if (W.figA > 0.01 && fig.complete && fig.naturalWidth) {
+      let dx = 0;
+      if (W === nwRoom) { const u = Math.max(0, Math.min(1, W.cross / W.crossDur)), span = box[2] + figBox[2]; dx = Math.round((W.crossDir > 0 ? u : 1 - u) * span - (figBox[0] - box[0]) - figBox[2]); }
+      else dx = Math.round(4 * Math.sin(t * 0.21 + W.seed) + 2 * Math.sin(t * 0.53 + 2 * W.seed));
+      g.globalCompositeOperation = 'source-atop'; g.globalAlpha = W.figA;
+      g.drawImage(fig, figBox[0] - box[0] + dx, figBox[1] - box[1]);
+    }
+    if (W.fog > 0.01) { g.globalCompositeOperation = 'source-atop'; g.globalAlpha = W.fog; g.fillStyle = W.fogCol; g.fillRect(0, 0, cv.width, cv.height); }
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; W.tex.needsUpdate = true; W.dirty = false;
+  }
+  function stepNWin(dt, t) {
+    for (const W of NWIN.list) {
+      const m = W.mesh.material;
+      if (!W.ready) {                                // (its images in: its steam's colour from its own light)
+        if (!W.im.complete || !W.im.naturalWidth) continue;
+        W.ready = true;
+        try { const d = W.g; d.drawImage(W.im, 0, 0); const px = d.getImageData(0, 0, W.cv.width, W.cv.height).data; let r = 0, gg = 0, b = 0, n = 0;
+          for (let i = 0; i < px.length; i += 4) if (px[i + 3] > 127) { r += px[i]; gg += px[i + 1]; b += px[i + 2]; n++; }
+          if (n) W.fogCol = `rgb(${Math.min(255, (r / n) * 1.05 + 14) | 0},${Math.min(255, (gg / n) * 1.05 + 14) | 0},${Math.min(255, (b / n) * 1.05 + 18) | 0})`;
+        } catch (e) {}
+        W.on = W === nwRoom ? (Math.random() < 0.6 || !!(POSTER && POSTER.on)) && nwAllowed(W) : false;
+        W.next = W.on ? W.onT[0] * Math.random() : W.offT[0] * Math.random(); m.opacity = W.on ? 1 : 0; W.dirty = true;
+      }
+      // on and off: a lived-in room's minutes; out at bedtime, by day
+      W.next -= dt; if (W.on) W.t += dt;
+      if (W.next < 0) {
+        if (W.on) { W.on = false; W.next = W.offT[0] + Math.random() * (W.offT[1] - W.offT[0]); }
+        else if (nwAllowed(W)) {
+          W.on = true; W.t = 0; W.next = W.onT[0] + Math.random() * (W.onT[1] - W.onT[0]); W.fog = 0;
+          W.tv = W === nwRoom && Math.random() < 0.3; W.cross = -1; W.crossNext = 6 + Math.random() * 30; W.figNext = 3 + Math.random() * 10;
+        } else W.next = 20 + Math.random() * 60;
+      } else if (W.on && !nwAllowed(W) && W.next > 3) W.next = nightDelay();
+      // the room: someone crossing behind the curtain now and then; or the television's light
+      let tgt = W.on ? 1 : 0, col = [1, 1, 1];
+      if (W === nwRoom && W.on) {
+        if (W.tv) {
+          W.tvNext -= dt;
+          if (W.tvNext < 0) { W.lvl = 0.45 + Math.random() * 0.4; W.cool = Math.random() < 0.7; W.tvNext = 0.6 + Math.random() * 3.4; }
+          tgt = reduced ? 0.6 : W.lvl * (0.965 + 0.035 * Math.sin(t * 29 + W.seed) * Math.sin(t * 7.3));
+          col = W.cool ? [0.5, 0.68, 1] : [0.8, 0.85, 1];
+        } else if (!reduced) {
+          if (W.cross < 0) { W.crossNext -= dt; if (W.crossNext < 0) { W.cross = 0; W.crossDur = 4 + Math.random() * 3; W.crossDir = Math.random() < 0.5 ? 1 : -1; } }
+          else { W.cross += dt; W.dirty = true; if (W.cross > W.crossDur) { W.cross = -1; W.crossNext = 25 + Math.random() * 70; } }
+          const a = W.cross >= 0 ? 0.85 : 0; if (a !== W.figA) { W.figA = a; W.dirty = true; }
+        }
+      }
+      // the bathroom: its figure coming and going behind the frosted glass, its steam
+      if (W === nwBath && W.on && !reduced) {
+        W.figNext -= dt; if (W.figNext < 0) { W.figOn = !W.figOn; W.figNext = W.figOn ? 6 + Math.random() * 20 : 4 + Math.random() * 14; }
+        const fa = W.figA + ((W.figOn ? 0.85 : 0) - W.figA) * Math.min(1, dt * 0.8);
+        const fg = Math.min(0.22, W.t / 500);
+        if (Math.abs(fa - W.figA) > 0.002 || Math.abs(fg - W.fog) > 0.002 || W.figA > 0.01) { W.figA = fa; W.fog = fg; W.dirty = true; }
+      }
+      if (!W.on && (W.figA || W.fog) && m.opacity < 0.01) { W.figA = 0; W.fog = 0; W.dirty = true; }
+      m.opacity += (tgt - m.opacity) * Math.min(1, dt * (W.tv && W.on ? 14 : 3));
+      const c = m.color, kc = Math.min(1, dt * 10); c.setRGB(c.r + (col[0] - c.r) * kc, c.g + (col[1] - c.g) * kc, c.b + (col[2] - c.b) * kc);
+      if (W.dirty && W.ready) nwPaint(W, t);
+    }
+  }
+  FEAT.push(stepNWin);
+  // ==== end of NWIN ====
 
   // ---- the dagashi-ya's obaa-chan (tools/dagashi_obaachan.py, from the owner's two sheets), in the shop of tools/dagashi_interior.py
   // (a small 3D model seen by the street's eye): behind her counter, at her depth (Z 26.45 m: 53 px a metre of the model), at her

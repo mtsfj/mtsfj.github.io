@@ -1,0 +1,6 @@
+The attached image is an enlarged crop of a pixel-art painting of a Japanese street at night (each painting pixel is an 8 x 8 block: keep exactly that pixel grid, that framing and that size; the output must line up pixel for pixel with this input). It shows the concrete end wall of a small apartment building with two lit windows: on the left a room's sliding window (a cosy lit room seen through its left pane, a pale curtain drawn across its right pane), on the top right a small frosted bathroom window lit warm-white.
+
+Change only the glass of the two windows, in the same pixel-art style, palette and light, soft, no black outlines:
+- on the room window's curtain (the right pane only), the soft blurred shadow of a person standing just behind it, cast by the room's lamp: a darker, warm-grey silhouette of a head and shoulders, its edges soft, in the middle of that pane; the left pane and the room seen through it unchanged;
+- on the bathroom's frosted glass, the faint blurred silhouette of a person behind it (a soft darker shape of a head and shoulders, very diffuse through the frosted glass), and a little steam fogging the glass (its light a touch milkier and flatter).
+Keep everything else exactly as it is, pixel for pixel: the frames, the sills, the wall, the air-conditioner, the room's interior. No text, no new objects.
