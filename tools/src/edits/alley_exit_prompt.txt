@@ -1,0 +1,7 @@
+This is a crop of a pixel-art Japanese street at night, seen from the street. In the middle, between the Pokemon Center (left, its red awning and lilac pillar) and a dark apartment building (right, with a lit shop window and a bicycle), there is a narrow alley: what you see in it is the alley's far wall, a plain lilac plaster wall seen exactly face on.
+
+Redraw ONLY the two things on that wall, with more detail and cleaner, more believable shapes, keeping each one exactly at the same place and the same size as now, and seen face on like the wall:
+- the emergency exit: a plain steel door (painted grey-teal, flat, no window), its slim steel frame all round, its lever handle on the left, standing on a low concrete step;
+- just above the door: the Japanese emergency exit sign (避難口誘導灯), a small flat lit box: a bright green panel with the white pictogram of a running figure heading to a white door opening, lit from inside, a thin grey rim; its soft green light glowing faintly on the plaster around it and on the top of the door.
+
+Keep the plaster wall around them plain and flat, the same lilac tone everywhere, with nothing else on it, and keep everything else in the picture identical: the Pokemon Center, the dark building, the shop window, the bicycle, the sidewalk, the colours and the image's framing and size. Same pixel-art style, same palette and the same dim night light; soft shading, no black outlines, no new objects, no text.

@@ -2,8 +2,10 @@
 """The narrow building between the Pokemon Center and the apartment building taken away: a roji in its place.
 
     (a module: tools/redraw_zones.py's zone 'alley' calls draw() on the street as the zones before it leave it; it also
-     writes assets/z5_alley.webp, the alley lamp's lit comp, and the cherry's foot behind the gap in assets/fuji_night.webp
-     and fuji_aux.webp (far_layers): the same bytes each time)
+     writes assets/z5_alley.webp, the exit sign's lit comp, the cherry's foot behind the gap in assets/fuji_night.webp
+     and fuji_aux.webp (far_layers) and the sidewalk's wet in front of the Center's corner in assets/wet.webp (wet_layer):
+     the same bytes each time)
+    python3 tools/roji_alley.py --call   (asks the image model for the door and the sign once more: see DRAFT)
     python3 tools/roji_alley.py --preview DIR   (only shows it: the zone drawn on the layers as they are, written to DIR
                                                  with its comp and its model's lines over a x6 crop; run it on layers
                                                  without the zone; nothing in the repository changes)
@@ -26,31 +28,25 @@ pixel by pixel (4 x 4 rays a pixel, each pixel the surface most of its rays meet
   plane), the corner a crisp edge between the two faces. From the white band down the side is one plaster (the owner:
   "diff de couleur entre le devant et le côté : soit tout uni, soit côté et façade différents, mais identiques sur le même
   pan"): the front's lilac over its awning times SIDE, one value over the plane in each layer, only the light on it: the
-  sky's from above (a little lighter up), the contact shade at its foot, the lamp's falloff (the comp), a fine grain within
-  that value. On it, as on a small shop's side in a roji (the owner: "la façade ruelle plus de détail"; R25: a few things
-  that say what they are; the window with its lattice that was upstairs taken off: "retire la grille ... la façade face à
-  nous"); R28: each drawn by the image model in its context, tools/src/edits/alley_objects_model.webp from
-  alley_objects_in.webp and _prompt.txt, laid on this tool's model of it (its place, its size; its colours brought to
-  the street's and quantised, the sign's and the lamp's light on it as on the plaster): an air conditioner's outdoor unit
-  on its wall bracket
-  (its casing, louvred side, the fan's grille, its right part behind B's corner); the electricity meter (its glass) and
-  under it the gas meter with its pipe down to the floor and its riser; the steel back door in its frame (a lever) on a
-  concrete step; beside it a small wall lamp (its glass lit as this tool lights it); at the wall's foot an
-  upturned plastic crate, a hydrangea in its pot on it;
+  sky's from above (a little lighter up), the contact shade at its foot, the exit sign's light (the comp), a fine grain within
+  that value. On it one thing only (the owner, 2026-11-14: "petite rue surchargée : mets juste une sortie de secours avec
+  l'indicateur vert au-dessus ; le reste rien, mur lisse"): the emergency exit, a plain steel door in its frame (a lever),
+  recessed a little, on a low concrete step, whole between the two corners; above it the green exit sign (避難口誘導灯:
+  its lit panel, the white running figure and its door). R28: both drawn by the image model in their context
+  (tools/src/edits/alley_exit_model.webp from alley_exit_in.webp and _prompt.txt), each one's picture there laid on this
+  tool's model of it (its place, its size), its colours brought to the street's and quantised;
 - the alley's floor at the sidewalk's level (the painter's foot line of the old building, v -0.2555: 13 cm over the
-  ground model), concrete, a gutter's grate across the alley's mouth along the sidewalk's edge (the hydrangea, the owner's
-  sprite sheet 2 cut as zone5 cut its plants);
+  ground model), concrete, a gutter's grate across the alley's mouth along the sidewalk's edge;
 - above the Center's roof: nothing (transparent: the cherry and the sky of the far layers, night_far 0 as it was); the
   cherry's painted foot there, which the old building hid, had holes onto the dusk's horizon: filled (far_layers).
 B's left edge is its corner now: its painter's lit arris (x 941) evened along its height, what the old building's
 mailbox laid on it (rows 606..627) taken back from above and below. The plant zone5 put on the sidewalk in front of the
-Center's corner stays where it stands (its pixels kept, the alley behind it).
-Light: the street's (the layer: the lamp off), the Pokemon Center's sign's own light on the plane as the painter put it
-on the front's lilac (the street over its power cut there: the power cut takes it off), and the lamp
-(the comp z5_alley, street.js: a 'lamp', on all night, out in the power cut, red in the red night): its glass lit, its
-light on the wall round it (a soft pool falling off, cut above by its cap), on the meters, the door and its step, the
-crate, the plant and the floor, warm as the
-painter's lantern light on a lavender wall (his paper lantern's comp: the wall's own colour lifted toward mauve and rose).
+Center's corner goes too ("le reste rien"): the painter's pillar and sidewalk where it and its shade were, its wet
+patch off the wet layer.
+Light: the street's (the layer: the sign's comp off, the sign dim), the Pokemon Center's sign's own light on the plane as
+the painter put it on the front's lilac (the street over its power cut there: the power cut takes it off), and the exit
+sign (the comp z5_alley, street.js: a 'tube', on day and night, never flickering; in the power cut on its battery, dimmer,
+in the layer): its panel lit, its green light on the wall round it, the door, its step and the floor (a soft falloff).
 A fine grain on the plaster, the bands, the door and the floor (the painter's). Needs Pillow, numpy, scipy.
 """
 import os
@@ -68,28 +64,18 @@ ZB = F * XF / (GX1 - VPX)                        # B's corner (19.92 m)
 HS = EYE - 0.2555 * XF                           # the sidewalk's level, the alley's floor (0.13 m)
 TOP_ROW = 441                                    # the Center's roof line at its corner (its front's first row)
 HT = EYE + (VPY - TOP_ROW) * ZF / F              # the far wall's top (5.59 m)
-BOX = (904, 300, 944, 690)                       # the zone (redraw_zones.py 'alley')
+BOX = (896, 300, 944, 690)                       # the zone (redraw_zones.py 'alley')
 SS = 4                                           # rays a pixel, each way
 # the far wall's things, in metres: X across the alley from the street, h up, d out of the wall toward the street
-DOOR = dict(x=(5.47, 6.27), h=(HS + 0.15, HS + 2.15), d=0.07, frame=0.045)
-HANDLE = dict(x=(5.53, 5.63), h=(HS + 1.12, HS + 1.15))         # its lever, on the leaf
-LAMP = dict(plate=((5.335, 5.385), (2.20, 2.40), (0.0, 0.02)), arm=((5.353, 5.367), (2.345, 2.365), (0.02, 0.15)),
-            cap=((5.285, 5.435), (2.30, 2.34), (0.12, 0.27)), glass=((5.30, 5.42), (2.12, 2.30), (0.135, 0.255)),
-            foot=((5.32, 5.40), (2.10, 2.12), (0.15, 0.24)))
-LAMP_AT = (5.36, 2.21, 0.195)                    # its light's source (X, h, d)
+DOOR = dict(x=(5.07, 5.73), h=(HS + 0.15, HS + 2.10), d=0.07, frame=0.045)   # the emergency exit, whole between the
+                                                 # Center's corner and B's (the far wall shows X 5.0 .. 5.79)
+HANDLE = dict(x=(5.14, 5.24), h=(HS + 1.0, HS + 1.03))           # its lever, on the leaf
+SIGN = ((5.20, 5.60), (2.32, 2.48), (0.0, 0.05))  # the exit sign over it (非常口: a green box, its running figure): X, h, d
+SIGN_AT = (5.40, 2.40, 0.07)                     # its light's source (X, h, d)
 BOXES = {                                        # what stands out of the wall: X range, h range, d range
-    'step': ((5.44, 6.32), (HS, HS + 0.15), (0.0, 0.30)),
-    'crate': ((5.06, 5.32), (HS, HS + 0.31), (0.02, 0.38)),
-    'emeter': ((5.05, 5.21), (1.80, 2.06), (0.0, 0.11)),
-    'gmeter': ((5.06, 5.24), (1.14, 1.42), (0.0, 0.13)),
-    'gpipe': ((5.135, 5.165), (HS, 1.14), (0.03, 0.06)),
-    'griser': ((5.19, 5.22), (1.42, 1.66), (0.03, 0.06)),
-    'ac': ((5.50, 6.30), (2.58, 3.12), (0.10, 0.40)),
-    'acarm1': ((5.56, 5.59), (2.55, 2.58), (0.0, 0.42)), 'acarm2': ((6.20, 6.23), (2.55, 2.58), (0.0, 0.42)),
-    'acplate1': ((5.56, 5.59), (2.38, 2.58), (0.0, 0.015)), 'acplate2': ((6.20, 6.23), (2.38, 2.58), (0.0, 0.015)),
+    'step': ((5.03, 5.77), (HS, HS + 0.15), (0.0, 0.28)),
+    'sign': SIGN,
 }
-AC_FAN = (5.70, 2.85, 0.17)                      # the unit's fan grille on its front (X, h, radius)
-EMETER_GLASS = ((5.08, 5.18), (1.92, 2.02))      # the meter's window on its front
 SIDE = 0.80                                      # the side's light against the front's, at the same height (one factor, the
                                                  # whole plane: its bands and its plaster alike)
 TOP = dict(nose=0.026, face=0.061, drip=0.077, shad=0.095)   # topPC's coping on the front, under the roof line (m)
@@ -100,20 +86,20 @@ WHITE_TOP = 485                                  # the white band's first row at
 WHITE_ROWS = (486, 499)                          # the rows its tone is read at (the front's lilac over the awning)
 PARAPET = HT - (EYE + (VPY - BAND_FOOT - 1) * ZF / F)   # (the bands' depth, for the lines)
 GRATE = (5.0, 5.18)                              # the gutter's grate across the mouth (X)
-PLANT = ('zone5_sheet2.webp', (718, 148, 865, 351), 5.20, 0.20, 0.34, HS + 0.31)   # sheet, box, X, d, height, its foot (on the crate)
-# tones (the layer: the lamp off), the painter's: the Center's lavender in the alley's shade, his navy for what is dark
+# tones (the layer: the sign's comp off), the painter's: the Center's lavender in the alley's shade, his navy for what is dark
 C = {'wall': (24, 24, 47), 'glass': (34, 34, 61), 'frame': (36, 36, 61), 'wood': (34, 25, 30), 'wood_lit': (48, 35, 40),
      'door': (21, 27, 43), 'dframe': (12, 15, 26), 'handle': (60, 60, 82), 'iron': (17, 17, 29), 'iron_lit': (34, 33, 52),
      'lens': (44, 37, 60), 'floor': (12, 17, 31), 'grate': (6, 9, 18), 'bar': (15, 21, 36), 'sill': (30, 30, 54),
-     'step': (24, 25, 40), 'crate': (20, 30, 66), 'crate_hole': (9, 12, 26), 'meter': (36, 37, 58), 'mglass': (52, 56, 80),
-     'gas': (44, 40, 46), 'pipe': (30, 30, 42), 'ac': (40, 41, 66), 'ac_grille': (16, 17, 30), 'steel': (16, 16, 26)}
+     'step': (24, 25, 40), 'sign': (28, 52, 40), 'sign_lit': (70, 226, 128), 'sign_fig': (226, 244, 232)}
 FACE = {'front': 1.0, 'left': 1.08, 'right': 0.62, 'top': 1.15, 'bottom': 0.52}    # (the street's light comes from the left)
-WARM, LIFT = np.array([46.0, 15.0, 3.0]), 0.45   # the lamp's light: the surface lifted by LIFT of itself and WARM (his lantern's,
-                                                 # a little less rose: a bulb's, not a red paper's)
-LENS_LIT = (np.array([250.0, 224.0, 182.0]), np.array([226.0, 158.0, 118.0]))   # the lit glass: its middle, its rim
+GLOW, GLIFT = np.array([3.0, 30.0, 13.0]), 0.12  # the sign's light: the surface lifted by GLIFT of itself and GLOW (a green)
+SIGN_DIM, SIGN_BATT = 0.42, 0.30                 # the sign unlit in the street (its comp off), on its battery in the power cut
 GRAIN = 0.025                                    # (a fine grain within the plane's one value)
-DRAFT = dict(name='alley_objects', crop=(876, 520, 972, 691), scale=6, gamma=2.0, reach=3,   # (R28: the wall's things drawn by
-             model='google/gemini-3-pro-image')  # the image model in their context, 9:16, laid in on the model's masks)
+DRAFT = dict(name='alley_exit', crop=(876, 520, 972, 691), scale=6, gamma=2.0,   # (R28: the door and the sign drawn by the
+             model='openai/gpt-5.4-image-2',     # image model in their context; its answer came back square, its things
+             boxes={'door': (416, 300, 625, 891), 'step': (383, 891, 658, 951), 'sign': (456, 221, 592, 279)},
+             k={'door': 6, 'step': 3, 'sign': 5})  # a little moved: each one's box measured on it (its pixels: x0, y0, x1, y1),
+                                                 # laid on this tool's model of it, quantised to k of its tones)
 COMP = ('z5_alley', (908, 441), (33, 237))       # the lit comp: street.js ASSETS.comps.z5_alley (x, y), (w, h)
 MAILBOX_ROWS = (606, 627)                        # what the old mailbox laid on B's corner (x 941..943)
 FAR = dict(box=(904, 420, 944, 446), fill=(906, 428, 942, 442))   # the cherry's foot behind the gap (scene x0, y0, x1, y1)
@@ -163,9 +149,6 @@ def surface(px, py):
     def take(t, s, f):
         nonlocal best
         if best is None or t < best[0]: best = (t, s, f)
-    for name, bx in LAMP.items():
-        r = box_hit(dx, dh, bx)
-        if r: take(r[0], 'lamp_' + name, r[1])
     for name, bx in BOXES.items():
         r = box_hit(dx, dh, bx)
         if r: take(r[0], name, r[1])
@@ -180,7 +163,7 @@ def surface(px, py):
         t, f, X, h = recess(dx, dh, (DOOR['x'], DOOR['h']), DOOR['d'])
         if f == 'back':
             fr = DOOR['frame']
-            s = 'door_frame' if min(X - DOOR['x'][0], DOOR['h'][1] - h) < fr else 'door'
+            s = 'door_frame' if min(X - DOOR['x'][0], DOOR['x'][1] - X, DOOR['h'][1] - h) < fr else 'door'
             hx, hh = HANDLE['x'], HANDLE['h']
             if hx[0] <= X <= hx[1] and hh[0] <= h <= hh[1]: s = 'door_handle'
             take(t, s, 'front')
@@ -207,20 +190,28 @@ def cast(x0=GX0, x1=GX1, y0=TOP_ROW - 2, y1=690):
     return out
 
 
-def lamp_light(X, h, d, normal):
-    """The lamp's light on a point (0 .. ~1.4): soft, its cap shading what is above it."""
-    lx, lh, ld = LAMP_AT
+def sign_light(X, h, d, normal):
+    """The exit sign's light on a point (0 .. ~1.4): soft, round it, falling off with distance."""
+    lx, lh, ld = SIGN_AT
     v = np.array([lx - X, lh - h, ld - d]); dist = np.sqrt((v * v).sum()) + 1e-6
-    if h < lh: dist = np.sqrt((lx - X) ** 2 + (0.75 * (lh - h)) ** 2 + (ld - d) ** 2) + 1e-6   # (its glass throws down)
     n = {'front': (0, 0, 1), 'left': (-1, 0, 0), 'right': (1, 0, 0), 'top': (0, 1, 0), 'bottom': (0, -1, 0),
          'jamb': (-1, 0, 0), 'soffit': (0, -1, 0), 'sillin': (0, 1, 0)}.get(normal, (0, 0, 1))
     cos = max(0.0, float(np.dot(n, v)) / dist)
-    k = 0.68 * cos / (dist * dist + 0.35 ** 2)
-    c0 = LAMP['cap'][1][1]; k *= 1 - 0.65 * np.clip((h - c0 + 0.05) / 0.35, 0, 1) ** 2   # (above its cap, less)
-    return min(1.4, k)
+    return min(1.4, 0.55 * cos / (dist * dist + 0.3 ** 2))
 
 
 def frac(v): return v - np.floor(v)
+
+
+def sign_face(X, h, f):
+    """The exit sign lit, as this tool draws it before the drawing (its panel green, a white figure, a darker rim; its sides
+    dimmer)."""
+    (x0, x1), (h0, h1), _ = SIGN
+    if f != 'front': return np.array(C['sign_lit'], float) * 0.5
+    u, w = (X - x0) / (x1 - x0), (h - h0) / (h1 - h0)
+    if u < 0.05 or u > 0.95 or w < 0.12 or w > 0.88: return np.array(C['sign_lit'], float) * 0.7
+    if 0.14 < u < 0.32 and 0.22 < w < 0.82: return np.array(C['sign_fig'], float)
+    return np.array(C['sign_lit'], float)
 
 
 WALL = {'c': np.array(C['wall'], float)}          # the side's plaster (the power cut's), set from the front's lilac by draw_layers
@@ -241,47 +232,21 @@ def light_profile(h):
 
 
 def tone(s, f, X, h, d, px, py):
-    """The pixel's colour with the lamp off (before the sign's light), and whether it takes the grain."""
+    """The pixel's colour with the sign's comp off (before its light), and whether it takes the grain."""
     k = FACE.get(f, 1.0)
     if s == 'wall': return wall_tone(X, h), True
     if s == 'door_jamb': return wall_tone(X, h) * 0.9, True                          # (it faces the street)
     if s == 'door_sillin': return np.array(C['floor'], float) * 0.8, False
     if s == 'door_soffit': return wall_tone(X, h) * FACE['bottom'], False
     if s == 'step': return np.array(C['step'], float) * k, True
-    if s == 'crate':                                                 # (an upturned crate: its grid of holes)
-        (x0, x1), (h0, h1), (d0, d1) = BOXES['crate']
-        u, w, z = (X - x0) / (x1 - x0), (h - h0) / (h1 - h0), (d - d0) / (d1 - d0)
-        if f == 'front': hole = 0.08 < w < 0.92 and 0.3 < frac(w * 4) < 0.8 and 0.25 < frac(u * 5) < 0.85
-        elif f == 'top': hole = 0.08 < u < 0.92 and 0.08 < z < 0.92 and 0.25 < frac(u * 5) < 0.85 and 0.25 < frac(z * 6) < 0.85
-        else: hole = 0.08 < w < 0.92 and 0.3 < frac(w * 4) < 0.8 and 0.2 < frac(z * 6) < 0.85
-        return np.array(C['crate_hole'] if hole else C['crate'], float) * (1.0 if hole else k), not hole
-    if s == 'emeter':
-        (gx0, gx1), (gh0, gh1) = EMETER_GLASS
-        if f == 'front' and gx0 <= X <= gx1 and gh0 <= h <= gh1: return np.array(C['mglass'], float), False
-        return np.array(C['meter'], float) * k, False
-    if s == 'gmeter': return np.array(C['gas'], float) * k * (1.15 if f == 'front' and h > BOXES['gmeter'][1][1] - 0.02 else 1.0), False
-    if s in ('gpipe', 'griser'): return np.array(C['pipe'], float) * k, False
-    if s == 'ac':
-        if f == 'front':
-            fx, fh, r = AC_FAN; rr = np.hypot(X - fx, h - fh) / r
-            if rr < 1:
-                if rr > 0.86: return np.array(C['ac'], float) * 0.72, False
-                return np.array(C['ac_grille'], float) * (1.45 if frac((h - fh) / 0.03) < 0.4 else 1.0), False
-            return np.array(C['ac'], float) * (0.96 + 0.08 * (h - BOXES['ac'][1][0]) / 0.54), True
-        if f == 'left': return np.array(C['ac'], float) * k * (0.72 if frac((h - BOXES['ac'][1][0]) / 0.035) < 0.45 else 1.0), False
-        return np.array(C['ac'], float) * k, False
-    if s.startswith('acarm') or s.startswith('acplate'): return np.array(C['steel'], float) * k, False
+    if s == 'sign': return np.array(C['sign'], float), False
     if s == 'door': return np.array(C['door'], float) * (0.94 + 0.06 * (h - HS) / 2.0), True
     if s == 'door_frame': return np.array(C['dframe'], float), False
     if s == 'door_handle': return np.array(C['handle'], float), False
-    if s == 'lamp_glass': return np.array(C['lens'], float) * (1.06 if h > 2.24 else 0.96), False
-    if s in ('lamp_cap', 'lamp_plate', 'lamp_arm', 'lamp_foot'):
-        lit = s == 'lamp_cap' and f == 'front' and h > LAMP['cap'][1][1] - 0.015
-        return np.array(C['iron_lit'] if lit else C['iron'], float) * (k if not lit else 1.0), False
     if s == 'floor':
         c = np.array(C['floor'], float)
         if d < 0.05: c = c * 0.78                                   # (its meeting with the far wall)
-        for name in ('step', 'crate'):                              # (and with what stands on it)
+        for name in ('step',):                                      # (and with what stands on it)
             (x0, x1), _, (d0, d1) = BOXES[name]
             if x0 - 0.02 <= X <= x1 + 0.02 and d1 <= d < d1 + 0.08: c = c * 0.72
         return c, True
@@ -322,16 +287,19 @@ def grain_field(shape, seed=11, sigma=0.7):
     n = gaussian_filter(rng.standard_normal(shape), sigma); return n / n.std()
 
 
-def plant(lay, mask, light):
-    """The hydrangea by the door (zone5's render_frontal: the sprite's own colours, its pixel size at its depth)."""
-    import zone5_facades as Z
-    sh, bx, X, d, hm, hb = PLANT
-    spr = Z.cut(Z.sheet(sh), bx)
-    return Z.render_frontal(lay, mask, X, ZF - d, hb, hm, spr, Z.kpal(spr, 12), light, sat=0.8)
+PAINTED = 'cd2d002^'                             # the layers as painted, before zone5 put its plant on the sidewalk
+POT_BOX = (896, 640, 922, 690)                   # round that plant and its shade (scene x0, y0, x1, y1)
+WET_ROW0 = 600                                   # wet.webp's first row in the scene
+
+
+def painted(f, mode='RGBA'):
+    import io, subprocess
+    b = subprocess.run(['git', 'show', f'{PAINTED}:assets/{f}'], cwd=ROOT, capture_output=True, check=True).stdout
+    return np.asarray(Image.open(io.BytesIO(b)).convert(mode)).astype(float)
 
 
 def zone5_pot_mask(shape):
-    """The plant zone5 put on the sidewalk in front of the Center's corner: its pixels (kept as they are)."""
+    """The plant zone5 put on the sidewalk in front of the Center's corner: its pixels."""
     import zone5_facades as Z
     n, bx, X, Zd, hm, sat = Z.POTS[0]
     spr = Z.cut(Z.sheet(n), bx); lay = np.zeros(shape[:2] + (4,)); m = np.zeros(shape[:2], bool)
@@ -340,14 +308,12 @@ def zone5_pot_mask(shape):
 
 
 EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
-GROUPS = {'ac': ('ac', 'acarm1', 'acarm2', 'acplate1', 'acplate2'), 'emeter': ('emeter',), 'gmeter': ('gmeter', 'gpipe', 'griser'),
-          'door': ('door', 'door_frame', 'door_handle', 'door_jamb', 'door_soffit', 'door_sillin'), 'step': ('step',),
-          'crate': ('crate',), 'lamp': ('lamp_plate', 'lamp_arm', 'lamp_cap', 'lamp_glass', 'lamp_foot')}
-                                                 # the things the draft redraws (the lamp's glass lit as this tool lights it)
+GROUPS = {'door': ('door', 'door_frame', 'door_handle', 'door_jamb', 'door_soffit', 'door_sillin'), 'step': ('step',),
+          'sign': ('sign',)}                     # the things the draft draws, each laid on this tool's model of it
 
 
 def draft_input(city):
-    """The draft's input: the street with the wall's things as the model of this tool draws them (the layer, lamp off),
+    """The draft's input: the street with the wall's things as the model of this tool draws them (the sign's comp on),
     its crop brightened (x ** (1 / gamma)) and enlarged with nearest pixels, as tools/redraw_zones.py asks its drafts."""
     x0, y0, x1, y1 = DRAFT['crop']; k = DRAFT['scale']
     z = np.clip(city[y0:y1, x0:x1, :3] / 255.0, 0, 1) ** (1 / DRAFT['gamma'])
@@ -356,8 +322,9 @@ def draft_input(city):
 
 
 def call():
-    """Asks the image model for the wall's things (tools/src/edits/alley_objects_in.webp and _prompt.txt; the key from
-    the environment's vault or OPENROUTER_API_KEY), saves its answer as tools/src/edits/alley_objects_model.webp."""
+    """Asks the image model for the wall's things (tools/src/edits/alley_exit_in.webp and _prompt.txt; the key from
+    the environment's vault or OPENROUTER_API_KEY), saves its answer as tools/src/edits/alley_exit_model.webp (a new
+    answer: its things' boxes in DRAFT measured again)."""
     import base64, io, json, urllib.request
     n = DRAFT['name']; buf = io.BytesIO(); Image.open(os.path.join(EDITS, n + '_in.webp')).convert('RGB').save(buf, 'PNG')
     body = {"model": DRAFT['model'], "modalities": ["image", "text"], "usage": {"include": True}, "messages": [{"role": "user", "content": [
@@ -373,33 +340,28 @@ def call():
 
 
 def draft(street):
-    """The model's answer brought back to the street's grid: boxed down to the crop's pixels, darkened back (x ** gamma),
-    moved by the integer shift whose gradients best match the street's round the alley (its far wall left out), as the
-    street's own rows and columns (whole-scene array, the crop only)."""
-    from scipy.ndimage import binary_dilation
+    """The model's answer darkened back (x ** gamma) and its colours brought to the street's: a line per channel through
+    their quantiles (5 .. 95 %) on the crop round the gap, which it was asked to keep (its frame is near the input's, not
+    exactly: quantiles, not pixel pairs); None without an answer."""
     p = os.path.join(EDITS, DRAFT['name'] + '_model.webp')
     if not os.path.exists(p): return None
-    x0, y0, x1, y1 = DRAFT['crop']; w, h = x1 - x0, y1 - y0
-    e = (np.asarray(Image.open(p).convert('RGB').resize((w, h), Image.BOX)).astype(float) / 255.0) ** DRAFT['gamma'] * 255.0
-    o = street[y0:y1, x0:x1, :3]
-    def grad(z):
-        l = z @ np.array([0.299, 0.587, 0.114]); gx = np.zeros_like(l); gy = np.zeros_like(l)
-        gx[:, 1:] = l[:, 1:] - l[:, :-1]; gy[1:] = l[1:] - l[:-1]; return np.hypot(gx, gy)
-    ref = np.ones((h, w), bool); ref[:, GX0 - x0:GX1 - x0] = False; ref[:4] = ref[-4:] = False; ref[:, :4] = ref[:, -4:] = False
-    go = grad(o); go = (go - go[ref].mean()) / (go[ref].std() + 1e-6); best = None
-    def shift(a, dy, dx):
-        yi = np.clip(np.arange(h) - dy, 0, h - 1); xi = np.clip(np.arange(w) - dx, 0, w - 1); return a[yi][:, xi]
-    for dy in range(-DRAFT['reach'], DRAFT['reach'] + 1):
-        for dx in range(-DRAFT['reach'], DRAFT['reach'] + 1):
-            g = grad(shift(e, dy, dx)); g = (g - g[ref].mean()) / (g[ref].std() + 1e-6)
-            c = float((g[ref] * go[ref]).mean())
-            if best is None or c > best[0]: best = (c, dx, dy)
-    out = np.zeros(street.shape[:2] + (3,)); out[y0:y1, x0:x1] = shift(e, best[2], best[1])
-    print(f'alley draft: registered dx={best[1]} dy={best[2]} (gradient correlation {best[0]:.2f})')
+    a = (np.asarray(Image.open(p).convert('RGB')).astype(float) / 255.0) ** DRAFT['gamma'] * 255.0
+    x0, y0, x1, y1 = DRAFT['crop']; w, h = x1 - x0, y1 - y0; H_, W_ = a.shape[:2]
+    def ref(ny, nx, gx0, gx1):
+        m = np.ones((ny, nx), bool); m[:, gx0:gx1] = False; m[:ny // 40] = m[-ny // 40:] = False; return m
+    o = street[y0:y1, x0:x1, :3]; ro = ref(h, w, GX0 - 2 - x0, GX1 + 2 - x0) & (street[y0:y1, x0:x1, 3] > 250)
+    ra = ref(H_, W_, (GX0 - 2 - x0) * W_ // w, (GX1 + 2 - x0) * W_ // w + 1)
+    q = np.linspace(5, 95, 19); out = np.empty_like(a)
+    for c in range(3):
+        k, b = np.polyfit(np.percentile(a[..., c][ra], q), np.percentile(o[..., c][ro], q), 1); out[..., c] = k * a[..., c] + b
     return out
 
 
-DRAFT_DEV, DRAFT_K = 6.0, 6                      # (a pixel of the drawing is a thing's when it is that far from its wall; its tones)
+def draft_thing(D, g, bbox):
+    """Thing g as the answer draws it (its box there), resampled (box filter) to bbox on the street (x0, y0, x1, y1)."""
+    mx0, my0, mx1, my1 = DRAFT['boxes'][g]; x0, y0, x1, y1 = bbox
+    return np.stack([np.asarray(Image.fromarray(D[my0:my1, mx0:mx1, c].astype(np.float32), 'F').resize(
+        (x1 - x0, y1 - y0), Image.BOX)) for c in range(3)], -1).astype(float)
 
 
 def kq(px, k, seed=0, it=20):
@@ -413,19 +375,17 @@ def kq(px, k, seed=0, it=20):
     return c[((px[:, None, :] - c[None]) ** 2).sum(-1).argmin(1)]
 
 
-def match(src, ref):
-    """src's ranks given ref's values, channel by channel (the draft's drawing in the tool's own tones)."""
-    out = np.empty_like(src)
-    for c in range(3):
-        o = np.argsort(src[:, c], kind='stable'); v = np.empty(len(src)); v[o] = np.sort(ref[:, c]); out[:, c] = v
-    return out
-
-
 def draw_layers(city, unlit, box=BOX):
     """Both layers changed in place; returns what changed and the lit comp (RGBA, its box COMP)."""
     H, W = city.shape[:2]
     old = (city[..., 3] > 128)
-    keep = zone5_pot_mask((H, W))
+    pc, pu = painted('layer_city_off.webp'), painted('street_unlit.webp')   # (zone5's plant on the sidewalk goes too, the
+    x0p, y0p, x1p, y1p = POT_BOX                                    # owner: "le reste rien": the painter's pillar and
+                                                                    # sidewalk where it and its shade were)
+    pot = np.zeros((H, W), bool); pot[y0p:y1p, x0p:x1p] = True
+    pot &= (np.abs(city[..., :3] - pc[..., :3]).max(-1) > 0) | (np.abs(unlit[..., :3] - pu[..., :3]).max(-1) > 0)
+    city[pot] = pc[pot]; unlit[pot] = pu[pot]
+    ch = np.zeros((H, W), bool); ch |= pot
     Bc, Bu = front_bands(city), front_bands(unlit)
     wc = np.median(np.array([Bc[0][y] for y in range(*WHITE_ROWS)]), 0)   # the front's lilac over its awning, both layers:
     wu = np.median(np.array([Bu[0][y] for y in range(*WHITE_ROWS)]), 0)   # the side's one plaster, a little darker (SIDE)
@@ -433,17 +393,16 @@ def draw_layers(city, unlit, box=BOX):
     gain = (wc + 1) / (wu + 1)                                   # (the sign's light on the plane, the street over the cut)
     hit = cast()
     gr = grain_field((H, W))
-    ch = np.zeros((H, W), bool)
     assert not old[BOX[1]:BOX[1] + 1, GX0:GX1].any(), 'the old building reaches over the box'
     for y in range(BOX[1], TOP_ROW - 2):                            # (over the Center's roof: the old building's top, gone)
         for x in range(GX0, GX1):
             if old[y, x]:
                 city[y, x, 3] = unlit[y, x, 3] = 0; city[y, x, :3] = city[300, x, :3]; unlit[y, x, :3] = unlit[300, x, :3]
                 ch[y, x] = True
-    lit = city[..., :3].copy()                                      # (the comp's picture: the street with the lamp on)
-    base = np.zeros((H, W, 3)); amb = np.zeros((H, W, 3)); took = np.zeros((H, W), bool); Iat = np.zeros((H, W))
+    lit = city[..., :3].copy()                                      # (the comp's picture: the street with the sign on)
+    took = np.zeros((H, W), bool); Iat = np.zeros((H, W))
     for (x, y), (s, f, X, h, d) in hit.items():
-        if keep[y, x] or s == 'out': continue
+        if s == 'out': continue
         if s == 'sky':
             if old[y, x]:
                 city[y, x, 3] = 0; unlit[y, x, 3] = 0
@@ -457,72 +416,43 @@ def draw_layers(city, unlit, box=BOX):
             c, gn = tone(s, f, X, h, d, x, y)
             if gn: c = c * (1 + GRAIN * gr[y, x])
             cs = c * gain
-        amb[y, x] = c
-        I = lamp_light(X, h, d, f if s not in ('wall', 'door', 'door_frame', 'door_handle') else 'front')
-        if s == 'lamp_glass':
-            k = np.clip(1 - abs(X - LAMP_AT[0]) / 0.06, 0, 1) * np.clip(1 - abs(h - LAMP_AT[1]) / 0.09, 0, 1)
-            lt = LENS_LIT[1] + (LENS_LIT[0] - LENS_LIT[1]) * k
-        else:                                                       # (the warm light as much as the surface takes it)
-            lt = cs + I * (LIFT * cs + WARM * np.clip(lum3(c) / lum3(C['wall']), 0.15, 1.3))
+        I = sign_light(X, h, d, f if s not in ('wall', 'door', 'door_frame', 'door_handle') else 'front')
+        if s == 'sign':                                             # (lit: its panel, its figure; off in the street; on its
+            lt = sign_face(X, h, f)                                 # battery in the power cut)
+            cs, c = lt * SIGN_DIM, lt * SIGN_BATT
+        else:                                                       # (its green light as much as the surface takes it)
+            lt = cs + I * (GLIFT * cs + GLOW * np.clip(lum3(c) / lum3(C['wall']), 0.15, 1.3))
         city[y, x, :3] = cs; unlit[y, x, :3] = c; city[y, x, 3] = unlit[y, x, 3] = 255
         lit[y, x] = lt; ch[y, x] = True; took[y, x] = True; Iat[y, x] = I
-    # the wall's things as the image model draws them (R28): its colours brought to the street's (a line per channel fitted on
-    # the crop round the gap, which it was asked to keep), each thing's pixels where the drawing has it near this tool's
-    # model of it (its mask grown 2 px: its place, its size), quantised to a few of its own tones (crisp, no model mush);
-    # where the model's mask has plain wall in the drawing, the plaster; the sign's light and the lamp's on them as on the
-    # rest (the power cut: the street's colour over the sign's gain)
+    # the wall's things as the image model draws them (R28): each one's picture there (its box in the answer) resampled onto
+    # this tool's model of it (its place, its size: the box of its pixels), quantised to a few of its own tones (crisp, no
+    # model mush). The answer is the street at night, the sign lit: the sign's picture is its lit one (the comp's; dimmer
+    # in the street, on its battery in the power cut). On the door the answer's green light is taken off first: the
+    # street's door is without it, then the sign's light on it as on the plaster (the comp); the power cut's over the
+    # plane's gain
     D = draft(city)
     if D is not None:
-        from scipy.ndimage import binary_dilation, label
-        x0, y0, x1, y1 = DRAFT['crop']
-        ref = np.zeros((H, W), bool); ref[y0:y1, x0:x1] = True; ref[:, GX0 - 2:GX1 + 2] = False; ref &= city[..., 3] > 250
-        fit = [np.polyfit(D[ref][:, c], city[ref][:, c], 1) for c in range(3)]
-        Df = np.stack([fit[c][0] * D[..., c] + fit[c][1] for c in range(3)], -1)
         sid = np.full((H, W), '', 'U12')
         for (x, y), (s_, f_, X_, h_, d_) in hit.items():
             if took[y, x]: sid[y, x] = s_
-        masks = {g: np.isin(sid, ns) for g, ns in GROUPS.items()}
-        anyobj = np.any(list(masks.values()), 0)
-        plain = (sid == 'wall') & ~binary_dilation(anyobj, iterations=4)
-        wall_d = np.median(Df[plain], 0)
-        dev = np.abs(Df - wall_d).max(-1)
-        for gi, (g, m) in enumerate(masks.items()):
-            if m.sum() < 4: continue
-            near = binary_dilation(m, iterations=2) & took
-            near &= ~np.any([mm for gg, mm in masks.items() if gg != g], 0)
-            obj = near & (dev > DRAFT_DEV)
-            lab, n = label(obj)
-            for k in range(1, n + 1):
-                if (lab == k).sum() < 3: obj[lab == k] = False
-            ys, xs = np.nonzero(obj)
-            if len(ys):
-                q = kq(Df[ys, xs], DRAFT_K, seed=gi)
-                for y, x, cq in zip(ys, xs, q):
-                    city[y, x, :3] = cq; unlit[y, x, :3] = cq / gain
-                    if sid[y, x] == 'lamp_glass': continue                # (its glass lit in the comp as this tool lights it)
-                    al = np.clip(lum3(cq / gain) / lum3(C['wall']), 0.15, 1.3)
-                    lit[y, x] = cq + Iat[y, x] * (LIFT * cq + WARM * al)
-            for y, x in zip(*np.nonzero(m & ~obj & (sid != 'lamp_glass'))):   # (the model's thing not in the drawing: the plaster)
-                dx_, dh_ = ray(x + 0.5, y + 0.5); X_, h_ = ZF * dx_, EYE + ZF * dh_
-                c = wall_tone(X_, h_) * (1 + GRAIN * gr[y, x]); cs = c * gain; I_ = lamp_light(X_, h_, 0.0, 'front')
-                city[y, x, :3] = cs; unlit[y, x, :3] = c
-                lit[y, x] = cs + I_ * (LIFT * cs + WARM * np.clip(lum3(c) / lum3(C['wall']), 0.15, 1.3))
-    # the hydrangea on the crate: in the street's light, and in the lamp's
-    lm = np.zeros((H, W), bool); lay = np.zeros((H, W, 4))
-    yy, xx = np.mgrid[0:H, 0:W]
-    floor_amb = np.array(C['wall'], float) * 0.86
-    plant(lay, lm, floor_amb)
-    lm &= ~keep & (xx >= GX0) & (xx < GX1)
-    lay_lit = np.zeros((H, W, 4)); lm2 = np.zeros((H, W), bool)
-    L = np.ones((H, W, 3)) * floor_amb
-    for y, x in zip(*np.nonzero(lm)):
-        Xp = (x + 0.5 - VPX) * (ZF - PLANT[3]) / F; hp = EYE - (y + 0.5 - VPY) * (ZF - PLANT[3]) / F
-        I = lamp_light(Xp, hp, PLANT[3], 'top')
-        L[y, x] = floor_amb + I * (LIFT * floor_amb + WARM * 1.2)
-    plant(lay_lit, lm2, L)
-    for y, x in zip(*np.nonzero(lm)):
-        city[y, x, :3] = lay[y, x, :3] * gain; unlit[y, x, :3] = lay[y, x, :3]; lit[y, x] = lay_lit[y, x, :3] * gain
-        city[y, x, 3] = unlit[y, x, 3] = 255; ch[y, x] = True
+        for gi, (g, ns) in enumerate(GROUPS.items()):
+            m = np.isin(sid, ns); ys, xs = np.nonzero(m)
+            if len(ys) < 4: continue
+            bx = (xs.min(), ys.min(), xs.max() + 1, ys.max() + 1)
+            P = draft_thing(D, g, bx)
+            if g == 'door':                                         # (its difference to its column's lower half: a grey
+                d = P - np.median(P[P.shape[0] // 2:], 0)[None]     # part, its frame, its lever, kept; a green one, the
+                Bm = np.stack([np.ones(3), GLOW], 1)               # light, taken off)
+                gl = np.maximum((d.reshape(-1, 3) @ np.linalg.pinv(Bm).T)[:, 1], 0.0).reshape(P.shape[:2])
+                P = P - gl[..., None] * GLOW
+            P = P[ys - bx[1], xs - bx[0]]
+            for y, x, cq in zip(ys, xs, kq(P, DRAFT['k'][g], seed=gi)):
+                cq = np.maximum(cq, 0.0)
+                if g == 'sign':
+                    lit[y, x] = cq; city[y, x, :3] = cq * SIGN_DIM; unlit[y, x, :3] = cq * SIGN_BATT; continue
+                al = np.clip(lum3(cq / gain) / lum3(C['wall']), 0.15, 1.3)
+                city[y, x, :3] = cq; unlit[y, x, :3] = cq / gain
+                lit[y, x] = cq + Iat[y, x] * (GLIFT * cq + GLOW * al)
     # B's corner: its lit arris evened along its height, the old mailbox off it
     from scipy.ndimage import gaussian_filter1d
     for L_ in (city, unlit):
@@ -535,17 +465,17 @@ def draw_layers(city, unlit, box=BOX):
         col = L_[318:684, 941, :3]; L_[318:684, 941, :3] = gaussian_filter1d(col, 1.5, axis=0, mode='nearest')
         ch[318:684, 941] = True
     lit[MAILBOX_ROWS[0]:MAILBOX_ROWS[1] + 1, 941:944] = city[MAILBOX_ROWS[0]:MAILBOX_ROWS[1] + 1, 941:944, :3]
-    # the comp: the lamp's picture where it differs from the street
+    # the comp: the sign's picture where it differs from the street
     (cx, cy), (cw, chh) = COMP[1], COMP[2]
     comp = np.zeros((chh, cw, 4))
     sub = lit[cy:cy + chh, cx:cx + cw]; st = city[cy:cy + chh, cx:cx + cw, :3]
-    on = (np.abs(np.round(sub) - np.round(st)).max(-1) >= 1) & took[cy:cy + chh, cx:cx + cw] | lm[cy:cy + chh, cx:cx + cw] & (np.abs(np.round(sub) - np.round(st)).max(-1) >= 1)
+    on = (np.abs(np.round(sub) - np.round(st)).max(-1) >= 1) & took[cy:cy + chh, cx:cx + cw]
     comp[on, :3] = sub[on]; comp[on, 3] = 255
-    full = (np.abs(np.round(lit) - np.round(city[..., :3])).max(-1) >= 1) & (took | lm)
+    full = (np.abs(np.round(lit) - np.round(city[..., :3])).max(-1) >= 1) & took
     out = full.copy(); out[cy:cy + chh, cx:cx + cw] = False
     if out.any():
         ys, xs = np.nonzero(full)
-        raise SystemExit(f'the lamp lights beyond its comp: {xs.min()}..{xs.max()} x {ys.min()}..{ys.max()}')
+        raise SystemExit(f'the sign lights beyond its comp: {xs.min()}..{xs.max()} x {ys.min()}..{ys.max()}')
     x0, y0, x1, y1 = box
     inb = np.zeros((H, W), bool); inb[y0:y1, x0:x1] = True
     assert not (ch & ~inb).any(), 'changed outside the box'
@@ -581,12 +511,23 @@ def far_layers():
     return int(hole.sum())
 
 
+def wet_layer():
+    """wet.webp (the sidewalk's water, from row WET_ROW0): the dry patch zone5 made under its plant back to the painter's
+    (git PAINTED), from a before copy of POT_BOX (tools/src/edits/alley_wet_before.webp): the same bytes each time."""
+    x0, y0, x1, y1 = POT_BOX; pw = os.path.join(ROOT, 'assets', 'wet.webp')
+    w = np.asarray(Image.open(pw).convert('RGB')).copy(); b = np.asarray(Image.open(os.path.join(EDITS, 'alley_wet_before.webp')).convert('RGB'))
+    sl = (slice(y0 - WET_ROW0, y1 - WET_ROW0), slice(x0, x1)); w[sl] = b
+    p0 = painted('wet.webp', 'RGB').astype(np.uint8)[sl]; m = zone5_pot_mask((816, 1456))[y0:y1, x0:x1]
+    sub = w[sl].copy(); sub[m] = p0[m]; w[sl] = sub
+    Image.fromarray(w, 'RGB').save(pw, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+
+
 def draw(city, unlit, box=BOX):
     """The zone (redraw_zones.py): both layers changed in place; assets/z5_alley.webp written, the cherry's foot behind
     the gap filled (assets/fuji_night.webp, fuji_aux.webp)."""
     ch, comp = draw_layers(city, unlit, box)
     save(comp, os.path.join(ROOT, 'assets', COMP[0] + '.webp'))
-    far_layers()
+    far_layers(); wet_layer()
     return ch
 
 
@@ -610,7 +551,7 @@ def lines(img, x0, y0, k):
     for (xa, xb), (ha, hb) in [(DOOR['x'], DOOR['h'])]:
         for a, b in [((xa, ha), (xb, ha)), ((xb, ha), (xb, hb)), ((xb, hb), (xa, hb)), ((xa, hb), (xa, ha))]:
             seg((a[0], a[1], ZF), (b[0], b[1], ZF), (255, 120, 0))
-    for (xa, xb), (ha, hb), (da, db) in list(BOXES.values()) + [LAMP['glass']]:          # each box's front face
+    for (xa, xb), (ha, hb), (da, db) in BOXES.values():                                 # each box's front face
         Z = ZF - db
         for a, b in [((xa, ha), (xb, ha)), ((xb, ha), (xb, hb)), ((xb, hb), (xa, hb)), ((xa, hb), (xa, ha))]:
             seg((a[0], a[1], Z), (b[0], b[1], Z), (255, 0, 255))
@@ -637,7 +578,10 @@ def preview(out):
 
 if __name__ == '__main__':
     if '--preview' in sys.argv: preview(sys.argv[sys.argv.index('--preview') + 1])
-    if '--draft-in' in sys.argv:                 # (the draft's input from the street as it is: run it on layers with the zone)
+    if '--draft-in' in sys.argv:                 # (the draft's input from the street as it is, the sign's comp over it: run it
         L = np.asarray(Image.open(os.path.join(ROOT, 'assets', 'layer_city_off.webp')).convert('RGBA')).astype(float)
+        cm = np.asarray(Image.open(os.path.join(ROOT, 'assets', COMP[0] + '.webp')).convert('RGBA')).astype(float)
+        (cx, cy), (cw, chh) = COMP[1], COMP[2]; a = cm[..., 3:4] / 255.0   # on layers with the zone drawn without an
+        L[cy:cy + chh, cx:cx + cw, :3] = L[cy:cy + chh, cx:cx + cw, :3] * (1 - a) + cm[..., :3] * a   # answer, as it was)
         draft_input(L).save(os.path.join(EDITS, DRAFT['name'] + '_in.webp'), 'WEBP', lossless=True, quality=100, method=6)
     if '--call' in sys.argv: call()
