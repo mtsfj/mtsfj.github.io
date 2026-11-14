@@ -349,6 +349,13 @@ ZONES = {
     'eaveK5': dict(box=(322, 186, 374, 290), tool='left_eaves'),
     'eaveD': dict(box=(100, 0, 190, 50), tool='left_eaves'),
     'eaveP': dict(box=(128, 50, 141, 84), tool='left_eaves'),
+    # the small canopy over the pink-lit entrance right of the pole and its end against Ichiraku (the owner: "le haut-vent
+    # juste à droite... petit truc bizarre entre ça et la façade d'Ichiraku"): the draft's corrugated awning, seen from
+    # above though it hangs over the eye, its ragged edge and the dark slot at its end, now a thin aluminium hood in the
+    # street's camera, seen from below (its near end's lit edge, its underside lit by the hall's pink light), the house's
+    # planks down to it and in its shadow under it, the two walls' corner as under the entrance; drawn by
+    # tools/entrance_canopy.py, after pole, ramen, door and poletex (it overlaps their boxes; the pole's pixels untouched)
+    'canopy': dict(box=(1065, 452, 1124, 532), tool='entrance_canopy'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

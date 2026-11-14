@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=96", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=10", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=12", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=97", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=10", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=12", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=96') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=97') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4093,7 +4093,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=75', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=76', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -4964,17 +4964,17 @@
       dripPut(q, [x, y, 0, 0], [D.t - Math.random() * dt, 0, 0, 0], [0, 0, a[2] ? 0.85 : 0.7, 8], [1, 0, 0, sc], D.t + 1.1);   // (its brightness: about twice the old sprites' peak, which the eye never caught)
     }
   }
-  // the drops that hit the street lamp's head (meteo-14): a 1 px crown on its hood's top edge (a shallow dome, row 143 at its middle
-  // to 148 at its sides over x 861-901, as measured), its sparks the row above, against the sky, leaning with the wind; the drips' crown
+  // the drops that hit the street lamp's head (meteo-14): a 1 px crown on its hood's top edge (LCH: its top row over x 861-901, from
+  // 149 at the nose to 144 at the back, as tools/pole_lamp.py draws it), its sparks the row above, against the sky, leaning with the wind; the drips' crown
   // particle (index 8: the street's power at x 880), lit by the lamp through the water's pass, red in the red night, none when the lamp
   // is out (its glass's level); LCR.rate a second x the rain's factor
-  const LCR = { rate: 4, acc: 0 };
+  const LCR = { rate: 4, acc: 0 }, LCH = '54443333333332222222222111111111100000000';   // (the hood's top row at x 861 + i: 144 + the digit)
   function stepCrowns(dt, rk) {
     const k = lampComp ? lampComp.material.opacity : 1; if (k < 0.05) { LCR.acc = 0; return; }
     LCR.acc += LCR.rate * rk * dt;
     while (LCR.acc >= 1) {
       LCR.acc -= 0.6 + 0.8 * Math.random();
-      const x = 861 + Math.floor(Math.random() * 41), top = 143 + Math.round(Math.pow((x - 881) / 22, 2) * 6), r = Math.random(), w = Math.min(1, Math.max(0, gust.k));
+      const x = 861 + Math.floor(Math.random() * 41), top = 144 + +LCH[x - 861], r = Math.random(), w = Math.min(1, Math.max(0, gust.k));
       const kind = r < 0.35 + 0.35 * w ? 1 : r < 0.75 + 0.2 * w ? 3 : 2;   // its sparks: left (with the wind, the more the stronger it blows), both, right
       dripPut(DRIP2.pools[0], [x + 0.5, top - 0.5, top + 0.5, 400], [DRIP2.t - Math.random() * dt, 0, 0, 0], [0, 0, 0.9 * k, 8], [0, kind, 1, 0], DRIP2.t + 0.3);
     }
