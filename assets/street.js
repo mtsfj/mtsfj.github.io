@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=98", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=10", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=12", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=99", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=10", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=12", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=98') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=99') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4093,7 +4093,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=77', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=80', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6244,17 +6244,18 @@
   hero.addEventListener('pointermove', (ev) => { if (ev.pointerType === 'mouse') { showSlab(ev, overWin(ev) && !inPkpc(ev)); } });   // no pointer cursor over the secrets: it would give them away
   hero.addEventListener('pointerleave', (ev) => { if (ev.pointerType === 'mouse') showSlab(null, false); });   // (a mouse's hover only: a lifted finger leaves too)
   // ---- the balcony window (top right): the four panes light up one after the other, stay lit a while, go out in the
-  // same order; while they are lit, Naruto's shadow passes on the lace behind the glass now and then (below) ----
+  // same order; while they are lit, Naruto passes behind the clear glass now and then, in colour (below) ----
   const WL = { x: 1188, y: 56, w: 91, h: 244, n: 4 };   // (tools/naruto_floor.py: the window, and over it the room's light on the soffit)
   const wlC = document.createElement('canvas'); wlC.width = WL.w; wlC.height = WL.h; const wlg = wlC.getContext('2d');
   const wlTex = new THREE.CanvasTexture(wlC); wlTex.magFilter = wlTex.minFilter = THREE.NearestFilter; wlTex.generateMipmaps = false;
   const wlMesh = new THREE.Mesh(new THREE.PlaneGeometry(WL.w, WL.h), new THREE.MeshBasicMaterial({ map: wlTex, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
   wlMesh.position.set(WL.x + WL.w / 2, -(WL.y + WL.h / 2), 0.45); scene.add(wlMesh);
   const wlPane = [];                            // per pane: its warm light, already cut to its glass
+  const wlGlass = document.createElement('canvas'); wlGlass.width = WL.w; wlGlass.height = WL.h;
   // the glass is window_panes.webp (red = pane number x 50, alpha = lit: the glass, and the soffit over each pane); the light on it is
-  // window_lit_ukki.webp (tools/naruto_floor.py): the room's ceiling light through a lace curtain drawn across (its folds, a fine grain),
-  // brightest at the third pane, the drapes gathered at the jambs dimmer and redder, the head's shadow, Ukki-kun on the far sash's sill, and
-  // the soft pool it casts on the soffit over the window. The panes' flicker (WIN2.I), the power cut and the red night scale and grade it
+  // window_lit_ukki.webp (tools/naruto_floor.py): the room seen through the clear glass, lit (its ceiling and its lamp, the far wall face
+  // on with Team 7's photo, the Uzumaki spiral, a shelf of cup noodles, a low chest; the curtains drawn back at the jambs; Ukki-kun on the
+  // far sash's sill), what it adds to the room out in the street layer, and the soft pool of its light on the soffit over the window. The panes' flicker (WIN2.I), the power cut and the red night scale and grade it
   const wlMask = new Image(), wlLit = new Image();
   const wlBuild = () => {                       // once both sheets are in
     if (wlPane.length || !wlMask.naturalWidth || !wlLit.naturalWidth) return;
@@ -6268,9 +6269,12 @@
       }
       pg.putImageData(im, 0, 0); wlPane[k - 1] = pc;
     }
+    const gi = wlGlass.getContext('2d'), im = gi.createImageData(WL.w, WL.h);   // (where the light is: the glass, Naruto drawn only there)
+    for (let i = 0; i < m.length; i += 4) if (m[i + 3] >= 128) im.data[i + 3] = 255;
+    gi.putImageData(im, 0, 0);
   };
   wlMask.onload = wlLit.onload = wlBuild;
-  wlMask.src = 'assets/window_panes.webp?v=3'; wlLit.src = 'assets/window_lit_ukki.webp?v=4';   // (droite-09: Ukki-kun, his potted plant, on the first pane's sill: its shadow cut out of the light)
+  wlMask.src = 'assets/window_panes.webp?v=4'; wlLit.src = 'assets/window_lit_ukki.webp?v=7';   // (droite-09: Ukki-kun, his potted plant, on the first pane's sill: its shadow cut out of the light)
   // ---- Naruto in the room behind that window (build_zzzchar_naruto.py): silhouettes of a jointed body posed joint by
   // joint (rig_naruto.py; the walk and the run from normative joint-angle curves, his soles rolling on the floor without
   // slipping; the stop, the start, a stepping turn and his gestures by IK; the headband's tails and his hair on springs),
@@ -6279,26 +6283,47 @@
   // behind the glass and its lace (his middle 32 cm from it, nothing of him nearer than 3 cm), on the room's floor: under
   // his path the line v = 615 - 355 (u - 700) / 593.9, to the street's vanishing point (700, 615) as the window and the
   // railing (tools/naruto_floor.py), from the balcony's near end; his scale there 74.8 (u - 700) / 593.9 px/m (a sliding
-  // window, he is 1.39 m, 1.54 m to his hair's tips); his feet tread either side of that line, on the same floor. The
-  // balustrade hides the room up to ~1.1 m at the glass: along its receding part only his hair and the top of his head
-  // show over it, in the frontal section all of him down to mid-shin.
+  // window, its glass 2.4 m over his floor; he is 1.67 m, 1.78 m to his hair's tips: NG.top); his feet tread either side
+  // of that line, on the same floor. The balustrade hides the room up to ~1.1 m at the glass: along its receding part his
+  // head and shoulders show over it, in the frontal section all of him down to mid-shin.
   // Places are metres s along the glass (0 at the balcony's near end, + toward the camera); a gait's frame i is drawn
-  // at a root moving at the gait's own speed (walk: 0.85 m a cycle, 0.98 m/s; run: 1.57 m, 2.85 m/s) where it was at
+  // at a root moving at the gait's own speed (walk: 1.10 m a cycle, 1.28 m/s; run: 2.04 m, 3.7 m/s) where it was at
   // phase i/n, so a foot in stance stays put. He walks past, does the Naruto run, or stops in front of the glass (hands
   // behind his head, or looking down at the street) and goes on or turns back; rarely, the shadow-clone jutsu: the
-  // seal, two puffs, a clone beside him and one beyond, gone in a puff. His head brought to the street's proportions
-  // (all above his neck at 0.8, set back on it) and his edges made whole by tools/naruto_sil.py; drawn on the scene's grid
+  // seal, two puffs, a clone beside him and one beyond, gone in a puff. His body brought to a young man's (x 1.3) and his
+  // head to the street's proportions (all above his neck at 0.8, set back on it), his edges made whole, by
+  // tools/naruto_sil.py; drawn on the scene's grid
   // (majCell: his cell by majority at his height there, at whole px) ----
-  const NG = { vx: 700, vy: 615, uzn: 1293.936, kzn: 74.8, zn: 18.7166, ppm: 75, walkD: 0.847, runD: 1.5674, walkV: 0.985, runV: 2.85, xa0: 0.223, xr0: -0.211 };
-  const NC = { walkT: [0, 50, 125, 16, 24, 119], walkA: [125, 50, 125, 16, 26, 118], runT: [250, 58, 125, 12, 29, 118], runA: [375, 58, 118, 12, 29, 111], settleT: [493, 50, 126, 6, 21, 122], settleA: [743, 50, 125, 6, 29, 116], startT: [619, 50, 124, 4, 21, 120], startA: [868, 50, 125, 4, 29, 118], turn: [993, 46, 124, 9, 23, 119], look: [1117, 55, 123, 4, 27, 118], seal: [1240, 46, 123, 3, 27, 118] };   // the sheet's rows: top, cell w, h, frames, the floor point under his pelvis in the cell
-  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_sil.webp?v=3');   // (late: he is never due before 26 s)
+  const NG = { vx: 700, vy: 615, uzn: 1293.936, kzn: 74.8, zn: 18.7166, ppm: 75, walkD: 1.1011, runD: 2.0376, walkV: 1.2805, runV: 3.705, xa0: 0.2899, xr0: -0.2743, top: 1.78 };
+  const NC = { walkT: [0, 65, 153, 16, 31, 145], walkA: [153, 65, 154, 16, 34, 144], runT: [307, 75, 154, 12, 38, 144], runA: [461, 75, 147, 12, 38, 137], settleT: [608, 65, 154, 6, 27, 148], settleA: [914, 65, 154, 6, 38, 142], startT: [762, 65, 152, 4, 27, 146], startA: [1068, 65, 154, 4, 38, 144], turn: [1222, 60, 152, 9, 30, 145], look: [1374, 72, 151, 4, 35, 144], seal: [1525, 60, 151, 3, 35, 144] };   // the sheet's rows: top, cell w, h, frames, the floor point under his pelvis in the cell
+  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_col.webp?v=4');   // (late: he is never due before 26 s; tools/naruto_col.py: his
+  // painted frames, case for case on the rig's (each the painting that fits that pose best); his shape by majority, each pixel's colour at its centre)
   const nU = (s) => NG.vx + (NG.uzn - NG.vx) * NG.zn / (NG.zn - s);                 // s (m along the glass) -> scene x
   const nV = (u) => NG.vy + (260 - NG.vy) * (u - NG.vx) / (NG.uzn - NG.vx);          // the floor line under him at x
   const nK = (u) => NG.kzn * (u - NG.vx) / (NG.uzn - NG.vx);                          // px per metre there
   const silC = document.createElement('canvas'); silC.width = WL.w; silC.height = WL.h; const silg = silC.getContext('2d');
-  const nGrain = document.createElement('canvas'); nGrain.width = WL.w; nGrain.height = WL.h;   // the painting's grain, fixed
-  (function () { const g = nGrain.getContext('2d'), im = g.createImageData(WL.w, WL.h), d = im.data;
-    for (let i = 0; i < d.length; i += 4) d[i + 3] = Math.random() < 0.45 ? 10 + Math.random() * 30 : 0; g.putImageData(im, 0, 0); })();
+  const colC = document.createElement('canvas'); colC.width = WL.w; colC.height = WL.h; const colg = colC.getContext('2d');   // (him in colour)
+  const nColMemo = new Map();
+  function nColCell(S, D, sx, sy, cw, ch, ax, ay, k, ref) {   // his cell in colour: majCell's shape, each pixel the sheet's at its centre
+    const M = majCell(S, sx, sy, cw, ch, ax, ay, k, ref), n = Math.max(1, Math.round(k * ref)), key = sx + ',' + sy + ',' + n;   // (or the
+    let r = nColMemo.get(key); if (r) return r;                                                                     // nearest in him)
+    const W = M.c.width, H = M.c.height, f = ref / n, src = M.c.getContext('2d').getImageData(0, 0, W, H).data;
+    const c = document.createElement('canvas'); c.width = W; c.height = H; const g = c.getContext('2d'), im = g.createImageData(W, H), d = im.data;
+    for (let Y = 0; Y < H; Y++) for (let X = 0; X < W; X++) {
+      const o = (Y * W + X) * 4; if (src[o + 3] < 128) continue;
+      const cx = ax + (X + M.x + 0.5) * f, cy = ay + (Y + M.y + 0.5) * f; let best = -1, bd = 1e9;
+      for (let j = Math.floor(cy - f); j <= Math.floor(cy + f); j++) for (let i = Math.floor(cx - f); i <= Math.floor(cx + f); i++) {
+        if (i < 0 || j < 0 || i >= cw || j >= ch) continue;
+        const q = (sy + j) * S.w + sx + i; if (!S.a[q]) continue;
+        const dd = (i + 0.5 - cx) * (i + 0.5 - cx) + (j + 0.5 - cy) * (j + 0.5 - cy); if (dd < bd) { bd = dd; best = q; }
+      }
+      if (best < 0) continue;
+      d[o] = D[best * 4]; d[o + 1] = D[best * 4 + 1]; d[o + 2] = D[best * 4 + 2]; d[o + 3] = 255;
+    }
+    g.putImageData(im, 0, 0); r = { c, x: M.x, y: M.y }; nColMemo.set(key, r); if (nColMemo.size > 300) nColMemo.delete(nColMemo.keys().next().value);
+    return r;
+  }
+  const nPaneLight = (u) => WIN2.I[u >= 1246.3 ? 3 : u >= 1226.1 ? 2 : u >= 1207.4 ? 1 : 0];   // (the sash he stands behind: its light on him)
   const NAR = { a: null, q: [], s: 0, fig: null, figs: [], puffs: [], next: 5, jutsu: false, dbg: false };
   const nGo = (to, run, dir) => ({ k: 'go', to, run, dir, row: (run ? 'run' : 'walk') + (dir > 0 ? 'T' : 'A'), ph0: to });
   const nFrames = (seq, after) => ({ k: 'frames', seq, after });                  // [row, frame, seconds, event?] at his place
@@ -6358,29 +6383,35 @@
     }
     return true;
   }
-  function nDraw() {                            // his shape, the clones', the puffs: as much light as they block
-    silg.globalCompositeOperation = 'source-over'; silg.clearRect(0, 0, WL.w, WL.h);
+  function nDraw() {                            // his shape (what of the room he hides) and him in colour, the clones', the puffs
+    silg.globalCompositeOperation = 'source-over'; silg.clearRect(0, 0, WL.w, WL.h); colg.clearRect(0, 0, WL.w, WL.h);
     const nf = NAR.fig && NAR.rx > 0 && (NAR.fig.row === 'look' || NAR.fig.row === 'seal') ? { row: 'seal', i: 1, s: NAR.fig.s } : NAR.fig;   // (the four heroes: his seal)
     const figs = (nf ? [nf] : []).concat(NAR.figs);
     if ((!figs.length && !NAR.puffs.length) || !nSheet.complete || !nSheet.naturalWidth) return false;
     silg.imageSmoothingEnabled = false; silg.fillStyle = '#000';
     const S = NAR.maj || (NAR.maj = majSheet(nSheet));
+    const D = NAR.rgb || (NAR.rgb = (() => { const c = document.createElement('canvas'); c.width = nSheet.naturalWidth; c.height = nSheet.naturalHeight;
+      const g = c.getContext('2d'); g.drawImage(nSheet, 0, 0); return g.getImageData(0, 0, c.width, c.height).data; })());
+    colg.imageSmoothingEnabled = false;
     for (const f of figs) {                     // (on the scene's grid: his cell by majority at his height there, at whole px)
-      const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm, M = majCell(S, f.i * c[1], c[0], c[1], c[2], c[4], c[5], k, NG.ppm * 1.54);
-      silg.drawImage(M.c, Math.round(u - WL.x) + M.x, Math.round(nV(u) - (f.lift || 0) * nK(u) - WL.y) + M.y);
+      const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm, M = majCell(S, f.i * c[1], c[0], c[1], c[2], c[4], c[5], k, NG.ppm * NG.top);
+      const X = Math.round(u - WL.x) + M.x, Y = Math.round(nV(u) - (f.lift || 0) * nK(u) - WL.y) + M.y;
+      silg.drawImage(M.c, X, Y);
+      const Q = nColCell(S, D, f.i * c[1], c[0], c[1], c[2], c[4], c[5], k, NG.ppm * NG.top);
+      colg.globalAlpha = nPaneLight(u); colg.drawImage(Q.c, X, Y); colg.globalAlpha = 1;   // (as lit as the room behind him)
     }
     for (const p of NAR.puffs) {                // a puff of smoke: a few billows swelling fast, thinning out
       if (p.t < 0) continue;
-      const u = nU(p.s), k = nK(u), x = u - WL.x, y = nV(u) - WL.y - (p.h || 0.78) * k, e = 1 - Math.pow(1 - Math.min(1, p.t / 0.8), 2.6);
-      const a = 0.5 * Math.min(1, p.t / 0.06) * Math.pow(1 - p.t / 0.8, 1.3);   // smoke: it thins the light, never as dark as him
+      const u = nU(p.s), k = nK(u), x = u - WL.x, y = nV(u) - WL.y - (p.h || 0.95) * k, e = 1 - Math.pow(1 - Math.min(1, p.t / 0.8), 2.6);
+      const a = 0.55 * Math.min(1, p.t / 0.06) * Math.pow(1 - p.t / 0.8, 1.3) * nPaneLight(nU(p.s));   // smoke: pale, lit by the room
       for (const [bx, by, br] of [[0, -0.42, 0.27], [-0.21, -0.16, 0.25], [0.2, -0.2, 0.24], [0, 0.12, 0.27], [-0.15, 0.42, 0.21], [0.16, 0.4, 0.2]]) {
         const X = x + bx * k * (0.6 + 0.6 * e), Y = y + by * k * (0.6 + 0.6 * e), R = br * k * (0.5 + 0.7 * e);
-        const g = silg.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, 'rgba(0,0,0,' + a + ')'); g.addColorStop(1, 'rgba(0,0,0,0)');
-        silg.fillStyle = g; silg.fillRect(X - R, Y - R, 2 * R, 2 * R);
+        const g = colg.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, 'rgba(226,222,214,' + a + ')'); g.addColorStop(1, 'rgba(226,222,214,0)');
+        colg.fillStyle = g; colg.fillRect(X - R, Y - R, 2 * R, 2 * R);
       }
     }
-    silg.globalCompositeOperation = 'destination-out'; silg.drawImage(nGrain, 0, 0);   // the grain shows through him
-    return true;
+    colg.globalCompositeOperation = 'destination-in'; colg.drawImage(wlGlass, 0, 0); colg.globalCompositeOperation = 'source-over';   // (behind the glass only:
+    return true;                                                                                                                          // the frame and the rail in front)
   }
   const WIN2 = { state: 'off', t: 0, next: 4 + Math.random() * 5, I: [0, 0, 0, 0], acc: 0, shown: true };
   const NAR_AT = { area: [[WL.x, WL.y, WL.x + WL.w, WL.y + WL.h]] };             // (his place, STAGE: the window)
@@ -6419,9 +6450,9 @@
     wlg.globalCompositeOperation = 'source-over'; wlg.clearRect(0, 0, WL.w, WL.h);
     if (wlPane.length === WL.n) for (let k = 0; k < WL.n; k++) if (W2.I[k] > 0.01) { wlg.globalAlpha = W2.I[k]; wlg.drawImage(wlPane[k], 0, 0); }
     wlg.globalAlpha = 1;
-    if (here && nDraw()) {                      // he blocks the room's light (the rail, in the street layer, stays in front)
-      wlg.globalCompositeOperation = 'destination-out'; wlg.globalAlpha = 0.88; wlg.drawImage(silC, 0, 0);
-      wlg.globalCompositeOperation = 'source-over'; wlg.globalAlpha = 1;
+    if (here && nDraw()) {                      // he hides the room behind him and shows himself, lit by it (the rail, in the street
+      wlg.globalCompositeOperation = 'destination-out'; wlg.globalAlpha = 1; wlg.drawImage(silC, 0, 0);   // layer, stays in front; the
+      wlg.globalCompositeOperation = 'source-over'; wlg.globalAlpha = 1; wlg.drawImage(colC, 0, 0);       // glass's sheen in it, over him)
       if (NAR.dbg) {                            // debug: all of him in cyan (not cut by the glass), the floor line in yellow
         const c = NAR.dbgC || (NAR.dbgC = document.createElement('canvas')); c.width = WL.w; c.height = WL.h;
         const g = c.getContext('2d'); g.drawImage(silC, 0, 0); g.globalCompositeOperation = 'source-in'; g.fillStyle = 'rgb(0,190,255)'; g.fillRect(0, 0, WL.w, WL.h);
@@ -11103,7 +11134,7 @@
   // dark street: the unlit layer's leaves). Never under reduced motion, nor when it is out of the frame ----
   const ROOF = { state: 0, tries: 0, x0: 0, y0: 0, W: 0, H: 0, t: -1, dur: 0, acc: 0, since: 99, seen: 0, tab: null, P: null, mesh: null,
     tex: null, g2: null, id: null, kd: null, ktex: null, A: null, rows: null, list: null, sky: null, sk: [0, 0, 0, 0], unlit: null, ok: false };
-  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=2');
+  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=5');
   function roofRead(im, x, y, w, h, W, H) {            // an image's pixels (RGBA) in a box of its plane (W x H: the plane's size), once
     const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true });
     g.imageSmoothingEnabled = false; g.drawImage(im, -x, -y, W || im.naturalWidth, H || im.naturalHeight); return g.getImageData(0, 0, w, h).data;

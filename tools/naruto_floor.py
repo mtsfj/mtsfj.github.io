@@ -43,8 +43,9 @@ What it is (the owner: "à refaire : fenêtre, rambarde, appart Naruto, façade 
 - W, one concrete (the pier's own colour at the corner), darker under the soffit and into the corner by the side face;
   in it the sliding window (2.1 m, four sashes on Naruto's own camera, NG in street.js: the panes he walks behind): a dark
   aluminium frame (its head, its jambs, the stiles between the sashes, each with its side toward the vanishing point a
-  shade lighter), the glass the painter's night glass, the head's shadow at its top, and behind it a lace curtain drawn
-  across (its folds faint in the dark glass) between two heavy drapes gathered at the jambs;
+  shade lighter), clear glass (the owner: "fenêtre de Naruto transparente et Naruto visible aussi"): the room behind it
+  (room_lit: its ceiling and its lamp seen from below, its far wall face on with a few of his things, the curtains drawn
+  back at the jambs, Ukki-kun on the far sill), out in the night's dark under the glass's faint sheen;
 - the railing on P: a handrail (its lit top, its face, its underside), a rail under it, a bottom rail over the floor's
   edge, square bars every BAR m along it (foreshortened toward the vanishing point: 4.3 px apart at the corner, 3 at the
   far end, 2 px wide (a lit side, a shaded one) where there is room; 11 px across the frontal section), posts at its ends
@@ -53,13 +54,11 @@ What it is (the owner: "à refaire : fenêtre, rambarde, appart Naruto, façade 
 - the balcony's slab under it: its front edge's lit arris, its face, its lower arris, its end facing us at the near end,
   its underside back to the ground floor's wall, then that wall (Ichiraku's, in the painter's teal) down to the sign, a
   shadow under the slab on it; at the far end, under the slab, the pillar's side face again;
-- the lit room (window_lit_ukki.webp, added on the panes by street.js, pane after pane): the lace lit warm by the room's
-  ceiling light (brightest at the third pane as the painter's, its folds, a fine grain), the drapes at the jambs dimmer
-  and redder, the head's shadow at the top, Ukki-kun (Naruto's potted plant) on the far sash's sill a dark shape against
-  the lace (cut from the old sheet, set on the new handrail as it sat on the old), and the room's light on the soffit
-  over the window (a soft warm pool, strongest at the wall); window_panes.webp says which pane each lit pixel follows
-  (red = pane x 50) and where the light is (alpha): the glass and that pool, never the frame or the railing in front, so
-  Naruto's silhouette (cut out of the light) stays behind the bars.
+- the lit room (window_lit_ukki.webp, added on the panes by street.js, pane after pane): what the lit room adds to it out
+  (the sheen stays), and the room's light on the soffit over the window (a soft warm pool, strongest at the wall);
+  window_panes.webp says which pane each lit pixel follows (red = pane x 50) and where the light is (alpha): the glass and
+  that pool, never the frame or the railing in front; Naruto (street.js, in colour: tools/naruto_col.py) hides the room
+  behind him and is drawn in its light, behind the bars.
 The far pillar's face (PILLAR, from under the parapet's coping to the sign) keeps the painter's light below PILLAR_SIGMA,
 its blotches gone, in both layers.
 The power cut (street_unlit): the same picture, the lamp's share off the railing and the slab's edge (LAMP); the walls,
@@ -367,16 +366,14 @@ def paint(O, U, box, R, T, P, O0, U0):
     new[m] = (C['under'] * (1 - tt) + C['under_back'] * tt) * (1 + 0.05 * n[m])[:, None]
     m = R == 'gwall'; sh = 1 - 0.5 * np.exp(-T[m] / 1.5)
     new[m] = C['gwall'] * sh[:, None] * (1 + GRAIN * n[m])[:, None]
-    # the glass: the painter's night glass, the head's shadow at its top, the lace's folds faint, the drapes darker
+    # the glass: clear, the room behind it out (the night's dark) under the glass's faint sheen; Ukki-kun on the far sill
     m = R == 'glass'
-    s = sw(X[m])
-    lace = 1 + 0.06 * np.sin(2 * np.pi * s / 0.11 + 1.3 * np.sin(s * 7.1))
-    dr = drape_k(s)
-    top = 1 - 0.25 * np.exp(-T[m] / 1.6)
-    low = 0.94 + 0.06 * np.clip(T[m] / 120.0, 0, 1)
-    g = C['glass'][None, :] * (lace * top * low)[:, None]
-    g = g * (1 - dr)[:, None] + C['drape'][None, :] * (top * (0.8 + 0.2 * drape_fold(s)))[:, None] * dr[:, None]
-    new[m] = g * (1 + 0.025 * n[m])[:, None]
+    uk = ukki_pixels()
+    for yi, xi in zip(*np.nonzero(m)):
+        x, y = x0 + xi, y0 + yi
+        lit_c, out_c, dark_c = room_pixel(x, y, T[yi, xi], n[yi, xi])
+        if (x, y) in uk: out_c = out_c - dark_c + uk[(x, y)] * ROOM_DARK
+        new[yi, xi] = out_c
     # the far pillar's face: the painter's light on it (below PILLAR_SIGMA), the fine grain of the rest, in both layers
     pm = R == 'pillar'
     if pm.any():
@@ -423,28 +420,110 @@ def drape_fold(s):
     return 0.5 + 0.5 * np.cos(2 * np.pi * s / 0.09)
 
 
+# ---- the room behind the clear glass (the owner: "génère ... un intérieur de maison, qualité nulle là") ----
+# Seen from the street far below and along the facade, a ray through the glass runs much further along the street than it
+# goes into the room: it meets the room's far wall, face on (tools/interieur.py, tools/kirua_bay_window.py: the same). That
+# wall is a picture drawn for it (tools/src/naruto_room.webp: Naruto's studio flat at night, its ceiling lamp, Team 7's photo,
+# the Uzumaki spiral, cup noodles and a cactus on a shelf, the edge of his bed; ROOM_CROP: its inside, without the frame it
+# was drawn in), laid face on behind the glass without shear at ROOM_SCALE scene px per px of it, its corner at ROOM_AT
+# (the lamp under the window's head over the near sashes); past its edges, its edge rows and columns carried on (the
+# ceiling, the wall). Brought to the scene's pixels: each pixel the mean of what it covers, then ROOM_PAL tones of it, a
+# pixel alone melted into its neighbours (no blur, no mush); lit as it was drawn, a little lower (ROOM_K); the curtains drawn
+# back at both jambs (CURTAIN: m along W from each jamb). Out, the same in the night's dark (ROOM_DARK, channel by channel)
+# with the glass's faint sheen over it (SHEEN).
+ROOM_CROP = (105, 110, 690, 1070)                # (x0, y0, x1, y1) of the picture's inside
+ROOM_SCALE = 0.14
+ROOM_AT = (1188.0, 124.0)                        # the picture's corner in the scene
+ROOM_PAL = 24
+ROOM_K = 0.56                                    # (its light brought to the street's lit windows: Kirua's bay, B's, a median
+ROOM_TINT = np.array((1.0, 0.86, 0.74))          # lightness about theirs, warmer: it glows, it is not the brightest thing)
+POSTER = ((545, 455, 690, 750), 0.75, (548, 480))   # the spiral's poster (its box in the picture, cut by the picture's edge),
+                                                 # made smaller and moved left, into the near sash between its stile and the
+                                                 # jamb; the wall carried over where it was
+CURTAIN = (0.30, 0.24)                           # the curtains drawn back at the far and the near jamb (m along W)
+ROOM_DARK = np.array((0.055, 0.065, 0.11))       # out: the room's colours in the night's dark
+SHEEN = np.array((5.0, 7.0, 13.0))               # the glass's faint sheen (the sky in it), at its brightest
+CURT_C = np.array((214.0, 104.0, 40.0))
+
+
+def room_picture():
+    """the room's picture on the scene's grid (cached): RGB float"""
+    if getattr(room_picture, 'img', None) is not None: return room_picture.img
+    a, b, c, d = ROOM_CROP
+    src = Image.open(os.path.join(ROOT, 'tools', 'src', 'naruto_room.webp')).convert('RGB')
+    (pa, pb, pc, pd), k, (qa, qb) = POSTER
+    poster = src.crop((pa, pb, pc, pd))
+    arr = np.asarray(src).copy()
+    arr[pb:pd, pa:pc] = arr[pb:pd, pa - 15:pa - 14]             # (the wall, row by row, from just left of it)
+    src = Image.fromarray(arr)
+    src.paste(poster.resize((int(round((pc - pa) * k)), int(round((pd - pb) * k))), Image.LANCZOS), (qa, qb))
+    im = src.crop((a, b, c, d))
+    w, h = int(round((c - a) * ROOM_SCALE)), int(round((d - b) * ROOM_SCALE))
+    px = np.asarray(im.resize((w, h), Image.BOX)).astype(float)
+    flat = px.reshape(-1, 3); rng_ = np.random.default_rng(3)
+    C = flat[rng_.choice(len(flat), ROOM_PAL, replace=False)].copy()
+    for _ in range(30):
+        lab = ((flat[:, None] - C[None]) ** 2).sum(-1).argmin(1)
+        for j in range(ROOM_PAL):
+            if (lab == j).any(): C[j] = flat[lab == j].mean(0)
+    q = ((px[..., None, :] - C[None, None]) ** 2).sum(-1).argmin(-1); q2 = q.copy()
+    for y in range(1, h - 1):
+        for x in range(1, w - 1):
+            nb = [q[y - 1, x], q[y + 1, x], q[y, x - 1], q[y, x + 1]]
+            if len(set(nb)) == 1 and nb[0] != q[y, x]: q2[y, x] = nb[0]
+    room_picture.img = C[q2] * ROOM_K * ROOM_TINT
+    return room_picture.img
+
+
+def room_lit(x, y):
+    """the lit room at the glass pixel (x, y): its picture's pixel there (its edges carried on past it)"""
+    img = room_picture(); h, w = img.shape[:2]
+    i = int(np.clip(np.floor(y - ROOM_AT[1]), 0, h - 1)); j = int(np.clip(np.floor(x - ROOM_AT[0]), 0, w - 1))
+    return img[i, j], 'room'
+
+
+def curtain_k(s):
+    """how much curtain is behind the glass at s (m along W from the corner): 1 at the jambs, fading over a few cm"""
+    a = np.clip((S_FAR - s) / CURTAIN[0], 0, 1); b = np.clip((s - S_NEAR) / CURTAIN[1], 0, 1)
+    return np.clip(np.maximum(1.6 - 1.6 * a, 1.6 - 1.6 * b), 0, 1)
+
+
+def room_pixel(x, y, Tt, seed_n):
+    """the glass pixel (x, y): (lit RGB, out RGB): the room (or the curtains drawn back at the jambs), lit and out; the
+    sheen of the glass on the out one (it stays under the room's light, which is added)"""
+    xc = x + 0.5; s = sw(xc)
+    c, what = room_lit(x, y)
+    ck = float(curtain_k(np.array([s]))[0])
+    if ck > 0:
+        fold = 0.7 + 0.3 * np.cos(2 * np.pi * s / 0.07)
+        cl = CURT_C * fold * 0.62                              # (lit from behind: the fabric glows dim)
+        c = c * (1 - ck) + cl * ck
+    c = c * (1 + 0.015 * seed_n)
+    dark = c * ROOM_DARK
+    # the sheen: the sky in the glass, a soft band across each sash, lighter up high
+    p = 4 - int(np.searchsorted(-np.array(SASH), -xc)); p = min(max(p, 1), 4)
+    x0p, x1p = SASH[p], SASH[p - 1]
+    u = (xc - x0p) / max(x1p - x0p, 1.0)
+    band = np.exp(-((u + (y - 100) / 160.0 - 0.75) / 0.18) ** 2)
+    sheen = SHEEN * (0.35 + 0.65 * band) * (1.0 - 0.4 * np.clip((y - 100) / 180.0, 0, 1))
+    return c, dark + sheen, dark
+
+
 def overlay(R, T, P, box):
     """the window's lit overlay (street.js WL): which pane each lit pixel follows, and the room's light"""
     x0, y0 = box[:2]; wx, wy, ww, wh = WL
     mask = np.zeros((wh, ww, 4), np.uint8); lit = np.zeros((wh, ww, 4), float)
-    n = grain((wh, ww), 11, 0.8)
+    gn = grain(R.shape, 7); uk = ukki_pixels()            # (the zone's grain, as paint() has it: the same room)
     for yy in range(wh):
         for xx in range(ww):
             x, y = wx + xx, wy + yy
             if not (box[0] <= x < box[2] and box[1] <= y < box[3]): continue
             r = R[y - y0, x - x0]; xc, yc = x + 0.5, y + 0.5
             if r == 'glass':
-                p = P[y - y0, x - x0]; s = sw(xc)
-                # the ceiling lamp over the third sash, the room a little darker low down and far
-                lamp = 0.74 + 0.26 * np.exp(-((xc - 1236.0) / 26.0) ** 2) * np.exp(-((yc - 165.0) / 70.0) ** 2)
-                lamp *= 0.92 + 0.08 * np.clip((xc - 1190.0) / 70.0, 0, 1)
-                lace = 1 + 0.07 * np.sin(2 * np.pi * s / 0.11 + 1.3 * np.sin(s * 7.1))
-                top = 1 - 0.45 * np.exp(-T[y - y0, x - x0] / 1.8)       # (the head's shadow)
-                dk = drape_k(np.array([s]))[0]
-                c = WARM * lamp * lace * top * (1 + 0.045 * n[yy, xx])
-                dc = WARM * np.array((0.62, 0.42, 0.30)) * lamp * top * (0.65 + 0.35 * drape_fold(np.array([s]))[0])
-                c = c * (1 - dk) + dc * dk
-                lit[yy, xx, :3] = c; lit[yy, xx, 3] = 255
+                p = P[y - y0, x - x0]
+                lit_c, out_c, dark_c = room_pixel(x, y, T[y - y0, x - x0], gn[y - y0, x - x0])
+                if (x, y) in uk: lit_c = uk[(x, y)]
+                lit[yy, xx, :3] = np.clip(lit_c - dark_c, 0, 255); lit[yy, xx, 3] = 255
                 mask[yy, xx] = (50 * p, 0, 0, 255)
             elif r == 'soffit' and x >= XWF:
                 d = T[y - y0, x - x0]                  # (rows over W's top)
@@ -455,13 +534,13 @@ def overlay(R, T, P, box):
                 if a < 0.012: continue
                 lit[yy, xx, :3] = WARM * a; lit[yy, xx, 3] = 255
                 mask[yy, xx] = (50 * p, 0, 0, 255)
-    ukki(lit, mask)
     return mask, lit
 
 
-def ukki(lit, mask):
-    """Ukki-kun (Naruto's potted plant, droite-09) on the far sash's sill: his dark shape cut from the old sheet, set on the
-    new handrail as he sat on the old one"""
+def ukki_pixels():
+    """Ukki-kun (Naruto's potted plant, droite-09) on the far sash's sill, through the clear glass: his shape cut from the
+    old sheet (its shadow there), set on the new handrail as he sat on the old one; his leaves green against the lit room,
+    his pot terracotta: {(x, y): his colour lit}"""
     old = np.asarray(Image.open(os.path.join(EDITS, 'window_lit_ukki_before.webp')).convert('RGBA')).astype(float)
     ox, oy = 1188, 100                                  # (the old sheet's place)
     a, b, c, d = UKKI_OLD
@@ -469,16 +548,16 @@ def ukki(lit, mask):
     L = sub[..., :3] @ LUMA; ref = np.median(L[L > 30]) if (L > 30).any() else 1
     k = np.where(sub[..., 3] > 0, np.clip(L / ref, 0, 1), 1.0)
     shape = k < 0.75
-    if not shape.any(): return
+    out = {}
+    if not shape.any(): return out
     ys, xs = np.nonzero(shape)
-    xm = a + xs.mean(); base_old = b + ys.max()
+    xm = a + xs.mean(); bot = ys.max()
     dy = int(round(Y(xm + 0.5, V_RT) - UKKI_RAIL_OLD(xm)))
-    wx, wy = WL[:2]
     for yy, xx in zip(ys, xs):
-        X_, Y_ = a + xx, b + yy + dy
-        i, j = Y_ - wy, X_ - wx
-        if 0 <= i < lit.shape[0] and 0 <= j < lit.shape[1] and mask[i, j, 3] and mask[i, j, 0] == 50:
-            lit[i, j, :3] *= k[yy, xx] / 0.95
+        if bot - yy < 3: col = (150.0, 80.0, 50.0) if bot - yy > 0 else (110.0, 58.0, 38.0)
+        else: col = (74.0, 122.0, 62.0) if not shape[max(yy - 1, 0), xx] or yy == 0 else (44.0, 84.0, 44.0)
+        out[(a + xx, b + yy + dy)] = np.array(col)
+    return out
 
 
 # ---- the roof's edge (on the floor's rays), the garden set on it, the downpipes ----

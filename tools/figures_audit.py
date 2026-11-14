@@ -217,7 +217,7 @@ CHARS = [
          H=1.65, tete=6.5, ref=[0, ZRC['idle'][0], ZRC['idle'][1], ZRC['idle'][2]], head=27,
          places=[('à l\'arrêt (w 0)', k_red(0), 1400 / ZR['zs'] * FIX_A, None), ('entrée (w %.2f)' % ZR['w0'], k_red(ZR['w0']), 1400 / (ZR['zs'] - ZR['w0']) * FIX_A, None)]),
     dict(id='naruto_win', nom='Naruto à la fenêtre du balcon', outil='tools/naruto_sil.py (sa source : build_zzzchar_naruto.py, hors du dépôt)',
-         asset='naruto_sil.webp', js='NG, NC, NAR, nDraw', modele='fenêtre peinte = 2,1 m', H=1.45, tete=5.75, ref=[NCL[1], NCL[0], NCL[1], NCL[2]], head=19,
+         asset='naruto_sil.webp', js='NG, NC, NAR, nDraw', modele='fenêtre peinte = 2,1 m', H=1.78, tete=7.0, ref=[NCL[1], NCL[0], NCL[1], NCL[2]], head=19,
          places=[('devant la vitre (s -1,5)', nK(nU(-1.5)) / NG['ppm'], nK(nU(-1.5)), None), ('entrée (s -6,2)', nK(nU(-6.2)) / NG['ppm'], nK(nU(-6.2)), None)]),
     dict(id='killua', nom='Killua sur le toit', outil='build_zzzchar_killua.py (hors du dépôt)', asset='killua_body/legs/head.webp',
          js='KM, KIL, stepKillua', modele='la maison (~78 px/m), = B', H=1.58, tete=6.5, ref=None, head=19, seated=58,
