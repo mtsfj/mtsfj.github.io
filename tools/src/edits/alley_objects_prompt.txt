@@ -1,0 +1,11 @@
+This is a crop of a pixel-art Japanese street at night, seen from the street. In the middle, between the Pokemon Center (left, its red awning and lilac pillar) and a dark apartment building (right, with a lit shop window and a bicycle), there is a narrow alley: what you see in it is the alley's far wall, a plain lilac plaster wall seen exactly face on.
+
+Redraw ONLY the things fixed on that lilac wall, with more detail and cleaner, more believable shapes, keeping each one exactly at the same place and the same size as now, and seen face on like the wall:
+- top right: an air conditioner's outdoor unit (a white metal box with its round fan grille and side louvres) on a steel wall bracket, its right part cut off by the dark building's corner;
+- just under it, left of the door's top: a small wall lamp (a little glass box under an iron cap), unlit;
+- left, mid height: a grey electricity meter box with its small glass window;
+- under it: a gas meter (a small beige-grey box) with its thin pipe going down to the ground and a short pipe up;
+- right, lower half: a steel back door (grey-teal, a lever handle) set in its frame, standing on a low concrete step, its right part cut off by the building's corner;
+- at the foot of the wall: an upturned blue plastic crate with a potted purple hydrangea on it (the green potted plant in front of the pillar stays as it is).
+
+Keep the plaster wall around them plain and flat, the same lilac tone everywhere, and keep everything else in the picture identical: the Pokemon Center, the dark building, the shop window, the bicycle, the sidewalk, the colours and the image's framing and size. Same pixel-art style, same palette and the same dim night light; soft shading, no black outlines, no new objects, no text.

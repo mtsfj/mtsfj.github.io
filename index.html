@@ -598,8 +598,8 @@
      false), as two scripts here would be */
   (function () {
     var go = function () { if (go.done) return; go.done = true;
-      var c = 'assets/layer_city_off.webp?v=110', E = window.__early = {}; if (window.fetch) E[c] = fetch(c);   // (the street's biggest layer, with them: street.js takes it, at the same address as its ASSETS.city)
-      ['assets/three.min.js', 'assets/street.min.js?v=34'].forEach(function (src) { var e = document.createElement('script'); e.src = src; e.async = false; document.body.appendChild(e); }); };
+      var c = 'assets/layer_city_off.webp?v=111', E = window.__early = {}; if (window.fetch) E[c] = fetch(c);   // (the street's biggest layer, with them: street.js takes it, at the same address as its ASSETS.city)
+      ['assets/three.min.js', 'assets/street.min.js?v=35'].forEach(function (src) { var e = document.createElement('script'); e.src = src; e.async = false; document.body.appendChild(e); }); };
     var P = window.__poster;
     if (P && P.on && P.ready && !P.got) { P.go = go; P.ready.then(go, go); setTimeout(go, 800); } else go();
   })();
