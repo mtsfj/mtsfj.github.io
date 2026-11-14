@@ -373,6 +373,18 @@ ZONES = {
     'topEnd': dict(box=(752, 434, 856, 500), tool='building_tops'),
     'topOden': dict(box=(486, 424, 614, 486), tool='building_tops'),
     'topOdenShop': dict(box=(455, 478, 478, 528), tool='building_tops'),
+    # the tops of the two buildings on the right (the owner: "toit Naruto toujours bizarre : gouttière trop de contraste,
+    # forme pas logique et qui représente rien", "faut penser le haut comme un vrai haut d'immeuble avec détail, pas juste
+    # un rectangle ; pareil pour les autres toits"), by tools/naruto_parapet.py: Naruto's from a small model in the
+    # street's camera, a concrete parapet flush with his facade (no lit lip) in the painter's grain and light, its
+    # aluminium coping's crisp lit edge, drip shadow and joints, plumb round the near corner and level across the near
+    # side, the planters' rims over it under the garden, one scupper, rain head and downpipe on the pillar (the near
+    # corner's second pipe gone, the near wall one face with its light); the arcade's the painter's own (his tiled eave,
+    # his row of round tiles redrawn clean on its ray), its walls' green black now vertical boards in their light. Last:
+    # over narufloor (whose roof edge it redraws: its rows and the garden kept, the planters' rims written into its wind
+    # data, assets/roof_sway.webp), fan, arceave and ramen (their pixels it does not draw, as they leave them);
+    # street_sun beyond narufloor's box from tools/src/edits/naruroof_before_sun.webp
+    'naruroof': dict(box=(1120, 0, 1456, 376), tool='naruto_parapet'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
