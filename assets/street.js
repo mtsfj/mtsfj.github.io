@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=111", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=13", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=15", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=3", "x": 908, "y": 441, "w": 33, "h": 237}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=112", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=13", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=15", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=3", "x": 908, "y": 441, "w": 33, "h": 237}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=111') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=112') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4138,7 +4138,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=92', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=93', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7276,7 +7276,7 @@
   const Z1 = { warm: comps.find((c) => c.userData.name === 'win_z1_warm'), top: comps.find((c) => c.userData.name === 'win_z1_top') };
   const z1Glass = (box, mask, crisp) => { const G = odenGlass(box, mask, crisp); G.mesh.position.z = 1.12; G.mesh.visible = false;
     G.sh = document.createElement('canvas'); G.sh.width = box[2]; G.sh.height = box[3]; G.shg = G.sh.getContext('2d'); return G; };
-  const z1Cur = z1Glass([1081, 288, 30, 136], 'assets/z1_warm_mask.webp?v=1'), z1Door = z1Glass([963, 226, 43, 137], 'assets/z1_top_glaze.webp?v=2', true); z1Door.gk = 0.5;   // (Red: half the grain, crisp)
+  const z1Cur = z1Glass([1081, 288, 30, 138], 'assets/z1_warm_mask.webp?v=2'), z1Door = z1Glass([963, 222, 43, 141], 'assets/z1_top_glaze.webp?v=3', true); z1Door.gk = 0.5;   // (Red: half the grain, crisp)
   // a person in metres (the top of the head at 0, the body's axis at 0), at (cx, top) with s px per metre, squeezed
   // across by fs and sheared along the facade's lines (slope sl); sw swings the arms
   function z1Person(g, cx, top, s, fs, sl, sw, head) {
@@ -7386,7 +7386,7 @@
       let W = Z1S.who; const light = Z1.warm.material.opacity;
       if (!W) {
         Z1S.next -= dt;
-        if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7 && !STAGE.spot('z1s', 20, { area: [[1081, 288, 1111, 424]] })) Z1S.next = 1.5 + Math.random();   // (his place, STAGE: the curtain; taken, a moment later)
+        if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7 && !STAGE.spot('z1s', 20, { area: [[1081, 288, 1111, 426]] })) Z1S.next = 1.5 + Math.random();   // (his place, STAGE: the curtain; taken, a moment later)
         else if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7) {
           const dir = Math.random() < 0.5 ? 1 : -1;
           W = Z1S.who = { x: dir > 0 ? 1062 : 1126, dir, v: 8 + Math.random() * 4, stop: Math.random() < 0.45 ? 1088 + Math.random() * 14 : null, wait: 0, ph: 0 };
@@ -7412,7 +7412,7 @@
       if (!F) {
         Z1F.next -= dt;
         if (Z1F.next < 0 && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) {
-          if (!STAGE.spot('red', 60, { area: [[963, 226, 1006, 363]] })) Z1F.next = 1.5 + Math.random();   // (his place, STAGE: the balcony door's glass; taken, a moment later)
+          if (!STAGE.spot('red', 60, { area: [[963, 222, 1006, 363]] })) Z1F.next = 1.5 + Math.random();   // (his place, STAGE: the balcony door's glass; taken, a moment later)
           else { F = Z1F.who = z1RPlan(RNV.on); z1Door.mesh.visible = true; Z1F.acc = 1; }
         }
       }

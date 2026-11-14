@@ -33,6 +33,11 @@ TOPS = [('topB', 942, 40), ('topC', 1065, 30), ('topPC', 884, 436), ('topEnd', 7
         ('topOdenShop', 455, 478)]
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in TOPS]
+# the windows round the right pole given their depth (tools/window_depth.py, by tools/redraw_zones.py's zones winB and
+# winC): B's balcony door and the window under it with their balconies, C's two windows and their sills
+WINDOWS = [('winB', 944, 205), ('winC', 1074, 112)]
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in WINDOWS]
 
 
 def main():

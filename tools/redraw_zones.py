@@ -392,6 +392,20 @@ ZONES = {
     # its light (assets/arcade_sign.webp: the tubes, the invader's two poses, the bulbs' chase; arcade_sign_glow.webp), laid
     # on it by street.js (ASGN) with the arcade's hours and power; the last zone (it overlaps arceave's and naruroof's boxes)
     'arcsign': dict(box=(1320, 356, 1456, 446), tool='arcade_sign'),
+    # the windows round the right pole (the owner, circling them: "refaire les fenêtres de ce bâtiment-là : dessinées,
+    # 0 volume, moche"; R28): B's balcony door (Red's) and the window under it, C's tall lit window and its top storey's
+    # window, drawn by tools/window_depth.py ('hand'): the geometry a small model in the street's camera (each opening set
+    # back in the wall, the far jamb, the head's soffit, the frame and sashes, the glass; B's balconies, a slab and a
+    # steel railing in perspective, their shadow on the wall; C's sills), what is in it the image model's drafts
+    # (tools/src/edits/wdBC_model.webp, wdCU_model.webp) laid in by the model's outline, given the painter's tint and
+    # snapped to his palette there, each state (lit, off, the power cut) by the model's change of light; the lit comps
+    # win_z1_top and win_z1_warm written last (COMP_OUT, after bwall's `comps`), the glass street.js draws the visitors in
+    # (z1_top_glaze.webp, z1_warm_mask.webp) by the tool. Last: after bwall, topB, topC, polelamp, poletex and ramen,
+    # whose boxes they overlap (the lamp's arm and the sign as they leave them)
+    'winB': dict(box=(944, 205, 1021, 526), nodraft=True, parts=[
+        dict(poly=[(944, 205), (1021, 205), (1021, 526), (944, 526)], method='hand', fn='window_depth.b_windows', comp='win_z1_top')]),
+    'winC': dict(box=(1074, 112, 1112, 440), nodraft=True, parts=[
+        dict(poly=[(1074, 112), (1112, 112), (1112, 440), (1074, 440)], method='hand', fn='window_depth.c_window', comp='win_z1_warm')]),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
