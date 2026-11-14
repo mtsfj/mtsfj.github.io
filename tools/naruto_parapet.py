@@ -105,7 +105,7 @@ import os
 import sys
 import numpy as np
 from PIL import Image
-from scipy.ndimage import gaussian_filter, binary_fill_holes, label
+from scipy.ndimage import gaussian_filter, binary_fill_holes, label, distance_transform_edt
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import naruto_floor as NF   # noqa: E402  (the floor's rows: the soffit's edge, the coping's top, P's corners)
@@ -262,13 +262,19 @@ def under_old_top(box):
     return m
 
 
+def specks(m, c):
+    """over m's frame: its dark pixels (luminance under 8 in c) with three or fewer of m's pixels round them: specks"""
+    nb = sum(np.roll(np.roll(m, dy, 0), dx, 1).astype(int) for dy in (-1, 0, 1) for dx in (-1, 0, 1) if dy or dx)
+    return m & (c @ LUMA < 8) & (nb <= 3)
+
+
 def unit_reach(box):
     """over box: the AC unit's silhouette in the street's camera (tools/arcade_eave.py's box: its face along the street
-    from its top's ray, the painter's rim a few rows over it, to its bottom's; its end; its valves and their pipes' cover
-    down to the lean-to), a little wide: where its draft is laid"""
+    from its top's ray, the painter's rim a few rows over it, to its bottom's, from its far edge, x 1359, on: no stub of
+    the draft's past it; its end; its valves and their pipes' cover down to the lean-to): where its draft is laid"""
     x0, y0, x1, y1 = box
     m = np.zeros((y1 - y0, x1 - x0), bool)
-    for x in range(max(x0, 1355), min(x1, 1452)):
+    for x in range(max(x0, 1359), min(x1, 1452)):
         if x < 1405: a, b = int(np.floor(AE.ray_y(x, AE.VTOP))) - 5, int(np.ceil(AE.ray_y(x, AE.VB))) + 1
         elif x < 1443: a, b = 191, 293
         else: a, b = 0, 0
@@ -580,6 +586,7 @@ def lay_draft(city, unlit, box, name, M, done):
     sizes = np.bincount(lab.ravel())
     m = np.isin(lab, [i for i in range(1, n + 1) if sizes[i] >= 6])
     put |= binary_fill_holes(m) & reach
+    put &= ~specks(put, q)                                            # (no dark speck alone over its rim)
     warm = (q[..., 0] > q[..., 1] + 25) & (q[..., 0] > q[..., 2] + 15)
     ku = np.where(warm[..., None], (0.37, 0.5, 0.7), (0.93, 0.96, 0.98))
     ys, xs = np.nonzero(put)
@@ -624,6 +631,13 @@ def lay_face(city, unlit, box, name, M, done, unit):
     fold = np.clip(Lg / max(np.mean(Lg[glass]), 1.0), 0.6, 1.4)
     off = dark[None, None, :] * (0.75 + 0.35 * fold)[..., None]
     q = np.where(glass[..., None], off, q)
+    # (round the unit, where the draft's own unit may stray: its wall carried in from the nearest face pixel, no ring of
+    # the zone's lighter wall round it)
+    ring = near_unit & ~u & (nm == 'near') & Mc & ~under_old_top((cx0, cy0, cx1, cy1))
+    if ring.any():
+        _, (iy, ix) = distance_transform_edt(~face, return_indices=True)
+        q = np.where(ring[..., None], q[iy, ix], q)
+        face = face | ring
     ys, xs = np.nonzero(face)
     for lay in (city, unlit):
         lay[cy0 + ys, cx0 + xs, :3] = q[ys, xs]; lay[cy0 + ys, cx0 + xs, 3] = 255
@@ -746,6 +760,9 @@ def draw(city, unlit, box=BOX, write=True):
             if not gbx(x, y): break
             M[y - y0, x - x0] = True
     acm = ac_unit(city, box, name)
+    acm &= ~specks(acm, city[y0:y1, x0:x1, :3])
+    for x in range(AC_X[0], 1359):                     # (left of the unit's far edge, over its bottom's ray: the painter's
+        acm[:int(np.floor(AE.ray_y(x, AE.VB))) - y0, x - x0] = False   # broken line round it, the wall's now; its stand kept)
     M &= ~acm
     sky = M & (name == '')
     pal = palette(city)
