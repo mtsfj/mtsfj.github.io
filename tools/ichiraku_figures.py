@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Ichiraku : les gens de la boutique dans la maquette de tools/ichiraku_interior.py, chacun à sa profondeur et à sa vraie
 taille, découpés dans les deux planches du propriétaire (tools/src/ichiraku_teuchi_sheet.webp : Teuchi ;
-tools/src/ichiraku_regular_sheet.webp : l'habitué en costume), dans l'un de trois styles.
+tools/src/ichiraku_regular_sheet.webp : l'habitué en costume ; tools/src/ichiraku_naruto_sheet.webp : Naruto au comptoir),
+dans l'un de trois styles (la couleur, B, depuis que le propriétaire a dit « plus personne en ombre »).
 
     python3 tools/ichiraku_figures.py                       (après tools/ichiraku_interior.py ; réécrit assets/ramen_figures.webp
                                                              et, dans assets/street.js, la ligne IRF : on peut le relancer, il
                                                              écrit la même chose)
-    python3 tools/ichiraku_figures.py --style couleur       (le style : ombre (A), couleur (B), liseré (C, par défaut))
+    python3 tools/ichiraku_figures.py --style liseré        (le style : ombre (A), couleur (B, par défaut), liseré (C))
     python3 tools/ichiraku_figures.py --preview dossier     (des aperçus seulement : l'atlas, la ligne IRF en json)
 
 Les styles (STYLE, ou --style) :
@@ -42,7 +43,11 @@ elle et celle du corps se rejoignent en douceur (une main sur le front reste sur
 perche de Teuchi, plus fine (POLE_W), montée d'un bloc derrière sa main jusqu'à la tringle par crans (POLE_UP). Teuchi
 derrière le comptoir : la planche le coupe au ventre ; au comptoir et à la marmite, sous son buste, le bas du buste de sa marche
 de face (le kimono, le cordon, le haut du tablier ; TORSO de large), ailleurs une bande de sa couleur, jusqu'à BOTTOM_T (le
-comptoir des clients le coupe à 1 m). Naruto : ses images agrandies de N_SCALE, posées sur le coussin.
+comptoir des clients le coupe à 1 m). Naruto, de dos sur le tabouret de droite, comme le client : sa planche le dessine assis
+sur un tabouret qu'on ne voit pas (sit : son assise, là où le fond passe entre ses jambes ; ses jambes resserrées de LEGS vers
+le milieu) ; sa mesure (REF) prise sur sa première image, de dos (la tête jusqu'au col, le col à l'assise, le haut du dos, la
+largeur des cheveux) ; assis comme le client, penché sur son bol (SIT : du col à l'assise, tant de son buste debout) ; ses
+couleurs vives (l'orange, le jaune) un peu éteintes dans la lumière de la boutique (CHROMA).
 
 Chaque image de la planche (T_FR, R_FR : sa boîte, ce qu'il faut ôter autour, son groupe) :
   - la découpe : le fond est le blanc relié au bord de la boîte (les blancs enfermés, la veste, le bandeau, restent à la figure ;
@@ -58,7 +63,8 @@ Où va chaque image : Teuchi au comptoir (idle, calm, nod, smile, serve), à la 
 sa marche de côté dans l'allée (walk) et à la porte (dwalk), de face à la porte (dfront), sa perche montée par crans jusqu'à la
 tringle (dpole), s'essuyant le front (dbrow) ; le client assis de dos (seat, chop, sip, done), qui se retourne (turn), se lève
 (rise), remet sa veste en place (jacket), debout (stand), qui marche vers nous à chaque taille entre son tabouret et la porte
-(W), qui remonte la bandoulière de son sac à la porte (fix). Naruto : ses images d'avant, agrandies, en silhouette. Le reste de IRF : ce
+(W), qui remonte la bandoulière de son sac à la porte (fix) ; Naruto de dos (N : assis, penché, deux pour aspirer, la tête
+tournée en riant, les bouts du bandeau à droite ; sa colonne, la rangée du sol). Le reste de IRF : ce
 qui est devant Teuchi (O), le verre colonne par colonne avec l'ourlet du noren (G), d'où monte la vapeur (wisps), le style
 (look : son genre, l'alpha et le grain des deux passes, où sont les liserés dans l'atlas).
 """
@@ -78,10 +84,11 @@ ROOT = R.ROOT
 JS = os.path.join(ROOT, 'assets', 'street.js')
 OUT = 'ramen_figures.webp'
 SHEETS = {'teuchi': os.path.join(ROOT, 'tools', 'src', 'ichiraku_teuchi_sheet.webp'),
-          'regular': os.path.join(ROOT, 'tools', 'src', 'ichiraku_regular_sheet.webp')}
+          'regular': os.path.join(ROOT, 'tools', 'src', 'ichiraku_regular_sheet.webp'),
+          'naruto': os.path.join(ROOT, 'tools', 'src', 'ichiraku_naruto_sheet.webp')}
 F, VX, VY, EYE = R.F, R.VX, R.VY, R.EYE
 STYLES = {'a': 'ombre', 'b': 'couleur', 'c': 'liseré', 'ombre': 'ombre', 'couleur': 'couleur', 'liseré': 'liseré', 'lisere': 'liseré'}
-STYLE = 'liseré'                             # le style écrit (C, choisi par le propriétaire) ; --style le change
+STYLE = 'couleur'                            # le style écrit (B : « plus personne en ombre », le propriétaire) ; --style le change
 
 # ---- les profondeurs (m, le long de la rue) et les échelles (px par mètre : F / Z)
 Z_T = R.Z_C + R.CTR_D + R.AISLE / 2          # Teuchi, au milieu de son allée
@@ -94,20 +101,25 @@ H_T, H_R = 1.78 * SCALE, 1.82 * SCALE        # Teuchi (son bandeau compris), le 
 DOOR_Z, POLE_X = 17.6, 1215.0                # Teuchi à la porte : sa profondeur (il y vient de côté, de derrière le montant gauche),
                                              # la colonne de sa perche (au milieu de la vitre de droite : lui un peu à gauche)
 WALK_END = (1175.0, 0.32)                    # le client qui s'en va : à la porte, la colonne de son milieu, derrière la vitre de tant
-PLACES = {'counter': 1199.0, 'pots': -0.25, 'shelf': 9.42}   # Teuchi : au comptoir (sa colonne), à la marmite (à tant de
+PLACES = {'counter': 1216.0, 'pots': -0.25, 'shelf': 9.42}   # Teuchi : au comptoir (sa colonne : derrière la quatrième vitre,
+                                             # Luffy assis devant la troisième), à la marmite (à tant de
                                              # son X, la louche à bout de bras), à l'étagère (son X, devant les bocaux de gauche)
-N_TOP, N_ROWS = 614, 47                      # Naruto : la rangée 0 de ses images (ses épis à 626), jusqu'au coussin (rangée 660)
-N_COL = (20, 6, 10)                          # (Naruto, tel qu'avant : une silhouette sombre)
+H_N = 1.66 * SCALE                           # Naruto (ses épis compris) : sa taille
 
 # ---- les vraies proportions : la tête (haut, largeur au plus), les épaules, l'entrejambe (part de la taille), l'assise
-HEAD = {'T': 0.245 * SCALE, 'R': 0.26 * SCALE}   # (du haut du crâne au menton : le bandeau, les cheveux compris)
+HEAD = {'T': 0.245 * SCALE, 'R': 0.26 * SCALE, 'N': 0.28 * SCALE}   # (du haut du crâne au menton, au col de dos : le bandeau, les cheveux compris)
 HEAD_W, SHOULDERS, CROTCH = 0.20 * SCALE, 0.45 * SCALE, 0.465
 SEAT_H = R.STOOL['top']
 BOTTOM_T, TORSO = 0.9, 0.36 * SCALE          # (Teuchi au comptoir : son buste jusque-là au moins, sous l'arête du comptoir, de tant de large)
 # l'image de référence de chacun (debout, de trois quarts face, zoom 1) : sa taille, en pixels de planche la hauteur de sa
 # tête (du haut du crâne au menton), de son buste (du menton à l'entrejambe), de ses épaules, la largeur de sa tête de face
 REF = {'T': dict(H=H_T, head=50, torso=96, sh=70, hw=48.3),     # (Teuchi : sa marche de face, 582 / 632 / 728 ; au comptoir 58 / 1,2)
-       'R': dict(H=H_R, head=56, torso=112, sh=75, hw=48)}      # (le client debout : 515 / 571 / 683)
+       'R': dict(H=H_R, head=56, torso=112, sh=75, hw=48),      # (le client debout : 515 / 571 / 683)
+       'N': dict(H=H_N, head=107, torso=162 / 0.95, sh=134, hw=90, S=0.42 * SCALE)}   # (Naruto de dos, assis, sa première image :
+# le crâne à 21, le col à 128, l'assise à 290 ; le haut du dos, la largeur de ses épis ; ses épaules, S, de 42 cm)
+SIT = 0.95                                   # (assis de dos, penché sur son bol : du col à l'assise, tant de son buste debout ; le client)
+LEGS = 0.85                                  # (de dos, sur un tabouret que la planche ne montre pas : les jambes resserrées d'autant)
+CHROMA = {'T': 1.0, 'R': 1.0, 'N': 0.78}     # (les couleurs vives dans la lumière de la boutique : leur saturation gardée à tant)
 # chaque groupe de poses : qui, son zoom (pixels de planche pour un de la référence), la hauteur de sa tête (du haut du crâne
 # à la ligne du cou), ce qui le pose (le haut de sa tête à sa taille, ses pieds au sol, son assise sur le coussin) ; de dos
 # (BACK), du haut du crâne au col, la tête et la nuque que les cheveux cachent : HEAD aussi (pas moins haute que de face)
@@ -118,8 +130,9 @@ GROUP = {'buste': ('T', 1.2, 60, 'head'),    # (la rangée du comptoir : le crâ
          'assis': ('R', 1.08, 49, 'seat'),   # (de dos : la largeur de sa tête et de ses épaules ; le col à 63, l'assise à 176)
          'tourne': ('R', 1.08, 57, 'seat'),  # (le col à 319, l'assise à 425)
          'leve': ('R', 1.0, 55, 'feet'),     # (le menton à 316, à 308)
-         'debout': ('R', 1.0, 56, 'feet')}
-BACK = ('dos', 'assis', 'tourne')
+         'debout': ('R', 1.0, 56, 'feet'),
+         'naruto': ('N', 1.0, 107, 'seat')}  # (de dos : sa tête jusqu'au col)
+BACK = ('dos', 'assis', 'tourne', 'naruto')
 
 # ---- les planches du propriétaire : chaque image, sa boîte dans la planche, sa découpe, son groupe (et ce qui le précise :
 # le haut du crâne, la ligne du cou, l'entrejambe et sa hauteur, le milieu de la tête)
@@ -155,6 +168,9 @@ R_FR = {   # le client
     'walk': tuple(('regular', b, 'free', G('debout')) for b in ((326, 508, 452, 762), (480, 508, 605, 762), (630, 508, 753, 762), (785, 508, 896, 762))),
     'fix': (('regular', (1264, 508, 1391, 762), 'free', G('debout', tint=((1279, 618, 1306, 674, (112, 64, 42)),))),),
 }
+N_FR = tuple(('naruto', b, 'free', G('naruto', multi=True)) for b in (   # Naruto : assis, penché, aspirant (deux), la tête
+    (52, 0, 259, 380), (399, 30, 622, 380), (774, 24, 997, 380), (408, 384, 625, 766),   # tournée en riant, les bouts du
+    (778, 382, 995, 766), (1133, 6, 1346, 380)))                                       # bandeau à droite
 SS = 8                                       # (les points de planche pris par pixel de la scène : SS x SS)
 INK = (0.55, 0.3)                            # un trait sombre : plus sombre que tant de fois le clair de son pixel ; il le colore s'il
                                              # en couvre au moins tant
@@ -163,10 +179,12 @@ BLEND = (0.35, 0.1)                          # (autour de la tête, de sa largeu
 POLE_W = 0.55                                # (la perche, moins large que dessinée : 3 cm)
 WARM = (0.96, 0.87, 0.75)                    # la lumière de la boutique sur eux (chaude) ; d'en haut : la tête plus claire que le
 TOPLIGHT = (1.07, 0.9)                       # bas de la figure (de tant à tant)
-LIFT = {'T': 1.0, 'R': 0.85}                 # (les sombres relevés : le costume bleu nuit du client, de dos, garde ses plis)
+LIFT = {'T': 1.0, 'R': 0.85, 'N': 1.0}       # (les sombres relevés : le costume bleu nuit du client, de dos, garde ses plis)
 FAMILIES = 16                                # les couleurs de chacun, après réduction : autant de familles de tons (B), chacune d'un grain
 GRAIN_B = 3                                  # fin de plus ou moins tant de niveaux (pas d'aplat), au plus ISOLATED de pixels seuls dans
 ISOLATED = 0.2                               # leur famille (sans voisin de la même)
+GRAIN_T = 8                                  # (le grain : un carreau de tant de pixels, le même pour toutes les cases de chacun ; tiré au
+                                             # hasard pour chaque pixel, il pesait 1,5 Mo dans l'atlas, ainsi 0,55)
 VALUES = (42.0, 66.0)                        # la clarté (L*) des couleurs, gardée dans celle de la peinture autour (son 98e centile sur le verre,
                                              # la lanterne à part) : au-dessus du premier, ramenée sous le second
 OUTLINE_DL = 12.0                            # pas de trait sombre continu au bord : un pixel du bord plus sombre de tant que le dedans en prend
@@ -174,12 +192,11 @@ OUTLINE_DL = 12.0                            # pas de trait sombre continu au bo
 SHADOW_COS = -0.25
 FACE = (10, 15, (0.42, 0.66))                # le détail selon la tête (pixels de haut) : sous le premier, pas de traits ; jusqu'au second, un
                                              # pixel pour chaque oeil (dans cette bande de la tête) ; au-delà, la bouche, le nez
-N_SCALE = 1.4                                # (Naruto : ses images agrandies d'autant, posées sur le coussin)
 POLE_UP = (0.0, 0.35, 0.7, 1.0)              # la perche de Teuchi montée de tant (part de ce qu'il faut pour atteindre la tringle)
 # l'ombre : ses trois tons (le plus sombre, la base d'avant, un peu moins sombre) pour Teuchi derrière le comptoir et pour les
 # gens plus près ; leur clarté (L*) dans la planche réduite qui sépare les tons ; l'alpha et le grain de chaque passe
 TONES = {'far': ((24, 8, 5), (34, 10, 6), (47, 17, 10)), 'near': ((13, 4, 7), (20, 6, 10), (32, 12, 15))}
-TONE_L = {'T': (30.0, 62.0), 'R': (12.0, 45.0)}   # (Teuchi en blanc, le client en bleu nuit : ses traits plus sombres que lui)
+TONE_L = {'T': (30.0, 62.0), 'R': (12.0, 45.0), 'N': (30.0, 62.0)}   # (Teuchi en blanc, le client en bleu nuit : ses traits plus sombres que lui)
 SHADE = {'alpha': [0.86, 0.95], 'grain': [1, 0.5]}
 # le liseré : la lumière qui l'allume (une direction dans l'image, y vers le bas) pour chaque groupe de cases ; un bord la
 # reçoit s'il lui fait face d'au moins tant ; la clarté (L*) qu'il prend au moins
@@ -302,6 +319,29 @@ def cut(sheets, sheet, box, kind, o):
     return Q, a, seat
 
 
+def sit(Q, a, legs=LEGS):
+    """une image de dos, assise sur un tabouret que la planche ne montre pas : son assise (rangée de la case : sous le buste, au
+    milieu, la dernière pleine avant que le fond passe entre les jambes) ; ses jambes resserrées vers le milieu de legs, en
+    douceur depuis le bas du dos (le quart du dos au-dessus de l'assise)"""
+    m = a > 0.5; cx = chest(a); c = int(cx); ys = np.nonzero(m.any(1))[0]
+    y = ys[0] + (ys[-1] - ys[0]) // 2
+    while y < ys[-1] and m[y, c - 1:c + 2].all(): y += 1
+    seat = y - 1; Wd = a.shape[1]; Q2, a2 = Q.copy(), a.copy()
+    r = max(1, (seat - ys[0]) // 4)
+    for yy in range(seat - r, len(a)):
+        k = 1 - (1 - legs) * min(1.0, (yy - (seat - r)) / r)
+        xs = cx + (np.arange(Wd) + 0.5 - cx) / k - 0.5; src = np.clip(np.round(xs).astype(int), 0, Wd - 1)
+        Q2[yy] = Q[yy, src]; a2[yy] = np.where((xs < -0.5) | (xs > Wd - 0.5), 0, a[yy, src])
+    return Q2, a2, seat
+
+
+def mute(rgb, k):
+    """des couleurs vives dans la lumière de la boutique : leur saturation (a*, b*) gardée à k"""
+    if k >= 1: return rgb
+    L = R.lab(np.clip(rgb, 0, 255)); L[..., 1:] *= k
+    return lab2rgb(L)
+
+
 def runs_of(m):
     d = np.diff(np.r_[0, m.astype(int), 0])
     return list(zip(np.nonzero(d == 1)[0], np.nonzero(d == -1)[0]))
@@ -341,7 +381,7 @@ def knots(who, o, g, a, seat_row, s, anchor_y):
     hd = HEAD[who]
     mh = hd / (hn if o['g'] in BACK else ref['head'] * z)              # (m par pixel de planche : la tête,
     mt = (ref['H'] * (1 - CROTCH) - hd) / ref['torso'] / z              # le buste,
-    mx = SHOULDERS / ref['sh'] / z                                      # le corps en largeur,
+    mx = ref.get('S', SHOULDERS) / ref['sh'] / z                        # le corps en largeur,
     mhx = min(hd / ref['head'] / z, HEAD_W / ref['hw'] / z)            # la tête en largeur)
     crown, neck, crotch = g['crown'], g['neck'], g['crotch']
     ys = np.nonzero((a > 0.5).any(1))[0]; feet = ys[-1] + 1
@@ -567,27 +607,6 @@ class Atlas:
         return a, (H + 1 if rims else 0)
 
 
-def naruto_cells():
-    """Naruto au comptoir, de dos : ses six images (assets/naruto_ramen.webp, 23 x 37 : assis, penché, deux pour aspirer, la
-    tête levée, les bouts du bandeau), le bas du dos prolongé jusqu'au coussin (ses rangées du bas, qui se resserraient, refaites
-    droites), agrandies de N_SCALE, posées sur le coussin (leur forme lissée : chaque pixel plein dès la moitié couverte) ; une
-    silhouette sombre, comme avant. Rend les images, la rangée du haut, le milieu"""
-    a = I.load('naruto_ramen.webp', 'RGBA')[..., 3] > 128
-    H2, W2 = int(round(N_ROWS * N_SCALE)), int(round(23 * N_SCALE)); out = []
-    for f in range(6):
-        c = a[:, f * 23:(f + 1) * 23]
-        m = np.zeros((N_ROWS, 23), bool); m[:33] = c[:33]
-        for r in range(33, N_ROWS):
-            k = int(round(1.5 * (r - 33) / (N_ROWS - 34)))
-            m[r, 3 + k:20 - k] = True
-        src = Image.fromarray(np.pad(m, 4).astype(np.uint8) * 255, 'L')
-        bx = (4 + 11.5 - W2 / N_SCALE / 2, 4 + N_ROWS - H2 / N_SCALE, 4 + 11.5 + W2 / N_SCALE / 2, 4 + N_ROWS)
-        up = np.asarray(src.resize((W2 * 4, H2 * 4), Image.BILINEAR, box=bx)).astype(float) / 255
-        mm = up.reshape(H2, 4, W2, 4).mean((1, 3)) >= 0.5
-        rgba = np.zeros((H2, W2, 4), np.uint8); rgba[..., :3] = N_COL; rgba[..., 3] = mm * 255
-        out.append(rgba)
-    return out, N_TOP + N_ROWS - H2, W2 / 2
-
 def glass_rows(hem):
     """chaque colonne de verre : la rangée sous la tringle du noren (un rayon vers VP), la dernière au-dessus de la traverse, la
     première au-dessous, la dernière au-dessus de la lisière du bas ; la dernière de l'ourlet du noren (sous lui, son ombre)"""
@@ -615,7 +634,7 @@ def main():
 
     # ---- chaque case à sa profondeur et à sa vraie taille : Teuchi dans l'allée et à la porte, le client assis, debout, en
     # marche (une taille par pixel de haut) ; puis les couleurs de chacun ramenées à sa palette
-    raw = {'T': [], 'R': []}                 # (qui, la passe, groupe, clé, couleurs, plein, case : ox, oy)
+    raw = {'T': [], 'R': [], 'N': []}        # (qui, la passe, groupe, clé, couleurs, plein, case : ox, oy)
     def prepare(who, cq, f, s, anchor_y, int_y=False, strip=True):
         """une image : sa mesure, ses noeuds, ses échelles ; Teuchi derrière le comptoir, son buste coupé au-dessus du bord (du
         comptoir, de la marmite de la planche) et prolongé vers le bas (strip : d'une bande de sa couleur ; sinon pas)"""
@@ -730,11 +749,15 @@ def main():
         for cq, f in cuts['R', 'walk']: put('R', 'W', 'walk', H, cq, f, H / H_R, 0.0, int_y=True)
     Hf = int(round(H_R * F / Ze))            # (à la porte : la taille qu'il y a en marchant)
     for cq, f in cuts['R', 'fix']: put('R', 'W', 'fix', None, cq, f, Hf / H_R, 0.0, int_y=True)
+    for i, f in enumerate(N_FR):             # Naruto, de dos, sur le tabouret de droite : assis sur le coussin
+        Q, a, _ = cut(sheets, *f[:3], dict(f[3])); Q, a, seat = sit(Q, a)
+        put('N', 'S', 'naruto', i, (Q, a, f[1][1] + seat), f, s_s, row(0, Z_S))
 
     A = Atlas(1024)
-    cells = {'T': {}, 'R': {}}; QUAL.clear()
-    for who in ('T', 'R'):
-        graded = [(p, gr, k, grade(255 * (np.clip(rgb, 0, 255) / 255) ** LIFT[who], m), m, ox, oy, hd, hy) for p, gr, k, rgb, m, ox, oy, hd, hy in raw[who]]
+    cells = {'T': {}, 'R': {}, 'N': {}}; QUAL.clear()
+    grain = {w: np.random.default_rng(k).integers(-GRAIN_B, GRAIN_B + 1, (GRAIN_T, GRAIN_T)) for w, k in (('T', 0), ('R', 1000), ('N', 2000))}
+    for who in ('T', 'R', 'N'):
+        graded = [(p, gr, k, mute(grade(255 * (np.clip(rgb, 0, 255) / 255) ** LIFT[who], m), CHROMA[who]), m, ox, oy, hd, hy) for p, gr, k, rgb, m, ox, oy, hd, hy in raw[who]]
         allc = np.concatenate([c[m] for _, _, _, c, m, *_ in graded])
         fam = palette(np.clip(allc, 0, 255), FAMILIES); Lf = R.lab(fam)[:, 0]; famB = cap_values(fam)
         for i, (p, gr, k, rgb, m, ox, oy, hd, hy) in enumerate(graded):
@@ -744,7 +767,7 @@ def main():
                 idx = no_outline(idx, m, Lf, LIGHT[p])   # seuls ; le grain)
                 idx, keep = face_detail(idx, m, hd, hy, fam)
                 idx = unspeckle(idx, m, keep)
-                o = np.random.default_rng(1000 * (who == 'R') + i).integers(-GRAIN_B, GRAIN_B + 1, m.shape)
+                o = np.tile(grain[who], (m.shape[0] // GRAIN_T + 1, m.shape[1] // GRAIN_T + 1))[:m.shape[0], :m.shape[1]]
                 rgba[..., :3] = np.clip(np.round(famB[np.maximum(idx, 0)] + o[..., None]), 0, 255)
                 QUAL.append((who, p, gr, k, isolated(idx, m, keep).sum() / m.sum()))
             else:                            # (l'ombre : trois tons sombres selon la clarté de la planche réduite ; la tête d'un seul ; pas de
@@ -761,7 +784,6 @@ def main():
                         rim[e, :3] = np.round(light[R.nearest(lab2rgb(lab_) * np.array(RIM_WARM), light)]); rim[e, 3] = 255
             box = A.add(rgba, rim)
             cells[who].setdefault(gr, []).append((k, box + [int(ox), int(oy)]))
-    NC, N_Y, N_CX = naruto_cells(); NA = [A.add(c) for c in NC]
     # ce qui est devant Teuchi (la lanterne, les objets et l'arête du comptoir, les tabourets) : rien de lui n'y passe
     src = np.asarray(Image.open(R.SRC).convert('RGB')).astype(float)
     pix, hem = R.glass_pixels()
@@ -794,7 +816,7 @@ def main():
            'Sx': round(col(Xs, Z_S), 1), 'Sy': round(row(0, Z_S), 2),
            'W': {'h0': H0, 'cells': [[b for k, b in cells['R']['walk'] if k == H] for H in range(H0, H1 + 1)], 'fix': lst('R', 'fix'),
                  'top': H_R, 'from': [round(Xs, 3), round(Z_S, 2)], 'to': [round(Xe, 3), round(Ze, 2)]},
-           'N': {'cells': NA, 'x': round(col(Xn, Z_S), 1), 'y': N_Y, 'cx': N_CX},
+           'N': {'cells': lst('N', 'naruto'), 'x': round(col(Xn, Z_S), 1), 'y': round(row(0, Z_S), 2)},
            'O': OC + [zx0, zy0], 'G': glass_rows(hem), 'wisps': wisps, 'look': look}
     print('style %s | Teuchi Z %.2f (%.1f px/m), à la porte Z %.2f (%.1f px/m, colonne %d, sa perche à %d) | le client assis Z %.2f '
           '(%.1f px/m), en marche de Z %.2f à %.2f (%d à %d px) | %d cases, atlas %d x %d' % (style, Z_T, s_t, DOOR_Z, s_door,

@@ -6535,12 +6535,12 @@
   // column, depth, floor row: Dz), the regular on the corner stool (S: eating, drinking his broth, putting his bowl down, turning,
   // getting up, setting his jacket straight; his column and floor row: Sx, Sy), the regular walking from his stool to the doors (W:
   // a size for each pixel of his height, his feet on the floor at his depth; fix: his bag's strap at the doors), Naruto on the
-  // right-hand stool (N: a dark silhouette, as before), the glass column by column (G: under the noren's rail, the transom, the
+  // right-hand stool (N: from behind, like the regular, from his own sheet), the glass column by column (G: under the noren's rail, the transom, the
   // bottom's light edge, the noren's hem: the rows under it in its shadow), where the steam rises (the bowls, the stock pot), the
   // style (look: its kind; the shadows' alpha and grain for Teuchi's pass and the nearer one; the rims' rows). A cell is [sx, sy,
   // w, h, ox, oy]: (ox, oy) the middle of his chest and the top of his head (or the floor) in it
-  const IRF = {"T":{"idle":[[0,0,34,63,17,0]],"calm":[[35,0,34,63,17,0]],"nod":[[70,0,33,63,18,0]],"smile":[[104,0,34,63,17,0]],"stir":[[139,0,33,63,15,0],[173,0,29,63,14,0],[203,0,31,63,14,0],[235,0,33,63,15,0],[269,0,28,63,14,0],[298,0,31,63,14,0]],"lift":[[330,0,38,67,22,4]],"serve":[[369,0,46,64,16,0],[416,0,46,64,19,0]],"shelf":[[463,0,41,66,20,1],[505,0,40,67,19,2]],"walk":[[546,0,37,109,18,109],[584,0,36,109,17,109],[621,0,33,109,16,109],[655,0,33,109,15,109],[689,0,36,109,17,109]]},"Ty":{"head":583.26,"feet":692.02},"Tz":27.27,"at":{"counter":1199.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[726,0,57,168,28,168],[784,0,55,168,26,168],[840,0,51,168,25,168],[892,0,51,168,23,168],[944,0,57,168,27,168]],"dfront":[[0,169,48,169,23,169]],"dbrow":[[49,169,62,169,25,169]],"dpole":[[112,169,66,173,31,173],[179,169,66,191,31,191],[246,169,66,209,31,209],[313,169,66,224,31,224]]},"Dz":[1187.0,17.6,734.32],"S":{"seat":[[380,169,49,95,26,95]],"chop":[[430,169,55,95,26,96]],"sip":[[486,169,44,96,24,96],[531,169,44,92,24,96]],"done":[[576,169,56,96,30,96]],"turn":[[633,169,44,93,22,94],[678,169,44,92,22,92]],"rise":[[723,169,45,103,22,103],[769,169,39,112,19,112]],"jacket":[[846,169,54,117,28,117],[901,169,40,117,20,117]],"stand":[[809,169,36,117,18,117]]},"Sx":1165.1,"Sy":696.03,"W":{"h0":116,"cells":[[[942,169,43,116,18,116],[0,394,42,116,20,116],[43,394,42,116,18,116],[86,394,37,116,16,116]],[[124,394,43,117,18,117],[168,394,43,117,20,117],[212,394,43,117,18,117],[256,394,38,117,17,117]],[[295,394,43,118,18,118],[339,394,43,118,20,118],[383,394,43,118,18,118],[427,394,38,118,17,118]],[[466,394,45,119,19,119],[512,394,43,119,20,119],[556,394,43,119,18,119],[600,394,38,119,17,119]],[[639,394,45,120,19,120],[685,394,43,120,20,120],[729,394,43,120,18,120],[773,394,38,120,17,120]],[[812,394,45,121,19,121],[858,394,44,121,21,121],[903,394,43,121,18,121],[947,394,39,121,17,121]],[[0,516,45,122,19,122],[46,516,45,122,21,122],[92,516,44,122,18,122],[137,516,39,122,17,122]],[[177,516,45,123,19,123],[223,516,45,123,21,123],[269,516,45,123,19,123],[315,516,39,123,17,123]],[[355,516,46,124,19,124],[402,516,45,124,21,124],[448,516,45,124,19,124],[494,516,40,124,18,124]],[[535,516,46,125,19,125],[582,516,45,125,21,125],[628,516,45,125,19,125],[674,516,40,125,18,125]],[[715,516,47,126,20,126],[763,516,45,126,21,126],[809,516,45,126,19,126],[855,516,41,126,18,126]],[[897,516,47,127,20,127],[945,516,47,127,22,127],[0,644,46,127,19,127],[47,644,41,127,18,127]],[[89,644,47,128,20,128],[137,644,47,128,22,128],[185,644,46,128,19,128],[232,644,41,128,18,128]],[[274,644,48,129,20,129],[323,644,47,129,22,129],[371,644,46,129,19,129],[418,644,41,129,18,129]],[[460,644,48,130,20,130],[509,644,47,130,22,130],[557,644,47,130,20,130],[605,644,41,130,18,130]],[[647,644,48,131,20,131],[696,644,47,131,22,131],[744,644,47,131,20,131],[792,644,42,131,19,131]],[[835,644,49,132,21,132],[885,644,48,132,22,132],[934,644,48,132,20,132],[0,777,43,132,19,132]],[[44,777,50,133,21,133],[95,777,49,133,23,133],[145,777,48,133,20,133],[194,777,43,133,19,133]],[[238,777,50,134,21,134],[289,777,49,134,23,134],[339,777,48,134,20,134],[388,777,43,134,19,134]],[[432,777,50,135,21,135],[483,777,49,135,23,135],[533,777,48,135,20,135],[582,777,43,135,19,135]],[[626,777,50,136,21,136],[677,777,49,136,23,136],[727,777,49,136,21,136],[777,777,43,136,19,136]],[[821,777,50,137,21,137],[872,777,49,137,23,137],[922,777,50,137,21,137],[973,777,43,137,19,137]],[[0,915,51,138,21,138],[52,915,50,138,23,138],[103,915,50,138,21,138],[154,915,45,138,20,138]],[[200,915,52,139,22,139],[253,915,51,139,24,139],[305,915,50,139,21,139],[356,915,45,139,20,139]],[[402,915,52,140,22,140],[455,915,51,140,24,140],[507,915,50,140,21,140],[558,915,45,140,20,140]],[[604,915,52,141,22,141],[657,915,51,141,24,141],[709,915,51,141,21,141],[761,915,45,141,20,141]],[[807,915,52,142,22,142],[860,915,51,142,24,142],[912,915,51,142,21,142],[964,915,45,142,20,142]],[[0,1058,53,143,22,143],[54,1058,52,143,24,143],[107,1058,52,143,22,143],[160,1058,46,143,20,143]],[[207,1058,53,144,22,144],[261,1058,52,144,24,144],[314,1058,52,144,22,144],[367,1058,46,144,20,144]],[[414,1058,54,145,23,145],[469,1058,53,145,25,145],[523,1058,52,145,22,145],[576,1058,47,145,21,145]],[[624,1058,54,146,23,146],[679,1058,53,146,25,146],[733,1058,53,146,22,146],[787,1058,47,146,21,146]],[[835,1058,55,147,23,147],[891,1058,53,147,25,147],[945,1058,53,147,22,147],[0,1206,47,147,21,147]],[[48,1206,55,148,23,148],[104,1206,54,148,25,148],[159,1206,53,148,22,148],[213,1206,47,148,21,148]],[[261,1206,55,149,23,149],[317,1206,54,149,25,149],[372,1206,53,149,22,149],[426,1206,48,149,21,149]],[[475,1206,55,150,23,150],[531,1206,55,150,26,150],[587,1206,54,150,23,150],[642,1206,48,150,21,150]],[[691,1206,55,151,23,151],[747,1206,55,151,26,151],[803,1206,55,151,23,151],[859,1206,48,151,21,151]],[[908,1206,57,152,24,152],[966,1206,55,152,26,152],[0,1359,55,152,23,152],[56,1359,49,152,22,152]],[[106,1359,57,153,24,153],[164,1359,56,153,26,153],[221,1359,55,153,23,153],[277,1359,49,153,22,153]],[[327,1359,57,154,24,154],[385,1359,56,154,26,154],[442,1359,55,154,23,154],[498,1359,50,154,22,154]],[[549,1359,57,155,24,155],[607,1359,56,155,26,155],[664,1359,55,155,23,155],[720,1359,50,155,22,155]],[[771,1359,57,156,24,156],[829,1359,57,156,27,156],[887,1359,57,156,24,156],[945,1359,50,156,22,156]],[[0,1516,58,157,24,157],[59,1516,57,157,27,157],[117,1516,57,157,24,157],[175,1516,50,157,22,157]],[[226,1516,59,158,25,158],[286,1516,58,158,27,158],[345,1516,57,158,24,158],[403,1516,50,158,22,158]],[[454,1516,59,159,25,159],[514,1516,58,159,27,159],[573,1516,57,159,24,159],[631,1516,51,159,23,159]],[[683,1516,59,160,25,160],[743,1516,58,160,27,160],[802,1516,57,160,24,160],[860,1516,52,160,23,160]],[[913,1516,60,161,25,161],[0,1678,58,161,27,161],[59,1678,58,161,24,161],[118,1678,52,161,23,161]],[[171,1678,60,162,25,162],[232,1678,59,162,28,162],[292,1678,58,162,24,162],[351,1678,52,162,23,162]],[[404,1678,60,163,25,163],[465,1678,60,163,28,163],[526,1678,59,163,25,163],[586,1678,52,163,23,163]],[[639,1678,61,164,26,164],[701,1678,60,164,28,164],[762,1678,59,164,25,164],[822,1678,52,164,23,164]],[[875,1678,61,165,26,165],[937,1678,60,165,28,165],[0,1844,60,165,25,165],[61,1844,52,165,23,165]],[[114,1844,62,166,26,166],[177,1844,60,166,28,166],[238,1844,60,166,25,166],[299,1844,54,166,24,166]],[[354,1844,62,167,26,167],[417,1844,60,167,28,167],[478,1844,60,167,25,167],[539,1844,54,167,24,167]],[[594,1844,62,168,26,168],[657,1844,61,168,29,168],[719,1844,60,168,25,168],[780,1844,54,168,24,168]],[[835,1844,62,169,26,169],[898,1844,62,169,29,169],[961,1844,60,169,25,169],[0,2014,54,169,24,169]],[[55,2014,62,170,26,170],[118,2014,62,170,29,170],[181,2014,62,170,26,170],[244,2014,54,170,24,170]],[[299,2014,64,171,27,171],[364,2014,62,171,29,171],[427,2014,62,171,26,171],[490,2014,55,171,24,171]],[[546,2014,64,172,27,172],[611,2014,62,172,29,172],[674,2014,62,172,26,172],[737,2014,55,172,24,172]],[[793,2014,64,173,27,173],[858,2014,62,173,29,173],[921,2014,62,173,26,173],[0,2188,56,173,25,173]],[[57,2188,64,174,27,174],[122,2188,64,174,30,174],[187,2188,62,174,26,174],[250,2188,56,174,25,174]],[[307,2188,65,175,27,175],[373,2188,64,175,30,175],[438,2188,63,175,26,175],[502,2188,56,175,25,175]],[[559,2188,65,176,27,176],[625,2188,64,176,30,176],[690,2188,64,176,27,176],[755,2188,56,176,25,176]],[[812,2188,66,177,28,177],[879,2188,64,177,30,177],[944,2188,64,177,27,177],[0,2366,57,177,25,177]]],"fix":[[58,2366,65,176,29,176]],"top":2.1658,"from":[8.61,25.92],"to":[5.854,17.25]},"N":{"cells":[[124,2366,32,66],[157,2366,32,66],[190,2366,32,66],[223,2366,32,66],[256,2366,32,66],[289,2366,32,66]],"x":1218.4,"y":595,"cx":16.0},"O":[322,2366,82,110,1150,590],"G":[[1160,522,631,636,681,598],[1161,521,631,636,681,597],[1162,521,631,636,681,597],[1163,521,631,636,681,597],[1164,521,631,636,682,597],[1165,520,631,636,682,597],[1166,520,631,636,682,597],[1167,520,631,636,682,597],[1168,520,631,636,682,597],[1169,520,631,636,682,597],[1170,519,631,636,682,596],[1173,519,631,636,683,596],[1174,519,631,636,683,596],[1175,518,631,636,683,596],[1176,518,631,636,683,596],[1177,518,631,636,683,596],[1178,518,631,636,684,596],[1179,518,631,636,684,596],[1180,517,631,636,684,596],[1181,517,631,636,684,595],[1182,517,631,636,684,595],[1183,517,631,636,684,595],[1184,517,631,636,685,595],[1185,516,631,636,685,595],[1192,515,631,636,686,594],[1193,515,631,636,686,594],[1194,514,631,636,686,594],[1195,514,631,636,686,594],[1196,514,631,636,686,594],[1197,514,631,636,686,594],[1198,514,631,636,687,594],[1199,513,631,636,687,594],[1200,513,631,636,687,594],[1201,513,631,636,687,593],[1202,513,631,636,687,593],[1203,513,631,636,687,593],[1204,512,631,636,687,593],[1205,512,631,636,688,593],[1209,511,631,636,688,593],[1210,511,631,636,688,592],[1211,511,631,636,688,592],[1212,511,631,636,689,592],[1213,511,631,636,689,592],[1214,510,631,636,689,592],[1215,510,631,636,689,592],[1216,510,631,636,689,592],[1217,510,631,636,689,592],[1218,510,631,636,689,592],[1219,509,631,636,690,592],[1220,509,631,636,690,592],[1221,509,631,636,690,591],[1222,509,631,636,690,591],[1223,509,631,636,690,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]],"look":{"kind":"liser\u00e9","alpha":[0.86,0.95],"grain":[1,0.5],"rim":2544}};
-  const IRFI = new Image(), IRF_SRC = 'assets/ramen_figures.webp?v=3';
+  const IRF = {"T":{"idle":[[0,0,34,63,17,0]],"calm":[[35,0,34,63,17,0]],"nod":[[70,0,33,63,18,0]],"smile":[[104,0,34,63,17,0]],"stir":[[139,0,33,63,15,0],[173,0,29,63,14,0],[203,0,31,63,14,0],[235,0,33,63,15,0],[269,0,28,63,14,0],[298,0,31,63,14,0]],"lift":[[330,0,38,67,22,4]],"serve":[[369,0,46,64,16,0],[416,0,46,64,19,0]],"shelf":[[463,0,41,66,20,1],[505,0,40,67,19,2]],"walk":[[546,0,37,109,18,109],[584,0,36,109,17,109],[621,0,33,109,16,109],[655,0,33,109,15,109],[689,0,36,109,17,109]]},"Ty":{"head":583.26,"feet":692.02},"Tz":27.27,"at":{"counter":1216.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[726,0,57,168,28,168],[784,0,55,168,26,168],[840,0,51,168,25,168],[892,0,51,168,23,168],[944,0,57,168,27,168]],"dfront":[[0,169,48,169,23,169]],"dbrow":[[49,169,62,169,25,169]],"dpole":[[112,169,66,173,31,173],[179,169,66,191,31,191],[246,169,66,209,31,209],[313,169,66,224,31,224]]},"Dz":[1187.0,17.6,734.32],"S":{"seat":[[380,169,49,95,26,95]],"chop":[[430,169,55,95,26,96]],"sip":[[486,169,44,96,24,96],[531,169,44,92,24,96]],"done":[[576,169,56,96,30,96]],"turn":[[633,169,44,93,22,94],[678,169,44,92,22,92]],"rise":[[723,169,45,103,22,103],[769,169,39,112,19,112]],"jacket":[[846,169,54,117,28,117],[901,169,40,117,20,117]],"stand":[[809,169,36,117,18,117]]},"Sx":1165.1,"Sy":696.03,"W":{"h0":116,"cells":[[[942,169,43,116,18,116],[0,394,42,116,20,116],[43,394,42,116,18,116],[86,394,37,116,16,116]],[[124,394,43,117,18,117],[168,394,43,117,20,117],[212,394,43,117,18,117],[256,394,38,117,17,117]],[[295,394,43,118,18,118],[339,394,43,118,20,118],[383,394,43,118,18,118],[427,394,38,118,17,118]],[[466,394,45,119,19,119],[512,394,43,119,20,119],[556,394,43,119,18,119],[600,394,38,119,17,119]],[[639,394,45,120,19,120],[685,394,43,120,20,120],[729,394,43,120,18,120],[773,394,38,120,17,120]],[[812,394,45,121,19,121],[858,394,44,121,21,121],[903,394,43,121,18,121],[947,394,39,121,17,121]],[[0,516,45,122,19,122],[46,516,45,122,21,122],[92,516,44,122,18,122],[137,516,39,122,17,122]],[[177,516,45,123,19,123],[223,516,45,123,21,123],[269,516,45,123,19,123],[315,516,39,123,17,123]],[[355,516,46,124,19,124],[402,516,45,124,21,124],[448,516,45,124,19,124],[494,516,40,124,18,124]],[[535,516,46,125,19,125],[582,516,45,125,21,125],[628,516,45,125,19,125],[674,516,40,125,18,125]],[[715,516,47,126,20,126],[763,516,45,126,21,126],[809,516,45,126,19,126],[855,516,41,126,18,126]],[[897,516,47,127,20,127],[945,516,47,127,22,127],[0,644,46,127,19,127],[47,644,41,127,18,127]],[[89,644,47,128,20,128],[137,644,47,128,22,128],[185,644,46,128,19,128],[232,644,41,128,18,128]],[[274,644,48,129,20,129],[323,644,47,129,22,129],[371,644,46,129,19,129],[418,644,41,129,18,129]],[[460,644,48,130,20,130],[509,644,47,130,22,130],[557,644,47,130,20,130],[605,644,41,130,18,130]],[[647,644,48,131,20,131],[696,644,47,131,22,131],[744,644,47,131,20,131],[792,644,42,131,19,131]],[[835,644,49,132,21,132],[885,644,48,132,22,132],[934,644,48,132,20,132],[0,777,43,132,19,132]],[[44,777,50,133,21,133],[95,777,49,133,23,133],[145,777,48,133,20,133],[194,777,43,133,19,133]],[[238,777,50,134,21,134],[289,777,49,134,23,134],[339,777,48,134,20,134],[388,777,43,134,19,134]],[[432,777,50,135,21,135],[483,777,49,135,23,135],[533,777,48,135,20,135],[582,777,43,135,19,135]],[[626,777,50,136,21,136],[677,777,49,136,23,136],[727,777,49,136,21,136],[777,777,43,136,19,136]],[[821,777,50,137,21,137],[872,777,49,137,23,137],[922,777,50,137,21,137],[973,777,43,137,19,137]],[[0,915,51,138,21,138],[52,915,50,138,23,138],[103,915,50,138,21,138],[154,915,45,138,20,138]],[[200,915,52,139,22,139],[253,915,51,139,24,139],[305,915,50,139,21,139],[356,915,45,139,20,139]],[[402,915,52,140,22,140],[455,915,51,140,24,140],[507,915,50,140,21,140],[558,915,45,140,20,140]],[[604,915,52,141,22,141],[657,915,51,141,24,141],[709,915,51,141,21,141],[761,915,45,141,20,141]],[[807,915,52,142,22,142],[860,915,51,142,24,142],[912,915,51,142,21,142],[964,915,45,142,20,142]],[[0,1058,53,143,22,143],[54,1058,52,143,24,143],[107,1058,52,143,22,143],[160,1058,46,143,20,143]],[[207,1058,53,144,22,144],[261,1058,52,144,24,144],[314,1058,52,144,22,144],[367,1058,46,144,20,144]],[[414,1058,54,145,23,145],[469,1058,53,145,25,145],[523,1058,52,145,22,145],[576,1058,47,145,21,145]],[[624,1058,54,146,23,146],[679,1058,53,146,25,146],[733,1058,53,146,22,146],[787,1058,47,146,21,146]],[[835,1058,55,147,23,147],[891,1058,53,147,25,147],[945,1058,53,147,22,147],[0,1206,47,147,21,147]],[[48,1206,55,148,23,148],[104,1206,54,148,25,148],[159,1206,53,148,22,148],[213,1206,47,148,21,148]],[[261,1206,55,149,23,149],[317,1206,54,149,25,149],[372,1206,53,149,22,149],[426,1206,48,149,21,149]],[[475,1206,55,150,23,150],[531,1206,55,150,26,150],[587,1206,54,150,23,150],[642,1206,48,150,21,150]],[[691,1206,55,151,23,151],[747,1206,55,151,26,151],[803,1206,55,151,23,151],[859,1206,48,151,21,151]],[[908,1206,57,152,24,152],[966,1206,55,152,26,152],[0,1359,55,152,23,152],[56,1359,49,152,22,152]],[[106,1359,57,153,24,153],[164,1359,56,153,26,153],[221,1359,55,153,23,153],[277,1359,49,153,22,153]],[[327,1359,57,154,24,154],[385,1359,56,154,26,154],[442,1359,55,154,23,154],[498,1359,50,154,22,154]],[[549,1359,57,155,24,155],[607,1359,56,155,26,155],[664,1359,55,155,23,155],[720,1359,50,155,22,155]],[[771,1359,57,156,24,156],[829,1359,57,156,27,156],[887,1359,57,156,24,156],[945,1359,50,156,22,156]],[[0,1516,58,157,24,157],[59,1516,57,157,27,157],[117,1516,57,157,24,157],[175,1516,50,157,22,157]],[[226,1516,59,158,25,158],[286,1516,58,158,27,158],[345,1516,57,158,24,158],[403,1516,50,158,22,158]],[[454,1516,59,159,25,159],[514,1516,58,159,27,159],[573,1516,57,159,24,159],[631,1516,51,159,23,159]],[[683,1516,59,160,25,160],[743,1516,58,160,27,160],[802,1516,57,160,24,160],[860,1516,52,160,23,160]],[[913,1516,60,161,25,161],[0,1678,58,161,27,161],[59,1678,58,161,24,161],[118,1678,52,161,23,161]],[[171,1678,60,162,25,162],[232,1678,59,162,28,162],[292,1678,58,162,24,162],[351,1678,52,162,23,162]],[[404,1678,60,163,25,163],[465,1678,60,163,28,163],[526,1678,59,163,25,163],[586,1678,52,163,23,163]],[[639,1678,61,164,26,164],[701,1678,60,164,28,164],[762,1678,59,164,25,164],[822,1678,52,164,23,164]],[[875,1678,61,165,26,165],[937,1678,60,165,28,165],[0,1844,60,165,25,165],[61,1844,52,165,23,165]],[[114,1844,62,166,26,166],[177,1844,60,166,28,166],[238,1844,60,166,25,166],[299,1844,54,166,24,166]],[[354,1844,62,167,26,167],[417,1844,60,167,28,167],[478,1844,60,167,25,167],[539,1844,54,167,24,167]],[[594,1844,62,168,26,168],[657,1844,61,168,29,168],[719,1844,60,168,25,168],[780,1844,54,168,24,168]],[[835,1844,62,169,26,169],[898,1844,62,169,29,169],[961,1844,60,169,25,169],[0,2014,54,169,24,169]],[[55,2014,62,170,26,170],[118,2014,62,170,29,170],[181,2014,62,170,26,170],[244,2014,54,170,24,170]],[[299,2014,64,171,27,171],[364,2014,62,171,29,171],[427,2014,62,171,26,171],[490,2014,55,171,24,171]],[[546,2014,64,172,27,172],[611,2014,62,172,29,172],[674,2014,62,172,26,172],[737,2014,55,172,24,172]],[[793,2014,64,173,27,173],[858,2014,62,173,29,173],[921,2014,62,173,26,173],[0,2188,56,173,25,173]],[[57,2188,64,174,27,174],[122,2188,64,174,30,174],[187,2188,62,174,26,174],[250,2188,56,174,25,174]],[[307,2188,65,175,27,175],[373,2188,64,175,30,175],[438,2188,63,175,26,175],[502,2188,56,175,25,175]],[[559,2188,65,176,27,176],[625,2188,64,176,30,176],[690,2188,64,176,27,176],[755,2188,56,176,25,176]],[[812,2188,66,177,28,177],[879,2188,64,177,30,177],[944,2188,64,177,27,177],[0,2366,57,177,25,177]]],"fix":[[58,2366,65,176,29,176]],"top":2.1658,"from":[8.61,25.92],"to":[5.854,17.25]},"N":{"cells":[[124,2366,36,92,18,92],[161,2366,40,84,20,84],[202,2366,39,85,20,85],[242,2366,38,92,19,92],[281,2366,38,93,19,93],[320,2366,37,89,18,89]],"x":1218.4,"y":696.03},"O":[358,2366,82,110,1150,590],"G":[[1160,522,631,636,681,598],[1161,521,631,636,681,597],[1162,521,631,636,681,597],[1163,521,631,636,681,597],[1164,521,631,636,682,597],[1165,520,631,636,682,597],[1166,520,631,636,682,597],[1167,520,631,636,682,597],[1168,520,631,636,682,597],[1169,520,631,636,682,597],[1170,519,631,636,682,596],[1173,519,631,636,683,596],[1174,519,631,636,683,596],[1175,518,631,636,683,596],[1176,518,631,636,683,596],[1177,518,631,636,683,545],[1178,518,631,636,684,596],[1179,518,631,636,684,596],[1180,517,631,636,684,596],[1181,517,631,636,684,595],[1182,517,631,636,684,595],[1183,517,631,636,684,595],[1184,517,631,636,685,595],[1185,516,631,636,685,595],[1192,515,631,636,686,594],[1193,515,631,636,686,594],[1194,514,631,636,686,594],[1195,514,631,636,686,594],[1196,514,631,636,686,594],[1197,514,631,636,686,594],[1198,514,631,636,687,594],[1199,513,631,636,687,594],[1200,513,631,636,687,594],[1201,513,631,636,687,593],[1202,513,631,636,687,593],[1203,513,631,636,687,593],[1204,512,631,636,687,593],[1205,512,631,636,688,593],[1209,511,631,636,688,593],[1210,511,631,636,688,592],[1211,511,631,636,688,592],[1212,511,631,636,689,592],[1213,511,631,636,689,592],[1214,510,631,636,689,592],[1215,510,631,636,689,592],[1216,510,631,636,689,592],[1217,510,631,636,689,592],[1218,510,631,636,689,592],[1219,509,631,636,690,592],[1220,509,631,636,690,592],[1221,509,631,636,690,591],[1222,509,631,636,690,591],[1223,509,631,636,690,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]],"look":{"kind":"couleur"}};
+  const IRFI = new Image(), IRF_SRC = 'assets/ramen_figures.webp?v=4';
   let IRFS = null;                               // what they are drawn from, once in: the sheet decoded off the main thread (an ImageBitmap; drawn
   // as its <img> draws, to the byte), else the <img> (5 Mpx: its decoding in a frame froze the street for a fifth of a second on a phone)
   offView(RL.x, RL.x + RL.w, () => (window.createImageBitmap && window.fetch ? UP.fetch(IRF_SRC).then((r) => (r.ok ? r.blob() : Promise.reject(r.status))).then((b) => createImageBitmap(b)) : Promise.reject(0))
@@ -6553,7 +6553,8 @@
   const IR_HAUT = [0.6, 0.8, 0.92];                                            // (the noren's shadow on them, as on the room: the share kept, row by row)
   // they are drawn at scene res (in scene coordinates), crisp, then into the room's canvas (RL.K texels a scene pixel)
   const shC = document.createElement('canvas'); shC.width = RL.w; shC.height = RL.h; const shg = shC.getContext('2d'); shg.translate(-RL.x, -RL.y);
-  // Naruto's silhouette takes the painting's grain: a fixed grain, one scene pixel per grain, blotchy like the painting
+  // (the bowls' steam in front of Teuchi: sbC; the painting's grain the shadow styles take: a fixed grain, one scene pixel per
+  // grain, blotchy like the painting)
   const sbC = document.createElement('canvas'); sbC.width = RL.w * RL.K; sbC.height = RL.h * RL.K; const sbg = sbC.getContext('2d');
   const grC = document.createElement('canvas'); grC.width = RL.w; grC.height = RL.h;
   (function () { const g = grC.getContext('2d'), im = g.createImageData(RL.w, RL.h), d = im.data;
@@ -6680,7 +6681,7 @@
       else if (T.act !== 'counter' && Math.random() < 0.08) { T.glance = tchRand(0.9, 1.5); T.seq = []; return; }   // a look at the street
       else T.seq = tchWork(T.act);
     }
-    const [g, i, d] = T.seq.shift(); T.c = [g, i]; T.ft = d; T.flip = false;
+    const [g, i, d, fl] = T.seq.shift(); T.c = [g, i]; T.ft = d; T.flip = !!fl;   // (fl: turned round, to serve Luffy on his left)
   }
   // the regular, seated on the corner stool with his back to the doors, a salaryman in his navy suit: he eats (his chopsticks up
   // and down), drinks his broth from the bowl, rests, looks round. He is there whenever the shop is open; as the closing begins
@@ -6737,6 +6738,78 @@
     if (R.st === 'fix') regWalk(R.X, R.Z, 1, L, IRF.W.fix[0]);
     if (R.st === 'out') regWalk(R.X, R.Z, 1 - R.t / REG_OUT, L);
   }
+  // ---- Luffy (One Piece), the fourth of the four heroes, at Ichiraku: on the middle stool, seated as the customers sit, seen
+  // from behind (his black hair in a mess, his straw hat hung on his back by its cord, his red vest, his blue shorts, his
+  // sandals), in colour as they are, wolfing his ramen. tools/ichiraku_luffy.py made him the people's way
+  // (tools/ichiraku_figures.py: cut from a sheet drawn for him, seated on the cushion like the regular, his head, his body and
+  // his legs each at its true scale, 1.74 m at the seated customers' depth, the shop's warm light from above, his loud colours
+  // muted in it, his families of tones, no outline, the painter's grain); drawn as they are, on the glass, the noren's shadow on
+  // him, nearer than Teuchi, behind those nearer still. His meal: he eats, the bowl at his chin and his chopsticks at his mouth,
+  // lifts his noodles high, chews with his cheeks full, drinks the last of the broth with the bowl over his face, then holds
+  // the empty bowl out to Teuchi (at his counter, on Luffy's right, in the fourth pane): Teuchi, if he is there, serves him
+  // another (turned to him); if not, his arm stretches out (rubber) and he helps himself. The empty bowls stack on the counter
+  // on his left, between him and the regular (ILF.stack), as many as the hours since the shop opened have had (two and a half
+  // an hour, at most LF_MAX), and one more each bowl here: behind their backs in the morning, the tower rises between their two
+  // heads in the evening; the shop shut, he is gone, the stack cleared for the morning. Clicked
+  // (the four heroes): his arm stretches out, the bowl held out, then he turns round with his big grin (the scar under his
+  // left eye) and waves. Reduced motion: still, the stack as the hour has it ----
+  const ILF = {"cells":{"eat":[0,0,42,95,19,95],"noodles":[43,0,38,99,15,99],"drink":[82,0,41,99,18,99],"hold":[124,0,49,94,20,94],"chew":[174,0,38,93,18,93],"stretch":[213,0,58,94,20,94],"stretch2":[272,0,67,94,20,94],"grin":[340,0,38,97,18,97],"wave":[379,0,46,98,27,98],"wave_b":[426,0,47,98,28,98]},"x":1197.0,"y":696.03,"head":{"eat":0.2,"noodles":-0.2,"drink":0.2,"hold":-0.1,"chew":0.5,"stretch":-0.1,"stretch2":-0.1,"grin":-0.2,"wave":-0.4,"wave_b":-0.4},"bowl":[474,0,11,4],"top":[486,0,11,5],"stack":[1179.5,641,2]};   // (tools/ichiraku_luffy.py: his cells [sx, sy, w, h, ox, oy], his column, the floor's row, the bowls, the stack)
+  const LF_MAX = 20, LF_RATE = 2.5;
+  const LF = { a: 1, c: 'eat', seq: [], ft: 0, n: 0, wait: -1, hk0: -1, dead: false, cur: false };
+  const ILFI = new Image(); ILFI.onerror = () => { LF.dead = true; };
+  offView(RL.x, RL.x + RL.w, () => { ILFI.src = 'assets/ichiraku_luffy.webp?v=2'; });
+  const lfR = (a, b) => a + Math.random() * (b - a);
+  function lfMeal() {                            // (his bowl: [frame, seconds], ...; -1: until served)
+    const s = [['eat', lfR(0.6, 1.0)]];
+    for (let k = 3 + ((Math.random() * 4) | 0); k > 0; k--) { const r = Math.random(); s.push(r < 0.45 ? ['eat', lfR(0.5, 0.9)] : r < 0.75 ? ['noodles', lfR(0.35, 0.6)] : ['chew', lfR(0.5, 1.0)]); }
+    s.push(['drink', lfR(1.0, 1.6)], ['hold', -1]);
+    return s;
+  }
+  const LF_WAVE = [['hold', 0.12], ['stretch', 0.07], ['stretch2', 0.45], ['stretch', 0.07], ['hold', 0.12], ['grin', 0.3], ['wave', 0.22], ['wave_b', 0.18], ['wave', 0.18], ['wave_b', 0.18], ['wave', 0.3], ['grin', 0.4]];
+  const LF_HELP = [['stretch', 0.08], ['stretch2', 0.7], ['stretch', 0.08], ['hold', 0.2]];   // (no Teuchi: he helps himself)
+  function lfPlay(seq) { LF.seq = seq.slice().concat(lfMeal()); LF.ft = 0; LF.cur = true; LF.wait = -1; }
+  function lfStack() {                           // (the empty bowls: the hours since the shop opened, and his here)
+    const h = ((CLOCK.h - 8.5) % 24 + 24) % 24;
+    return Math.min(LF_MAX, Math.floor(h * LF_RATE) + LF.n);
+  }
+  function stepLuffy(dt) {
+    if (LF.dead) return;
+    const hk = openK('ramen'), live = LF.hk0 >= 0 && Math.abs(hk - LF.hk0) < 0.05 && !reduced; LF.hk0 = hk;
+    const want = hk > 0.97;
+    LF.a = want ? (live ? Math.min(1, LF.a + dt / 1.2) : 1) : (live ? Math.max(0, LF.a - dt / 1.0) : 0);   // (he comes, he goes: softly when seen)
+    if (!want) { LF.n = 0; LF.seq = []; LF.cur = false; }
+    if (reduced) { LF.c = 'eat'; return; }
+    if (LF.wait >= 0) {                          // his bowl held out: Teuchi serves him (his two frames), or he helps himself
+      LF.wait += dt;
+      const T = TCH;
+      if (LF.wait < 0.1 && T.where === 'T' && T.mode === 'place' && T.act === 'counter' && !T.trip) { T.seq = [['serve', 0, 0.45, 1], ['serve', 1, 0.7, 1]]; T.ft = 0; LF.served = true; }   // (turned to him: on his left)
+      if (LF.served ? LF.wait > 1.25 : LF.wait > lfR(1.6, 2.6)) {
+        LF.n++; LF.wait = -1; LF.seq = (LF.served ? [] : LF_HELP.slice()).concat(lfMeal()); LF.ft = 0; LF.served = false;
+      }
+      return;
+    }
+    if ((LF.ft -= dt) > 0) return;
+    if (!LF.seq.length) { LF.seq = lfMeal(); LF.cur = false; }
+    const [c, d] = LF.seq.shift(); LF.c = c;
+    if (d < 0) { LF.wait = 0; LF.served = false; LF.cur = false; } else LF.ft = d;
+  }
+  function lfBox() {                             // (where he shows: his cell, under the noren's hem)
+    const [, , w, h, ox, oy] = ILF.cells[LF.c], y0 = Math.max(ILF.y - oy, 595);
+    return [ILF.x - ox, y0, w, ILF.y - oy + h - y0];
+  }
+  function luffyPass(begin, blit) {              // (the stack, then him: on the glass, the noren's shadow on them)
+    begin();
+    const [cx, cy, step] = ILF.stack, n = lfStack();
+    for (let i = 0; i < n; i++) {
+      const [qx, qy, qw, qh] = i === n - 1 ? ILF.top : ILF.bowl;
+      shg.drawImage(ILFI, qx, qy, qw, qh, Math.round(cx - qw / 2), cy - qh + 1 - i * step, qw, qh);
+    }
+    const [sx, sy, w, h, ox, oy] = ILF.cells[LF.c];
+    shg.drawImage(ILFI, sx, sy, w, h, Math.round(ILF.x) - ox, Math.round(ILF.y) - oy, w, h);
+    shg.globalCompositeOperation = 'source-atop';
+    IR_HAUT.forEach((k, i) => { shg.fillStyle = 'rgba(0,0,0,' + (1 - k) + ')'; shg.fill(irHem[i]); });
+    blit(LF.a);
+  }
   function stepRamen(dt, t) {
     stepTeuchi(dt, t); stepGuests(dt, t);
     if (RAM.dip <= 0 && Math.random() < dt * 0.08) RAM.dip = 0.09; RAM.dip = Math.max(0, RAM.dip - dt);
@@ -6780,14 +6853,6 @@
       IR_HAUT.forEach((k, i) => { shg.fillStyle = 'rgba(0,0,0,' + (1 - k) + ')'; shg.fill(irHem[i]); });
       blit(LOOK.alpha ? LOOK.alpha[k] : 1);
     };
-    // Naruto's silhouette: one dark colour, the painting's grain
-    const shadow = (list, colour, grain, alpha) => {
-      begin();
-      for (const P of list) { const [sx, sy, w, h] = P.c; shg.drawImage(IRFS || IRFI, sx, sy, w, h, P.x, P.y, w, h); }
-      shg.globalCompositeOperation = 'source-in'; shg.fillStyle = colour; shg.fillRect(RL.x, RL.y, RL.w, RL.h);
-      shg.globalCompositeOperation = 'destination-out'; shg.globalAlpha = grain; shg.drawImage(grC, RL.x, RL.y); shg.globalAlpha = 1;
-      blit(alpha);
-    };
     rlg.globalCompositeOperation = 'source-over'; rlg.globalAlpha = 1; rlg.clearRect(0, 0, rlC.width, rlC.height);
     rlg.fillStyle = 'rgba(255,196,128,' + Math.max(0, 0.05 + 0.04 * Math.sin(t * 0.9) - (RAM.dip > 0 ? 0.05 : 0)) + ')';
     rlg.fillRect(0, 0, rlC.width, rlC.height);      // the room's light breathes on everything
@@ -6799,7 +6864,8 @@
     rlg.drawImage(sbC, 0, 0);                                                        // (the bowls' steam, in front of him)
     // the people at the counter, on the stools before it (Naruto, droite-08; the regular), the regular on his way to the door,
     // Teuchi at the doors: nearer than Teuchi's aisle, the farthest first
-    if (ok && NRM.st === 'here') shadow([{ c: IRF.N.cells[NRM.f], x: Math.round(IRF.N.x - IRF.N.cx), y: IRF.N.y - (NRM.br > 0.25 ? 1 : 0) }], '#14060a', 0.5, 0.95);
+    if (ok && LF.a > 0.01 && ILF.cells && ILFI.complete && ILFI.naturalWidth) luffyPass(begin, blit);   // (Luffy and his bowls: in colour)
+    if (ok && NRM.st === 'here') sprites([{ c: IRF.N.cells[NRM.f], x: IRF.N.x, y: IRF.N.y - (NRM.br > 0.25 ? 1 : 0) }], false);   // (Naruto: in colour)
     IRNEAR.length = 0; guestsNear(IRNEAR);
     if (tc && T.where === 'D') IRNEAR.push({ c: tc, x: T.x, y: IRF.Dz[2], flip: T.flip, z: IRF.Dz[1] });
     IRNEAR.sort((a, b) => b.z - a.z);
@@ -6851,10 +6917,10 @@
   const irPow = () => PW.on && IR.zone >= 0 ? pwShade.material.uniforms.uPow.value[IR.zone] : 1;   // the zone's power
   const IR_ON = [0.3, 0.8, 0.5, 1], IR_OFF = [0.6, 0.2, 0.45, 0];              // a lantern catching, going out (70 ms steps)
   // droite-08: when Naruto leaves his window (its panes go out), now and then he goes down to Ichiraku (he lives above it): some
-  // 20-40 s later his shadow sits at the counter, seen from behind (the spiky crown, the headband's tails), slurps his noodles,
+  // 20-40 s later he sits at the counter, seen from behind (the spiky crown, the headband's tails), slurps his noodles,
   // a minute or two, then leaves; his window stays dark meanwhile (NAR.away, read by stepWindow; never in the finale, which
-  // holds him at his window: NFIN). On the right-hand stool, his bowl before him; his frames (naruto_ramen.webp, kept pixel for
-  // pixel in assets/ramen_figures.webp, IRF.N): sit, lean, slurp a, slurp b, head up (tails left), tails right ----
+  // holds him at his window: NFIN). On the right-hand stool, his bowl before him; in colour like the others, his frames
+  // (tools/ichiraku_figures.py, IRF.N): sit, lean, slurp a, slurp b, his head turned, laughing, the tails right ----
   const NRM = { st: 'idle', t: 0, wait: 0, f: 0, ft: 0, seq: [], w2: 'off', br: 0 };
   const IRNEAR = [];                                                           // (the people near the glass, this frame)
   function stepNaruRamen(dt, hk) {
@@ -7125,71 +7191,6 @@
     }
   }
   function stepOden(dt, t) { stepOdenBox(dt); stepLantern(dt); stepOdenSteam(dt, t); stepOdenDoor(dt, t); }
-  // ---- Luffy (One Piece), the fourth of the four heroes: sat cross-legged on the oden's roof sign (おでん: Wano's Kozuki Oden),
-  // a meat on the bone in his hands, out in the rain. tools/luffy_oden.py cut his frames from a sheet drawn for him, at the
-  // street's scale there (51 px a metre: 50 px from his hat to his soles), sat ON the box: its near top edge hides his seat
-  // and the backs of his legs pressed on it, his lap leaning with it, a sandal over its front, his shadow on its rim. Lit as
-  // that place is: the dusk alone in the base row (the night on what faces us, the zenith's violet on what faces up, the
-  // sunset's terracotta rim on what faces the far end, his undersides darker), the straw's weave and the band, the vest's
-  // buttons, the meat's sheen, the painter's grain, his face by hand (the scar under his left eye); the sign's red on what
-  // faces down, his knees and soles the most, a little under his chin, in the second row, added at the
-  // sign's own level (its tube's stutters), the shop's hours (its signs go out first), the zone's power, half drowned by
-  // day, red in the red night. His life: he breathes; every 6-14 s a bite (the meat up, a bite, two, then he chews, his
-  // cheeks full); a hard gust and his hand goes to his hat until it drops; the fireworks and the finale, he grins at them;
-  // from 1:30 to 6, asleep sitting up, a bubble at his nose swelling and shrinking with his breath: now and then it pops and
-  // he starts awake a moment. Clicked (the four heroes): he laughs and his arm stretches up, rubber, to wave (a second).
-  // Reduced motion: still (asleep at night, at rest otherwise), the star alone ----
-  const LFO = {"cell":[56,92],"seat":[490,492],"anchor":[28,85],"names":["rest","rest_b","lift","bite","chew","chew_b","hat","grin","wave","wave_2","wave_3","wave_3b","doze","doze_1","doze_2","doze_3"]};   // (tools/luffy_oden.py: the cell, his seat on the sign, its anchor in the cell, the frames)
-  const LF = { f: -1, cur: false, seq: [], ft: 0, br: 0, next: 6 + Math.random() * 8, grin: 40 + Math.random() * 50, pop: 25 + Math.random() * 30,
-    hat: false, dead: false, graded: false };
-  const lfTex = crisp('assets/luffy_oden.webp?v=2', null, () => { LF.dead = true; });
-  const LFX = LFO.seat[0] - LFO.anchor[0], LFY = LFO.seat[1] - LFO.anchor[1];   // (the cell's top left in the street)
-  const LFM = [0, 1].map((r) => {                // his picture in the dusk, then the sign's light on him
-    const m = new THREE.Mesh(new THREE.PlaneGeometry(LFO.cell[0], LFO.cell[1]), new THREE.MeshBasicMaterial({ map: lfTex, transparent: true, depthWrite: false,
-      blending: r ? THREE.AdditiveBlending : THREE.NormalBlending }));
-    m.position.set(LFX + LFO.cell[0] / 2, -(LFY + LFO.cell[1] / 2), 0.035 + 0.0002 * r); scene.add(m); return m;   // (over the sign's own states, z 0.03: mirrored by the water)
-  });
-  function lfShow(name) {                        // a frame (the atlas: a column a frame, the base row over the light's)
-    const i = LFO.names.indexOf(name); if (i < 0 || i === LF.f) return; LF.f = i;
-    const n = LFO.names.length, u0 = i / n, u1 = (i + 1) / n;
-    LFM.forEach((m, r) => { const a = m.geometry.attributes.uv, v0 = 1 - r / 2, v1 = 1 - (r + 1) / 2;
-      a.setXY(0, u0, v0); a.setXY(1, u1, v0); a.setXY(2, u0, v1); a.setXY(3, u1, v1); a.needsUpdate = true; });
-  }
-  const LF_BITE = [['lift', 0.22], ['bite', 0.3], ['lift', 0.12], ['bite', 0.3], ['chew', 0.32], ['chew_b', 0.28], ['chew', 0.32], ['chew_b', 0.28], ['chew', 0.45]];
-  const LF_WAVE = [['wave', 0.1], ['wave_2', 0.05], ['wave_3', 0.12], ['wave_3b', 0.14], ['wave_3', 0.14], ['wave_3b', 0.14], ['wave_3', 0.1], ['wave_2', 0.05], ['wave', 0.12], ['grin', 0.7]];
-  function lfPlay(seq) { LF.seq = seq.slice(); LF.cur = true; LF.ft = 0; }
-  const lfAsleep = () => { const h = ((CLOCK.h % 24) + 24) % 24; return h >= 1.5 && h < 6 && FINS.t < 0; };
-  function lfLight() {                           // the sign's light on him, 0..1: its tube, its hours, the zone's power, the day
-    let k = OBOX.lvl * HRS.ks;
-    try { k *= (PW.on ? pwShade.material.uniforms.uPow.value[HRS.z.oden] : 1) * SKYF.dayL; } catch (e) {}
-    return Math.max(0, Math.min(1, k));
-  }
-  function stepLuffy(dt) {
-    if (LF.dead) { for (const m of LFM) m.visible = false; return; }
-    if (!LF.graded) { LF.graded = true; gradeSprite(LFM[0].material, 'street'); gradeSprite(LFM[1].material, 'self'); }
-    const k = lfLight(); LFM[1].material.opacity = k; LFM[1].visible = k > 0.004;
-    const sleep = lfAsleep();
-    if (reduced) { lfShow(sleep ? 'doze_2' : 'rest'); return; }
-    if (LF.cur) {                                // a sequence: each frame its time
-      LF.ft -= dt;
-      while (LF.ft <= 0 && LF.cur) { const s = LF.seq.shift(); if (s) { lfShow(s[0]); LF.ft += s[1]; } else LF.cur = false; }
-      if (LF.cur) return;
-    }
-    LF.br += dt;
-    if (sleep) {                                 // asleep sitting up: the bubble with his breath (3.2 s); at its biggest, now and then, it pops
-      const ph = (LF.br % 3.2) / 3.2, s = ph < 0.5 ? 2 * ph : 2 - 2 * ph;
-      lfShow(['doze', 'doze_1', 'doze_2', 'doze_3'][Math.min(3, Math.floor(s * 4))]);
-      if ((LF.pop -= dt) < 0 && s > 0.9) { LF.pop = 25 + Math.random() * 30; LF.br = 0; lfPlay([['doze', 0.3], ['rest', 0.8], ['rest_b', 0.7], ['rest', 0.6]]); }
-      return;
-    }
-    if ((gust.k > 0.6 && (gust.kind === 'rafale' || gust.kind === 'bourrasque')) || (LF.hat && gust.k > 0.35)) { LF.hat = true; lfShow('hat'); return; }
-    LF.hat = false;
-    if (FWK.active || FINS.t >= 0) { lfShow('grin'); return; }
-    if ((LF.next -= dt) < 0) { LF.next = 6 + Math.random() * 8; lfPlay(LF_BITE); return; }
-    if ((LF.grin -= dt) < 0) { LF.grin = 40 + Math.random() * 50; lfPlay([['grin', 1.4 + Math.random()]]); return; }
-    lfShow((LF.br % 3.4) < 1.5 ? 'rest_b' : 'rest');   // (his breath: in, out)
-  }
-  const lfBox = () => LF.cur && LF.f >= 0 && LFO.names[LF.f].startsWith('wave') ? [LFO.seat[0] - 20, LFO.seat[1] - 76, 46, 78] : [LFO.seat[0] - 20, LFO.seat[1] - 51, 40, 53];   // (waving: his arm up)
   // ---- zone 1's lit windows live (right side, behind the street lamp). Behind the curtained window of the narrow
   // building (win_z1_warm) someone crosses the room now and then: his shadow slides over the lit curtain, in the
   // facade's plane (squeezed across, its lines to the vanishing point), bigger than him and soft. Rarely Red, Pokémon's
@@ -7649,12 +7650,12 @@
     gsMesh.visible = true;
   }
   // ---- the four heroes (the secret 'killua': its id and its line in the list kept). Kirua on his roof, Naruto behind
-  // the balcony's lit glass, Red at the balcony door above the shop, Luffy on the oden's roof sign: each clicked (or
+  // the balcony's lit glass, Red at the balcony door above the shop, Luffy at Ichiraku's counter: each clicked (or
   // tapped) once while he is there, in any order. Each answers at once, a second at most, in the scene's own light: the
   // same small star (pixel steps, its light added) and the same soft chime for all four, and a touch of his own: Kirua's
   // lightning crackles on him; a shadow clone pops beside Naruto in a puff (his hand seal too if he faces the glass: a
-  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy laughs, his arm stretched up, rubber, to
-  // wave. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
+  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy stretches his arm out, rubber, his bowl
+  // held out, and waves. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
   // then the list's line keeps a ✧ a hero. Clicked again: a faint star only. Kept in this browser ('mtsfj-four'). No
   // cursor, no hint. Reduced motion: no animation, a still star a second ----
   const HEROK = ['kirua', 'naruto', 'red', 'luffy'];
@@ -7692,10 +7693,10 @@
   }
   function overNaruto(ev) { const b = heroNar(); return !!b && heroIn(heroPt(ev), b, 2); }
   function overRedHero(ev) { const b = heroRed(); return !!b && heroIn(heroPt(ev), b, 2); }
-  function overLuffy(ev) { return !LF.dead && heroIn(heroPt(ev), lfBox(), 2); }   // (on the oden's sign: always there)
+  function overLuffy(ev) { return !LF.dead && LF.a > 0.5 && !!ILF.cells && ILFI.naturalWidth > 0 && SHOP.k > 0.5 && heroIn(heroPt(ev), lfBox(), 2); }   // (at Ichiraku's counter, the shop open)
   function heroAt(k) {                           // where his star shows: by his head
     if (k === 'kirua') return [331, 134];
-    if (k === 'luffy') return [LFO.seat[0] + 12, LFO.seat[1] - 46];
+    if (k === 'luffy') { const oy = ILF.cells[LF.c][5]; return [ILF.x + 9, Math.max(ILF.y - oy + ILF.head[LF.c] + 5, 600)]; }
     const b = k === 'naruto' ? heroNar() : heroRed();
     return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
   }
@@ -10068,7 +10069,7 @@
     stepBBus(dt, t); stepGlide(dt);
     stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
     stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
-    stepLuffy(dt);                                   // Luffy on the oden's sign: his frame, the sign's light on him
+    stepLuffy(dt);                                   // Luffy at Ichiraku: his meal, his bowls
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
     stepSwitch();                                    // the switch box by the Center: its toggles, its light
     // Konami fireworks: launch the queued shells on time, step every burst, stop when the sky is clear again
