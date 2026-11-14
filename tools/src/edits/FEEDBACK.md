@@ -79,6 +79,16 @@ street. Read this before redrawing any zone; add to it after every review.
   top is a real building's top with its parts, not a band ("faut penser le haut comme un vrai haut d'immeuble avec
   détail, pas juste un rectangle ; pareil pour les autres toits"). The owner: "ils ont tous le droit, qu'ils n'hésitent
   pas au lieu de rafistoler s'ils savent que ça sera mieux", "regen l'image si besoin".
+- **R28. Detail is generated, then pixelated; never drawn by hand.** Anything detailed (a figure, a sign or an ad, a
+  window with its room, a machine, a meter, a lamp) is generated with the image API (OpenRouter), then brought into the
+  scene: downscaled to its pixel size, quantised to the painter's palette and the local colours, set on the true
+  perspective, lit and grained like its surroundings, masked cleanly, laid in by a tool that writes the same bytes (its
+  generated source kept under tools/src/). Hand or procedural drawing only for simple geometry (a coping, a pipe, a
+  plain wall). The owner: "règle en plus : agents, stop de vouloir dessiner des trucs durs, détails : génère OpenRouter
+  puis pixellise".
+- **R29. One tone per plane.** A wall is one material at one base value over its whole plane; only real light (a lamp's
+  falloff, the sky from above, contact shade) modulates it; the next face of the same building may differ, but is
+  itself uniform. The owner: "soit tout uni, soit côté et façade différents, mais identiques sur le même pan".
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
