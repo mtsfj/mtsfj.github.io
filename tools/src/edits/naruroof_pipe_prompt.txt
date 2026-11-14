@@ -1,8 +1,0 @@
-This is an enlarged crop of a pixel-art painting of a Japanese street at night (brightened). The concrete pillar in the middle belongs to a small flat-roofed building; at its top the roof's parapet with its thin metal coping runs diagonally (the street's perspective), with clipped shrubs of a roof garden behind it. Down the pillar's face, just left of the balcony, runs a rainwater downpipe that is drawn too crudely.
-
-Redraw ONLY that downpipe as a real, finely made Japanese downpipe, in the same place and at the same size, keeping everything else exactly as it is (the parapet, the coping, the shrubs, the balcony, its railing, the window, the building on the left, the sign at the bottom, the pillar's wall):
-- at the top, just under the parapet's coping, a small scupper through the parapet (a dark rectangular mouth with a short lip) dripping into a small rectangular rain head (a compact metal box with a lit top rim, a lit side facing us, a darker front, a short tapered funnel at its bottom);
-- from the funnel, one slim round pipe (about 6 cm across: only 2 to 3 pixels wide at this scale) going perfectly vertically down the pillar's face into the top of the sign; its side toward the left lit, a thin highlight line, its right side dark, a soft narrow shadow on the wall to its right;
-- small metal clamps holding it to the wall every 1.2 m or so (about 4 of them), each a thin lit band around the pipe with a tiny plate on the wall;
-- the pillar's concrete around it with a fine grain and a faint water stain under the rain head.
-Night palette (deep navy, slate, muted violet), very low contrast, no black outlines, the same pixel-art resolution and framing.

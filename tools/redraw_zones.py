@@ -378,11 +378,15 @@ ZONES = {
     # un rectangle ; pareil pour les autres toits"), by tools/naruto_parapet.py: Naruto's from a small model in the
     # street's camera, a concrete parapet flush with his facade (no lit lip) in the painter's grain and light, its
     # aluminium coping's crisp lit edge, drip shadow and joints, plumb round the near corner and level across the near
-    # side, the planters' rims over it under the garden, one scupper, rain head and a slim round downpipe with its clamps
-    # on the pillar ("cette gouttière pas ouf"), the near side the front's concrete round a lit corner ("on dirait un
+    # side, the planters' rims over it under the garden, no downpipe ("Vire cette gouttière": the pillar one wall, the
+    # coping unbroken), the near side the front's concrete round a lit corner ("on dirait un
     # bâtiment entre Ichiraku et l'arcade": its slabs turning the corner, down to the canopy, a flashing) (the near
-    # corner's second pipe gone, the near wall one face with its light); the arcade's the painter's own (his tiled eave,
-    # his row of round tiles redrawn clean on its ray), its walls' green black now vertical boards in their light. Last:
+    # corner's second pipe gone, the near wall one face with its light); the arcade's low ("Et le mur, juste vire-le :
+    # au-dessus de l'arcade, fais juste un truc clean": the painter's board wall and its high tiled eave gone, a slim
+    # parapet and coping just over its lean-to, one tone; over it Naruto's near side, the building deep ("l'immeuble de
+    # Naruto fait 50 cm de profondeur": the frontal wall runs past the frame, its coping and slabs level across it, a
+    # small high window from a draft); the AC unit on the lean-to whole ("il manque la moitié de la ventilation"), redrawn
+    # from a draft (tools/src/edits/naruroof_ac_draft.webp), its pipes in a cover into the roof). Last:
     # over narufloor (whose roof edge it redraws: its rows and the garden kept, the planters' rims written into its wind
     # data, assets/roof_sway.webp), fan, arceave and ramen (their pixels it does not draw, as they leave them);
     # street_sun beyond narufloor's box from tools/src/edits/naruroof_before_sun.webp
