@@ -34,7 +34,10 @@ vers elle (RIM : en haut, ses cheveux et ses épaules ; ses côtés, moins), ses
 ramenées à FAMILIES familles de tons communes, et le bleu de ses yeux (rien ne change de teinte d'une image à l'autre), gardées dans la clarté de ce
 qui l'entoure à sa profondeur (VALUES : mesuré à 22 h la fenêtre allumée, la pièce derrière lui L* 40 en médiane, 50 au
 p90, Kirua sur son toit 34 et 40, la façade autour 7 à 17 : ses clartés au-dessus de 24 ramenées sous 44, plus sombre que
-la pièce, à contre-jour), pas de trait sombre au bord (tools/ichiraku_figures.py : no_outline), peu de pixels seuls (ses yeux
+la pièce, à contre-jour), son visage lisible (le propriétaire, sur sa tête : « bizarre, non ? ») : sa peau (dans le haut de sa figure, HEAD, de sa
+teinte, pas le jaune de ses cheveux ni son bord, où reste le liseré de la pièce) en ses familles à elle, ramenées à une
+valeur chaude moyenne un peu plus claire que sa veste (SKIN : la lueur des réverbères à travers la vitre sur son visage), la
+plaque de son bandeau un petit éclat (PLATE) ; pas de trait sombre au bord (tools/ichiraku_figures.py : no_outline), peu de pixels seuls (ses yeux
 gardés), un grain fin en carreau. Ses allures, leur rythme et leurs points au sol restent ceux du rig ; sa forme est celle de
 la peinture (street.js la prend par majorité).
 Il faut Pillow, numpy, scipy (et ce qu'il faut à tools/ichiraku_figures.py).
@@ -75,6 +78,10 @@ VALUES = (24.0, 44.0)            # ses clartés L* : au-dessus du premier seuil,
 SUB = 8                          # (points de la peinture par pixel, sur chaque axe)
 GRAIN, GRAIN_T = 2, 8            # (le grain : plus ou moins tant de niveaux, un carreau de tant de pixels)
 LIGHT = (0.0, -1.0)              # (la lumière dans l'image : la pièce derrière lui, d'en haut)
+HEAD = 0.2                       # (sa tête : tant de sa hauteur, du haut de ses cheveux)
+SKIN = (3, (25.0, 62.0), (8.0, 38.0), 20.0, (34.0, 46.0))   # sa peau : ses familles, sa teinte (pas le jaune de ses
+                                 # cheveux), son chroma, sa clarté au moins, ses clartés
+PLATE = (9.0, 38.0, 55.0)        # sa plaque : chroma sous tant, clarté au moins, sa clarté (un petit éclat)
 EYE = (-18.0, 30.0)              # (ses yeux : une famille bleue de plus, b* sous tant, L* au-dessus de tant ; gardée)
 FAMILY = {'walkT': 'front', 'runT': 'front', 'settleT': 'front', 'startT': 'front',
           'walkA': 'back', 'runA': 'back', 'settleA': 'back', 'startA': 'back',
@@ -191,6 +198,33 @@ def light(rgb, m):
     return out
 
 
+def face_of(c, m):
+    """his face in a cell (its top HEAD of his height): his skin (warm, not dark) and his forehead protector's plate (light,
+    grey), each a mask"""
+    ys = np.nonzero(m.any(1))[0]; hd = np.zeros(m.shape, bool)
+    hd[ys[0]:ys[0] + int(np.ceil(HEAD * (ys[-1] + 1 - ys[0])))] = True; hd &= m
+    L = R.lab(np.clip(c, 0, 255)); ch = np.hypot(L[..., 1], L[..., 2])
+    hue = np.degrees(np.arctan2(L[..., 2], L[..., 1]))
+    inner = binary_erosion(m, np.ones((3, 3)), border_value=0)     # (not his edge: the room's rim there stays)
+    skin = hd & inner & (hue >= SKIN[1][0]) & (hue <= SKIN[1][1]) & (ch >= SKIN[2][0]) & (ch <= SKIN[2][1]) & (L[..., 0] >= SKIN[3])
+    plate = hd & (ch < PLATE[0]) & (L[..., 0] >= PLATE[1])
+    return skin, plate
+
+
+def skin_tones(P):
+    """his skin's families, brought into a warm middle (SKIN[4]: their clarities spread between these, in order), a little
+    lighter than his jacket: the soft fill of the street's lamps through the glass on his face"""
+    lab_ = R.lab(P); o = np.argsort(np.argsort(lab_[:, 0]))
+    lo, hi = SKIN[4]; lab_[:, 0] = lo + (hi - lo) * o / max(1, len(P) - 1)
+    return FG.lab2rgb(lab_)
+
+
+def plate_tone(P):
+    """his plate: a small lit patch (PLATE[2])"""
+    lab_ = R.lab(P); lab_[:, 0] = PLATE[2]
+    return FG.lab2rgb(lab_)
+
+
 def build():
     NC = table_nc()
     A = np.asarray(Image.open(SIL).convert('RGBA'))[..., 3] >= 128
@@ -213,19 +247,29 @@ def build():
                     if sc > best[0]: best = (sc, (c2, a2, j, mi))
             c2, a2, j, mi = best[1]; report[f'{k}{i}'] = (j, 'g' if own else 'm' if mi else '', round(float(best[0]), 2))
             cells[(k, i)] = (FG.mute(light(c2, a2), CHROMA), a2)
-    allc = np.concatenate([c[m] for c, m in cells.values()])
+    face = {key: face_of(c, m) for key, (c, m) in cells.items()}   # (his face's skin, his plate: their own families)
+    allc = np.concatenate([c[m & ~face[key][0] & ~face[key][1]] for key, (c, m) in cells.items()])
+    skinc = np.concatenate([c[face[key][0]] for key, (c, m) in cells.items()])
+    platec = np.concatenate([c[face[key][1]] for key, (c, m) in cells.items()])
     famc = FG.palette(np.clip(allc, 0, 255), FAMILIES)
     la = R.lab(np.clip(allc, 0, 255)); blue = (la[:, 2] < EYE[0]) & (la[:, 0] > EYE[1])
     if blue.any(): famc = np.vstack([famc, allc[blue].mean(0)])     # (his eyes' blue: too few pixels for a family of their own)
-    labf = R.lab(famc); Lf = labf[:, 0]; famB = values(famc, VALUES)
-    eye = (labf[:, 2] < EYE[0]) & (Lf > EYE[1])
+    famB = values(famc, VALUES); ng = len(famc)
+    famS = FG.palette(np.clip(skinc, 0, 255), SKIN[0]); famP = platec.mean(0)[None]
+    famc = np.vstack([famc, famS, famP]); famB = np.vstack([famB, skin_tones(famS), plate_tone(famP)])
+    labf = R.lab(famc); Lf = labf[:, 0]
+    eye = (labf[:, 2] < EYE[0]) & (Lf > EYE[1]); eye[ng:] = False
+    gen = np.arange(len(famc)) < ng; sk = (np.arange(len(famc)) >= ng) & (np.arange(len(famc)) < ng + len(famS)); pl = np.arange(len(famc)) == len(famc) - 1
     tile = np.random.default_rng(17).integers(-GRAIN, GRAIN + 1, (GRAIN_T, GRAIN_T))
     rgba = np.zeros(A.shape + (4,), np.uint8)
     for (k, i), (c, m) in cells.items():
         t, w, h, n, ax, ay = NC[k]
-        idx = np.where(m, R.nearest(np.clip(c.reshape(-1, 3), 0, 255), famc).reshape(m.shape), -1)
+        fs, fp = face[(k, i)]; cc = np.clip(c.reshape(-1, 3), 0, 255)
+        idx = np.where(m, (np.nonzero(gen)[0][R.nearest(cc, famc[gen])]).reshape(m.shape), -1)
+        if fs.any(): idx[fs] = np.nonzero(sk)[0][R.nearest(np.clip(c[fs], 0, 255), famc[sk])]
+        if fp.any(): idx[fp] = np.nonzero(pl)[0][0]
         idx = FG.no_outline(idx, m, Lf, LIGHT)
-        keep = m & eye[np.maximum(idx, 0)]
+        keep = m & (eye[np.maximum(idx, 0)] | pl[np.maximum(idx, 0)])
         idx = FG.unspeckle(idx, m, keep)
         gr = np.tile(tile, (h // GRAIN_T + 1, w // GRAIN_T + 1))[:h, :w]
         cell = np.zeros((h, w, 4), np.uint8)
