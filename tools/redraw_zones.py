@@ -357,6 +357,24 @@ ZONES = {
     # planks down to it and in its shadow under it, the two walls' corner as under the entrance; drawn by
     # tools/entrance_canopy.py, after pole, ramen, door and poletex (it overlaps their boxes; the pole's pixels untouched)
     'canopy': dict(box=(1065, 452, 1124, 532), tool='entrance_canopy'),
+    # the tops of the buildings (the owner: "faut penser le haut comme un vrai haut d'immeuble avec détail, pas juste un
+    # rectangle", "pareil pour les autres toits"), each modelled in the street's camera and drawn on the pixel grid by
+    # tools/building_tops.py (its draw() picks the top by the box; it sets night_far.webp to the street's where it
+    # changes a pixel): the apartment block behind the pole, its parapet's coping with its joints and drip, the rain head
+    # its downpipe now stops in, the stair penthouse's top over the parapet (topB, after bwall, polelamp and poletex,
+    # whose boxes it overlaps: the lamp's arm and bracket laid back over it); the narrow building right of the pole, its
+    # front's top on its own ray from the near corner (the painter's level top, a triangle of planks, made sky), the
+    # ledge there its coping (topC); the Pokemon Center's coping over its cladding, its joints (topPC, the ball laid
+    # back); the end house's gable: the verge tiles' roll and joints, the barge board, the onigawara on the ridge's end,
+    # the eave's corner and gutter end (topEnd, the ball laid back); the roof garden across the crossroads: the coping
+    # round its corner, four planters with clipped shrubs, the maple in the last (topOden); the oden's own roof between
+    # the tree and the sign, its ridge and its courses on the rays (topOdenShop)
+    'topB': dict(box=(942, 40, 1023, 300), tool='building_tops'),
+    'topC': dict(box=(1065, 40, 1120, 160), tool='building_tops'),
+    'topPC': dict(box=(884, 436, 905, 470), tool='building_tops'),
+    'topEnd': dict(box=(752, 434, 856, 500), tool='building_tops'),
+    'topOden': dict(box=(486, 424, 614, 486), tool='building_tops'),
+    'topOdenShop': dict(box=(455, 478, 478, 528), tool='building_tops'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
