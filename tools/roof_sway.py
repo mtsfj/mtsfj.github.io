@@ -3,6 +3,9 @@
 
     python3 tools/roof_sway.py      (after tools/naruto_roof.py; it replays that tool on the layers as they were before it)
 
+(Superseded: the garden now stands on the parapet redrawn by tools/naruto_floor.py, which writes assets/roof_sway.webp
+the same way, with foliage_own() and the rules below; this replay no longer matches the layers and stops.)
+
 The garden (tools/naruto_roof.py: the maple's crown in tiers, the shrubs' cushions, the low hedge) is painted into the
 street's layers. To move it the script needs what is behind each plant and which plant each pixel is. This replays
 naruto_roof.py on the layers of commit BEFORE (in memory: nothing is written but the data file), checks that it gives the

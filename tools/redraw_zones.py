@@ -309,10 +309,12 @@ ZONES = {
     'polelamp': dict(box=(845, 128, 1023, 230), tool='pole_lamp'),
     # Naruto's floor over Ichiraku (the owner: "à refaire : fenêtre, rambarde, appart Naruto, façade premier"): its window,
     # its balcony's railing, its walls and slabs redrawn on the pixel grid in the street's perspective by
-    # tools/naruto_floor.py, from under the roof's lip down to the sign's top edge (the sign, 'ramen', and the arcade's
-    # eave, 'arceave', whose boxes it overlaps, as they leave them); it writes the window's lit overlay too
-    # (assets/window_panes.webp, window_lit_ukki.webp)
-    'narufloor': dict(box=(1120, 55, 1279, 390), tool='naruto_floor'),
+    # tools/naruto_floor.py, down to the sign's top edge (the sign, 'ramen', the rooftop unit, 'fan', and the arcade's
+    # eave, 'arceave', whose boxes it overlaps, as they leave them); then ("rebord, tuyauterie et géométrie du toit pas
+    # correctes") the roof's edge over it on the same rays, its near side, the garden set on the new coping, the
+    # downpipes; it writes the window's lit overlay too (assets/window_panes.webp, window_lit_ukki.webp), the garden's
+    # wind data (roof_sway.webp) and the low sun's glint on the lip (street_sun.webp)
+    'narufloor': dict(box=(1120, 0, 1381, 390), tool='naruto_floor'),
     # the drinks corner on the left sidewalk (the owner: "à refaire : le haut-vent toit tuile au-dessus soda, les soda, la
     # caisse soda"), drawn in the street's camera by tools/soda_corner.py: the kiosk's lean-to in old Japanese tiles (its
     # pans where the painter's troughs were: the eave's drips stay), the three machines (their comps z7_vending and

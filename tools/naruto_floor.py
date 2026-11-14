@@ -1,9 +1,30 @@
 #!/usr/bin/env python3
-"""Naruto's floor over Ichiraku, redrawn on the pixel grid: its window, its balcony's railing, its walls and its slabs.
+"""Naruto's floor over Ichiraku, redrawn on the pixel grid: its window, its balcony's railing, its walls and its slabs, and
+the roof's edge over it, its garden and its downpipes, on the same lines.
 
     (a module: tools/redraw_zones.py's zone 'narufloor' calls draw() on the street as the zones before it leave it; it
-     also writes assets/window_panes.webp and assets/window_lit_ukki.webp, the window's lit overlay in street.js, WL)
+     also writes assets/window_panes.webp and assets/window_lit_ukki.webp, the window's lit overlay in street.js, WL;
+     assets/roof_sway.webp, the garden's wind data (street.js ROOF: its box printed); and assets/street_sun.webp over its
+     box, from its before crop: the low sun's glint on the lip, moved with it)
     python3 tools/naruto_floor.py --preview OUT     previews in OUT (nothing written in assets/)
+
+The roof (the owner, after the floor: "rebord, tuyauterie et géométrie du toit pas correctes"): tools/naruto_roof.py had
+kept the painter's lip and stood its parapet on it, on a vanishing point of its own (985, 377), much steeper than the
+floor's lines under it. Now the slab's lip is on the ray where its underside's front edge meets the soffit's back edge (W's
+top) at the same depth (V_LB = WALL_V x KW), its lit band, the parapet's face and its coping over it in the painter's
+proportions at x 1200 (11, 22 and 5 px) scaled along the rays (their thickness constant in perspective); the coping lit on
+top, a crisp shadow under it; at the far end the parapet stops on a plumb line at C's corner, over the pillar its face the
+pillar's own concrete (cleaned with it); round the near corner (over the railing's corner, XPN) the same rows run level
+across the near side: the slab's end over the balcony and over the near wall to the right house's corner (XNS), the near
+wall and its coping on over the right house's eave (to XE). What the old edge covered and the new one does not is the sky,
+or C's side wall under its coping (naruto_roof's planks); the right house's tiles now against the sky take its light on
+their top (naruto_roof's rule). The low sun's glint on the lip's far end (street_sun) moves with the lip. The garden is
+naruto_roof's own (its maple, its shrubs and hedge in the planters along the parapet, their clumps, seeds, colours and
+light), set on the new coping: the leaves it had are taken off with what they covered (roof_sway_before.webp), the plants
+drawn again by its garden() over the new edge; roof_sway.webp is made from them as tools/roof_sway.py made it. The
+downpipes: the far one on the pillar's face, round (PIPE_K: lit from the left and the front), from a rain head under the
+parapet's outlet at the roof's level straight down behind the sign, a bracket every PIPE_STEP rows; the near corner's
+(naruto_roof's) from a socket under the slab's end, its brackets evened out (CPIPE).
 
 What was there (x 1152..1278, from under the roof's lip down to Ichiraku's signboard): the painter's balcony, its lines
 drawn to a vanishing point of their own (the railing's top to x ~810, the window's head steeper still, while Ichiraku's
@@ -52,10 +73,14 @@ import numpy as np
 from PIL import Image
 from scipy.ndimage import gaussian_filter
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import naruto_roof as NR   # noqa: E402  (the roof garden, the old roof's geometry, its helpers)
+import roof_sway as RS     # noqa: E402  (the garden's wind data: its rules)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
 ASSETS = os.path.join(ROOT, 'assets')
-BOX = (1120, 55, 1279, 390)                    # the zone (redraw_zones.py 'narufloor')
+BOX = (1120, 0, 1381, 390)                     # the zone (redraw_zones.py 'narufloor'): the roof's edge and the floor
 VPX, VPY = 700.0, 615.0                        # the street's vanishing point
 LUMA = np.array([0.299, 0.587, 0.114])
 
@@ -92,9 +117,28 @@ KZ = 74.8                                       # px per m at the near end's dep
 LAMP = ((1185.0, 0.68), (1202.0, 0.94))         # the street lamp's share on the railing and the slab's edge: what the power
                                                 # cut leaves of it (the painter's railing: 0.68 at the far end, 0.94 by the corner)
 GRAIN = 0.07                                    # the surfaces' fine grain (relative)
-PILLAR = (1124, 1143)                           # the far pillar's face, between C's corner (x 1122, 1123: its joint and lit
-PILLAR_SIGMA = 3.0                              # arris) and the downpipe's shadow: its light below this scale kept, its
-                                                # blotches gone, from under the parapet's coping down to the sign
+PILLAR = (1124, 1152)                           # the far pillar's face, between C's corner (x 1122, 1123: its joint and lit
+PILLAR_SIGMA = 3.0                              # arris) and the balcony: its light below this scale kept, its blotches
+                                                # gone, from under the parapet's coping down to the sign (the parapet's
+                                                # face over it the same concrete); the downpipe in front of it
+# the roof's edge on P, on rays of the same family as the floor's: the slab's lip (its underside's front edge meets the
+# soffit's back edge, W's top, at the same depth: WALL_V x KW), its lit band, the parapet's face over it, its coping; at
+# x 1200 the painter's proportions (lip 11 px, parapet 22, coping 5), scaled along the rays; round the near corner (XPN,
+# over the railing's corner) the same rows level across the near side to its end (XNS)
+V_LB = WALL_V * KW
+V_LT = V_LB + 11.0 / 500.5
+V_PF = V_LT + 22.0 / 500.5
+V_CT = V_PF + 5.0 / 500.5
+X0R, XNS, XE = 1124, 1297, 1381                # the parapet's far end (against C's corner); the slab's end band on the near
+                                                # side to x XNS (the right house's corner boards from there); the near side
+                                                # over the right house's eave to XE
+SWAY_AT = (1127, 11)                            # roof_sway_before.webp's place (street.js ROOF: B.x0, B.y0)
+PIPE = (1145, 1152)                             # the downpipe on the pillar's face: its columns
+PIPE_K = (0.55, 1.12, 1.18, 1.0, 0.84, 0.66, 0.45)   # across it: lit from the left and the front, its shade side
+PIPE_C = np.array((28.0, 36.0, 58.0))           # its metal (the painter's pipe)
+PIPE_UNLIT = 0.78                               # what the power cut leaves of it (the painter's pipe: the lamp lights it)
+PIPE_STEP = 45                                  # a bracket every PIPE_STEP rows from the rain head down
+CPIPE = (1281, 1288, 50)                        # the near corner's downpipe (tools/naruto_roof.py's strip): its columns, its brackets' step
 
 # the painter's colours (night, the street with its lights off; sampled on his pier, glass, railing, soffit)
 C = dict(
@@ -135,29 +179,21 @@ def lamp_k(x):
     return np.interp(x, [xa, xb], [ka, kb])
 
 
-def lip_bottom(O, box):
-    """per column: the roof's lip's last row as painted (its lit band, tools/naruto_roof.py's lip), the zone's top"""
-    x0, y0, x1, y1 = box; L = O @ LUMA; out = {}
-    for x in range(x0, x1):
-        if x >= 1250:
-            out[x] = 56; continue                  # (the slab's end band on the near side, rows 46..56)
-        r = int(np.floor(376.9 + (107.5 - 376.9) * (x - 985.4) / (1200.0 - 985.4) + 0.5))   # naruto_roof's lip, its first row
-        y = max(r, y0); last = r - 1
-        for yy in range(y, min(r + 16, y1)):
-            q = O[yy - y0, x - x0]
-            if L[yy - y0, x - x0] >= 12 or q[0] > q[2] + 4: last = yy     # (its lit band, or the low sun's glint on it)
-            elif yy > last + 1: break
-        out[x] = last
-    return out
+def first_row(yline):
+    """the first row whose centre is at or under a line's continuous y"""
+    return int(np.ceil(yline - 0.5))
 
 
-def coping_rows(O, box):
-    """per column over the far pillar: the parapet's coping's lowest lit row as tools/naruto_roof.py drew it"""
-    x0, y0 = box[:2]; L = O @ LUMA; out = {}
-    for x in range(PILLAR[0], PILLAR[1]):
-        ys = [y for y in range(140, 200) if L[y - y0, x - x0] >= 25]
-        out[x] = max(ys) if ys else 190
-    return out
+def edge_rows(x):
+    """the roof's edge at column x: (the coping's first row, the parapet face's, the lip's, the soffit's)"""
+    xc = min(x + 0.5, XPN)                         # (round the near corner: level)
+    return tuple(first_row(Y(xc, v)) for v in (V_CT, V_PF, V_LT, V_LB))
+
+
+def lip_bottom(box):
+    """per column: the lip's last row (the slab's end's on the near side), the floor's top"""
+    x0, y0, x1, y1 = box
+    return {x: edge_rows(x)[3] - 1 for x in range(x0, x1)}
 
 
 def sign_top(box):
@@ -166,18 +202,20 @@ def sign_top(box):
     return {x: int(np.floor(393 + (302 - 393) * (x + 0.5 - 1106) / (1278 - 1106))) - 1 for x in range(x0, x1)}
 
 
-def roles(box, lip, sign, coping):
+def roles(box, lip, sign):
     """what each pixel of the zone shows (its centre, front to back), and a parameter for its shading"""
     x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
     R = np.full((h, w), '', 'U12'); T = np.zeros((h, w)); P = np.zeros((h, w), int)
     for xi in range(w):
         x = x0 + xi; xc = x + 0.5
-        if x < XPF:                                # (the downpipe and its shadow: kept; the pillar's face under the
-            if PILLAR[0] <= x < PILLAR[1]:         # coping, cleaned)
-                top = coping[x] + 2
+        if x < XPF:                                # (the pillar's face under the parapet's coping, cleaned)
+            if PILLAR[0] <= x < PILLAR[1]:
+                top = edge_rows(x)[1]
                 for yi in range(h):
                     if top <= y0 + yi < sign[x]: R[yi, xi] = 'pillar'
             continue
+        if x >= XWN:
+            continue                               # (the near side: the roof's edge only)
         for yi in range(h):
             y = y0 + yi; yc = y + 0.5
             if y <= lip[x] or y >= sign[x]:
@@ -289,7 +327,7 @@ def role_at(xc, yc):
     return 'wall', yc - yw, 0
 
 
-def paint(O, U, box, R, T, P):
+def paint(O, U, box, R, T, P, O0, U0):
     """the new street and its power cut over box, from the roles"""
     x0, y0, x1, y1 = box; h, w = R.shape
     X = np.arange(x0, x1)[None, :] + 0.5 + np.zeros((h, 1))
@@ -342,15 +380,30 @@ def paint(O, U, box, R, T, P):
     # the far pillar's face: the painter's light on it (below PILLAR_SIGMA), the fine grain of the rest, in both layers
     pm = R == 'pillar'
     if pm.any():
-        new[pm] = lowpass_in(O, pm, PILLAR_SIGMA)[pm] * (1 + GRAIN * n[pm])[:, None]
+        new[pm] = pillar_light(O0, pm, box)[pm] * (1 + GRAIN * n[pm])[:, None]
     # the power cut: the lamp's share off the railing and the slab's edge; the walls, the glass and the slabs' shaded
     # faces as they are (no light of the street on them; the painter's own power cut changes nothing there)
     unew = U.copy(); done = R != ''
     unew[done] = new[done]
     unew[lit] = new[lit] * lamp_k(X[lit])[:, None]
     if pm.any():
-        unew[pm] = lowpass_in(U, pm, PILLAR_SIGMA)[pm] * (1 + GRAIN * n[pm])[:, None]
+        unew[pm] = pillar_light(U0, pm, box)[pm] * (1 + GRAIN * n[pm])[:, None]
     return new, unew, done
+
+
+def pillar_light(A, pm, box):
+    """the far pillar's light (A: the zone's pixels before it), from its old face only (under tools/naruto_roof.py's coping,
+    clear of the downpipe's shadow): below PILLAR_SIGMA, carried up to the new coping at a wider scale"""
+    x0, y0 = box[:2]; h, w = pm.shape; src = np.zeros_like(pm)
+    for xi in range(w):
+        x = x0 + xi
+        if PILLAR[0] <= x <= 1142:
+            r = NR.front_rows(x)[1] + 2 - y0
+            src[max(r, 0):, xi] = pm[max(r, 0):, xi]
+    a = lowpass_in(A, src, PILLAR_SIGMA); wa = gaussian_filter(src.astype(float), PILLAR_SIGMA)
+    b = lowpass_in(A, src, 10.0)
+    t = np.clip((wa - 0.08) / 0.3, 0, 1)[..., None]
+    return a * t + b * (1 - t)
 
 
 def lowpass_in(A, m, s):
@@ -428,23 +481,272 @@ def ukki(lit, mask):
             lit[i, j, :3] *= k[yy, xx] / 0.95
 
 
-def draw(city, unlit, box=BOX, write=True):
-    """The zone (redraw_zones.py): the layers changed in place (whole-scene float RGBA), the window's overlay written;
-    returns what changed in box."""
+# ---- the roof's edge (on the floor's rays), the garden set on it, the downpipes ----
+RC = {k: np.array(v, float) for k, v in dict(
+    cop_top=(28, 40, 76), cop=(15, 22, 40), cop_low=(11, 17, 31),          # the coping: its top lit by the sky, its face, its
+    par=(7, 14, 24),                                                       # lower arris; the parapet's face (the pillar's concrete)
+    lip_top=(32, 44, 82), lip=(24, 34, 64), lip_low=(19, 28, 52), lip_arris=(14, 21, 40),   # the slab's lit lip (the painter's)
+    npar=(6, 13, 22),                                                      # the near side, turned from the street
+    slab_top=(9, 17, 27), slab=(6, 12, 19), slab_low=(4, 9, 15)).items()}  # the slab's end on the near side (naruto_roof's)
+NEAR_K = 0.85                                   # the near side's coping's light over the street face's
+
+
+class Lay:
+    """the scene's layers for tools/naruto_roof.py's garden: put() as its Layers' (the street, its power cut, the sun's share)"""
+    def __init__(s, city, unlit, sun):
+        s.city, s.unlit, s.sun = city, unlit, sun; s.H, s.W = city.shape[:2]
+        s.nf = np.zeros((1, 1, 3))
+
+    def put(s, x, y, rgb, unlit=None):
+        if 0 <= y < s.H and 0 <= x < s.W:
+            s.city[y, x, :3] = rgb; s.city[y, x, 3] = 255
+            s.unlit[y, x, :3] = rgb if unlit is None else unlit; s.unlit[y, x, 3] = 255
+            s.sun[y, x] = 0
+
+
+def old_top(x):
+    """the roof's top as tools/naruto_roof.py drew it (its coping's first row; the near side's level one from its corner)"""
+    if x < NR.XC: return NR.front_rows(x)[0]
+    return 13 if x < 1300 else min(13, NR.EAVE[x - 1296])
+
+
+def c_wall(city):
+    """building C's near side wall as tools/naruto_roof.py paints it (its planks, its coping carried round): f(x, y, top)"""
+    X0 = NR.X0; LUM = NR.LUM
+    Lf = city[160:211, 1067:1121, :3] @ LUM + 1.0
+    Lp = np.concatenate([Lf[:1].repeat(4, 0), Lf, Lf[-1:].repeat(4, 0)]); cs = np.concatenate([np.zeros((1, Lf.shape[1])), Lp.cumsum(0)])
+    gr = np.clip(Lf / ((cs[9:] - cs[:-9]) / 9.0), 0.8, 1.2); gr = np.concatenate([gr, gr[::-1]])
+    cf = city[NR.CTOP:NR.CTOP + 3, 1067:X0 - 1, :3]; Lcf = cf @ LUM + 1.0
+    ok = Lcf > 0.6 * np.median(Lcf, 1, keepdims=True)
+    crow = np.array([cf[j][ok[j]].mean(0) for j in range(3)]); mrow = np.array([Lcf[j][ok[j]].mean() for j in range(3)])
+    gcf = np.clip(Lcf / mrow[:, None], 0.7, 1.4); ncf = gcf.shape[1]
+    stc = NR.streaks(NR.XE - X0 + 1, 13, 0.2, 30)
+
+    def f(x, y, top):
+        u = (x - X0) % (2 * ncf); u = ncf - 1 - u if u < ncf else u - ncf
+        j = y - NR.CTOP
+        if j < 3: return crow[j] * gcf[j, u] * NR.CCOP_K
+        drift = (1.0 + 0.1 * max(0.0, 1.0 - (j - 4) / 8.0) if j > 3 else 1.0) * (1.0 - 0.3 * max(0.0, 1.0 - (top - 1 - y) / 15.0))
+        return NR.CSIDE * NR.plank(x - X0, y, gr) * drift * (NR.SHADE if j == 3 else 0.82 if j - 3 < stc[x - X0] else 1.0)
+    return f
+
+
+def roof(city, unlit, sun, box):
+    """the roof's edge redrawn on the floor's rays, what it no longer covers (the sky, C's wall), the low sun's glint moved
+    with the lip, the right house's tiles against the sky, the garden set on the new coping; returns the garden's record"""
     x0, y0, x1, y1 = box
+    c0, u0, s0 = city.copy(), unlit.copy(), sun.copy()
+    # 1. the old garden's leaves out: what each covered (roof_sway_before.webp's blocks), over the old coping
+    sw_ = np.asarray(Image.open(os.path.join(EDITS, 'roof_sway_before.webp')).convert('RGBA')).astype(float)
+    H = sw_.shape[0] // 3; W = sw_.shape[1]; bx, by = SWAY_AT
+    for x in range(max(bx, NR.X0 + 6), min(bx + W, NR.XC)):
+        for y in range(by, min(by + H, NR.front_rows(x)[0])):
+            city[y, x] = sw_[y - by, x - bx]; unlit[y, x] = sw_[H + y - by, x - bx]
+    # 2. what the old edge covered and the new one does not: C's side wall under its coping, else the sky
+    cw = c_wall(c0)
+    eave = {1296 + i: e for i, e in enumerate(NR.EAVE)}
+    for x in range(X0R, XE):
+        ct = edge_rows(x)[0]
+        for y in range(old_top(x), ct):
+            if x >= 1296 and y >= eave[x]: continue                 # (the right house's tiles)
+            if y >= NR.CTOP and ct > NR.CTOP and x < NR.XC:
+                c = cw(x, y, ct); city[y, x, :3] = c; unlit[y, x, :3] = c; city[y, x, 3] = unlit[y, x, 3] = 255
+            else:
+                city[y, x] = 0; unlit[y, x] = 0
+            sun[y, x] = 0
+    # the right house's tiles now against the sky over the near side: a clean stair, the sky's light on their top
+    for x in range(1297, XE):
+        e = eave[x]; ct = edge_rows(x)[0]
+        if e >= ct or old_top(x) >= e: continue                         # (against the near side still, or lit already)
+        ee = min(e, eave[x - 1])
+        for y in range(ee, e): city[y, x] = c0[e, x]; unlit[y, x] = u0[e, x]
+        for lay, src in ((city, c0), (unlit, u0)):
+            lay[ee, x, :3] = src[e, x, :3] * 0.3 + NR.EAVE_LIT * 0.7; lay[ee, x, 3] = 255
+    # 3. the edge: the coping, the parapet's face, the lip (over the pillar the face is the pillar's own, cleaned with it),
+    # round the near corner level: the near side's coping, its face, the slab's end over the balcony and the near wall
+    n = grain(city.shape[:2], 41)
+    def put(x, y, c, lamp=True):
+        k = 1 + n[y, x] * 0.04
+        la = NR.lamp(x, y) if lamp else 0.0
+        city[y, x, :3] = c * k * (1 + la); unlit[y, x, :3] = c * k; city[y, x, 3] = unlit[y, x, 3] = 255; sun[y, x] = 0
+    for x in range(X0R, XE):
+        ct, pf, lt, lb = edge_rows(x); near = x >= XPN
+        bot = eave[x] if x >= 1296 else 10 ** 6                         # (the right house's eave in front, from x 1296)
+        kk = NEAR_K if near else 1.0
+        for y in range(ct, min(pf, bot)):
+            i = y - ct; m = pf - ct
+            c = RC['cop_top'] if i == 0 else RC['cop_low'] if i == m - 1 else RC['cop']
+            put(x, y, c * kk * (0.7 if x == X0R else 1.0))
+        if x < XPF: continue
+        lo = lb if x < XNS else bot
+        for y in range(pf, min(lo, bot)):
+            j = y - pf
+            if near and (y < lt or x >= XNS):                           # (the near side's face, its wall over the eave)
+                c = RC['npar'] * (1.25 - 0.25 * min(1.0, j / 18.0))
+            elif y < lt:
+                c = RC['par']
+            else:
+                i = y - lt; m = lb - lt
+                if near:
+                    c = RC['slab_top'] if i == 0 else RC['slab_low'] if i == m - 1 else RC['slab']
+                else:
+                    c = RC['lip_top'] if i == 0 else RC['lip_arris'] if i == m - 1 else RC['lip_low'] if i >= m - 3 else RC['lip']
+            put(x, y, c * (0.5 if j == 0 else 1.0))
+        if XWN <= x < XNS:                                              # (the slab's shadow on the near wall under it)
+            for lay in (city, unlit): lay[lb, x, :3] *= 0.55
+    # 4. the low sun's glint on the lip's far end (street_sun), moved with the lip, its colours kept
+    bs = np.asarray(Image.open(os.path.join(EDITS, 'narufloor_before_sun.webp')).convert('RGB')).astype(float)
+    bc = np.asarray(Image.open(os.path.join(EDITS, 'narufloor_before_city.webp')).convert('RGBA')).astype(float)
+    bu = np.asarray(Image.open(os.path.join(EDITS, 'narufloor_before_unlit.webp')).convert('RGBA')).astype(float)
+    for x in range(int(XPF), 1175):
+        ct, pf, lt, lb = edge_rows(x); dy = lt - NR.ry(x, NR.LIPV)
+        for y in range(140, 190):
+            if bs[y - y0, x - x0, 0] <= 0: continue
+            ny = y + dy
+            if lt <= ny < lb:
+                city[ny, x] = bc[y - y0, x - x0]; unlit[ny, x] = bu[y - y0, x - x0]; sun[ny, x] = bs[y - y0, x - x0]
+    # 5. the garden on the new coping (tools/naruto_roof.py's own plants, clumps and light; the shrubs and the hedge in their
+    # planters along the parapet: on its new coping); recorded for the wind (roof_sway.webp)
+    rec = {'calls': [], 'clumps': [], 'clip': None}
+    keep = (NR.front_rows, NR.foliage)
+    NR.front_rows = lambda x: edge_rows(x)[:3]
+    plain = keep[1]
+
+    def foliage(clumps, rank, seed, clip, *a, **k):
+        if not rec['calls']: rec['under'] = (city.copy(), unlit.copy())       # (the trunk and limbs in, no leaf yet)
+        px = plain(clumps, rank, seed, clip, *a, **k)
+        rec['calls'].append((px, RS.foliage_own(clumps, rank, seed, clip, *a, **k))); rec['clumps'].append(list(clumps))
+        rec['clip'] = clip
+        return px
+    NR.foliage = foliage
+    try:
+        NR.garden(Lay(city, unlit, sun))
+    finally:
+        NR.front_rows, NR.foliage = keep
+    return rec
+
+
+def downpipes(city, unlit, box, sign):
+    """the far downpipe on the pillar's face: from a rain head under the parapet's outlet (at the roof's level, over the lip's
+    first row) straight down behind the sign, round, lit from the left and the front, a bracket every PIPE_STEP rows; the near
+    corner's downpipe (tools/naruto_roof.py's) from under the slab's end, its brackets evened out"""
+    a, b = PIPE
+    cx = (a + b) / 2.0
+    lt = edge_rows(a + 3)[2]                                            # (the roof's level at the pipe: the lip's top)
+    rh = (lt - 1, lt + 6)                                               # the rain head's rows
+    drawn = set()
+    def put(x, y, c, k_un=PIPE_UNLIT):
+        city[y, x, :3] = c; unlit[y, x, :3] = c * k_un; city[y, x, 3] = unlit[y, x, 3] = 255; drawn.add((x, y))
+    # the outlet through the parapet just over the roof's level: a dark mouth, its lit sill
+    for y in range(lt - 5, lt - 2):
+        for x in range(a + 2, a + 5):
+            put(x, y, np.array((2.0, 4.0, 8.0)) if y < lt - 3 else PIPE_C * 0.9)
+    # the rain head: a box wider than the pipe, its rim lit, its sides shaded, its funnel narrowing into the pipe
+    for y in range(*rh):
+        i = y - rh[0]; w = 5.5 if i < 4 else 4.5 if i < 5 else 3.5
+        for x in range(int(np.floor(cx - w)), int(np.ceil(cx + w))):
+            u = (x + 0.5 - (cx - w)) / (2 * w)
+            k = 1.25 if i == 0 else (1.15 - 0.6 * u) * (0.8 if i >= 5 else 1.0)
+            put(x, y, PIPE_C * k)
+    # the pipe, its brackets (a lit strap's top, its dark band, its ear on the pillar's face)
+    for x in range(a, b):
+        for y in range(rh[1], sign[x]):
+            c = PIPE_C * PIPE_K[x - a]
+            j = (y - rh[1]) % PIPE_STEP
+            if y - rh[1] >= PIPE_STEP // 2 and j == PIPE_STEP // 2: c = c * 1.3
+            elif y - rh[1] >= PIPE_STEP // 2 and j == PIPE_STEP // 2 + 1: c = c * 0.5
+            put(x, y, c)
+    for y in range(rh[1] + PIPE_STEP // 2, sign[a - 1], PIPE_STEP):
+        put(a - 1, y, PIPE_C * 0.9); put(a - 1, y + 1, PIPE_C * 0.4)
+    # the near corner's downpipe: from the slab's end down to the box over the awning, its brackets every CPIPE[2] rows
+    ca, cb, st = CPIPE
+    lb = edge_rows(ca)[3]
+    for x in range(ca, cb):
+        col = np.median(city[100:300, x, :3], 0); colu = np.median(unlit[100:300, x, :3], 0)
+        for y in range(lb, 312):
+            j = (y - lb) % st; k = 1.25 if j == 0 else 0.55 if j == 1 else 1.0
+            if y - lb < 2: k = (1.25, 0.55)[y - lb]
+            city[y, x, :3] = col * k; unlit[y, x, :3] = colu * k; drawn.add((x, y))
+    return drawn
+
+
+def sway(city, unlit, rec):
+    """the garden's wind data (assets/roof_sway.webp, street.js ROOF): tools/roof_sway.py's blocks for the garden as set on
+    the new coping; returns its box"""
+    LUM = NR.LUM; under = rec['under']
+    mass = {}; clump = {}
+    for m, (px, own) in enumerate(rec['calls']):
+        for q in px: mass[q] = m + 1; clump[q] = own[q]
+    xs = [q[0] for q in mass]; ys = [q[1] for q in mass]
+    x0, y0 = min(xs) - 3, max(0, min(ys) - 3); x1, y1 = max(xs) + 4, max(ys) + 4
+    W, H = x1 - x0, y1 - y0
+    fin = [np.clip(np.round(a), 0, 255) for a in (city, unlit)]
+    und = [f.copy() for f in fin]
+    for q in mass:                                                      # (what each leaf covers)
+        x, y = q
+        for u, src in zip(und, under): u[y, x] = np.clip(np.round(src[y, x]), 0, 255)
+    out = np.zeros((3 * H, W, 4), np.uint8)
+    out[0:H] = und[0][y0:y1, x0:x1]; out[H:2 * H] = und[1][y0:y1, x0:x1]
+    clip = rec['clip']
+    L = fin[0][:, :, :3] @ LUM / 255.0; Lu = fin[1][:, :, :3] @ LUM / 255.0
+    ext = {}
+    for q, m in mass.items():
+        e = ext.setdefault(m, [1e9, -1e9, 1e9, -1e9]); e[0] = min(e[0], q[0]); e[1] = max(e[1], q[0]); e[2] = min(e[2], q[1]); e[3] = max(e[3], q[1])
+    ctop = {}
+    for q, m in mass.items():
+        if m > 1: key = (m, clump[q], q[0]); ctop[key] = min(ctop.get(key, 1e9), q[1])
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            o = out[2 * H + y - y0, x - x0]
+            o[3] = 255; o[2] = 255 if clip(x, y) else 0
+            m = mass.get((x, y))
+            if not m: continue
+            if L[y, x] - Lu[y, x] > RS.LAMP_LIT: continue
+            k = clump[(x, y)]
+            if m == 1:
+                cx, cy, rx, ry = rec['clumps'][0][k]
+                up = np.clip((100 - y) / (100 - ext[1][2]), 0, 1); out_ = np.clip(abs(x - cx) / rx, 0, 1)
+                f = (0.35 + 0.65 * up) * (0.75 + 0.25 * out_)
+            else:
+                d = y - ctop[(m, k, x)]
+                f = max(0.0, 1.0 - d / 4.0) * (0.8 if m == 2 else 0.6 * float(np.clip((y - RS.HEDGE_CALM) / 4.0, 0, 1)))
+            o[0] = 16 * m + k; o[1] = int(round(255 * f))
+    return out, (x0, y0, W, H)
+
+
+def draw(city, unlit, box=BOX, write=True):
+    """The zone (redraw_zones.py): the layers changed in place (whole-scene float RGBA); the window's overlay, the garden's
+    wind data and the low sun's share (street_sun) written; returns what changed in box."""
+    x0, y0, x1, y1 = box
+    sun = np.asarray(Image.open(os.path.join(ASSETS, 'street_sun.webp')).convert('RGB')).astype(float)
+    sun[y0:y1, x0:x1] = np.asarray(Image.open(os.path.join(EDITS, 'narufloor_before_sun.webp')).convert('RGB')).astype(float)
+    before = city[y0:y1, x0:x1].copy(), unlit[y0:y1, x0:x1].copy()
+    O0, U0 = before[0][..., :3].copy(), before[1][..., :3].copy()
+    rec = roof(city, unlit, sun, box)
     O, U = city[y0:y1, x0:x1, :3].copy(), unlit[y0:y1, x0:x1, :3].copy()
-    lip = lip_bottom(O, box); sign = sign_top(box)
-    R, T, P = roles(box, lip, sign, coping_rows(O, box))
-    new, unew, done = paint(O, U, box, R, T, P)
+    lip = lip_bottom(box); sign = sign_top(box)
+    R, T, P = roles(box, lip, sign)
+    new, unew, done = paint(O, U, box, R, T, P, O0, U0)
     city[y0:y1, x0:x1, :3][done] = np.clip(np.round(new[done]), 0, 255)
     unlit[y0:y1, x0:x1, :3][done] = np.clip(np.round(unew[done]), 0, 255)
     city[y0:y1, x0:x1, 3][done] = 255; unlit[y0:y1, x0:x1, 3][done] = 255
+    sun[y0:y1, x0:x1][done] = 0
+    for x in range(PILLAR[0], PILLAR[1]):                   # (the coping's shadow on the pillar's face under it)
+        y = edge_rows(x)[1]
+        for lay in (city, unlit): lay[y, x, :3] = np.round(lay[y, x, :3] * 0.5)
+    for (x, y) in downpipes(city, unlit, box, sign): sun[y, x] = 0
+    for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
     mask, lit = overlay(R, T, P, box)
+    sw_, sbox = sway(city, unlit, rec)
     if write:
         save(mask, os.path.join(ASSETS, 'window_panes.webp'))
         save(lit, os.path.join(ASSETS, 'window_lit_ukki.webp'))
-    draw.last = (R, T, P, mask, lit)
-    return done
+        save(sw_, os.path.join(ASSETS, 'roof_sway.webp'))
+        Image.fromarray(np.clip(np.round(sun), 0, 255).astype(np.uint8), 'RGB').save(
+            os.path.join(ASSETS, 'street_sun.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    print('naruto_floor: roof_sway box', sbox)
+    draw.last = (R, T, P, mask, lit, sun, sw_, sbox)
+    return (city[y0:y1, x0:x1] != before[0]).any(-1) | (unlit[y0:y1, x0:x1] != before[1]).any(-1)
 
 
 def save(a, path):
@@ -456,19 +758,18 @@ def preview(out):
     os.makedirs(out, exist_ok=True)
     L = {t: np.asarray(Image.open(os.path.join(ASSETS, f)).convert('RGBA')).astype(float)
          for t, f in (('city', 'layer_city_off.webp'), ('unlit', 'street_unlit.webp'))}
-    bc = os.path.join(EDITS, 'narufloor_before_city.webp')
-    if os.path.exists(bc):                              # (from the painter's pixels, as redraw_zones does, over the sign:
-        x0, y0, x1, y1 = BOX                            # under it, the sign as the zone 'ramen' left it)
-        sg = sign_top(BOX); keep = np.array([[y < sg[x] for x in range(x0, x1)] for y in range(y0, y1)])
-        for t in ('city', 'unlit'):
-            b = np.asarray(Image.open(os.path.join(EDITS, f'narufloor_before_{t}.webp')).convert('RGBA')).astype(float)
-            L[t][y0:y1, x0:x1][keep] = b[keep]
-    A = {t: a.copy() for t, a in L.items()}
+    A = {t: a.copy() for t, a in L.items()}             # (the zone's input: its before crop over the sign's line and,
+    x0, y0, x1, y1 = BOX                                # right of the corner, over the rooftop unit; under them what
+    sg = sign_top(BOX)                                  # the zones before it leave)
+    keep = np.array([[y < (sg[x] if x < XWN else 160) for x in range(x0, x1)] for y in range(y0, y1)])
+    for t in ('city', 'unlit'):
+        b = np.asarray(Image.open(os.path.join(EDITS, f'narufloor_before_{t}.webp')).convert('RGBA')).astype(float)
+        A[t][y0:y1, x0:x1][keep] = b[keep]
     draw(A['city'], A['unlit'], BOX, write=False)
-    R, T, P, mask, lit = draw.last
-    old_m = np.asarray(Image.open(os.path.join(EDITS, 'window_panes_before.webp')).convert('RGBA')).astype(float)
-    old_l = np.asarray(Image.open(os.path.join(EDITS, 'window_lit_ukki_before.webp')).convert('RGBA')).astype(float)
-    B = (1110, 40, 1300, 400)
+    R, T, P, mask, lit = draw.last[:5]
+    old_m = np.asarray(Image.open(os.path.join(ASSETS, 'window_panes.webp')).convert('RGBA')).astype(float)
+    old_l = np.asarray(Image.open(os.path.join(ASSETS, 'window_lit_ukki.webp')).convert('RGBA')).astype(float)
+    B = (1100, 0, 1390, 400)
     def crop(a): return np.clip(a[B[1]:B[3], B[0]:B[2], :3], 0, 255).copy()
     def add(z, m, l, at):
         ax, ay = at; g = (m[..., 3] >= 128)[..., None]
@@ -477,7 +778,7 @@ def preview(out):
         return np.clip(z, 0, 255)
     shots = {'city_before': crop(L['city']), 'city_after': crop(A['city']),
              'unlit_before': crop(L['unlit']), 'unlit_after': crop(A['unlit']),
-             'lit_before': add(crop(L['city']), old_m, old_l, (1188, 100)), 'lit_after': add(crop(A['city']), mask, lit, WL[:2])}
+             'lit_before': add(crop(L['city']), old_m, old_l, WL[:2]), 'lit_after': add(crop(A['city']), mask, lit, WL[:2])}
     for k, z in shots.items():
         for gm, suf in ((1.0, ''), (0.55, 'b')):
             Image.fromarray(np.round(255 * (z / 255) ** gm).astype(np.uint8)).resize(((B[2] - B[0]) * 4, (B[3] - B[1]) * 4), Image.NEAREST).save(os.path.join(out, f'{k}_x4{suf}.png'))

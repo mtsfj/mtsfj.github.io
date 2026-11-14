@@ -3,6 +3,10 @@
 
     python3 tools/naruto_roof.py      (once, on the layers as they are; it stops if the floor is gone already)
 
+(Since redrawn over it by tools/naruto_floor.py, the zone 'narufloor' of tools/redraw_zones.py: the parapet, its coping,
+the lip and the near side on the street's vanishing point, the garden set on the new coping with this tool's own plants,
+the downpipes; its helpers and its garden() are used from there.)
+
 What was there: over Naruto's window (the overlay WL, x 1188..1268 from y 100) the building rose out of the frame: a balcony
 (its railing, its slab's lit lip), the floor's wall behind it, the concrete pillar at its far end (x 1124..1149) and, over
 the right house's eave, the floor's near side wall (the painter's teal, x 1288..1376).
