@@ -111,6 +111,8 @@ BEAM_K = [(10, 16, 26), (13, 21, 36), (10, 19, 34), (7, 16, 30), (6, 13, 22), (4
 K_FASC = (0.075, 0.02)                           # the hip's fascia: its height under the soffit, the gutter's gap to it
 K_RAFT = 0.45                                    # the rafters' spacing under the overhang
 K_HEAD = 5.22                                    # the rain head on the hip's gutter: m from the axis (over the wall's corner)
+K_SEAT = dict(off=(-3, 3), seat=(325, 199), r=(11.0, 4.5), k=0.38)   # Kirua: his rig's move up the slope (street.js KOFF,
+                                 # tools/killua_seat.py), his seat before it; his shadow on the tiles round it (radii px, depth)
 RET_D = (0.042, 0.010)                           # the near return's tile ends, face on: their radius, their rise over the lip
 # the downpipes: the painter's (Kirua's: tools/kirua_gutter.py's, x 326..330 against the far corner; the dojo's, x 137..140
 # on its corner), each now fed from its gutter by a collecting box under the gutter's end and a swan neck (yobi-toi:
@@ -486,6 +488,12 @@ def draw_layers(city, unlit, box, which, sunb=None):
         new[on, :3] = np.array(BEAM_K, float)[u[on]]; new[on, 3] = 255
         rim = span & ~on & (sr >= s0 - 0.006) & (sr <= s1 + 0.006)
         new[rim, :3] = SOFFIT_K; new[rim, 3] = 255
+        # Kirua's soft shadow on the tiles round his seat (he sits on them, a little up the slope: K_SEAT)
+        sx, sy = K_SEAT['seat'][0] + K_SEAT['off'][0], K_SEAT['seat'][1] + K_SEAT['off'][1]
+        rx, ry = K_SEAT['r']
+        wgt = np.exp(-(((X + 0.5 - sx) / rx) ** 2 + ((Y + 0.5 - sy) / ry) ** 2))
+        tiles = hit & np.isin(kind, (TILE, DISC, LIP)) & (wgt > 0.04)
+        new[tiles, :3] = new[tiles, :3] * (1 - K_SEAT['k'] * wgt[tiles])[:, None]
     ch = np.abs(new - O).max(-1) > 0
     un = U.copy(); un[ch] = new[ch]                    # (the power cut: the same, the painter's being the lit layer there)
     city[y0:y1, x0:x1] = new; unlit[y0:y1, x0:x1] = un

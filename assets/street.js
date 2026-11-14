@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=109", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=13", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=15", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=2", "x": 908, "y": 441, "w": 33, "h": 237}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=110", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=4", "x": 963, "y": 226, "w": 43, "h": 137}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=2", "x": 1081, "y": 288, "w": 30, "h": 136}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=13", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=15", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=2", "x": 908, "y": 441, "w": 33, "h": 237}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=109') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=110') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4138,7 +4138,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=90', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=91', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7440,13 +7440,18 @@
     head: { x: 305, y: 136, w: 34, h: 30, cols: 9, rows: 5 },
     rest: { x: 288, y: 138, w: 61, h: 88 }, seat: [325, 199], chest: [313.8, 177.3], tip: { w: 8, h: 11, seat: [4.6, 7.6] },
     knee: [-0.15, -0.12, -0.09, -0.06, -0.03, 0, 0.035, 0.07, 0.105], ankle: [-0.02, 0, 0.02] };
+  // he sits a little up the slope, on the tiles (the roof redrawn, tools/left_eaves.py): his whole rig moved by KOFF, the
+  // eave's tiles in front of his seat cut from his body's frames (tools/killua_seat.py), his shadow on them (left_eaves)
+  const KOFF = [-3, 3];
+  for (const k of ['body', 'legs', 'head', 'rest']) { KM[k].x += KOFF[0]; KM[k].y += KOFF[1]; }
+  KM.seat = [KM.seat[0] + KOFF[0], KM.seat[1] + KOFF[1]]; KM.chest = [KM.chest[0] + KOFF[0], KM.chest[1] + KOFF[1]];
   const KIL = { x: KM.rest.x, y: KM.rest.y, w: KM.rest.w, h: KM.rest.h, state: 'sit', t: 0, edge: [], dash: null, sparks: [], up: false, down: false, tick: 0,
     f: {}, br: Math.random() * 4.6, wind: 0, wt: 0, pitch: 2, pt: 0, doze: 30 + Math.random() * 40, dz: -1, start: 0, ph: null };
   // his legs and his shirt's hem at rest: the shin's angle k (rad, + under) and speed, the foot's lag a, the hem e
   // (steps); the next little kick; the bursts' clock
   const kilPh = () => ({ k: 0, kv: 0, a: 0, av: 0, k2: 0, kv2: 0, a2: 0, av2: 0, e: 0, ev: 0, kick: 0, f: 0, next: 3 + Math.random() * 8, t: Math.random() * 60, acc: 0 });   // (k2, a2: the far leg's)
   KIL.ph = kilPh();
-  const KSRC = { body: 'assets/killua_body.webp?v=4', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=1' };
+  const KSRC = { body: 'assets/killua_body.webp?v=5', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=1' };
   const kilMesh = new THREE.Group(); scene.add(kilMesh);        // his layers, hidden together while he is a bolt
   const kilPart = {};
   for (const [n, z] of [['body', 0.018], ['legs', 0.019], ['head', 0.02]]) {
@@ -7476,7 +7481,7 @@
   // between his body and his legs, in his group (hidden with him while he is a bolt, graded with him); in a gust the sleeper's string
   // leans with the rain. Under reduced motion it stays in his hand, still; Godspeed and the finale's charge put it back there at
   // once. Debug: ?yoyo in the URL brings a trick 4 s after the page opens ----
-  const YO = { x: 310, y: 172, w: 44, h: 78, K: 2, hand: [326, 184], drop: 56, t: -1, kind: 'sleeper', drawn: false, acc: 0, next: /[?&]yoyo\b/.test(location.search) ? 4 : 20 + Math.random() * 25 };   // (debug: ?yoyo brings a trick 4 s after the page opens)
+  const YO = { x: 310 + KOFF[0], y: 172 + KOFF[1], w: 44, h: 78, K: 2, hand: [326 + KOFF[0], 184 + KOFF[1]], drop: 56, t: -1, kind: 'sleeper', drawn: false, acc: 0, next: /[?&]yoyo\b/.test(location.search) ? 4 : 20 + Math.random() * 25 };   // (debug: ?yoyo brings a trick 4 s after the page opens)
   const YO_KIND = ['sleeper', 'throw', 'loop'], YO_DUR = { sleeper: 3.4, throw: 0.95, loop: 1.15 };
   const yoC = document.createElement('canvas'); yoC.width = YO.w * YO.K; yoC.height = YO.h * YO.K; const yog = yoC.getContext('2d');
   const yoTex = new THREE.CanvasTexture(yoC); yoTex.magFilter = yoTex.minFilter = THREE.NearestFilter; yoTex.generateMipmaps = false;
@@ -7771,7 +7776,7 @@
   function overRedHero(ev) { const b = heroRed(); return !!b && heroIn(heroPt(ev), b, 2); }
   function overLuffy(ev) { return !LF.dead && LF.a > 0.5 && !!ILF.cells && ILFI.naturalWidth > 0 && SHOP.k > 0.5 && heroIn(heroPt(ev), lfBox(), 2); }   // (at Ichiraku's counter, the shop open)
   function heroAt(k) {                           // where his star shows: by his head
-    if (k === 'kirua') return [331, 134];
+    if (k === 'kirua') return [331 + KOFF[0], 134 + KOFF[1]];
     if (k === 'luffy') { const oy = ILF.cells[LF.c][5]; return [ILF.x + 9, Math.max(ILF.y - oy + ILF.head[LF.c] + 5, 600)]; }
     const b = k === 'naruto' ? heroNar() : heroRed();
     return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
