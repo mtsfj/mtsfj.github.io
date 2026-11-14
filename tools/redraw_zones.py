@@ -297,7 +297,7 @@ ZONES = {
     # the right pole's concrete (the owner: "texture poto"): a near black green column with a lit stripe, an outline, an
     # orange rim with gaps and a stack of smeared bands, now a concrete cylinder in the painter's light (its lit side
     # round from the left, its shade the night's navy, his rim continuous, a fine even grain on its own surface), its
-    # bands, bolt and conduits crisp; its cap, its sign and its foot's shape kept. Drawn by tools/pole_texture.py, after
+    # bands, bolt and conduits crisp; its cap and its foot's shape kept, its sign gone ("vire le truc Uchiha"). Drawn by tools/pole_texture.py, after
     # pole, bfloor, bwall and polefoot (it overlaps them); it also writes the rim's sun mask (assets/street_sun.webp)
     'poletex': dict(box=(1005, 44, 1070, 757), tool='pole_texture'),
     # the street lamp the pole carries (the owner: "luminaire du poteau"): its head a model in the street's camera (a
@@ -348,13 +348,13 @@ ZONES = {
     'eaveK5': dict(box=(322, 186, 374, 290), tool='left_eaves'),
     'eaveD': dict(box=(100, 0, 190, 50), tool='left_eaves'),
     'eaveP': dict(box=(128, 50, 141, 84), tool='left_eaves'),
-    # the small canopy over the pink-lit entrance right of the pole and its end against Ichiraku (the owner: "le haut-vent
-    # juste à droite... petit truc bizarre entre ça et la façade d'Ichiraku"): the draft's corrugated awning, seen from
-    # above though it hangs over the eye, its ragged edge and the dark slot at its end, now a thin aluminium hood in the
-    # street's camera, seen from below (its near end's lit edge, its underside lit by the hall's pink light), the house's
-    # planks down to it and in its shadow under it, the two walls' corner as under the entrance; drawn by
-    # tools/entrance_canopy.py, after pole, ramen, door and poletex (it overlaps their boxes; the pole's pixels untouched)
-    'canopy': dict(box=(1065, 452, 1124, 532), tool='entrance_canopy'),
+    # the pink-lit entrance right of the pole and its end against Ichiraku (the owner: "petit truc bizarre entre ça et la
+    # façade d'Ichiraku", then "haut-vent porte rose : à virer, laisse le renfoncement du mur"): the draft's corrugated
+    # awning, its ragged edge and the dark slot at its end gone, no canopy; the entrance a recess in the wall (its head
+    # seen from below over the transom, its left reveal carried up to it), the house's planks down to it, the two walls'
+    # corner as under the entrance; drawn by tools/entrance_recess.py, after pole, ramen, door and poletex (it overlaps
+    # their boxes; the pole's pixels untouched)
+    'recess': dict(box=(1065, 452, 1124, 532), tool='entrance_recess'),
     # the tops of the buildings (the owner: "faut penser le haut comme un vrai haut d'immeuble avec détail, pas juste un
     # rectangle", "pareil pour les autres toits"), each modelled in the street's camera and drawn on the pixel grid by
     # tools/building_tops.py (its draw() picks the top by the box; it sets night_far.webp to the street's where it
@@ -406,6 +406,25 @@ ZONES = {
         dict(poly=[(944, 205), (1021, 205), (1021, 526), (944, 526)], method='hand', fn='window_depth.b_windows', comp='win_z1_top')]),
     'winC': dict(box=(1074, 112, 1112, 440), nodraft=True, parts=[
         dict(poly=[(1074, 112), (1112, 112), (1112, 440), (1074, 440)], method='hand', fn='window_depth.c_window', comp='win_z1_warm')]),
+    # the entrance right of the pole, redrawn from a draft (the owner, R28: what is detailed comes from the image model,
+    # pixelated into the street): its recess (the reveal, the head over the transom), its frosted glass lit by the hall,
+    # its door and step, in a warm white; the pole laid back in front (front: its trace), the boards above, the corner
+    # with Ichiraku (recess) and Ichiraku's front kept; the draft asked of the street as it is with the hall warm
+    # (entree_draft_in.webp); after recess and naruroof, before hall (which tones its light)
+    'entree': dict(box=(1050, 440, 1215, 733), scale=6, front=POLE_RUNS, fringe=15,
+                   reg=[[(1120, 445), (1210, 445), (1210, 730), (1120, 730)], [(1068, 445), (1116, 445), (1116, 500), (1068, 500)]],
+                   parts=[dict(poly=[(1068, ray(1068, 0.2427)), (1115, ray(1115, 0.2427)), (1115, ray(1115, -0.283) + 1),
+                                     (1068, ray(1068, -0.283) + 1)], method='direct', unlit='rel')]),
+    # the entrance hall's light (the owner: "change le ton porte rose, c'est bizarre"): its pink, on the transom, the
+    # sidelight, the door's slit, the recess and the step and sidewalk before it, in the tone of a Japanese entrance at
+    # night (tools/hall_light.py, TONE: warm, an incandescent white); the street's layer only, the light over the power cut retoned; last: over pole,
+    # polefoot, recess, door and base (it overlaps them)
+    'hall': dict(box=(1066, 500, 1116, 732), tool='hall_light'),
+    # the apartment building's entrance hall left of the pole (the switch box on its wall) in the same warm white (the
+    # owner, choosing it for the entrance right of the pole: "le hall rose de B aussi"): its light retoned as 'hall's,
+    # on the sidewalk only its pink (the shop window's light beside it kept), its power cut's mauve the building's
+    # plaster; drawn by tools/hall_light_b.py, last: over bfloor, pole, poletex and polefoot (it overlaps them)
+    'hallB': dict(box=(975, 520, 1023, 762), tool='hall_light_b'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

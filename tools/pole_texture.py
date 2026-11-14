@@ -11,9 +11,9 @@ conduits clean (the owner: "texture poto").
 What was there: a column of near black green (the painter's body, 0-5 of 255) with a lit stripe down its left edge, a
 dark outline either side, two thin conduits, an orange rim down its right edge with gaps, and between 176 and 476 a
 stack of bands, a lit "elbow", a pink ring and the ghosts of more, all of it smeared (a survey and the owner: "redo the
-pole's texture: a real concrete pole"). Now each row is a cylinder (its columns 1023..1063 above the sign, the house's
-lit edge at 1064 left as it is; 1023..1064 below it, as the foot, tools/pole_foot.py), every pixel shaded from the
-normal of the surface it shows:
+pole's texture: a real concrete pole"). Now each row is a cylinder (its columns 1023..1063 down to row 454, the house's
+lit edge at 1064 left as it is; 1023..1064 under it, where its dark right limb is, as the foot, tools/pole_foot.py),
+every pixel shaded from the normal of the surface it shows:
 - its lit side: the light from the left (the street lamp on its arm, the open street beyond it), its share falling
   off round the cylinder as a side light's does (not in a stripe), at the colour the painter lit its left edge row by
   row (in the street and in the power cut each, the lamp's share with it: the brightest of his columns 1024..1032, over
@@ -36,8 +36,10 @@ normal of the surface it shows:
   two conduits straight from the band under the cap down into the sidewalk (small
   pipes, lit on their left, a thin shadow on the pole to their right where the pole is lit), under the bands; the
   painter's stray dash under the sign (684) gone (R7);
-- what stays as it is: the sign うちは眼科 and its edges (rows 522..661; a line of its shadow under it); the foot's shape
-  and its ground (tools/pole_foot.py: its ellipse, its last rows darker, redrawn here in the new concrete, the ground's
+- the sign that was wrapped round it (うちは眼科 under the Uchiha fan, rows 522..661) gone (the owner: "vire le truc
+  Uchiha du poteau : on a déjà assez de références à Naruto"): the concrete runs through, its light measured over the
+  whole pole at once with the sign's rows left out;
+- what stays as it is: the foot's shape and its ground (tools/pole_foot.py: its ellipse, its last rows darker, redrawn here in the new concrete, the ground's
   occlusion and the lamp's light on the ground untouched); the pole's trace (COCC in street.js) and its silhouette.
 The street and the power cut each from their own pixels (only the lit side's colour differs between them: the lamp).
 Needs Pillow, numpy, scipy.
@@ -53,13 +55,14 @@ EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 BOX = (1005, 44, 1070, 757)                     # the zone (redraw_zones.py 'poletex')
-UPPER = (61, 521, 1023, 1063)                   # the body above the sign: rows, columns
-LOWER = (662, 753, 1023, 1064)                  # under it, to the foot (tools/pole_foot.py's columns)
+UPPER = (61, 454, 1023, 1063)                   # the body: rows, columns (the house's lit edge at 1064 above)
+LOWER = (455, 753, 1023, 1064)                  # from where its dark right limb is 1064, to the foot (tools/pole_foot.py's)
 CAP = (50, 61)                                  # the cap's rows (tools/pole_cut.py), reshaded inside its alpha
 LIT_COLS = (1024, 1032)                         # where the painter's lit side is (its brightest pixel, row by row)
 RIM_COLS = (1059, 1064)                         # and his rim
-HW = [(76, 86), (172, 232), (258, 346), (416, 478), (680, 690)]   # his hardware's rows: not measured, filled round
-RIM_HW = [(76, 86), (174, 208)]                 # (on his rim: the old clamp's)
+HW = [(76, 86), (172, 232), (258, 346), (416, 478), (518, 666), (680, 690)]   # his hardware's and the sign's rows: not
+                                                # measured, filled round
+RIM_HW = [(76, 86), (174, 208), (518, 666)]     # (on his rim: the old clamp's, the sign's)
 LIGHT = np.array([-1.0, -0.06]) / np.hypot(1.0, 0.06)  # the light on the pole's side (X right, Z away from us)
 POW = 1.8                                       # (how fast the lit side falls off round the cylinder)
 U_EDGE = -0.83                                  # where the painter's lit edge is (its columns 1025..1027)
@@ -72,7 +75,6 @@ BOLT = (1032.5, 329.5, 2.6)                     # the bolt (the painter's pink r
 CONDUITS = [(1038, 1040), (1052, 1054)]         # two small pipes up its face (their columns)
 CONDUIT_TOP = 83                                # (they start under the band below the cap)
 GRAIN = dict(seed=1044, mul=0.055, add=1.0, pores=0.010, pore_k=0.82)
-SEAMS = dict(sign_shadow=(0.62, 0.85))          # the rows under the sign: its shadow
 LUMA = np.array([0.299, 0.587, 0.114])
 
 
@@ -163,7 +165,7 @@ class Light:
     """The pole's light in one layer: the lit side's colour E, the rim's R and the shade B, row by row."""
     def __init__(self, arr, unlit):
         self.E, self.R, self.B = {}, {}, {}
-        for part in (UPPER, LOWER):
+        for part in ((UPPER[0], LOWER[1]),):      # (the whole pole at once: one light down it)
             rows = (part[0], part[1])
             E = even(measure(arr, rows, LIT_COLS, 8.0, cool=True))
             Eu = even(measure(unlit, rows, LIT_COLS, 8.0, cool=True))
@@ -229,15 +231,12 @@ def draw_pole(arr, unlit, field, pores, glint, sun=None):
                 if len(j):
                     lit = float(np.clip(f_lit((b + 1.5 - cx) / r) * 2, 0, 1))
                     c[j[0]] *= 1 - 0.3 * lit
-        # under the sign, its shadow
-        if y - LOWER[0] < len(SEAMS['sign_shadow']) and y >= LOWER[0]:
-            c *= SEAMS['sign_shadow'][y - LOWER[0]]
         # the foot's last rows darker (tools/pole_foot.py: the wet foot, the ground's occlusion)
         if y >= FOOT_TOP:
             k = np.clip((np.array([fy[x] for x in xs]) - (y + 0.5)) / FOOT[0], 0, 1)
             c *= (FOOT[1] + (1 - FOOT[1]) * k)[:, None]
         arr[y, xs, :3] = c; arr[y, xs, 3] = 255; ch[y, xs] = True
-        if sun is not None and y <= UPPER[1]:  # (the street's sun mask: the rim, where the rim is the sun's)
+        if sun is not None and y < 662:        # (the street's sun mask: the rim, where the rim is the sun's)
             w = L.warm(y)
             sun[y, xs] = 0
             sun[y, xs[g_rim(u) > 0.25]] = round(255 * w)

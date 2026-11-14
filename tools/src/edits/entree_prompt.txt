@@ -1,0 +1,11 @@
+This is an enlarged crop (each painting pixel is a 6 x 6 block) of a pixel-art painting of a narrow Japanese residential street at night. These houses stand on the right-hand side of the street: their fronts recede toward a vanishing point far to the LEFT, out of the frame, so their horizontal lines (ledges, the head of the doorway, the foot of the walls on the sidewalk) slope gently toward the left. A concrete utility pole stands in front at the left edge.
+
+Redraw only the narrow house entrance (genkan) between the pole and the ramen shop's plain dark wall on the right, from the boards above it down to its step on the sidewalk, cleaner and more legible, as a real recessed entrance of a small Japanese apartment house:
+- the wall around it in dark vertical wooden boards, as now, down to the head of the doorway;
+- the doorway set back into the wall (a recess about 20 cm deep): its left side wall (the reveal) visible between the pole and the door, its plain head just above a frosted glass transom;
+- in the recess, as now: the frosted glass transom; on the left a narrow frosted glass sidelight in a slim dark frame; a plain dark door with a narrow vertical frosted window and a lever handle;
+- the hall behind is lit by a warm white incandescent ceiling light (soft amber-white, not pink, not violet): it glows evenly through the frosted glass of the transom, the sidelight and the door's window, and lights a little of the recess's side wall and the concrete step;
+- a concrete step in the recess, its front edge on the sidewalk.
+No awning, no canopy, no sign, no lamp, no box, no plant.
+
+Everything else stays exactly as it is, pixel for pixel: the pole, the boards and the ledge above, the ramen shop on the right (its dark plaster wall, its round wall lamp, its doors), the sidewalk. Keep the painter's palette and light: deep night blues, dark walls, the warm white glow of the hall. Same pixel size, crisp pixels, clean straight edges, no speckle noise, no blur. Do not add any text, person or object.
