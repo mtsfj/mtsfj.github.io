@@ -315,10 +315,12 @@ ZONES = {
     # wind data (roof_sway.webp) and the low sun's glint on the lip (street_sun.webp)
     'narufloor': dict(box=(1120, 0, 1381, 390), tool='naruto_floor'),
     # the drinks corner on the left sidewalk (the owner: "à refaire : le haut-vent toit tuile au-dessus soda, les soda, la
-    # caisse soda"), drawn in the street's camera by tools/soda_corner.py: the kiosk's lean-to in old Japanese tiles (its
-    # pans where the painter's troughs were: the eave's drips stay), the three machines (their comps z7_vending and
-    # z7_vendoff written for tools/bake_retouches.py), the kiosk's sign, its service window (its comp win_z7_kiosk,
-    # handed on in COMP_OUT after the kiosk zone's) and its plates; after the kiosk zones, whose boxes it overlaps
+    # caisse soda", then "le haut-vent juste trop grand, pentu, faut le refaire entier"), drawn in the street's camera by
+    # tools/soda_corner.py: the kiosk with its top at 3 m, Kirua's wall and the tree run on where the old lean-to hid
+    # them, a small low-pitched tiled canopy over the machines, the three machines (their comps z7_vending and z7_vendoff
+    # written for tools/bake_retouches.py; their perks' shields; street.js PERKS, BZ.soda and DRIPS 'kiosk' written
+    # from them), the kiosk's sign, its service window (its comp win_z7_kiosk, handed on in COMP_OUT after the kiosk
+    # zone's) and its plates, all in the painter's grain; after the kiosk zones, whose boxes it overlaps
     'soda': dict(box=(227, 405, 390, 735), tool='soda_corner'),
     # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940; the owner: "le
     # bâtiment entre Pokécenter et bâtiment refait : mur lisse"): its glazed tiles made one plaster from its cap to the

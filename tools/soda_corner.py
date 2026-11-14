@@ -1,54 +1,47 @@
 #!/usr/bin/env python3
-"""The drinks corner on the left sidewalk: the tobacco kiosk's lean-to roof in old Japanese tiles, the three drinks
-machines under it, the kiosk's front (the owner: "à refaire : le haut-vent toit tuile au-dessus soda, les soda, la
-caisse soda").
+"""The drinks corner on the left sidewalk: the tobacco kiosk, the three drinks machines set in its side, a small tiled
+canopy over them, and what the old big lean-to hid (the owner: "à refaire : le haut-vent toit tuile au-dessus soda, les
+soda, la caisse soda"; then "trop de contraste, pas assez de grain ; le haut-vent est juste trop grand, pentu, faut le
+refaire entier"; the machines keep their perk from the zombies game).
 
     (a module: tools/redraw_zones.py's zone 'soda' calls draw() on the street as the zones before it leave it)
-    python3 tools/soda_corner.py --preview DIR   (the layers as they are now, before and after, in DIR; nothing in the
-                                                  repository changes)
+    python3 tools/soda_corner.py --preview DIR   (the zone from its before copies, off, lit and in the stutter, in DIR;
+                                                  nothing in the repository changes)
 
-All of it is drawn in the street's own camera (tools/relief.py's, the one the old machines were built in: VP (700, 615),
-f 959.5 px, the eye 1.41 m up, the sidewalk 0.15 m; a point X across, Y up, Z along the street is seen at
-x = 700 + f X / Z, y = 615 - f (Y - 1.41) / Z): each pixel is cast as 3 x 3 rays onto a few planes and the tiles'
-heightfield, the nearest thing each ray meets gives its colour, the nine are averaged (an edge a pixel soft, as the
-painter's). Measured on the painting:
-- the roof: a lean-to over the kiosk, from Kirua's wall down toward the street. Its top under the flashing on the ray
-  v 0.434 (v = (615 - y) / (700 - x)), its eave on v 0.265, its near verge (in the kiosk's front plane, Z 10.99) from
-  (226, 411) to (306, 511): a plane 1.48 m long and steep (52 deg), from Z 10.99 to 13.88 (its far verge, against the
-  tree, from (325, 452) to (388, 533));
-- the machines: their feet from (282, 725) to (349, 707.5) on the sidewalk, a row 2.08 m long at X -4.785 (three
-  machines of 0.69 m), 2.03 m high (tools/alt_vend.py, retired, measured them so); the kiosk's side wall above them,
-  X -4.81, under the roof.
-
-What is drawn:
-- the tiles: sangawara (J-shaped pan tiles), a pan and a roll in each, one every 23.7 cm along the street (so they
-  shorten toward the vanishing point: 10 px at the near verge, 6 at the far one) with their pans where the painter's
-  corrugations had their troughs at the eave (street.js DRIPS 'kiosk': the water still runs off there), in courses of
-  23.5 cm down the slope (their lines run to the vanishing point), each course's foot a step that catches the light
-  and casts its shadow on the course under it, each roll's end rounded off; shaded as the painter shades a relief (the
-  roll lit along its top, its side toward us darker, the pans darker where they meet the rolls), in his roof's
-  colours, no two tiles quite alike; the far verge's last roll catching the dusk (his lit edge); the flashing at the
-  top as he painted it;
-- the eave: the tiles cut plumb, the eave tiles' lip and the round end of each roll (a row of small ovals, their rims
-  lit on top), a thin fascia under them in the shadow; the near verge: the verge tiles' roll and flange toward us,
-  their courses, the barge board under them with its lit edge, over the kiosk's gable;
-- the kiosk's side wall over the machines (its planks along the street), in the roof's shadow, lit a little by the
-  machines' headers in the comp;
-- the machines (the comp z7_vending lights them; the layers hold them off, as the power cut and the stutter show
-  them): two blue and a red one as the painter had them, each with its lit header, its display window recessed (the far
-  jamb's inside, the tube under the lintel, three shelves of samples: cans and bottles cast as cylinders, so the
-  nearer hides the farther as the eye sees them, lit from the front and darker as they turn; under each shelf its
-  price labels and buttons, now and then one sold out), a backlit poster with a bottle on it, the money plate (the
-  amount in red, the coin and bill slots, the lever, the change cup), the outlet's flap, the plinth, the seams; the
-  roof's shadow on their top; their light on the bezels round the windows. z7_vendoff (the middle display out while
-  its tube stutters) is the street's own pixels where the middle machine lights itself;
-- the kiosk's front: its enamel sign (the painter's glyphs, the red even, the rim cream, its rivets, its shadow on the
-  planks), its service window as the owner chose it (B: a Showa tobacco window) drawn clean: the jamb's inside, the
-  cabin's left wall lit orange, cartons stacked on the shelves behind, the two panes in wooden frames (the right one
-  slid open), the cash tray, the low showcase lit from inside with packs laid in rows; lit in its comp (win_z7_kiosk),
-  shut in the layers (the same, darkened as the painter darkens a shut window: the night's blue); its two small enamel
-  plates, whose marks nobody could read, now 塩 (salt, white on blue) and 〒 (stamps, red on cream), as tobacco shops
-  had them.
+All of it in the street's own camera (tools/relief.py's: VP (700, 615), f 959.5 px, the eye 1.41 m up, the sidewalk
+0.15 m; X across, Y up, Z along the street: x = 700 + f X / Z, y = 615 - f (Y - 1.41) / Z): each pixel cast as 3 x 3
+rays onto a few planes and the tiles' heightfield, the nearest thing each ray meets gives its colour, the nine averaged.
+- The kiosk: its front face on in the plane Z 10.99 (x 229 to 280, as painted), its side wall toward the street at
+  X -4.81 to Z 13.3, the machines set in it, its corner boards; its top now at 3.0 m (the old lean-to had it rise to a
+  gable under a steep roof): a fascia board along its front and its side (a lit moulding at its foot), a slim coping
+  over it (its lit edge, the drip's shadow under it).
+- What the old lean-to hid (R24): Kirua's house's side wall behind the kiosk (X -5.43, the plane the old roof met on
+  the ray v 0.434, to its downpipe at x 327), its weatherboards run on down from the painter's, one every 7.6 cm up
+  the wall in the phase of his lowest ones, each board his own profile of light (a touch firmer), the wall's light
+  his lowest boards', a little lower as it goes down, his grain over them; his downpipe on down the corner behind the
+  kiosk; past the house's corner,
+  the tree's leaves further in (tools/tree_a.py's way: its own drawing again, lower and to the left, in the shade).
+- The canopy (hisashi): fixed to the kiosk's side wall over the machines, 52 cm out, its pitch 4 in 10, from the
+  kiosk's front to just past the machines; its eave on a ray to the vanishing point; small pan tiles (16 cm along the
+  street, three courses), seen at a grazing angle from the street; the eave tiles' round ends a row of small bumps
+  whose rims catch the sky, a thin dark fascia, its near end's verge tiles and board; two wooden brackets under it (an
+  arm, a strut down to the wall); under it the wall in its soft shadow, and its shadow's edge across the machines'
+  headers. The water runs off at each pan (street.js DRIPS 'kiosk', written here).
+- The machines (the comp z7_vending lights them; the layers hold them off, as the power cut and the stutter show them):
+  ordinary drinks machines, two blue and a red one as the painter had them, their light and colour brought into his
+  range (muted, soft at the edges, the displays' glow falling off on the bezels): the display windows recessed (the far
+  jamb's inside, the tube under the lintel, three shelves of samples cast as cylinders, the nearer hiding the farther,
+  lit from the front), price strips and buttons, a dark lower panel with a hint of its colour, the money plate (the
+  amount in red, the slots, the lever, the change cup), the outlet, the plinth; on each header its perk's shield as the
+  zombies game's icons draw it (assets/*_perk.webp; street.js PERKS, near to far): Speed Cola (green, a hand),
+  Double Tap (brown-red, a burst and two rounds), Juggernog (red, the cross); PERKS' columns and BZ.soda written here
+  from the machines' edges. z7_vendoff (the middle one out while its tube stutters): the street's own pixels where it
+  lights itself.
+- The kiosk's front: its enamel sign (the painter's glyphs, soft as he drew them), its service window as the owner chose
+  it (B: a Showa tobacco window) drawn clean, lit in its comp (win_z7_kiosk), shut in the layers (darkened as the painter
+  darkens a shut window), its two plates 塩 and 〒.
+- Grain: everything drawn takes the painter's own (his plaster's fine structure in the alcove, as a ratio to its light),
+  the lit things half of it.
 The power cut: the same, times the painter's own darkening there (1 here). Needs Pillow, numpy, scipy.
 """
 import os
@@ -64,28 +57,39 @@ GROUND = 0.15                                  # the sidewalk's top
 BOX = (227, 405, 390, 735)
 SS = 3                                         # rays per pixel, each way
 
-# ---- the roof (a lean-to): its plane from the measured rays, its tiles ----
-ZN = 10.99                                     # the near verge (the kiosk's front plane)
-V_TOP, V_EAVE = 0.434, 0.265                   # its top (under the flashing) and its eave, as rays
-XT = (226 - VP[0]) * ZN / F; YT = EYE - V_TOP * XT
-XE = (306 - VP[0]) * ZN / F; YE = EYE - V_EAVE * XE
-ZF = F * XE / (388.5 - VP[0])                  # the far verge (where the painter's lit edge meets the eave)
+# ---- the kiosk, Kirua's wall behind it, the canopy over the machines ----
+ZN = 10.99                                     # the kiosk's front plane (and the canopy's near end)
+XW = -4.81                                     # the kiosk's side wall, toward the street (the machines set in it)
+XK0 = (229 - VP[0]) * ZN / F                   # the kiosk front's left edge
+YKT = 3.0                                      # the kiosk's top (its cap): it no longer rises to the old roof
+ZKE = 13.3                                     # the kiosk's far end, a little past the machines
+XK = -5.43                                     # Kirua's house's side wall behind (the old roof met it on the ray v 0.434)
+ZKC = F * XK / (327.5 - VP[0])                 # its far corner (its downpipe, x 326-329)
+V_FLASH = 0.446                                # (over the old roof's flashing: above it, the painter's wall)
+BOARD = 0.0759                                 # Kirua's weatherboards, one every this much up the wall (measured)
+PIPE_X = (326, 330)                            # (his downpipe's columns, at the house's corner)
+FASCIA_K = (2.83, 2.962)                       # the kiosk's fascia board under its coping (Y), its coping to YKT
+# the canopy (hisashi): small, low-pitched, fixed to the kiosk's side wall over the machines, its eave on a ray
+CY_TOP, CPITCH, CPROJ = 2.50, 0.40, 0.52       # its tiles' top at the wall, its pitch (rise over run), its reach
+ZF = 13.12                                     # its far end, just past the machines
+XT, YT = XW + 0.01, CY_TOP
+XE, YE = XW + CPROJ, CY_TOP - CPITCH * CPROJ
 L = np.hypot(XT - XE, YT - YE)
 TU = np.array([XT - XE, YT - YE]) / L          # up the slope (X, Y)
-NR = np.array([TU[1], -TU[0]])                 # the roof's normal (up and out toward the street)
-PITCH = 0.2373                                 # a tile's width along the street: its pans where the painter's troughs
-PAN0 = 10.9275                                 # were (street.js DRIPS 'kiosk', the water off the eave: kept)
-COURSE = 0.235                                 # a course's exposed length up the slope
-DP, RR, BASE, STEP = 0.016, 0.032, 0.02, 0.028  # the pan's depth, the roll's height, the battens, a tile's thickness
+NR = np.array([TU[1], -TU[0]])                 # its normal (up and out toward the street)
+PITCH = 0.16                                   # a tile's width along the street (small tiles)
+PAN0 = ZN - 0.26 * PITCH + 0.31 * PITCH        # (a roll at the near end)
+COURSE = 0.15                                  # a course's exposed length up the slope (three courses)
+DP, RR, BASE, STEP = 0.010, 0.022, 0.012, 0.016  # the pan's depth, the roll's height, the battens, a tile's thickness
 PANW = 0.62                                    # the pan's share of a tile's width (the roll the rest)
-V_KEEP = 0.4265                                # above this ray at the top, the painter's flashing as it is
-LIP = (0.03, 0.050)                           # the eave tiles' front lip (height) and the round ends' radius (m)
-FASCIA = 0.035                                 # the eave's board under the lip
-SODE, BARGE = 0.032, 0.048                     # the verge tiles' flange, the barge board under it (m, down from the plane)
-XLIP = XE + (BASE + STEP) * NR[0]           # the eave tiles' front (plumb)
-HC = BASE + STEP + 0.1 * RR                   # the round ends' centres, over the plane
-XW = -4.81                                     # the kiosk's side wall over the machines
+LIP = (0.016, 0.031)                           # the eave tiles' front lip (height) and the round ends' radius (m)
+FASCIA = 0.03                                  # the eave's board under the lip
+SODE, BARGE = 0.012, 0.028                     # the verge tiles' flange, the board under it (m, down from the plane)
+XLIP = XE + (BASE + STEP) * NR[0]              # the eave tiles' front (plumb)
+HC = BASE + STEP + 0.1 * RR                    # the round ends' centres, over the plane
 XM, ZM0, ZM1, YM = -4.785, 10.99, 13.07, 2.18  # the machines' front, their row's ends, their top
+BRACKETS = (ZN + 0.09, ZF - 0.1)               # the canopy's two brackets (Z): an arm under it, a strut to the wall
+CSHADE = 1.9                                   # its shadow's edge on the machines' fronts (Y): the sky shut out above
 
 # the painter's colours (picked on his roof, his flashing, his far verge's lit edge, the kiosk's planks and the dark
 # under the verge, in the street as it is)
@@ -94,6 +98,7 @@ TILE = [(0.00, (5, 6, 12)), (0.22, (9, 10, 19)), (0.40, (13, 13, 25)), (0.55, (1
 RIM = (118, 48, 70)                            # (his far verge's lit edge: the last roll's crest in the dusk)
 WOOD = (25, 15, 28)                            # (his maroon along the verge)
 WOOD_D = (12, 10, 21)
+EDGE_LIT = (72, 64, 94)                        # (the lit edge of a roof in this light: the painter's flashing)
 PLANK, GROOVE = (18, 29, 58), (12, 20, 40)     # (the kiosk's planks: a board's face, the joint)
 UNDER = (11, 11, 22)                           # (the dark under the verge)
 LUMA = np.array([0.299, 0.587, 0.114])
@@ -147,23 +152,27 @@ def on_roof(dx, dy, Z):
     return NR[0] * px + NR[1] * py, TU[0] * px + TU[1] * py
 
 
-def cast_tiles(dx, dy, n=40):
+def cast_tiles(dx, dy, n=96):
     """Where each ray first meets the tiles (Z, or inf): marched through the tiles' slab, then bisected."""
     a = NR[0] * dx + NR[1] * dy; b = -NR[0] * XE + NR[1] * (EYE - YE)
     hmax, hmin = BASE + RR + STEP + 0.005, BASE - DP - 0.005
-    z0 = np.maximum((hmax - b) / a, ZN - 0.5); z1 = (hmin - b) / a
-    hitz = np.full(dx.shape, np.inf); prev = z0.copy(); found = np.zeros(dx.shape, bool)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        za, zb = (hmax - b) / a, (hmin - b) / a
+    z0 = np.maximum(np.minimum(za, zb), ZN - 0.05); z1 = np.minimum(np.maximum(za, zb), ZF + 0.05)
+    ok = z1 > z0
+    z0 = np.where(ok, z0, ZN); z1 = np.where(ok, z1, ZN + 1e-3)
+    hitz = np.full(dx.shape, np.inf); prev = z0.copy(); found = ~ok
     for i in range(n + 1):
         Z = z0 + (z1 - z0) * i / n
         hr, s = on_roof(dx, dy, Z)
         surf = np.where((Z >= ZN) & (Z <= ZF) & (s >= 0) & (s <= L) & (dx * Z <= XLIP), tile_h(Z, s), -9)
         new = ~found & (hr <= surf)
         lo, hi = prev.copy(), Z.copy()
-        for _ in range(8):                                 # (bisect between the last miss and the hit)
+        for _ in range(7):                                 # (bisect between the last miss and the hit)
             m = (lo + hi) / 2; hr_, s_ = on_roof(dx, dy, m)
             inside = (m >= ZN) & (m <= ZF) & (s_ >= 0) & (s_ <= L) & (dx * m <= XLIP)
-            ok = inside & (hr_ <= np.where(inside, tile_h(m, s_), -9))
-            hi = np.where(ok, m, hi); lo = np.where(ok, lo, m)
+            okk = inside & (hr_ <= np.where(inside, tile_h(m, s_), -9))
+            hi = np.where(okk, m, hi); lo = np.where(okk, lo, m)
         hitz = np.where(new, hi, hitz); found |= new; prev = Z
     return hitz
 
@@ -183,16 +192,17 @@ def shade_tiles(dx, dy, Z):
     cs = s / COURSE; fr = cs - np.floor(cs)
     riser = np.abs(hr - tile_h(Z, s)) > 0.004                       # (a course's butt, toward the eave)
     u = np.clip((phi - PANW) / (1 - PANW), 0, 1)
-    t_pan = 0.44 - 0.20 * np.exp(-phi / 0.07) - 0.20 * np.exp(-(PANW - phi) / 0.06)
-    t_roll = np.where(u < 0.5, 0.46 + 0.56 * (u / 0.5) ** 2, 1.02 - 0.9 * (u - 0.5))
+    t_pan = 0.46 - 0.12 * np.exp(-phi / 0.07) - 0.12 * np.exp(-(PANW - phi) / 0.06)
+    t_roll = np.where(u < 0.5, 0.5 + 0.34 * (u / 0.5) ** 2, 0.84 - 0.7 * (u - 0.5))
     t = np.where(phi < PANW, t_pan, t_roll)
-    t = np.where(fr < 0.06, t + 0.18, t)                          # (a course's lower edge catches the light)
-    t = t * np.where(fr > 0.86, 0.32, 1.0) * np.where(fr > 0.78, 0.78, 1.0)   # (under the next course's butt: its shadow)
+    t = np.where(fr < 0.06, t + 0.1, t)                          # (a course's lower edge catches the light)
+    t = t * np.where(fr > 0.86, 0.6, 1.0) * np.where(fr > 0.78, 0.88, 1.0)   # (under the next course's butt: its shadow)
     t = np.where(riser, 0.16, t)
     ti = np.floor(col); ci = np.floor(cs)
     t = t * (0.88 + 0.22 * hsh(ti, ci))
-    near_top = np.clip((s - (L - 0.07)) / 0.07, 0, 1)            # (under the flashing: its shadow)
-    t = t * (1 - 0.6 * near_top)
+    t = t + 0.16                                                  # (its tiles face the sky: lighter than the wall behind)
+    near_top = np.clip((s - (L - 0.05)) / 0.05, 0, 1)            # (against the wall: its flashing's shadow)
+    t = t * (1 - 0.4 * near_top)
     c = ramp(t, TILE)
     # the far verge: the last roll's crest catching the dusk (the painter's lit edge)
     rim = (ZF - Z < 0.035) & ~riser
@@ -200,85 +210,212 @@ def shade_tiles(dx, dy, Z):
     return c
 
 
-def draw_roof(off, box):
-    """The roof and what hangs from it in the layer (off: the street, RGB floats over box, changed in place).
-    Returns the mask of the pixels drawn and the per-pixel coverage."""
+def kirua_wall(C, box):
+    """Kirua's side wall (X = XK) where the old roof hid it: its siding run on down to the kiosk's top, as the painter's
+    boards above it: one every BOARD up the wall in the phase of his lowest ones, each board his own profile of light
+    (its lit lower edge, its shadowed lap: as a ratio to the wall's light, read off his), the wall's light his lowest
+    boards', a little lower as it goes down (the sky's fading), his grain laid on it afterwards (build); his downpipe on
+    down the corner, its own pixels. C: the layer (whole scene, RGB floats). Returns the colour over box."""
+    from scipy.ndimage import gaussian_filter
+    x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
+    lf = np.stack([gaussian_filter(C[..., c], 3.0) for c in range(3)], -1)
+    Yof = lambda x, y: EYE + (VP[1] - (y + 0.5)) * (F * XK / (x + 0.5 - VP[0])) / F
+    # his boards just over the flashing (rays v 0.447 to 0.50, left of the old window's frame): their phase and profile
+    ref = [(x, y) for x in range(231, 296) for y in range(int(VP[1] - 0.50 * (VP[0] - x)), int(VP[1] - 0.447 * (VP[0] - x)))]
+    Yr = np.array([Yof(x, y) for x, y in ref]); R = np.array([C[y, x] / (lf[y, x] + 1.0) for x, y in ref])
+    best = None
+    for y0p in np.linspace(0, BOARD, 24, endpoint=False):
+        ph = ((Yr - y0p) / BOARD) % 1; b = np.minimum((ph * 8).astype(int), 7)
+        prof = np.array([R[b == i].mean(0) if (b == i).any() else np.ones(3) for i in range(8)])
+        var = (prof @ LUMA).var()
+        if best is None or var > best[0]: best = (var, y0p, prof)
+    _, Y0, prof = best
+    prof = prof.mean(0) + (prof - prof.mean(0)) * 1.25          # (his boards' relief, a touch firmer: no flat wall)
+    out = np.zeros((h, w, 3))
+    for xi in range(w):
+        x = x0 + xi
+        yref = int(VP[1] - 0.452 * (VP[0] - x - 0.5))          # (his lowest clean boards' light, this column)
+        top = lf[max(yref - 2, 0):yref + 1, x].mean(0)
+        pipe = PIPE_X[0] <= x < PIPE_X[1]
+        for yi in range(h):
+            y = y0 + yi
+            if y <= yref: out[yi, xi] = C[y, x]; continue
+            fade = 0.8 + 0.2 * np.exp(-(y - yref) / 45.0)
+            if pipe:                                           # (the downpipe: straight, its own pixels from above)
+                out[yi, xi] = C[yref - 1 - (y - yref) % 9, x] * fade; continue
+            ph = ((Yof(x, y) - Y0) / BOARD) % 1
+            fi = ph * 8 - 0.5; i0 = int(np.floor(fi)) % 8; i1 = (i0 + 1) % 8; t = fi - np.floor(fi)
+            r = prof[i0] * (1 - t) + prof[i1] * t
+            out[yi, xi] = (top * fade + 1.0) * r - 1.0
+    return out
+
+
+def tree_fill(C, A, box, hole):
+    """The tree behind where the old roof was: its own leaves further in (tools/tree_a.py's: the same drawing again,
+    lower and to the left, in the crown's shade), darker toward the alley's foot. C, A: the layer's colour and alpha
+    (whole scene); hole: the pixels to fill over box."""
+    x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
+    out = np.zeros((h, w, 3))
+    ys, xs = np.nonzero(hole)
+    for yi, xi in zip(ys, xs):
+        x, y = x0 + xi, y0 + yi
+        for n in range(1, 8):
+            sx, sy = x + 26 * n, y - 40 * n
+            inside = x0 <= sx < x1 and y0 <= sy < y1 and hole[sy - y0, sx - x0]
+            if sy >= 0 and sx < C.shape[1] and A[sy, sx] >= 250 and not inside:
+                break
+        shade = 0.62 ** n * (1 - 0.35 * np.clip((y - 470) / 70.0, 0, 1))
+        out[yi, xi] = C[sy, sx] * shade
+    return out
+
+
+def kiosk_top(Y):
+    """The kiosk's top by height Y (an array): its coping (its lit edge, its face, the drip's shadow under it), its fascia
+    board (a lit moulding along its foot); NaN below."""
+    out = np.full(Y.shape + (3,), np.nan)
+    f = (Y > FASCIA_K[0]) & (Y <= FASCIA_K[1])
+    out[f] = (24, 20, 36)
+    out[f & (Y < FASCIA_K[0] + 0.014)] = (40, 42, 70)
+    out[f & (Y > FASCIA_K[1] - 0.013)] = (9, 10, 22)
+    c = Y > FASCIA_K[1]
+    out[c] = (28, 34, 60)
+    out[c & (Y > YKT - 0.013)] = (62, 66, 100)
+    return out
+
+
+def old_roof(box):
+    """The pixels the old roof, its verge, its eave and the old machines' beam covered (over box)."""
+    x0, y0, x1, y1 = box
+    X = np.arange(x0, x1)[None, :] + 0.5; Y = np.arange(y0, y1)[:, None] + 0.5
+    v = (VP[1] - Y) / (VP[0] - X)
+    m = (v < V_FLASH) & (v > 0.158) & (X >= 225)
+    m &= ~((X > 325) & (Y < 452 + 1.278 * (X - 325) - 2))       # (right of its far verge: the tree, as painted)
+    m &= ~((X > 352) & (v < 0.236))                             # (under its far eave: the alley's leaves, as painted)
+    return m
+
+
+def draw_upper(C, A, box):
+    """The kiosk's top, its side wall, Kirua's wall behind, the tree, and the canopy over the machines, over box (C, A:
+    the layer, whole scene). Returns the new colour over box, the coverage of what is rebuilt (0..1), and the classes'
+    coverages (for the comps)."""
     x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0
     dx, dy = rays(box)
+    INF = np.inf
     zt = cast_tiles(dx, dy)
-    # the eave: the tiles cut plumb at their ends (the eave tiles' front, a lip hanging under the pans, the round end of
-    # each roll), the fascia board under them: faces toward the street
+    # the eave: the tiles cut plumb at their ends (the eave tiles' front, a lip under the pans, each roll's round end),
+    # the fascia board under them: toward the street
     zl = plane_x(dx, XLIP); yl = EYE + dy * zl
     hl = NR[0] * (XLIP - XE) + NR[1] * (yl - YE); sl = TU[0] * (XLIP - XE) + TU[1] * (yl - YE)
     col = (zl - (PAN0 - 0.31 * PITCH)) / PITCH; phi = col - np.floor(col)
-    rc = (np.floor(col) + PANW + (1 - PANW) / 2) * PITCH + (PAN0 - 0.31 * PITCH)   # (the roll's middle)
-    yc = YE + (XLIP - XE - HC * NR[0]) / TU[0] * TU[1] + HC * NR[1]               # (its round end's centre)
+    rc = (np.floor(col) + PANW + (1 - PANW) / 2) * PITCH + (PAN0 - 0.31 * PITCH)
+    yc = YE + (XLIP - XE - HC * NR[0]) / TU[0] * TU[1] + HC * NR[1]
     rr = np.sqrt((zl - rc) ** 2 + (yl - yc) ** 2)
     manju = (rr < LIP[1]) & (zl >= ZN + 0.02)
     lip = ((sl >= 0) & (hl <= tile_h(zl, np.maximum(sl, 0)))) | ((yl <= yc) & (yl >= yc - LIP[0])) | manju
     lip &= (zl >= ZN - 0.004) & (zl <= ZF)
-    xf = XLIP - 0.012; zf_ = plane_x(dx, xf); yf = EYE + dy * zf_
-    fascia = (yf <= yc - LIP[0] + 0.01) & (yf >= yc - LIP[0] - FASCIA) & (zf_ >= ZN - 0.004) & (zf_ <= ZF)
-    # the verge: the verge tiles' flange and the barge board under it, in the kiosk's front plane (toward the eye)
+    xf = XLIP - 0.008; zf_ = plane_x(dx, xf); yf = EYE + dy * zf_
+    fascia = (yf <= yc - LIP[0] + 0.006) & (yf >= yc - LIP[0] - FASCIA) & (zf_ >= ZN - 0.004) & (zf_ <= ZF)
+    # its near end, toward us: the verge tiles' edge and the board under it
     zv = ZN - 0.004
     hv, sv = on_roof(dx, dy, zv)
-    vtop = BASE + STEP * (1 - (sv / COURSE - np.floor(sv / COURSE))) + 0.026   # (its roll, along the edge)
+    vtop = BASE + STEP * (1 - (sv / COURSE - np.floor(sv / COURSE))) + RR * 0.8
     sode = (hv <= vtop) & (hv >= -SODE) & (sv >= 0) & (sv <= L)
-    barge = (hv < -SODE) & (hv >= -SODE - BARGE) & (sv >= -0.02) & (sv <= L)
-    # the kiosk's side wall above the machines, under the roof
+    barge = (hv < -SODE) & (hv >= -SODE - BARGE) & (sv >= -0.01) & (sv <= L)
+    # the kiosk: its side wall (the machines in it), its front (as it is, under its cap), Kirua's wall behind it
     zw = plane_x(dx, XW); yw = EYE + dy * zw
-    hw_, sw_ = on_roof(dx, dy, zw)
-    wall = (zw >= ZN) & (zw <= ZM1 + 0.02) & (yw >= YM) & (hw_ < 0)
-    # the nearest of them per ray
-    INF = np.inf
+    wall = (zw >= ZN) & (zw <= ZKE) & (yw >= GROUND) & (yw <= YKT)
+    xn = dx * ZN; yn = EYE + dy * ZN
+    front = (xn >= XK0) & (xn <= XW) & (yn >= GROUND) & (yn <= YKT)
+    zk = plane_x(dx, XK); kir = zk <= F * XK / (330 - VP[0])
+    ycb = lambda X: YT + (X - XT) * (YE - YT) / (XE - XT) - (BASE + 0.012)          # (the canopy's underside over X)
+    brk = np.zeros(dx.shape, bool); zbk = np.full(dx.shape, np.inf); bedge = np.zeros(dx.shape, bool)
+    for zb in BRACKETS:
+        Xb, Yb = dx * zb, EYE + dy * zb
+        on_arm = (Xb >= XW) & (Xb <= XE - 0.03) & (Yb <= ycb(Xb)) & (Yb >= ycb(Xb) - 0.045)
+        xa_, ya_ = XW, ycb(XW) - 0.36; xb_, yb_ = XE - 0.06, ycb(XE - 0.06) - 0.03
+        t_ = np.clip(((Xb - xa_) * (xb_ - xa_) + (Yb - ya_) * (yb_ - ya_)) / ((xb_ - xa_) ** 2 + (yb_ - ya_) ** 2), 0, 1)
+        dd = np.hypot(Xb - (xa_ + t_ * (xb_ - xa_)), Yb - (ya_ + t_ * (yb_ - ya_)))
+        on_st = (dd < 0.02) & (Xb >= XW)
+        hitb = (on_arm | on_st) & (zb < zbk)
+        bedge |= hitb & ((on_arm & (Yb > ycb(Xb) - 0.012)) | (on_st & (Yb - (ya_ + t_ * (yb_ - ya_)) > 0.008)))
+        brk |= hitb; zbk = np.where(hitb, zb - 2e-3, zbk)
     cand = np.stack([np.where(zt < INF, zt, INF), np.where(lip, zl - 1e-4, INF), np.where(fascia, zf_, INF),
-                     np.where(sode, zv, INF), np.where(barge, zv - 1e-4, INF), np.where(wall, zw, INF)])
-    k = np.argmin(cand, 0); hit = np.isfinite(cand.min(0))
+                     np.where(sode, zv, INF), np.where(barge, zv - 1e-4, INF), np.where(wall, zw, INF),
+                     np.where(front, ZN, INF), np.where(kir, zk, INF), np.where(brk, zbk, INF)])
+    k = np.argmin(cand, 0); k = np.where(np.isfinite(cand.min(0)), k, 9)   # (8: a bracket; 9: the tree, the alley)
     colr = np.zeros(dx.shape + (3,))
-    m = hit & (k == 0)
+    m = k == 0
     if m.any(): colr[m] = shade_tiles(dx[m], dy[m], zt[m])
-    m = hit & (k == 1)                                            # the tiles' ends: toward the eave, in the eave's own
-    if m.any():                                                    # shade; the round ends' rims catch the sky on top
+    m = k == 1                                                    # the tiles' ends: their lip lit along its top (the
+    if m.any():                                                    # eave's thin edge), the round ends' rims too
         t = np.full(m.sum(), 0.30)
         dym = yl[m] - yc
-        rim = manju[m] & (rr[m] > LIP[1] - 0.012)
-        t = np.where(manju[m], 0.50, t)
-        t = np.where(rim & (dym > 0.004), 0.86, np.where(rim & (dym < -0.012), 0.16, t))   # (its rim: lit on top, dark below)
-        t = np.where(~manju[m] & (yl[m] < yc - LIP[0] + 0.012), 0.14, t)              # (the lip's lower edge: dark)
-        t = t * (0.9 + 0.18 * hsh(np.floor(col[m]), 99))
-        colr[m] = ramp(t, TILE)
-    m = hit & (k == 2)                                            # the fascia: dark wood in the eave's shadow, its lower
-    if m.any():                                                    # edge lit a little
-        edge = yf[m] < YE - FASCIA + 0.012
-        colr[m] = np.where(edge[:, None], np.array(WOOD, float) * 1.1, np.array(WOOD_D, float))
-    m = hit & (k == 3)                                            # the verge tiles: their roll along the edge lit on
-    if m.any():                                                    # top, their flange toward us, each course's foot
-        frv = sv[m] / COURSE - np.floor(sv[m] / COURSE)
-        top = hv[m] > vtop[m] - 0.012
-        t = np.where(top, 0.80, np.where(frv > 0.88, 0.14, np.where(frv < 0.06, 0.5, 0.32)))
-        colr[m] = ramp(t * (0.9 + 0.18 * hsh(np.floor(sv[m] / COURSE), 7)), TILE)
-    m = hit & (k == 4)                                            # the barge board: wood, its lower edge lit
+        rim = manju[m] & (rr[m] > LIP[1] - 0.011)
+        t = np.where(manju[m], 0.52 + 0.25 * np.clip(dym / LIP[1], 0, 1), t)
+        t = np.where(rim & (dym < -0.008), 0.2, t)
+        t = np.where(~manju[m] & (yl[m] < yc - LIP[0] + 0.008), 0.24, t)
+        t = t * (0.92 + 0.14 * hsh(np.floor(col[m]), 99))
+        cc = ramp(t, TILE)
+        edge = rim & (dym > 0.0)                                                     # (its ends' rims lit by the sky: the
+        cc[edge] = np.array(EDGE_LIT, float) * (0.9 + 0.12 * hsh(np.floor(col[m][edge]), 98))[:, None]   # painter's flashing's)
+        colr[m] = cc
+    m = k == 2                                                    # the fascia, in the eave's soft shade
+    if m.any(): colr[m] = np.array(WOOD_D, float) * 1.15
+    m = k == 3                                                    # the verge tiles' edge: lit along its top
     if m.any():
-        edge = hv[m] < -SODE - BARGE + 0.012
-        colr[m] = np.where(edge[:, None], np.array(WOOD, float) * 1.3, np.array(WOOD, float) * 0.8)
-    m = hit & (k == 5)                                            # the side wall: its planks along the street, in the roof's
-    if m.any():                                                    # shadow (darker toward the roof)
-        yy = yw[m]; pl = (yy - YM) / 0.105; fr = pl - np.floor(pl)
-        base = np.where((fr < 0.16)[:, None], np.array(GROOVE, float), np.array(PLANK, float))
-        sh = 0.55 * np.clip(1 - (yy - YM) / 0.9, 0.35, 1)
-        colr[m] = base * sh[:, None]
-    if os.environ.get('SODA_DEBUG'):                              # (a map of what each pixel's middle ray met)
-        pal = np.array([(200, 60, 60), (60, 200, 60), (60, 60, 220), (220, 200, 40), (200, 40, 200), (40, 200, 200), (0, 0, 0)])
-        kk = np.where(hit, k, 6)[..., SS * SS // 2]
-        Image.fromarray(pal[kk].astype(np.uint8)).resize((w * 6, h * 6), Image.NEAREST).save(os.environ['SODA_DEBUG'])
-    cov = hit.mean(-1)
-    out = (colr * hit[..., None]).sum(-2) / np.maximum(hit.sum(-1), 1)[..., None]
-    # (the painter's flashing at the top as it is)
-    X = np.arange(x0, x1)[None, :] + 0.5; Y = np.arange(y0, y1)[:, None] + 0.5
-    keep = (VP[1] - Y) / (VP[0] - X) > V_KEEP
-    cov = np.where(keep, 0, cov)
-    off[:] = off * (1 - cov[..., None]) + out * cov[..., None]
-    return cov > 0, cov
+        top = hv[m] > vtop[m] - 0.01
+        cc = ramp(np.full(m.sum(), 0.46) * (0.92 + 0.14 * hsh(np.floor(sv[m] / COURSE), 7)), TILE)
+        cc[top] = np.array(EDGE_LIT, float) * 0.85
+        colr[m] = cc
+    m = k == 4                                                    # the board under it: wood, its lower edge lit
+    if m.any():
+        edge = hv[m] < -SODE - BARGE + 0.01
+        colr[m] = np.where(edge[:, None], np.array(WOOD, float) * 1.2, np.array(WOOD, float) * 0.85)
+    m = k == 5                                                    # the kiosk's side wall: its planks along the street, as
+    if m.any():                                                    # its front's, a little darker; under the canopy its
+        yy = yw[m]; pl = (yy - GROUND) / 0.105; fr = pl - np.floor(pl)   # soft shadow; its cap along the top
+        base = np.where((fr < 0.16)[:, None], np.array(GROOVE, float), np.array(PLANK, float)) * 0.86
+        ycb = YE - LIP[0] - FASCIA                                 # (the canopy's lower edge)
+        under = (yy < CY_TOP) & (yy > YM)
+        sh = np.where(under, 0.62 + 0.38 * np.clip((ycb - yy) / 0.3, 0, 1) ** 0.7, 1.0)
+        sh = np.where(yy < YM, 0.7, sh)                            # (past the machines, beside them: in their shade)
+        top = kiosk_top(yy)
+        base = np.where(np.isnan(top[:, :1]), base, top)
+        zz = zw[m]
+        base = np.where(((zz < ZN + 0.045) & (yy > YM))[:, None], np.array((34, 46, 82), float), base)   # (its corner boards:
+        base = np.where((zz > ZKE - 0.04)[:, None], np.array((14, 18, 36), float), base)         # the near one lit)
+        colr[m] = base * np.where(np.isnan(top[:, 0]), sh, 1.0)[:, None]
+    m = k == 6                                                    # the kiosk's front: its fascia and coping; under them,
+    cap_f = m & (yn > FASCIA_K[0])                               # as it is
+    if cap_f.any():
+        colr[cap_f] = kiosk_top(yn[cap_f]) * 1.06
+    m = k == 8                                                    # the canopy's brackets: dark wood, a lit upper edge
+    if m.any():
+        colr[m] = np.where(bedge[m][:, None], np.array((34, 32, 52), float), np.array((16, 13, 26), float))
+    # per pixel: each class's share of the rays
+    share = lambda mm: mm.mean(-1)
+    canopy = share(k <= 4); side = share(k == 5); capc = share(cap_f | ((k == 5) & (yw > YKT - 0.045)))
+    keepf = share((k == 6) & ~cap_f); kirc = share(k == 7); back = share(k == 9)
+    dm = (k <= 5) | cap_f | (k == 8)
+    drawn = share(dm)
+    dsum = np.maximum(dm.sum(-1), 1)[..., None]
+    dcol = (colr * dm[..., None]).sum(-2) / dsum
+    old = old_roof(box)
+    kw = kirua_wall(C, box)
+    hole = (back > 0) & old
+    tf = tree_fill(C, A, box, hole)
+    cur = C[y0:y1, x0:x1].copy()
+    # the composition: what is drawn; Kirua's wall and the tree where the old roof was (else the painter's); the kiosk's
+    # front under its cap as it is
+    kir_t = np.where(old, kirc, 0); back_t = np.where(old, back, 0)
+    rest = 1 - drawn - kir_t - back_t
+    new = dcol * drawn[..., None] + kw * kir_t[..., None] + tf * back_t[..., None] + cur * rest[..., None]
+    rebuilt = drawn + kir_t + back_t
+    if os.environ.get('SODA_DEBUG'):
+        pal = np.array([(200, 60, 60), (60, 200, 60), (60, 60, 220), (220, 200, 40), (200, 40, 200), (40, 200, 200),
+                        (120, 120, 120), (230, 150, 150), (250, 250, 250), (20, 90, 20)])
+        Image.fromarray(pal[k[..., SS * SS // 2]].astype(np.uint8)).resize((w * 5, h * 5), Image.NEAREST).save(os.environ['SODA_DEBUG'])
+    return new, rebuilt, dict(canopy=canopy, side=side, drawn=drawn, kirua=kir_t)
 
 
 # ---- the machines: three drinks machines side by side, their fronts toward the street (X = XM) ----
@@ -296,21 +433,25 @@ NPROD = 9                                      # samples per shelf
 # families of his displays' drinks; his blue bodies and his red one)
 BODY = [((12, 21, 44), (14, 24, 50)), ((12, 21, 44), (14, 24, 50)), ((28, 19, 40), (32, 22, 46))]
 BEZEL = [((22, 33, 64), (34, 50, 88)), ((22, 33, 64), (34, 50, 88)), ((44, 26, 48), (64, 36, 62))]
-HEADER = [((16, 22, 46), (36, 62, 112)), ((24, 24, 40), (120, 112, 100)), ((30, 18, 32), (104, 32, 46))]
-HEADMARK = [((22, 28, 54), (104, 128, 168)), ((30, 24, 42), (124, 46, 56)), ((38, 26, 40), (148, 128, 140))]
-ADC = [((12, 22, 30), (28, 66, 54)), ((26, 24, 34), (96, 74, 56)), ((30, 16, 28), (86, 30, 44))]
-BACK = ((22, 24, 48), (186, 202, 210))
-BACK_LO = ((20, 22, 44), (146, 170, 188))
-JAMB = ((36, 40, 72), (142, 168, 190))
-SHELF = ((40, 46, 78), (150, 182, 198))
-TUBE = ((44, 48, 80), (226, 236, 238))
-PRICE = ((16, 20, 44), (44, 74, 128))
-LABEL = ((34, 38, 62), (184, 196, 208))
-LED = ((24, 30, 56), (112, 178, 218))
-SOLD = ((40, 26, 44), (204, 92, 102))
+HEADER = [((13, 20, 40), (28, 40, 70)), ((13, 20, 40), (34, 40, 66)), ((26, 16, 30), (52, 26, 40))]
+# each machine's perk on its header (the zombies game's machines, street.js PERKS: near to far Speed Cola, Double Tap,
+# Juggernog), its shield as the game's icons draw it: the field, the rim, the symbol (lit; off, the same in the dark)
+PERK = [dict(field=(44, 80, 40), rim=(108, 114, 88), sym=(150, 160, 136)),   # Speed Cola: a white hand, its speed
+        dict(field=(74, 30, 22), rim=(112, 92, 70), sym=(176, 128, 52), sym2=(152, 142, 122)),   # Double Tap: a burst, two rounds
+        dict(field=(82, 28, 24), rim=(108, 80, 66), sym=(164, 154, 138))]   # Juggernog: the cross
+ADC = [((12, 22, 30), (20, 38, 36)), ((14, 20, 36), (36, 32, 34)), ((28, 16, 28), (46, 22, 32))]
+BACK = ((22, 24, 48), (164, 182, 198))
+BACK_LO = ((20, 22, 44), (122, 144, 168))
+JAMB = ((32, 36, 66), (118, 140, 164))
+SHELF = ((36, 42, 72), (128, 152, 174))
+TUBE = ((40, 44, 74), (196, 208, 218))
+PRICE = ((16, 20, 44), (40, 62, 104))
+LABEL = ((30, 34, 58), (156, 168, 184))
+LED = ((24, 30, 56), (96, 156, 196))
+SOLD = ((36, 24, 40), (176, 84, 94))
 METAL = ((26, 34, 62), (40, 52, 86))
 SLOT = ((4, 6, 14), (4, 6, 14))
-DIGIT = ((30, 14, 22), (236, 92, 64))
+DIGIT = ((26, 14, 22), (196, 84, 60))
 FLAP = ((8, 12, 26), (12, 18, 36))
 PROD = [(47, 86, 140), (86, 160, 193), (90, 120, 159), (61, 119, 174), (104, 88, 146), (62, 66, 94), (214, 104, 146),
         (190, 62, 68), (76, 168, 100), (222, 150, 74), (226, 208, 168)]
@@ -365,17 +506,34 @@ def machines(box):
     per_machine(on & (yf > HEAD[0] - 0.015) & (yf < HEAD[1] + 0.015) & (u > 0.03) & (u < WM - 0.03), BEZEL)
     hd = on & (yf > HEAD[0]) & (yf < HEAD[1]) & (u > 0.045) & (u < WM - 0.045)
     per_machine(hd, HEADER)
-    mark = hd & (np.abs((yf - (HEAD[0] + HEAD[1]) / 2) - 0.05 * (0.5 - u / WM) * (1 - 2 * (mi == 1))) < 0.012)
-    per_machine(mark, HEADMARK)                                      # (the brand: a band, a curve; no words at this size)
+    # the perk's shield on the header: its field, its rim, its symbol (in the shield's own coordinates s, t)
+    S_ = (u - 0.20) / 0.30; T_ = (2.115 - yf) / 0.23
+    half = np.where(T_ < 0.62, 0.5, 0.5 * (1 - (T_ - 0.62) / 0.38))
+    shield = hd & (T_ >= 0) & (T_ <= 1) & (np.abs(S_ - 0.5) <= half)
+    rimm = shield & ((np.abs(S_ - 0.5) > half - 0.11) | (T_ < 0.08))
+    for i, P in enumerate(PERK):
+        sh_i = shield & (mi == i)
+        if not sh_i.any(): continue
+        dk = lambda c: tuple(np.array(c, float) * 0.16 + np.array((10, 12, 24), float))
+        put(sh_i, (dk(P['field']), P['field']))
+        put(rimm & (mi == i), (dk(P['rim']), P['rim']))
+        s_, t_ = S_, T_
+        if i == 0:                                           # Speed Cola: a hand, its fingers streaming back
+            sym = (((s_ - 0.62) / 0.2) ** 2 + ((t_ - 0.56) / 0.17) ** 2 < 1) | \
+                  ((s_ < 0.62) & (t_ < 0.62) & (s_ + t_ > 0.62) & ((((s_ - t_) * 3.4) % 1) < 0.5))
+            put(sh_i & ~rimm & sym, (dk(P['sym']), P['sym']))
+        elif i == 1:                                         # Double Tap: a burst, two rounds across it
+            th = np.arctan2(t_ - 0.36, s_ - 0.46); rr_ = np.hypot(s_ - 0.46, t_ - 0.36)
+            put(sh_i & ~rimm & (rr_ < 0.12 + 0.09 * np.abs(np.cos(4 * th))), (dk(P['sym']), P['sym']))
+            rounds = ((np.abs(s_ + t_ - 1.02) < 0.055) | (np.abs(s_ + t_ - 1.24) < 0.055)) & (s_ > 0.22) & (s_ < 0.86)
+            put(sh_i & ~rimm & rounds, (dk(P['sym2']), P['sym2']))
+        else:                                                # Juggernog: the cross
+            cross = ((np.abs(s_ - 0.5) < 0.11) & (t_ > 0.13) & (t_ < 0.8)) | ((np.abs(t_ - 0.41) < 0.1) & (s_ > 0.19) & (s_ < 0.81))
+            put(sh_i & ~rimm & cross, (dk(P['sym']), P['sym']))
     ad = on & (u > AD[0]) & (u < AD[1]) & (yf > AD[2]) & (yf < AD[3])
-    for i in range(3):                                               # (backlit: brighter at its top)
-        mm = ad & (mi == i)
-        put(mm, ADC[i], (0.78 + 0.3 * np.clip((yf[mm] - AD[2]) / (AD[3] - AD[2]), 0, 1))[:, None])
-    uc = (AD[0] + AD[1]) / 2                                         # (the drink on the poster: a bottle, pale)
-    adm = ad & (((np.abs(u - uc) < 0.045) & (yf > 0.64) & (yf < 0.84)) | ((np.abs(u - uc) < 0.018) & (yf >= 0.84) & (yf < 0.9)))
-    for i in range(3):
-        mm = adm & (mi == i)
-        put(mm, (tuple(np.array(ADC[i][0]) * 1.4), tuple(np.array(ADC[i][1]) * 0.55 + 90)))
+    for i in range(3):                                               # (the lower panel: dark, a hint of its colour, a
+        mm = ad & (mi == i)                                          # little light at its top)
+        put(mm, ADC[i], (0.85 + 0.25 * np.clip((yf[mm] - AD[2]) / (AD[3] - AD[2]), 0, 1) ** 2)[:, None])
     mo = on & (u > MONEY[0]) & (u < MONEY[1]) & (yf > MONEY[2]) & (yf < MONEY[3])
     put(mo, METAL)
     dig = mo & (yf > 0.94) & (yf < 0.975) & (u > 0.49) & (u < 0.62)
@@ -456,7 +614,8 @@ def machines(box):
         cl = np.where(cap[:, None], np.array(LABEL[1], float) * np.where(bot[:, None] > 0, 0.95, 0.75), cl)
         sheen = (np.abs(nx - 0.86) < 0.07) & ~cap                          # (a can's metal: a bright line)
         cl = np.where(sheen[:, None], cl * 0.5 + 120, cl)
-        LIT[m] = np.clip(cl * lit_k[:, None], 0, 255)
+        cl = cl * 0.72 + 0.28 * np.array(BACK_LO[1], float)              # (muted, in the display's light)
+        LIT[m] = np.clip(cl * lit_k[:, None] * 0.92, 0, 255)
         OFF[m] = cl * 0.08 + np.array((18, 20, 40), float)
     m = win & (kk == 5)
     if m.any():
@@ -466,14 +625,14 @@ def machines(box):
         LIT[m] = (np.array(BACK_LO[1], float) * (1 - t[:, None]) + np.array(BACK[1], float) * t[:, None]) * (0.86 + 0.14 * fr_[:, None])
     # the roof's shadow on them (the sky shut out under the eave): darker toward their top, off and lit alike on the
     # body (the displays and the lit panels have their own light)
-    occ = 1 - 0.38 * np.clip((yf - 1.3) / (YM - 1.3), 0, 1)
+    occ = (1 - 0.18 * np.clip((yf - 1.3) / (YM - 1.3), 0, 1)) * (1 - 0.45 * np.clip((yf - CSHADE + 0.02) / 0.05, 0, 1))
     OFF *= occ[..., None]
     selflit = win | hd | ad | dig
-    LIT = np.where(selflit[..., None], LIT, LIT * occ[..., None])
+    LIT = np.where(selflit[..., None], np.where((hd & ~shield)[..., None], LIT * (0.4 + 0.6 * occ)[..., None], LIT), LIT * occ[..., None])
     # the displays' light on the bezel and the body round them (lit only): a cold glow falling off
     dwin = np.maximum(np.maximum(ua - u, u - ub), np.maximum(ya - yf, yf - yb))
-    glow = np.clip(1 - dwin / 0.12, 0, 1) ** 2 * on * ~win
-    LIT = LIT + glow[..., None] * np.array((26, 36, 44), float)
+    glow = np.clip(1 - dwin / 0.22, 0, 1) ** 2 * on * ~win
+    LIT = LIT + glow[..., None] * np.array((22, 30, 38), float)
     cov = on.mean(-1)
     n = np.maximum(on.sum(-1), 1)[..., None]
     off = (OFF * on[..., None]).sum(-2) / n; lit = (LIT * on[..., None]).sum(-2) / n
@@ -508,13 +667,13 @@ YUBIN = ['XXXXXXX',
          '...X...',
          '...X...']
 # the cabin's colours, lit (a warm tube behind the head of the window: the owner's pick B, a Showa service window)
-WALL_L = ((166, 96, 54), (118, 60, 40))        # its left wall, top and bottom (the painter's orange)
+WALL_L = ((150, 86, 50), (104, 56, 38))        # its left wall, top and bottom (the painter's orange)
 JAMB_K = (74, 50, 44)
-BACKW = ((112, 74, 50), (84, 54, 42))          # the back wall behind the shelves, top and bottom
-SHELF_K = (196, 146, 92)
+BACKW = ((100, 66, 46), (74, 48, 38))          # the back wall behind the shelves, top and bottom
+SHELF_K = (164, 120, 78)
 STILE = (58, 36, 30)
-CASE_IN = ((200, 160, 102), (152, 106, 64))    # inside the showcase, top and bottom (lit from inside)
-CASE_TOP = (214, 180, 128)
+CASE_IN = ((168, 128, 82), (126, 88, 56))    # inside the showcase, top and bottom (lit from inside)
+CASE_TOP = (180, 148, 104)
 CASE_FR = (70, 44, 34)
 PACKS = [(214, 206, 190), (178, 52, 48), (64, 86, 158), (200, 160, 74), (70, 128, 86), (226, 222, 214), (40, 52, 104),
          (160, 40, 64), (214, 130, 60)]
@@ -544,7 +703,7 @@ def kiosk_window():
         while x + 4 <= gx1 + 1:
             wdt = 5 if hsh(sy, k, 1) < 0.6 else 4; n = 2 + int(hsh(sy, k, 2) * 2)
             for q in range(n):
-                c = np.array(PACKS[int(hsh(sy, k, q, 3) * len(PACKS))], float) * 0.62
+                c = np.array(PACKS[int(hsh(sy, k, q, 3) * len(PACKS))], float) * 0.4 + 0.3 * np.array(BACKW[0], float)
                 top = sy - 1 - 3 * (q + 1)
                 for xx in range(x, min(x + wdt, gx1 + 1)):
                     img[top - gy0, xx - gx0] = c * 1.18
@@ -571,7 +730,7 @@ def kiosk_window():
         x = 238 + (r * 2) % 3; k = 0
         while x + 1 <= gx1:
             wdt = 3 if hsh(r, k, 6) < 0.65 else 2
-            c = np.array(PACKS[int(hsh(r, k, 7) * len(PACKS))], float) * 0.8 + 0.2 * np.array(CASE_IN[0], float)
+            c = np.array(PACKS[int(hsh(r, k, 7) * len(PACKS))], float) * 0.55 + 0.45 * np.array(CASE_IN[0], float)
             for xx in range(x, min(x + wdt, gx1 + 1)):
                 for yy in range(ry, ry + 4):
                     img[yy - gy0, xx - gx0] = c * (1.12 if yy == ry else 0.9 if yy == ry + 3 else 1.0) * (0.8 if xx == x + wdt - 1 else 1.0)
@@ -642,8 +801,8 @@ def kiosk_front(L, box):
     ch[gy0 - y0:gy1 - y0 + 1, gx0 - x0:gx1 - x0 + 1] = True
     # the plates: enamel, a cream rim, 塩 white on blue and 〒 red on cream, their shadow on the planks
     for (px0, py0, px1, py1), field, rim, glyph_rows, gcol in (
-            (PLATES[0], (22, 30, 66), (76, 76, 80), SHIO, (104, 104, 106)),
-            (PLATES[1], (68, 66, 68), (76, 76, 80), YUBIN, (96, 26, 36))):
+            (PLATES[0], (20, 28, 60), (64, 64, 70), SHIO, (92, 92, 96)),
+            (PLATES[1], (56, 56, 62), (64, 64, 70), YUBIN, (88, 26, 36))):
         for y in range(py0, py1 + 1):
             for x in range(px0, px1 + 1):
                 edge = y in (py0, py1) or x in (px0, px1)
@@ -671,15 +830,43 @@ def load(path):
     return np.asarray(Image.open(path).convert('RGBA')).astype(float)
 
 
+GRAIN_SRC = (356, 575, 388, 650)               # the alcove's plaster under its lamp: the painter's grain, no shapes in it
+GRAIN_K = 1.45                                 # (brought to his planks' and his old machines' strength, about 0.13)
+
+
+def grain_field(O, box):
+    """The painter's own grain over box: the relative fine structure of his plaster in the alcove (its luminance over
+    its own pixel-wide blur), mirror-tiled; O: the zone's pixels as handed over (RGB floats over box)."""
+    from scipy.ndimage import gaussian_filter
+    x0, y0, x1, y1 = box; gx0, gy0, gx1, gy1 = GRAIN_SRC
+    P = O[gy0 - y0:gy1 - y0, gx0 - x0:gx1 - x0] @ LUMA
+    lp = gaussian_filter(P, 1.0); rel = (P - lp) / (lp + 4.0); rel = rel - rel.mean()
+    T = np.concatenate([rel, rel[:, ::-1]], 1); T = np.concatenate([T, T[::-1]], 0)
+    yy = np.arange(y1 - y0)[:, None] % T.shape[0]; xx = (np.arange(x1 - x0)[None, :] + 7) % T.shape[1]
+    return np.clip(T[yy, xx] * GRAIN_K, -0.25, 0.25)
+
+
 def build(city, unlit, box, kcomp):
     """Everything over box from the layers as the zones before leave them (whole-scene RGBA floats, not changed):
     the new street and power cut over box, the three comps (RGBA floats), the mask of what changed."""
     x0, y0, x1, y1 = box
     O = city[y0:y1, x0:x1, :3].copy(); U = unlit[y0:y1, x0:x1, :3].copy()
-    new = O.copy()
+    from scipy.ndimage import gaussian_filter
+    new, rebuilt, cls = draw_upper(city[..., :3], city[..., 3], box)
     klit, kch = kiosk_front(new, box)
-    rmask, rcov = draw_roof(new, box)
+    rcov = cls['side']
     moff, mlit, mcov, mid, own = machines(box)
+    # their edges a little soft, as the painter's (a pixel's worth), then everything drawn takes his grain
+    wb = gaussian_filter(mcov, 0.75) + 1e-6
+    soft = lambda a: 0.7 * a + 0.3 * np.stack([gaussian_filter(a[..., c] * mcov, 0.75) for c in range(3)], -1) / wb[..., None]
+    moff, mlit = soft(moff), soft(mlit)
+    G = grain_field(O, box)
+    wsurf = np.clip(cls['drawn'] + cls['kirua'] + kch, 0, 1)
+    new = new * (1 + G * wsurf)[..., None]
+    Gm = np.where(own, 0.5 * G, G)                         # (what lights itself: half of it, as a lit pane shows it)
+    moff = moff * (1 + G)[..., None]; mlit = mlit * (1 + Gm)[..., None]
+    gx0, gy0, gx1, gy1 = GLASS
+    klit = klit * (1 + G[gy0 - y0:gy1 - y0 + 1, gx0 - x0:gx1 - x0 + 1])[..., None]
     new = new * (1 - mcov[..., None]) + moff * mcov[..., None]
     # the street under the lit comps, lit: the machines lit; the old comp's light outside them (the painter's: the bench
     # in the alcove, what the displays lit round them) kept, times the change the street took there
@@ -715,7 +902,6 @@ def build(city, unlit, box, kcomp):
     ocomp[od, :3] = new[os_][od]; ocomp[od, 3] = 255
     # the kiosk's window: its comp as the kiosk zone left it, the inside of the glass the new lit cabin
     kc = kcomp.copy(); cx, cy = COMP_AT
-    gx0, gy0, gx1, gy1 = GLASS
     kc[gy0 - cy:gy1 - cy + 1, gx0 - cx:gx1 - cx + 1, :3] = klit
     kc[gy0 - cy:gy1 - cy + 1, gx0 - cx:gx1 - cx + 1, 3] = 255
     # the power cut: the same, times the painter's own darkening there (unlit over lit, smoothed, channel by channel)
@@ -724,6 +910,44 @@ def build(city, unlit, box, kcomp):
     changed = np.abs(np.round(new) - np.round(O)).max(-1) > 0
     unew = U.copy(); unew[changed] = np.clip(new * np.clip(dark, 0, 1.5), 0, 255)[changed]
     return np.clip(new, 0, 255), unew, vcomp, ocomp, kc, changed
+
+
+def street_js():
+    """What street.js keeps of this corner, from its geometry: the drips off the canopy's eave (DRIPS 'kiosk': a trickle
+    at each pan's lip, falling to the sidewalk under it; 'shoe': none, Kirua's downpipe now runs on down behind the
+    kiosk), the machines' columns for the zombies game's Perk-a-Cola (PERKS x0, x1; BZ.soda: where a click buys).
+    Rewritten each run, the same bytes."""
+    import json, re
+    path = os.path.join(ROOT, 'assets', 'street.js')
+    s = open(path, encoding='utf-8').read()
+    m = re.search(r'  const DRIPS = (\[.*?\]);   // per eave', s)
+    D = json.loads(m.group(1))
+    yc = YE + (XLIP - XE - HC * NR[0]) / TU[0] * TU[1] + HC * NR[1]
+    ylb = yc - LIP[0]                                          # (the lip's lower edge: where a drop hangs)
+    st = []
+    k = 1
+    while PAN0 + k * PITCH < ZF - 0.04:
+        Z = PAN0 + k * PITCH
+        x = int(np.floor(VP[0] + F * XLIP / Z)); y = int(np.floor(VP[1] - F * (ylb - EYE) / Z))
+        land = round(VP[1] + F * (EYE - GROUND) / Z, 2)
+        rate = 20.0 if k == 1 else round(7.0 + 7.0 * float(hsh(k, 41)), 2)
+        st.append([x, y, land, round(9626.0 / Z, 1), round(9.225 / Z, 3), 0.0, rate, int(round(84.0 / Z)), int(round(36.0 / Z))])
+        k += 1
+    for E in D:
+        if E['n'] == 'kiosk':
+            E['st'] = st; E['px'] = int(round(np.mean([q[0] for q in st]))); E['py'] = int(round(np.mean([q[1] for q in st])))
+        if E['n'] == 'shoe':
+            E['st'] = []; E['bu'] = []
+    s = s[:m.start(1)] + json.dumps(D, separators=(',', ':'), ensure_ascii=False) + s[m.end(1):]
+    edges = [int(round(VP[0] + F * XM / (ZM0 + i * WM))) for i in range(4)]
+    for name, (a, b) in zip(('speed', 'tap', 'jugg'), zip(edges[:-1], edges[1:])):
+        s, n = re.subn(r'(\b%s: \{ x0: )\d+(, x1: )\d+' % name, r'\g<1>%d\g<2>%d' % (a, b), s)
+        assert n == 1, name
+    s, n = re.subn(r'"soda":\[\d+,(\d+),\d+,(\d+)\]', r'"soda":[%d,\1,%d,\2]' % (edges[0], edges[-1]), s)
+    assert n == 1, 'BZ.soda'
+    if s != open(path, encoding='utf-8').read():
+        open(path, 'w', encoding='utf-8').write(s)
+    return st, edges
 
 
 def save(arr, path, mode='RGBA'):
@@ -739,11 +963,12 @@ def draw(city, unlit, box=BOX):
     kcomp = kz[1] if kz is not None else load(os.path.join(EDITS, 'kiosk_comp_before.webp'))
     new, unew, vcomp, ocomp, kc, ch = build(city, unlit, box, kcomp)
     x0, y0, x1, y1 = box
-    city[y0:y1, x0:x1, :3] = new; city[y0:y1, x0:x1, 3] = 255
-    unlit[y0:y1, x0:x1, :3] = unew; unlit[y0:y1, x0:x1, 3] = 255
+    city[y0:y1, x0:x1, :3] = new; city[y0:y1, x0:x1, 3] = np.where(ch, 255, city[y0:y1, x0:x1, 3])
+    unlit[y0:y1, x0:x1, :3] = unew; unlit[y0:y1, x0:x1, 3] = np.where(ch, 255, unlit[y0:y1, x0:x1, 3])
     save(vcomp, os.path.join(RET, 'vend_z7_vending.webp'))
     save(ocomp, os.path.join(RET, 'vend_z7_vendoff.webp'))
     if hasattr(rz, 'COMP_OUT'): rz.COMP_OUT['soda'] = ['win_z7_kiosk', kc, None]
+    street_js()
     return ch
 
 
@@ -752,6 +977,8 @@ def preview(out):
     os.makedirs(out, exist_ok=True)
     x0, y0, x1, y1 = BOX
     city = load(os.path.join(ROOT, 'assets', 'layer_city_off.webp')); unlit = load(os.path.join(ROOT, 'assets', 'street_unlit.webp'))
+    city[y0:y1, x0:x1] = load(os.path.join(EDITS, 'soda_before_city.webp'))      # (the zone as the pipeline hands it over,
+    unlit[y0:y1, x0:x1] = load(os.path.join(EDITS, 'soda_before_unlit.webp'))    # but for the kiosk zones' own change)
     kcomp = load(os.path.join(ROOT, 'assets', 'win_z7_kiosk.webp'))
     new, unew, vcomp, ocomp, kc, ch = build(city, unlit, BOX, kcomp)
 
