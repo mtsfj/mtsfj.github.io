@@ -390,8 +390,9 @@ ZONES = {
     # streaks, its slab lines, a window lit through a curtain (its light the comp win_naru_side), a frosted one, a vent,
     # the ramen shop's kitchen hood); the AC unit on the lean-to whole ("il manque la moitié de la ventilation"), redrawn
     # from a draft (tools/src/edits/naruroof_ac_draft.webp), its pipes in a cover into the roof). Last:
-    # over narufloor (whose roof edge it redraws: its rows and the garden kept, the planters' rims written into its wind
-    # data, assets/roof_sway.webp), fan, arceave and ramen (their pixels it does not draw, as they leave them);
+    # over narufloor (whose roof edge it redraws: its rows kept; its garden redrawn from a draft, "Améliore le jardin de
+    # toit de droite", tools/src/edits/naruroof_garden_draft.webp, its wind data, assets/roof_sway.webp, written anew),
+    # fan, arceave and ramen (their pixels it does not draw, as they leave them);
     # street_sun beyond narufloor's box from tools/src/edits/naruroof_before_sun.webp
     'naruroof': dict(box=(1120, 0, 1456, 376), tool='naruto_parapet'),
     # the game centre's sign on the arcade's fascia, between the eave and the doorway (the owner: "un petit logo / devanture

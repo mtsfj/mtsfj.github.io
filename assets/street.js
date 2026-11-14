@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=120", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=14", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=17", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_naru_side": {"src": "assets/win_naru_side.webp?v=1", "x": 1300, "y": 128, "w": 58, "h": 60}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=2", "x": 264, "y": 422, "w": 57, "h": 84}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=121", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=14", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=17", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_naru_side": {"src": "assets/win_naru_side.webp?v=1", "x": 1300, "y": 128, "w": 58, "h": 60}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=2", "x": 264, "y": 422, "w": 57, "h": 84}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=120') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=121') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4143,7 +4143,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=101', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=102', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -9047,7 +9047,7 @@
       uRSky: { value: new THREE.Color(1, 1, 1) }, uRFar: { value: new THREE.Color(1, 1, 1) }, uSkyO: { value: new THREE.Vector2(0, 0) },
       uGlw: { value: new THREE.Vector4(0, 0, 0, 0) }, uGlwC: { value: new THREE.Vector3(0.17, 0.115, 0.15) },   // the valley's lit haze: its strength now; its light (the far city's, warm mauve)
       tUnder: { value: fujiNight.material.map }, tNRaux: { value: farMat.uniforms.tAux.value }, uNRauxR: { value: v4(FAR.box) },
-      tSunL: { value: crisp('assets/street_sun.webp?v=16') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
+      tSunL: { value: crisp('assets/street_sun.webp?v=17') },   // (the street's faces lit by the low sun: build_zzzsunlit.py)
       tFjAux: { value: crisp('assets/fuji_aux.webp?v=10') }, uFjAuxR: { value: new THREE.Vector4(320, 66, 696, 640) },   // (the far layers' box, pixel for pixel: the cherry's, the slope's rim; tools/fuji_aux.py)
       uFarPow: { value: 1 }, uFarLit: { value: 1 }, uFarOn: { value: new THREE.Vector3(1, 1, 1) } };   // (the far city's power, and its lights against the daylight (1 by night): its own lights keep their colour only while both are there)
   })();
@@ -11247,7 +11247,7 @@
   //
   //
   // ==== feature: rooftop garden above Naruto (ROOF) — its own block ====
-  // The garden on the roof over Naruto's window (tools/naruto_roof.py) moves in the gusts as the cherry does in its rustle: on
+  // The garden on the roof over Naruto's window (tools/naruto_parapet.py's, redrawn from a draft) moves in the gusts as the cherry does in its rustle: on
   // each gust's push (once a gust), the same hierarchy of three damped springs (treeTables: the crown, the tiers, the leaves),
   // driven by 2-4 pushes over the gust (treeGust, scaled by its peak), each pixel looking up where it came from (whole pixels,
   // 1-2 px, it never tears). The maple's crown sways from its fork, more toward its top and its tiers' ends, each tier a little
@@ -11260,7 +11260,7 @@
   // dark street: the unlit layer's leaves). Never under reduced motion, nor when it is out of the frame ----
   const ROOF = { state: 0, tries: 0, x0: 0, y0: 0, W: 0, H: 0, t: -1, dur: 0, acc: 0, since: 99, seen: 0, tab: null, P: null, mesh: null,
     tex: null, g2: null, id: null, kd: null, ktex: null, A: null, rows: null, list: null, sky: null, sk: [0, 0, 0, 0], unlit: null, ok: false };
-  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=6');
+  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=7');
   function roofRead(im, x, y, w, h, W, H) {            // an image's pixels (RGBA) in a box of its plane (W x H: the plane's size), once
     const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true });
     g.imageSmoothingEnabled = false; g.drawImage(im, -x, -y, W || im.naturalWidth, H || im.naturalHeight); return g.getImageData(0, 0, w, h).data;
@@ -11270,7 +11270,7 @@
     if (!roofImg.complete || !roofImg.naturalWidth || !ci || !ci.complete || !ci.naturalWidth || !si || !si.complete || !si.naturalWidth) return;
     try {
       const W = B.W = roofImg.naturalWidth, H = B.H = roofImg.naturalHeight / 3, N = W * H;
-      B.x0 = 1127; B.y0 = 34;                          // (tools/naruto_floor.py: its box)
+      B.x0 = 1124; B.y0 = 32;                          // (tools/naruto_parapet.py: GARDEN_CROP)
       const D = roofRead(roofImg, 0, 0, W, 3 * H), C = roofRead(ci, B.x0, B.y0, W, H), M = 40;
       B.sky = roofRead(si, B.x0 + PAD - M, B.y0 + PAD - M, W + 2 * M, H + 2 * M, IW + 2 * PAD, IH + 2 * PAD); B.sk = [B.x0 - M, B.y0 - M, W + 2 * M, H + 2 * M];   // (the sky round it: its drift with the scroll)
       const f32 = () => new Float32Array(N);
@@ -11314,7 +11314,7 @@
     for (let k = 0; k < 48; k++) { const a = Math.PI + (Math.random() * 2 - 1) * 0.75; A.cl[2 * k] = Math.cos(a); A.cl[2 * k + 1] = Math.sin(a); }
     for (const i of ROOF.list) { const c = 2 * (A.m[i] * 16 + A.k[i] - 16); A.u1x[i] = A.cl[c]; A.u1y[i] = A.cl[c + 1]; }
   }
-  const ROOF_AMP = [0, 1.25, 0.85, 0.75];              // (the maple, the shrubs, the hedge: their freedom)
+  const ROOF_AMP = [0, 1.25, 0.85, 0.75];              // (the trees, the shrubs and pots, the climber and the hedge: their freedom)
   const roofSs = (a, b, v) => { const u = Math.max(0, Math.min(1, (v - a) / (b - a))); return u * u * (3 - 2 * u); };
   function roofPow(x, y) {                             // the street's power at a pixel (the fuses' cut, the finale's dark), as its unlit quad reads it
     const U = pwShade.material.uniforms, ss = roofSs;

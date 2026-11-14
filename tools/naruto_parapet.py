@@ -4,7 +4,8 @@ small 3D model in the street's camera (each pixel's ray followed into it): Narut
 the arcade's a low one, its ground floor under its tiled lean-to, Naruto's near side over it.
 
     (a module: tools/redraw_zones.py's zone 'naruroof' calls draw() on the street as the zones before it leave it, after
-     'narufloor', whose roof edge it redraws; it rewrites assets/roof_sway.webp's planters (see below) and street_sun)
+     'narufloor', whose roof edge and garden it redraws; it rewrites assets/roof_sway.webp (the garden's wind data, see
+     below), street_sun and the side window's comp)
     python3 tools/naruto_parapet.py --before        once: the zone's before crops (tools/src/edits/naruroof_before_*.webp)
     python3 tools/naruto_parapet.py --preview OUT [SRC]   the zone drawn on the layers of SRC (default assets/), crops
                                                     before and after in OUT, the model's lines over x6 crops
@@ -58,6 +59,17 @@ floor under it, the window, the railing and the garden stay where they are).
 - The planters: the roof garden's shrubs, hedge and maple stand in concrete planters behind the parapet, their rims just
   showing over the coping under the plants (a lit top, its edge, the planter's face in shade over the coping's lit edge); the leaves the rims cover leave the garden's
   wind data (roof_sway.webp: no longer leaves, never shown there).
+- The garden itself (the owner: "Améliore le jardin de toit de droite"), as the image model painted it in its context
+  crop at 22 h (R28: GARDEN_CROP x8, brightened, on this zone's drawing; tools/src/edits/naruroof_garden_draft.webp from
+  naruroof_garden_prompt.txt; lay_garden): the red-leafed tree's tiered pads on its thin trunk, a pruned pine, round
+  clipped shrubs, a grass tuft and a pink azalea in concrete planters, a potted maple, a bamboo trellis with a climber,
+  the hedge at the corner, lit from below by the city's glow, a warm rim from the street lamp. Over the coping only:
+  first its ground (the old plants taken off: what each covered, from the wind data tools/naruto_floor.py wrote), then
+  the draft where it differs from that ground (each plant whole), the sky clear round them; the power cut at the old
+  garden's ratio. Its wind data written anew over GARDEN_CROP (street.js ROOF's box, 1124, 32): what each leaf covers in
+  both layers, each plant's own leaves and clumps (PLANTS: the trees free up their crowns and out to their pads' ends,
+  the pine stiffer; the shrubs, the pot and the azalea at their tops; the climber and the hedge calmer, the hedge still
+  under the menu's text), where a leaf may show (over the coping).
 - No downpipe (the owner, circling the one down the pillar by the balcony: "Vire cette gouttière"): no scupper, no rain
   head, no pipe, no bracket; the pillar's face one wall from the coping to the sign, in the painter's grain on the
   cleaned pillar's light (its rows' light smoothed down the wall, darker into C's corner), the coping unbroken to the
@@ -171,6 +183,29 @@ FACE_CROP = (1216, 0, 1456, 360)
 LIT = (1300, 128, 1358, 188)
 FROST = (1393, 121, 1419, 136)
 LIT_COMP = 'win_naru_side.webp'
+# the roof garden over the parapet (the owner: "Améliore le jardin de toit de droite"; R28): the image model's painting
+# of it in its context crop at 22 h (GARDEN_CROP x8, brightened, on this zone's drawing; tools/src/edits/
+# naruroof_garden_draft.webp from naruroof_garden_prompt.txt; lay_garden): the red-leafed tree's tiered pads, a pruned
+# pine, round clipped shrubs, a grass tuft and a pink azalea in their concrete planters, a potted maple, a bamboo trellis
+# with a climber, the hedge at the corner; laid where it differs from the garden's ground (the zone's drawing with the
+# old plants taken off: their wind data's ground) over the coping; its wind data written anew (assets/roof_sway.webp,
+# over GARDEN_CROP: street.js ROOF's box), each plant its own (PLANTS: its kind, its reach, how free)
+GARDEN_DRAFT = 'naruroof_garden_draft.webp'
+GARDEN_CROP = (1124, 32, 1252, 160)
+GARDEN_UNLIT = np.array((0.92, 0.94, 0.96))   # (the old garden's power cut over its lit layer: the street lamp's share)
+OLD_SWAY_AT = (1127, 34)                       # (tools/naruto_floor.py's wind data's box: the old garden's)
+# (kind: 1 a tree (freer up its crown and out to its pads' ends), 2 a shrub (its top rows), 3 a climber or the hedge (its
+# top rows, calmer); leaf: which of its pixels are leaves (red, green, any); its reach in the street; its freedom)
+PLANTS = [(2, 'green', (1156, 92, 1188, 111), 0.8),     # the clipped shrubs (the small ones first: each claims its own)
+          (2, 'green', (1149, 109, 1168, 123), 0.8),
+          (2, 'green', (1128, 126, 1148, 140), 0.8),
+          (2, 'green', (1125, 115, 1142, 128), 1.0),    # the grass tuft
+          (2, 'red', (1139, 117, 1158, 132), 0.8),      # the azalea
+          (2, 'red', (1177, 76, 1195, 93), 0.9),        # the potted maple
+          (3, 'green', (1195, 52, 1214, 84), 0.7),      # the climber on its trellis
+          (1, 'green', (1132, 90, 1162, 121), 0.7),     # the pine's pads (stiffer)
+          (1, 'red', (1132, 48, 1199, 92), 1.0),        # the red-leafed tree's pads
+          (3, 'any', (1212, 34, 1250, 62), 0.6)]        # the hedge at the corner
 
 GRAIN = 0.05
 
@@ -613,6 +648,86 @@ def lay_face(city, unlit, box, name, M, done, unit):
     return np.clip(np.round(comp), 0, 255).astype(np.uint8)
 
 
+def lay_garden(city, unlit, box, sway0):
+    """the roof garden as the image model painted it (GARDEN_DRAFT, R28) laid into the street: boxed down to the street's
+    pixels (its x8 brightened input undone: at 22 h the layer's own colours), over Naruto's coping only (the garden stands
+    behind the parapet), right of C's corner; its ground first (the zone's drawing with the old plants taken off: what
+    each covered, sway0's first two blocks, the street's wind data as tools/naruto_floor.py wrote it), then where the draft
+    differs from that ground by more than 10 in a channel (each plant a whole: specks dropped, holes filled) the draft;
+    the power cut at the old garden's ratio (GARDEN_UNLIT). Returns the new wind data (roof_sway.webp's three blocks over
+    GARDEN_CROP: what each leaf covers in each layer; each leaf's plant, clump and freedom, where a leaf may show)"""
+    src = os.path.join(EDITS, GARDEN_DRAFT)
+    if not os.path.exists(src): return None
+    x0, y0, x1, y1 = box
+    gx0, gy0, gx1, gy1 = GARDEN_CROP
+    W, H = gx1 - gx0, gy1 - gy0
+    d = np.asarray(Image.open(src).convert('RGB').resize((W, H), Image.BOX)).astype(float) / 255.0
+    d = (d ** 2.0) * 255.0
+    C = city[gy0:gy1, gx0:gx1].copy(); U = unlit[gy0:gy1, gx0:gx1].copy()
+    # the ground: the old plants off (their wind data: what each covered, where it differs from the layer)
+    sh = sway0.shape[0] // 3; sw = sway0.shape[1]; sx, sy = OLD_SWAY_AT
+    G, GU = C.copy(), U.copy()
+    for yy in range(sh):
+        for xx in range(sw):
+            x, y = sx + xx, sy + yy
+            if not (gx0 <= x < gx1 and gy0 <= y < gy1): continue
+            und = sway0[yy, xx].astype(float)
+            if np.abs(und - C[y - gy0, x - gx0]).max() > 0:
+                G[y - gy0, x - gx0] = und; GU[y - gy0, x - gx0] = sway0[sh + yy, xx]
+    area = np.zeros((H, W), bool)
+    for x in range(max(gx0, 1125), gx1):
+        area[:max(NF.edge_rows(x)[0] - gy0, 0), x - gx0] = True
+    gc = np.where((G[..., 3:4] > 127), G[..., :3], 0.0)
+    sky = G[..., 3] < 128
+    rows = np.arange(16)                                  # (the draft's sky: its gradient over its top rows, over C)
+    med = np.array([np.median(d[y, 0:80], 0) for y in rows])
+    skyc = np.stack([np.polyval(np.polyfit(rows, med[:, c], 1), np.arange(H)) for c in range(3)], -1)[:, None, :]
+    diff = np.where(sky, np.abs(d - skyc).max(-1), np.abs(d - gc).max(-1))
+    obj = (diff > 10.0) & area
+    lab, n = label(obj)
+    sizes = np.bincount(lab.ravel())
+    obj = np.isin(lab, [i for i in range(1, n + 1) if sizes[i] >= 4])
+    obj = binary_fill_holes(obj) & area
+    # the layers: the ground over the area, the draft on the plants
+    newc = np.where(area[..., None], G, C); newu = np.where(area[..., None], GU, U)
+    newc[obj, :3] = d[obj]; newc[obj, 3] = 255
+    newu[obj, :3] = d[obj] * GARDEN_UNLIT; newu[obj, 3] = 255
+    newc[sky & area & ~obj] = 0; newu[sky & area & ~obj] = 0
+    city[gy0:gy1, gx0:gx1] = np.clip(np.round(newc), 0, 255); unlit[gy0:gy1, gx0:gx1] = np.clip(np.round(newu), 0, 255)
+    # the wind data: what each leaf covers (the ground), each plant's leaves, their clumps, their freedom
+    out = np.zeros((3 * H, W, 4), np.uint8)
+    gr = np.where(area[..., None], G, newc); gu = np.where(area[..., None], GU, newu)
+    out[:H] = np.clip(np.round(gr), 0, 255); out[H:2 * H] = np.clip(np.round(gu), 0, 255)
+    blk = out[2 * H:]
+    blk[..., 3] = 255; blk[..., 2] = np.where(area, 255, 0)
+    r, g, b = d[..., 0], d[..., 1], d[..., 2]
+    chroma = d.max(-1) - d.min(-1)
+    leafy = {'red': (r > g + 4) & (r > b - 2), 'green': (g >= r) & ((chroma >= 4) | (d @ LUMA < 9)) & ~((r > b + 3) & (g > b)),
+             'any': np.ones((H, W), bool)}
+    kcount = {}
+    for kind, leaf, (ax0, ay0, ax1, ay1), free in PLANTS:
+        reach = np.zeros((H, W), bool); reach[max(ay0 - gy0, 0):ay1 - gy0, max(ax0 - gx0, 0):ax1 - gx0] = True
+        m = obj & reach & leafy[leaf] & (blk[..., 0] == 0)
+        if not m.any(): continue
+        lab, n = label(m, structure=np.ones((3, 3), bool))
+        ys, xs = np.nonzero(m)
+        top, base = ys.min(), ys.max(); cx, rx = xs.mean(), max(1.0, (xs.max() - xs.min()) / 2)
+        for j in range(1, n + 1):
+            k = kcount.get(kind, 0); kcount[kind] = min(k + 1, 15)
+            pys, pxs = np.nonzero(lab == j)
+            for yy, xx in zip(pys, pxs):
+                if kind == 1:
+                    up = (base - yy) / max(base - top, 1); out_ = min(1.0, abs(xx - cx) / rx)
+                    f = (0.35 + 0.65 * up) * (0.75 + 0.25 * out_)
+                else:
+                    col = np.nonzero(lab[:, xx] == j)[0]
+                    dd = yy - col.min()
+                    f = max(0.0, 1.0 - dd / 4.0) * (0.8 if kind == 2 else 0.6)
+                    if kind == 3: f *= float(np.clip((gy0 + yy - 44) / 4.0, 0, 1))   # (the hedge still under the menu's text)
+                blk[yy, xx, 0] = 16 * kind + k; blk[yy, xx, 1] = int(round(255 * f * free))
+    return out
+
+
 def draw(city, unlit, box=BOX, write=True):
     """The zone (redraw_zones.py): the layers changed in place (whole-scene float RGBA); street_sun written (0 on what is
     redrawn; beyond the zone 'narufloor' from this zone's before crop) and roof_sway.webp's planters; returns what changed
@@ -688,6 +803,11 @@ def draw(city, unlit, box=BOX, write=True):
     swp = os.path.join(ASSETS, 'roof_sway.webp')
     sw_ = np.asarray(Image.open(swp).convert('RGBA')).copy()
     for x, y in planters(city, unlit, box, pal, sw_): done[y - y0, x - x0] = True
+    gsw = lay_garden(city, unlit, box, np.asarray(Image.open(swp).convert('RGBA')).copy())   # (its ground: the file as
+    if gsw is not None:                                                                       # tools/naruto_floor.py wrote it)
+        sw_ = gsw
+        for x in range(1125, GARDEN_CROP[2]):
+            done[GARDEN_CROP[1] - y0:NF.edge_rows(x)[0] - y0, x - x0] = True
     # the pillar's side face beside the pipe (tools/naruto_floor.py's 'side', in the balcony's recess, as it leaves it): the
     # painter's grain on it, a little lighter lower down (the street's light from below)
     nb = NF.BOX

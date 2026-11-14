@@ -1,0 +1,11 @@
+The attached image is an enlarged crop of a pixel-art painting of a Japanese street at night, at 22 h, brightened for legibility (each painting pixel is an 8 x 8 block: keep exactly that pixel grid, that framing and that size; the output must line up pixel for pixel with this input). A small concrete apartment building seen from the street below: its roof parapet runs diagonally from the bottom left up to the top right (its thin lit metal coping), then turns flat along the top right. Behind that parapet, on the roof terrace, is a small roof garden: a red-leafed tree with tiered crowns, low dark shrubs along the parapet, a dark hedge near the corner. Behind the garden, on the left, the plank wall of a taller neighbouring building and its flat top; above, the night sky.
+
+Repaint only that roof garden, behind the parapet, as a lovely little Japanese rooftop garden, as the same painter would: the same pixel-art style, the same night palette, low contrast, soft:
+- a few rectangular concrete planters standing on the terrace behind the parapet, only their top rims just showing over the coping;
+- the small red-leafed tree kept and improved, its tiered rounded leaf pads clean and readable, its thin dark trunk and branches between them;
+- a small pruned Japanese black pine with three or four flat cloud-pruned needle pads, dark green;
+- a few low clipped round shrubs (azaleas), dark green;
+- near the corner on the right, a short bamboo screen fence or a slim wooden trellis with a climbing plant on it;
+- a small potted Japanese maple in a glazed pot;
+- all of it lit softly from below by the city's glow, a faint warm rim on the left edges from the street lamp, their silhouettes clean and crisp against the night sky and the wall behind, no mush, no black outlines, nothing too big: the plants stay small, behind the parapet, the tallest no higher than the red tree is now.
+Keep everything else exactly as it is: the sky, the parapet and its coping, the building's balcony and window, the neighbouring building's wall, the framing. No people, no text, no lights, no furniture.
