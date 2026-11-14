@@ -26,8 +26,8 @@ sourire gardé (le blanc des dents que la découpe prendrait pour le fond, rendu
 main qui salue d'un pixel de côté (wave_b).
 
 La pile : ses bols vides sur le comptoir, à sa gauche, devant le tabouret du coin, vide (STACK : leur colonne, la rangée du
-comptoir à leur profondeur) : derrière son épaule le matin, elle monte au-dessus d'elle le soir ; des bols de faïence claire à la
-bande rouge (BOWL), emboîtés (un bol de plus : son bord STEP pixels plus haut) ; le bol du haut montre son dedans. Il faut Pillow, numpy (et ce qu'il faut à tools/ichiraku_figures.py).
+comptoir à leur profondeur) : six au plus, une petite pile nette ; des bols de ramen blancs dans la lumière chaude (BOWL),
+emboîtés (un bol de plus : son bord STEP pixels plus haut, son dessous plus étroit) ; le bol du haut montre son dedans. Il faut Pillow, numpy (et ce qu'il faut à tools/ichiraku_figures.py).
 """
 import json
 import os
@@ -69,11 +69,12 @@ FACE = {'grin': (2, 12), 'wave': (3, 14)}     # (son visage tourné vers nous, t
                                               #  le milieu du visage à tant de sa colonne, les yeux à tant de son haut de crâne ; les yeux
                                               #  fermés de rire, la cicatrice sous son oeil gauche, le grand sourire)
 STRETCH = (9, 18)                             # (le bras tendu, en caoutchouc : de tant de pixels de la scène, puis de tant)
-BOWL = ((186, 170, 142), (150, 52, 40), (110, 84, 66), (92, 70, 56), (60, 36, 28))   # (des bols de faïence claire à la bande rouge,
-                                             #  dans la clarté de la peinture : le bord, la bande, son ombre, le pied, le dedans)
-STACK = (1179.5, 641)                         # la pile : la colonne de son milieu (à sa gauche, devant le tabouret du coin, vide : derrière la
-                                              #  deuxième vitre), la rangée du comptoir sous elle
-STEP = 2                                      # (un bol emboîté de plus : son bord tant de rangées plus haut)
+BOWL = ((226, 208, 178), (204, 184, 156), (150, 128, 108), (112, 92, 78), (96, 52, 34))   # (des bols de ramen blancs, à la lumière chaude :
+                                             #  le bord, le flanc, son dessous à l'ombre, le pied, le dedans ; « pas de bouillie »)
+STACK = (1165.5, 641)                         # la pile : la colonne de son milieu (à sa gauche, à la place du tabouret du coin, vide : toute
+                                              #  derrière la première vitre, rien devant elle), la rangée du comptoir sous elle
+STEP = 3                                      # (un bol emboîté de plus : son bord tant de rangées plus haut : son bord, son flanc, son
+                                              #  dessous plus étroit, d'un bol à l'autre)
 FAMILIES = 20
 SEED = 7
 
@@ -100,7 +101,7 @@ def keep_teeth(Q, a, crown):
 def centre_hat(Q, a):
     """son chapeau de paille ramené vers le milieu de son dos (au-dessus du milieu de ses hanches ; de HAT) : le chapeau, un
     disque (l'ellipse de la boîte de sa paille : le bord, la bande, le fond, leur trait), déplacé ; là où il était, son gilet
-    (le rouge médian de la rangée), ou le fond au-delà du bord de la figure"""
+    (le rouge médian de la rangée), ou le fond au-delà du bord de la figure (le gilet : l'autre côté de son dos en miroir, ses plis et son ombre, pas un aplat)"""
     r, g, b = Q[..., 0], Q[..., 1], Q[..., 2]; fig = a > 0.5; H, W = fig.shape
     straw = fig & (r > 150) & (g > 105) & (b < 115) & (r - b > 75) & (g - b > 45)
     lab_, n = FG.label(straw); sz = np.bincount(lab_.ravel()); sz[0] = 0
@@ -116,7 +117,7 @@ def centre_hat(Q, a):
     hat = fig & disc(cx)
     blue = fig & (b > r + 20) & (b > 90)                          # (son short : le milieu de ses hanches)
     by = np.nonzero(blue.sum(1) >= 0.5 * blue.sum(1).max())[0]; hips = np.nonzero(blue[by].any(0))[0]
-    dx = int(round(HAT * ((hips.min() + hips.max() + 1) / 2 - cx)))
+    xs = (hips.min() + hips.max() + 1) / 2; dx = int(round(HAT * (xs - cx)))
     if dx == 0: return Q, a
     vest = fig & ~hat & (r > 90) & (g < 0.42 * r) & (b < 0.5 * r)
     Q2, a2 = Q.copy(), a.copy()
@@ -125,7 +126,9 @@ def centre_hat(Q, a):
         outside = np.nonzero(fig[y] & ~hat[y])[0]
         for x in np.nonzero(hat[y])[0]:
             if (dx > 0 and not (outside < x).any()) or (dx < 0 and not (outside > x).any()): a2[y, x] = 0
-            else: Q2[y, x] = c
+            else:                            # (son gilet, l'autre côté de son dos en miroir : ses plis, son ombre ; sinon le rouge de la rangée)
+                xm = int(round(2 * xs - x))
+                Q2[y, x] = Q[y, xm] if 0 <= xm < W and vest[y, xm] else c
     hy, hx = np.nonzero(hat); ok = (hx + dx >= 0) & (hx + dx < W)
     Q2[hy[ok], hx[ok] + dx] = Q[hy[ok], hx[ok]]; a2[hy[ok], hx[ok] + dx] = 1.0
     return Q2, a2
@@ -216,15 +219,14 @@ def wave_b(c):
 
 
 def bowls():
-    """deux cases : un bol vu de côté dans la pile (son bord clair, son corps, son pied) et le bol du haut (son dedans sombre
-    sous son bord) ; 11 pixels de large, aux tons des bols de la boutique"""
+    """deux cases : un bol vu de côté dans la pile (son bord clair sur toute sa largeur, son flanc, son dessous à l'ombre plus
+    étroit, son pied) et le bol du haut (son dedans sous son bord) ; 9 pixels de large (la première vitre en a 11)"""
     rim, body, shade, foot, inside = (np.array(c, float) for c in BOWL)
-    side = np.zeros((4, 11, 4)); top = np.zeros((5, 11, 4))
+    side = np.zeros((4, 9, 4)); top = np.zeros((5, 9, 4))
     def put(img, y, x0, x1, col): img[y, x0:x1, :3] = col; img[y, x0:x1, 3] = 255
-    put(side, 0, 1, 10, rim); side[0, [1, 9], :3] = body
-    put(side, 1, 0, 11, body); put(side, 2, 1, 10, shade); put(side, 3, 3, 8, foot)
-    put(top, 0, 2, 9, rim); put(top, 1, 1, 10, rim); top[1, 2:9, :3] = inside; put(top, 2, 0, 11, body)
-    put(top, 3, 1, 10, shade); put(top, 4, 3, 8, foot)
+    put(side, 0, 0, 9, rim); put(side, 1, 0, 9, body); put(side, 2, 1, 8, shade); put(side, 3, 3, 6, foot)
+    put(top, 0, 1, 8, rim); put(top, 1, 0, 9, rim); top[1, 2:7, :3] = inside; put(top, 2, 0, 9, body)
+    put(top, 3, 1, 8, shade); put(top, 4, 3, 6, foot)
     return side, top
 
 
