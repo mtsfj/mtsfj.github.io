@@ -247,69 +247,137 @@ def top_b(city, unlit, box, lines=None):
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# C: the tall narrow building between the pole and Ichiraku's (zone5's C, x 1066..1121, dark vertical planks). The
-# painter ran its top level at y 66 over its whole front, the level top of its near side wall (the frontal face that
-# shows over Naruto's roof right of x 1122) carried on over a facade that runs to the vanishing point: its own lines (the
-# ledges, zone5's) all run on rays, and the highest of them, the lit ledge at v 1.30, meets the near corner exactly
-# (1122, 66). That ledge is the roof's edge: the front's top runs on its ray, from the near corner down to the pole, and
-# what the painter drew over it (a triangle of planks, up to the level top) is the sky. The edge itself, as the street's
-# other parapets: the painter's ledge made a metal coping (its nose lit by the sky, soft; its face; its drip lip; its
-# shadow on the planks under it, the painter's dark soffit row), a joint cover where the 1.8 m lengths meet. C is 12 m
-# away: what could stand on its roof (a railing, an antenna, a tank) would be a metre a 75 px over a top 55 px wide, so
-# nothing (R25); its near corner columns (1120, 1121) are the next agent's (Naruto's top): its top meets them on the ray.
-C = dict(x0=1065, x1=1119, v_top=(VP[1] - 66.0) / (1122.0 - VP[0]), nose=0.0034, face=0.0170, drip=0.0200,
-         shad=0.0265, joint=1.8, z_near=11.37, XF=5.0, v_soffit=1.2485, v_plank=(1.205, 1.244))
+# C: the tall narrow building between the pole and Ichiraku's (zone5's C, x 1066..1121, dark vertical planks, 11.4 to
+# 13.1 m down the street, its far end behind the pole). Its top, two ways (the owner, on the top drawn on its ray: "le
+# toit a perdu sa profondeur"; he picks between them in the street), C_TOP:
+# 'A' the storey kept, its roof in volume (the painter's): a lean-to roof falling toward the viewer along the street, a
+#   30 degree pitch (it rises 0.57 m a metre away from us, just what keeps its verge on the eye's line: so the verge
+#   is level on the screen, at the height of the near side wall's top, y 66, and the roof's plane is seen edge on). Under
+#   the verge the gable of the street side, a triangle of boards over the painter's lit ledge (on its ray: the string
+#   course at the near eave's height, from the near corner); the verge a metal flashing (its top lit by the sky, soft,
+#   its face, its drip lip lit from the street below as the painter had it, its shadow on the boards, a joint where two
+#   lengths meet); the boards his, each column evened along it (his blotches gone, his seams and his tones kept); the
+#   string course evened along its ray (its lit top, its face, its dark underside).
+# 'B' its top storey taken off (the one with the small window): the roof at the floor ledge over the lit window (v 0.8985),
+#   the ledge the slab's edge, a parapet over it in the same planks, 0.5 m, its metal coping (its nose lit by the sky,
+#   soft; its face; its drip; its shadow), over it the sky (the layer transparent: the far city's sky shows); the next
+#   building's dark corner (x 1122) and what stands over Naruto's roof as they are; the pole in front, as street.js lays
+#   it. Nothing on the roof (from 12 m below, a metre is 75 px: R25).
+C_TOP = 'A'
+C = dict(x0=1065, x1=1119, v_top=(VP[1] - 66.0) / (1122.0 - VP[0]), z_near=11.37, XF=5.0, joint=1.8,
+         verge=(66, 70), ledge=(1.249, 1.3015),                  # A: the verge's rows (its top, the boards' first),
+         x1b=1121, v_floor=0.8985, parapet=0.5, nose=0.0032, face=0.0125, drip=0.0155, shad=0.021,   # B
+         v_plank=(0.902, 0.955))                                 # (B: the storey's own planks the parapet's are taken from)
 
 
-def top_c(city, unlit, box, lines=None):
-    c_ = C; x0, y0, x1, y1 = box
-    O = city.copy()
-    zone = np.zeros((H, W), bool); zone[y0:y1, x0:x1] = True
-    cols = (XX >= c_['x0']) & (XX <= c_['x1'])
-    pole = pole_mask()
-    vT = c_['v_top']
-    xs_ = (XX >= 1070) & (XX <= 1115) & (O[..., 3] > 250)
-    # the painter's ledge: its lit top row (each column's brightest pixel in its top rows), its face
+def c_ledge_tones(O):
+    """The painter's string course (the lit ledge at v 1.30): its lit top row and its face (each column's brightest pixel
+    in its top rows, the rows under it)."""
     lits, faces = [], []
     for x in range(1070, 1116):
         ya, yb = int(np.floor(ray_y(x, 1.3015))), int(np.ceil(ray_y(x, 1.290)))
         k = ya + int(np.argmax(O[ya:yb, x, :3] @ LUMA)); lits.append(O[k, x, :3])
         faces.append(np.median(O[k + 2:int(np.floor(ray_y(x, 1.266))), x, :3], 0))
-    lit = np.median(np.array(lits), 0); face = np.median(np.array(faces), 0)
-    n = noise(23); tex = (1 + 0.025 * n)[..., None]
+    return np.median(np.array(lits), 0), np.median(np.array(faces), 0)
+
+
+def top_c(city, unlit, box, lines=None):
+    return (top_c_a if C_TOP == 'A' else top_c_b)(city, unlit, box, lines)
+
+
+def top_c_a(city, unlit, box, lines=None):
+    c_ = C; x0, y0, x1, y1 = box
+    O = city.copy()
+    zone = np.zeros((H, W), bool); zone[y0:y1, x0:x1] = True
+    pole = pole_mask()
+    new = O[..., :3].copy(); ch = np.zeros((H, W), bool)
+    ya, yb = c_['verge']
+    xs = [x for x in range(1070, c_['x1'] + 1)]
+    # 1. the verge flashing: each of its rows one tone (the painter's, its median along the verge: his dark flecks gone),
+    # a joint where two lengths meet (the flashing at X 5 m: a length every 1.8 m from the near corner)
+    rows = {y: np.median(np.array([O[y, x, :3] for x in xs]), 0) for y in range(ya, yb)}
+    xj = [int(np.floor(x_at(c_['z_near'] + c_['joint'] * (k + 0.5), c_['XF']) - 0.5)) for k in range(3)]
+    for x in range(c_['x0'], c_['x1'] + 1):
+        for y in range(ya, yb):
+            if pole[y, x]: continue
+            t = rows[y]
+            if x in xj and y < yb - 1: t = t * 0.72
+            elif x - 1 in xj and y < yb - 1: t = t * 1.06
+            new[y, x] = t; ch[y, x] = True
+    # 2. the gable's boards, from under the verge down to the string course: each column the painter's, evened along it
+    # (a running median over 7 rows, the seams and each board's tone kept), a little darker under the verge
+    from scipy.ndimage import median_filter
+    for x in range(c_['x0'], c_['x1'] + 1):
+        ye = int(np.floor(ray_y(x, c_['ledge'][1])))           # (the string course's top row)
+        if ye <= yb: continue
+        col = O[yb:ye, x, :3]
+        sm = np.stack([median_filter(col[:, k], size=7, mode='nearest') for k in range(3)], -1)
+        for i, y in enumerate(range(yb, ye)):
+            if pole[y, x]: continue
+            k = 0.88 + 0.12 * min((y - yb) / 4.0, 1.0)
+            new[y, x] = sm[i] * k; ch[y, x] = True
+    # 3. the string course along its ray: each pixel the painter's tone at its ray (the median over the columns at the
+    # same ray: his lit top, his face, his dark underside), evened
+    bins = {}
+    for x in xs:
+        for y in range(int(np.floor(ray_y(x, c_['ledge'][1]))), int(np.ceil(ray_y(x, c_['ledge'][0]))) + 1):
+            bins.setdefault(int(np.floor(V[y, x] / 0.0026)), []).append(O[y, x, :3])
+    tone = {k: np.median(np.array(v), 0) for k, v in bins.items()}
+    for x in range(c_['x0'], c_['x1'] + 1):
+        for y in range(int(np.floor(ray_y(x, c_['ledge'][1]))), int(np.ceil(ray_y(x, c_['ledge'][0]))) + 1):
+            if pole[y, x] or O[y, x, 3] < 250: continue
+            k = int(np.floor(V[y, x] / 0.0026))
+            if k in tone: new[y, x] = tone[k]; ch[y, x] = True
+    ch &= zone & ~pole & (O[..., 3] > 250)
+    ratio = darkening(city, unlit, ch)
+    lay(city, unlit, new, np.ones((H, W)), ch, ratio)
+    if lines is not None:
+        lines += [('seg', (c_['x0'], ya), (c_['x1'] + 1, ya)), ('seg', (c_['x0'], yb), (c_['x1'] + 1, yb)),
+                  ('ray', c_['x0'], c_['x1'], c_['ledge'][1]), ('ray', c_['x0'], c_['x1'], c_['ledge'][0])]
+        lines += [('v', x, ya - 2, yb + 1) for x in xj if c_['x0'] <= x <= c_['x1']]
+    return ch
+
+
+def top_c_b(city, unlit, box, lines=None):
+    c_ = C; x0, y0, x1, y1 = box
+    O = city.copy()
+    zone = np.zeros((H, W), bool); zone[y0:y1, x0:x1] = True
+    pole = pole_mask()
+    lit, face = c_ledge_tones(O)
+    vT = c_['v_floor'] + c_['parapet'] / c_['XF']
+    v_nose, v_face, v_drip, v_shad = vT - c_['nose'], vT - c_['face'], vT - c_['drip'], vT - c_['shad']
+    n = noise(29); tex = (1 + 0.025 * n)[..., None]
     new = O[..., :3].copy(); cov = np.zeros((H, W)); ch = np.zeros((H, W), bool)
     xj = [int(np.floor(x_at(c_['z_near'] + c_['joint'] * (k + 0.5), c_['XF']) - 0.5)) for k in range(3)]
-    v_nose, v_face, v_drip, v_shad = vT - c_['nose'], vT - c_['face'], vT - c_['drip'], vT - c_['shad']
-    for x in range(c_['x0'], c_['x1'] + 1):
-        # the planks run up to the coping: each column's own planks from under the old ledge, carried up a board's height
+    for x in range(c_['x0'], c_['x1b'] + 1):
         pa, pb = int(np.ceil(ray_y(x, c_['v_plank'][1]))), int(np.floor(ray_y(x, c_['v_plank'][0])))
-        for y in range(max(y0, 0), int(np.ceil(ray_y(x, c_['v_soffit']))) + 1):
+        for y in range(y0, int(np.floor(ray_y(x, c_['v_floor']))) + 1):
             if pole[y, x]: continue
             vt, vb = (VP[1] - y) / (x + 0.5 - VP[0]), (VP[1] - y - 1) / (x + 0.5 - VP[0])
-            cv = np.clip((vT - vb) / max(vt - vb, 1e-9), 0, 1)        # (the edge's coverage of the pixel)
-            v = min((vt + vb) / 2, vT - 1e-6)
-            if cv < 0.2:                                               # the sky over the edge
-                if O[y, x, 3] > 0: cov[y, x] = 0; ch[y, x] = True; new[y, x] = O[y, x, :3]
+            cv = np.clip((vT - vb) / max(vt - vb, 1e-9), 0, 1)
+            if cv < 0.2:                                               # over the coping: the sky
+                if O[y, x, 3] > 0: cov[y, x] = 0; ch[y, x] = True
                 continue
-            plank = O[pa + (y - pa) % max(pb - pa, 1), x, :3]
+            v = min((vt + vb) / 2, vT - 1e-6)
+            if v < c_['v_floor']: continue
+            plank = O[pa + (y - pa) % max(pb - pa, 1), x, :3]           # (the storey's own planks, carried up)
             if v >= v_nose: t = lit
             elif v >= v_face: t = face * 1.06 * tex[y, x, 0]
             elif v >= v_drip: t = face * 0.66
             elif v >= v_shad: t = plank * 0.75
             else: t = plank
-            if x in xj and v < v_nose and v >= v_face: t = t * 0.8
-            if x - 1 in xj and v < v_nose and v >= v_face: t = t * 1.08
+            if x in xj and v_face <= v < v_nose: t = t * 0.8
+            if x - 1 in xj and v_face <= v < v_nose: t = t * 1.08
             new[y, x] = t; cov[y, x] = 1.0 if cv > 0.85 else cv; ch[y, x] = True
-    ch &= zone & cols & ~pole
+    ch &= zone & ~pole
     ratio = darkening(city, unlit, ch)
     clear = ch & (cov == 0)
     lay(city, unlit, new, cov, ch & ~clear, ratio)
     for arr in (city, unlit):
-        arr[..., 3][clear] = 0
-        arr[..., :3][clear] = 0
+        arr[..., 3][clear] = 0; arr[..., :3][clear] = 0
     if lines is not None:
-        lines += [('ray', c_['x0'], c_['x1'], vT), ('ray', c_['x0'], c_['x1'], v_drip), ('ray', c_['x0'], c_['x1'], c_['v_soffit'])]
-        lines += [('v', x, ray_y(x, vT) - 2, ray_y(x, v_drip) + 2) for x in xj if c_['x0'] <= x <= c_['x1']]
+        lines += [('ray', c_['x0'], c_['x1b'], vT), ('ray', c_['x0'], c_['x1b'], v_drip), ('ray', c_['x0'], c_['x1b'], c_['v_floor'])]
+        lines += [('v', x, ray_y(x, vT) - 2, ray_y(x, v_drip) + 2) for x in xj if c_['x0'] <= x <= c_['x1b']]
     return ch
 
 
@@ -691,7 +759,7 @@ def draw(city, unlit, box):
 
 BOX_B = (942, 40, 1023, 300)
 TOPS[BOX_B] = top_b
-BOX_C = (1065, 40, 1120, 160)
+BOX_C = (1065, 30, 1122, 290)
 TOPS[BOX_C] = top_c
 BOX_PC = (884, 436, 905, 470)
 TOPS[BOX_PC] = top_pc

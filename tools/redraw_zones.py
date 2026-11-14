@@ -360,15 +360,15 @@ ZONES = {
     # tools/building_tops.py (its draw() picks the top by the box; it sets night_far.webp to the street's where it
     # changes a pixel): the apartment block behind the pole, its parapet's coping with its joints and drip, the rain head
     # its downpipe now stops in, the stair penthouse's top over the parapet (topB, after bwall, polelamp and poletex,
-    # whose boxes it overlaps: the lamp's arm and bracket laid back over it); the narrow building right of the pole, its
-    # front's top on its own ray from the near corner (the painter's level top, a triangle of planks, made sky), the
-    # ledge there its coping (topC); the Pokemon Center's coping over its cladding, its joints (topPC, the ball laid
+    # whose boxes it overlaps: the lamp's arm and bracket laid back over it); the narrow building right of the pole (topC,
+    # building_tops.C_TOP: 'A' its storey kept, the painter's lean-to roof in volume, its verge flashing, its gable's
+    # boards and string course evened; 'B' its top storey taken off, a parapet and coping on the floor ledge, the sky over); the Pokemon Center's coping over its cladding, its joints (topPC, the ball laid
     # back); the end house's gable: the verge tiles' roll and joints, the barge board, the onigawara on the ridge's end,
     # the eave's corner and gutter end (topEnd, the ball laid back); the roof garden across the crossroads: the coping
     # round its corner, four planters with clipped shrubs, the maple in the last (topOden); the oden's own roof between
     # the tree and the sign, its ridge and its courses on the rays (topOdenShop)
     'topB': dict(box=(942, 40, 1023, 300), tool='building_tops'),
-    'topC': dict(box=(1065, 40, 1120, 160), tool='building_tops'),
+    'topC': dict(box=(1065, 30, 1122, 290), tool='building_tops'),
     'topPC': dict(box=(884, 436, 905, 470), tool='building_tops'),
     'topEnd': dict(box=(752, 434, 856, 500), tool='building_tops'),
     'topOden': dict(box=(486, 424, 614, 486), tool='building_tops'),

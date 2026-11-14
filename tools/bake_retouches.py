@@ -29,7 +29,7 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # parapet and penthouse behind the pole, the narrow building's top on its ray, the Pokemon Center's coping, the end house's
 # gable, the roof garden across the crossroads, the oden's roof; each at its box's corner, laid last (over the zones
 # whose boxes they overlap)
-TOPS = [('topB', 942, 40), ('topC', 1065, 40), ('topPC', 884, 436), ('topEnd', 752, 434), ('topOden', 486, 424),
+TOPS = [('topB', 942, 40), ('topC', 1065, 30), ('topPC', 884, 436), ('topEnd', 752, 434), ('topOden', 486, 424),
         ('topOdenShop', 455, 478)]
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in TOPS]
