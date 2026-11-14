@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The tops of the two buildings on the right, over Ichiraku and over the arcade, as the tops of real buildings, from a
 small 3D model in the street's camera (each pixel's ray followed into it): Naruto's a deep flat-roofed concrete block,
-the arcade's a low one, its parapet just over its lean-to, Naruto's near side over it.
+the arcade's a low one, its ground floor under its tiled lean-to, Naruto's near side over it.
 
     (a module: tools/redraw_zones.py's zone 'naruroof' calls draw() on the street as the zones before it leave it, after
      'narufloor', whose roof edge it redraws; it rewrites assets/roof_sway.webp's planters (see below) and street_sun)
@@ -16,7 +16,7 @@ slab's lit lip, read as a gutter), a darker parapet over it, a box at the near c
 far downpipe and a second downpipe from a socket under that box. A first pass (v1) had the logic right but read at 1:1
 as large plain dark masses; v2 kept the logic and gave every surface its parts, its grain and its light (R27); v4 took
 the painter's tall board wall over the arcade away; v5 gives Naruto's building its depth back over it, the AC unit
-whole, and takes the downpipe away; v6 gives that end wall its face (below).
+whole, and takes the downpipe away; v6 gives that end wall its face; v7 takes the arcade's parapet away (below).
 The camera is the street's (tools/arcade_eave.py, tools/r6_sprites.py): the eye 1.41 m up on the street's axis, f 959.5
 px, the vanishing point (700, 615); a line along the street at X m from the axis and Y m up runs on the ray
 v = (Y - 1.41) / X (redraw_zones.ray's v; the interiors' camera, f 1400 and the eye 1.5 m, tools/ichiraku_interior.py,
@@ -65,23 +65,27 @@ floor under it, the window, the railing and the garden stay where they are).
   down. The street lamp's light on the far end as before (tools/naruto_roof.lamp's warm share, the lit layer only).
 - The arcade's building, the right neighbour (the owner on the painter's tall board wall over it, under a high tiled
   eave: "je sais pas à qui ça appartient, le truc en bois", then "Et le mur, juste vire-le : au-dessus de l'arcade, fais
-  juste un truc clean"): a low building, its flat roof's parapet just over its lean-to (tools/arcade_eave.py's canopy,
-  which meets its wall on the ray V_FOOT), from Naruto's near side (x 1297) to the frame: 34 cm of its street face XA,
-  one tone (ARC_TONE: the sky's light a little more up top, the painter's grain faint, the coping's drip shadow under
-  it, a touch darker at its foot, into the lean-to's flashing), and a 7 cm coping (its top arris lit by the sky, its
-  face, its drip edge, a joint every 1.8 m). Over it Naruto's near side (the board wall, its tiled eave, its row of
-  round tiles, the painter's pipes and line on it gone). The AC unit on the lean-to (tools/arcade_eave.py's box, on its
-  stand): as the zones before leave it (ac_unit: what is not the painter's green black, from its top rim down, his pipes
-  over it and past its end left out), the parapet in its shade round it and under it, its pipes in a cover out of its
-  valves' box down the parapet into the lean-to's roof (ac_duct); then (the owner: "il manque la moitié de la
+  juste un truc clean"; then, on the parapet and coping v4 ran over its lean-to: "Boudin en béton derrière la clim :
+  c'est quoi ça ? Ça représente rien, non ?"): a low building, its ground floor under its tiled lean-to
+  (tools/arcade_eave.py's canopy), the lean-to's roof running up to Naruto's near side and meeting it on the ray V_FOOT
+  with a flashing (its fold lit by the sky, its face, a shade on the wall over it); left of x 1346, where the lean-to's
+  far end rises to its top and the painter's dark showed past it, the near side carried down to that edge, the
+  flashing along it. Over it Naruto's near side, its concrete down to the flashing (the board wall, its tiled eave, its
+  row of round tiles, the painter's pipes and line on it gone; under the parapet's top that was there, ray V_ATOP, the
+  wall's last ten rows over it repeated: the drafts were drawn with it, none of theirs is laid there). The AC unit on
+  the lean-to (tools/arcade_eave.py's box, on its stand), against that wall: as the zones before leave it (ac_unit:
+  what is not the painter's green black, from its top rim down, his pipes over it and past its end left out), its
+  pipes in a cover out of its valves' box down the wall into the lean-to's roof at the flashing (ac_duct); then (the
+  owner: "il manque la moitié de la
   ventilation": its side was a dark open frame) redrawn whole by the image model in its context crop (R28: DRAFT_CROP
   x4, brightened, on this zone's drawing; tools/src/edits/naruroof_ac_draft.webp from naruroof_ac_prompt.txt): its fan
   guard fully round in its casing, its side one solid panel with its service cover, the valves' cover low on it and its
   pipes into the cover, its warm rim. Boxed down to the street's pixels, brought to the painting's colours by a gain per
-  channel (its wall to this zone's), laid where it differs from this zone's drawing, in the unit's reach (lay_draft);
+  channel (its wall to this zone's), laid where it differs from this zone's drawing, within the unit's silhouette in the
+  street's camera (unit_reach; lay_draft);
   the power cut at the painter's ratios on his unit and its rim.
-Colours are the painting's (Naruto's concrete from his pillar and the near strip; the arcade's parapet a blue-grey of its
-lean-to's, in the sky's light only). The power cut (street_unlit): the same, but the street lamp's share (the far end,
+Colours are the painting's (Naruto's concrete from his pillar and the near strip; the flashing a blue-grey of the
+lean-to's metal). The power cut (street_unlit): the same, but the street lamp's share (the far end,
 the metal) and the side window's light (a comp, off). street_sun (the low sun's
 share) is 0 on what is redrawn; night_far stays 0 (the street's, the sky's). Needs Pillow, numpy, scipy.
 """
@@ -89,7 +93,7 @@ import os
 import sys
 import numpy as np
 from PIL import Image
-from scipy.ndimage import gaussian_filter, binary_fill_holes, distance_transform_edt, label
+from scipy.ndimage import gaussian_filter, binary_fill_holes, label
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import naruto_floor as NF   # noqa: E402  (the floor's rows: the soffit's edge, the coping's top, P's corners)
@@ -127,16 +131,17 @@ STRIP = (1279, 1297, 312)                      # the near wall beside the window
 # rims two rows over the coping's top
 RIM_GAP = 3                                    # (spans of plants closer than this are one planter)
 # the arcade's building, the right neighbour, a low one (the owner, v4: "Et le mur, juste vire-le : au-dessus de
-# l'arcade, fais juste un truc clean"): its street face XA (its far corner at x 1297, against Naruto's near side), its
-# flat roof's parapet just over its lean-to (tools/arcade_eave.py's canopy, up to the wall's foot on the ray V_FOOT),
-# 34 cm of it and a 7 cm coping, to the ray V_ATOP; one tone (ARC_TONE), a joint in the coping every JOINT_A m
+# l'arcade, fais juste un truc clean"; v7, on the parapet and coping drawn over its lean-to: "Boudin en béton derrière la
+# clim : c'est quoi ça ? Ça représente rien, non ?"): its ground floor under its tiled lean-to (tools/arcade_eave.py's
+# canopy), whose roof runs up to Naruto's near side and meets it on the ray V_FOOT, a flashing there; its street face XA
+# (its far corner at x 1297); V_ATOP the ray of the parapet's top that was there (the drafts below were drawn with it)
 XA = (1297.0 - VPX) * ZN / F
 V_FOOT = (float(AE.roof_y(AE.XW)) - AE.EYE) / AE.XW     # (0.4401)
+Y_FOOT = EYE + V_FOOT * XA
 V_ATOP = V_FOOT + 0.036
-Y_FOOT, Y_ATOP = EYE + V_FOOT * XA, EYE + V_ATOP * XA
-COP_A = 0.07
-JOINT_A = 1.8
-ARC_TONE = np.array((15.0, 21.0, 33.0))        # (the arcade's cladding under its lean-to in the sky's light only)
+FLASH = (np.array((26.0, 36.0, 58.0)), np.array((15.0, 22.0, 38.0)))   # the flashing: its lit fold, its face
+LEAN_END = 1346                                # (left of this the lean-to's far end edge rises to its top: under it, past
+                                               # its end, the painter's dark, now the near side down to its edge)
 # the AC unit on the lean-to (tools/arcade_eave.py's, as the zones before leave it), kept: its face's top on the ray
 # AE.VTOP from its far edge (AE.UF), its end's top level (its near top corner's row) to AC_X[1], its valves under it
 # to the frame; what the painter had round it on the wall (a pipe up from its top, one up the far right, a line along
@@ -177,9 +182,7 @@ def boxes():
          ('near', (XP, Y_LB, ZN), (XP + DEEP, Y_CT - COP, ZN + 0.25)),             # the near side's parapet and slab end
          ('near', (XW, 0.0, ZN), (XP + DEEP, Y_LB, ZN + 3.0)),                     # the near wall under the slab
          ('cop', (XP - OVH, Y_CT - COP, ZN - OVH), (XP + 0.25 + OVH, Y_CT, ZF)),   # the coping on P
-         ('cop', (XP - OVH, Y_CT - COP, ZN - OVH), (X_BACK + OVH, Y_CT, ZN + 0.25 + OVH)),   # on the near side
-         ('arc', (XA, Y_FOOT - 1.0, 1.0), (XA + 0.25, Y_ATOP - COP_A, ZN)),        # the arcade's parapet over its lean-to,
-         ('arcop', (XA - OVH, Y_ATOP - COP_A, 1.0), (XA + 0.25 + OVH, Y_ATOP, ZN))]   # its coping
+         ('cop', (XP - OVH, Y_CT - COP, ZN - OVH), (X_BACK + OVH, Y_CT, ZN + 0.25 + OVH))]   # on the near side
     return B
 
 
@@ -214,6 +217,39 @@ def first_row(yline):
     return int(np.ceil(yline - 0.5))
 
 
+def under_old_top(box):
+    """over box: the pixels under the parapet's top that was over the arcade's lean-to (its ray V_ATOP, from x 1297; a row
+    of margin; its coping's overhang from x 1293), which the drafts below were drawn with: none of theirs is laid there"""
+    x0, y0, x1, y1 = box
+    m = np.zeros((y1 - y0, x1 - x0), bool)
+    for x in range(max(x0, 1293), x1):
+        m[max(int(np.floor(AE.ray_y(x, V_ATOP))) - 1 - y0, 0):, x - x0] = True
+    return m
+
+
+def unit_reach(box):
+    """over box: the AC unit's silhouette in the street's camera (tools/arcade_eave.py's box: its face along the street
+    from its top's ray, the painter's rim a few rows over it, to its bottom's; its end; its valves and their pipes' cover
+    down to the lean-to), a little wide: where its draft is laid"""
+    x0, y0, x1, y1 = box
+    m = np.zeros((y1 - y0, x1 - x0), bool)
+    for x in range(max(x0, 1355), min(x1, 1452)):
+        if x < 1405: a, b = int(np.floor(AE.ray_y(x, AE.VTOP))) - 5, int(np.ceil(AE.ray_y(x, AE.VB))) + 1
+        elif x < 1443: a, b = 191, 293
+        else: a, b = 0, 0
+        if 1428 <= x < 1443: a, b = min(a, 255), max(b, foot_row(x))   # (its pipes' cover past it: ac_duct's)
+        m[max(a - y0, 0):max(b - y0, 0), x - x0] = True
+    return m
+
+
+def wall_bottom(M, box, x):
+    """the first row under the zone's drawing in column x (x 1297 on): the lean-to's top there, or its end's edge"""
+    x0, y0, x1, y1 = box
+    y = foot_row(x)
+    while y < y1 and M[y - y0, x - x0]: y += 1
+    return y
+
+
 def foot_row(x):
     """the first row of the arcade's lean-to at column x (tools/arcade_eave.py's roof: the pixels whose centre's ray meets
     it short of its wall)"""
@@ -231,7 +267,7 @@ def mask(box, sign):
         elif x < NF.XPN: M[ct - y0:lb - y0, i] = True                  # P: the parapet and the slab's edge
         elif x < STRIP[0]: M[ct - y0:86 - y0, i] = True                # the near side over the balcony's opening
         elif x < STRIP[1]: M[ct - y0:STRIP[2] - y0, i] = True          # the near wall, its downpipe gone, to the awning
-        else: M[:foot_row(x) - y0, i] = True                          # over the arcade's lean-to: its parapet, Naruto's
+        else: M[:foot_row(x) - y0, i] = True                          # over the arcade's lean-to: Naruto's
                                                                        # near side, the sky (the AC unit: see draw)
     return M
 
@@ -342,7 +378,7 @@ def shade(box, name, nrm, P, pal, M, city, unlit):
     sw = onn & (X >= STRIP[0]) & (Yr >= 86)
     ks = 0.94 + 0.12 * np.clip((Yr - 90) / 220.0, 0, 1)
     k = np.where(sw, k * ks, k)
-    back = onn & ~np.isin(np.concatenate([name[:, 1:], name[:, -1:]], 1), ('near', 'cop', 'arc', 'arcop'))
+    back = onn & ~np.isin(np.concatenate([name[:, 1:], name[:, -1:]], 1), ('near', 'cop'))
     k = np.where(back, k * 0.88, k)
     # rain streaks from the coping: thin, each its own length and depth, fading down, longer under the joints and the corner
     rng = np.random.default_rng(31)
@@ -378,28 +414,6 @@ def shade(box, name, nrm, P, pal, M, city, unlit):
             for r in np.nonzero(pm[:, i])[0]:
                 ref[r, i] = rowm[max(r, pf + 3 - y0)] * (1 - 0.15 * np.exp(-(x - 1124) / 2.0))
         out[pm] = (ref * k[..., None] * pg[..., None])[pm]
-    # the arcade's parapet over its lean-to: one tone (ARC_TONE), the sky's light on it a little more up top, the drip's
-    # shadow under its coping, the painter's grain (faint), a touch darker at its foot, into the lean-to's flashing; its
-    # coping (its top arris lit by the sky, its face, its drip edge; a joint every JOINT_A m, a dark tick through it)
-    m = (name == 'arc') & M
-    if m.any():
-        rk, ln = runs_from_top(m)
-        t = np.clip(rk / np.maximum(ln - 1, 1), 0, 1)
-        ka = (1.05 - 0.1 * t) * np.where(rk == 0, 0.55, np.where(rk == 1, 0.82, 1.0))
-        foot = np.array([foot_row(x) for x in range(x0, x1)])[None, :] - 1
-        ka = np.where(Yr == foot, ka * 0.72, np.where(Yr == foot - 1, ka * 0.9, ka))
-        pa = tile(painter_grain(), h, w, 53, 7) ** 0.5
-        col[m] = (ARC_TONE * (ka * pa * (1 + 0.3 * GRAIN * n))[..., None])[m]
-    m = (name == 'arcop') & M
-    if m.any():
-        rk, ln = runs_from_top(m)
-        c = np.where((rk == 0)[..., None], ARC_TONE * 2.3,
-                     np.where(((rk == ln - 1) & (ln > 2))[..., None], ARC_TONE * 1.15, ARC_TONE * 1.5))
-        Pf = np.where(np.isfinite(P), P, 1e6)
-        kf = (ZN - Pf[2]) / JOINT_A; kr = np.round(kf)
-        dj = np.abs(kf - kr) * JOINT_A * F * XA / np.maximum(Pf[2], 1.0) ** 2
-        c = np.where(((dj < 0.5) & (kr >= 1) & (rk > 0))[..., None], c * 0.45, c)
-        col[m] = (c * (1 + 0.03 * n[..., None]))[m]
     other = M & ~pm
     colu[other] = col[other]
     return col, colu, lampable
@@ -469,10 +483,10 @@ def ac_unit(city, box, name):
 
 
 def ac_duct(city, unlit, box, acm, done):
-    """the AC unit's pipes, in a cover: out of the side of its valves' box, an elbow, then down the arcade's parapet into
+    """the AC unit's pipes, in a cover: out of the side of its valves' box, an elbow, then down the wall behind into
     its lean-to's roof (DUCT: the down run's columns, the cover's top row); four pixels across, its top lit by the sky, its
     side toward the street lit, its other side in shade, its outer corner round; a collar where it goes into the roof;
-    its shadow on the parapet beside it and under the elbow. Its colours the unit's casing's"""
+    its shadow on the wall beside it and under the elbow. Its colours the unit's casing's"""
     x0, y0, x1, y1 = box
     xa, xb, ya = DUCT
     met = np.median(city[230:280, 1392:1400, :3].reshape(-1, 3), 0) * 0.85
@@ -493,7 +507,7 @@ def ac_duct(city, unlit, box, acm, done):
         for lay in (city, unlit): lay[y, x, :3] = met * k; lay[y, x, 3] = 255
         done[y - y0, x - x0] = True
     for (x, y) in [(xb, y) for y in range(ya + 1, foot_row(xb))] + [(x, ya + 4) for x in range(xs, xa)]:
-        if (x, y) in cover or acm[y - y0, x - x0] or x >= x1: continue  # (its shadow on the parapet)
+        if (x, y) in cover or acm[y - y0, x - x0] or x >= x1: continue  # (its shadow on the wall)
         for lay in (city, unlit): lay[y, x, :3] *= 0.72
 
 
@@ -521,12 +535,12 @@ def lay_draft(city, unlit, box, name, M, done):
         reach[DRAFT_AC[1] - cy0:foot_row(x) - cy0, x - cx0] = True
     wx0, wy0, wx1, wy1 = DRAFT_WIN
     win[wy0 - cy0:wy1 - cy0, wx0 - cx0:wx1 - cx0] = True
-    ref = (nm == 'near') & Mc & ~reach & ~win
+    ref = (nm == 'near') & Mc & ~reach & ~win & ~under_old_top((cx0, cy0, cx1, cy1))
     gain = np.median(cur[ref], 0) / np.maximum(np.median(d[ref], 0), 1e-3)
     q = d * gain
     obj = np.abs(q - cur).max(-1) > 6.0
     put = np.zeros((h, w), bool)
-    m = obj & reach
+    m = obj & reach & unit_reach((cx0, cy0, cx1, cy1))
     lab, n = label(m)
     sizes = np.bincount(lab.ravel())
     m = np.isin(lab, [i for i in range(1, n + 1) if sizes[i] >= 6])
@@ -563,7 +577,7 @@ def lay_face(city, unlit, box, name, M, done, unit):
     for dy in range(-2, 3):
         for dx in range(-2, 3):
             near_unit |= np.roll(np.roll(u, dy, 0), dx, 1)
-    face = (nm == 'near') & Mc & ~near_unit
+    face = (nm == 'near') & Mc & ~near_unit & ~under_old_top((cx0, cy0, cx1, cy1))
     gain = np.median(cur[face], 0) / np.maximum(np.median(d[face], 0), 1e-3)
     q = d * gain
     lx0, ly0, lx1, ly1 = LIT
@@ -579,6 +593,19 @@ def lay_face(city, unlit, box, name, M, done, unit):
     for lay in (city, unlit):
         lay[cy0 + ys, cx0 + xs, :3] = q[ys, xs]; lay[cy0 + ys, cx0 + xs, 3] = 255
     done[cy0 - y0 + ys, cx0 - x0 + xs] = True
+    # under the parapet's top that was there (the draft drew it), the wall carried down to the lean-to's flashing: its
+    # last ten rows over it repeated (their streaks, their tone), a shade over the flashing
+    low = (nm == 'near') & Mc & ~near_unit & under_old_top((cx0, cy0, cx1, cy1))
+    for c in np.nonzero(low.any(0))[0]:
+        x = cx0 + c
+        cut = int(np.argmax(under_old_top((cx0, cy0, cx1, cy1))[:, c]))
+        yf = wall_bottom(M, box, x) - 2 - cy0
+        for r in np.nonzero(low[:, c])[0]:
+            if r >= yf: continue
+            sr = cut - 1 - (r - cut) % 10
+            if not face[sr, c]: continue
+            k = 0.85 if r == yf - 1 else 1.0
+            for lay in (city, unlit): lay[cy0 + r, x, :3] = q[sr, c] * k
     comp = np.zeros((ly1 - ly0, lx1 - lx0, 4))
     g = glass[ly0 - cy0:ly1 - cy0, lx0 - cx0:lx1 - cx0]
     comp[..., :3] = d[ly0 - cy0:ly1 - cy0, lx0 - cx0:lx1 - cx0]
@@ -599,6 +626,10 @@ def draw(city, unlit, box=BOX, write=True):
         for y in range(STRIP[2], y1):
             if not gbx(x, y): break
             M[y - y0, x - x0] = True
+    for x in range(STRIP[1], LEAN_END):                # (and down to the lean-to's far end, beyond which its painter's dark
+        for y in range(foot_row(x), y1):               # showed under the wall's foot: the near side there, as far down)
+            if not gbx(x, y): break
+            M[y - y0, x - x0] = True
     acm = ac_unit(city, box, name)
     M &= ~acm
     sky = M & (name == '')
@@ -612,10 +643,6 @@ def draw(city, unlit, box=BOX, write=True):
     city[y0:y1, x0:x1, 3][lit] = 255; unlit[y0:y1, x0:x1, 3][lit] = 255
     city[y0:y1, x0:x1][sky] = 0; unlit[y0:y1, x0:x1][sky] = 0
     done = M.copy()
-    # the AC unit against its parapet: the parapet in its shade round it and under it (the sky it hides)
-    da = distance_transform_edt(~acm)
-    m = M & (name == 'arc') & (da < 8)
-    for lay in (city, unlit): lay[y0:y1, x0:x1, :3][m] *= (1 - 0.35 * np.exp(-(da[m] - 1) / 2.0))[:, None]
     ac_duct(city, unlit, box, acm, done)
     # the front by the corner, between the sign's end and the corner, over the canopy (the dark box): the front's own wall
     # there carried down (each column's light just over it), the painter's grain
@@ -627,13 +654,23 @@ def draw(city, unlit, box=BOX, write=True):
             if not (q.max() <= 12 and q[1] >= q[0]): break
             city[y, x, :3] = ref * pg2[y - y0, x - x0]; unlit[y, x, :3] = refu * pg2[y - y0, x - x0]
             city[y, x, 3] = unlit[y, x, 3] = 255; done[y - y0, x - x0] = True
-    # the canopy's flashing where its roof meets the walls (the first row over its tiles); a shade on the wall over it
+    # the canopy's flashing where its roof meets the walls (the first row over its tiles); a shade on the wall over it;
+    # past the arcade's far corner the same where the lean-to's roof meets Naruto's near side (its fold lit by the sky
+    # over it, its face), but on the AC unit, its stand and its pipes' cover
     for x in range(CANOPY_X[0], CANOPY_X[1]):
         for y in range(STRIP[2], y1 - 1):
             if done[y - y0, x - x0] and not done[y + 1 - y0, x - x0]:
                 for lay in (city, unlit):
-                    lay[y, x, :3] = np.array((15.0, 22.0, 38.0)); lay[y - 1, x, :3] *= 0.8
+                    lay[y, x, :3] = FLASH[1]; lay[y - 1, x, :3] *= 0.8
                 break
+    for x in range(CANOPY_X[1], x1):
+        yf = wall_bottom(M, box, x)
+        for y, c in ((yf - 2, FLASH[0]), (yf - 1, FLASH[1])):
+            if not M[y - y0, x - x0] or acm[y - y0, x - x0] or name[y - y0, x - x0] != 'near': continue
+            if DUCT[0] <= x < DUCT[1]: continue
+            for lay in (city, unlit): lay[y, x, :3] = c
+        if M[yf - 3 - y0, x - x0] and not acm[yf - 3 - y0, x - x0] and not DUCT[0] <= x < DUCT[1]:
+            for lay in (city, unlit): lay[yf - 3, x, :3] *= 0.85
     # the near wall's corner with the front (W's last pier) one crisp lit column from the roof slab down to the canopy; the
     # balcony's slab round the corner at its own rows, as tools/naruto_floor.py draws its end over the opening (its edge's
     # lit line, its face, its lower arris), a step dimmer turned from the street, a shade under it
@@ -693,9 +730,7 @@ def model_lines():
          ('soffit edge', [pr(XP, Y_LB, z) for z in np.linspace(ZN, ZPIL, 10)]), ('terrace', [pr(XP, Y_T, z) for z in zs]),
          ('coping top near', [pr(x, Y_CT, ZN - OVH) for x in xs]), ('coping foot near', [pr(x, Y_CT - COP, ZN - OVH) for x in xs]),
          ('corner', [pr(XP, Y_LB, ZN), pr(XP, Y_CT, ZN)]), ('C corner', [pr(XP, Y_LB - 2, ZF), pr(XP, Y_CT, ZF)]),
-         ('arcade coping top', [pr(XA - OVH, Y_ATOP, z) for z in (ZN, F * XA / 756.0)]),
-         ('arcade foot', [pr(XA, Y_FOOT, z) for z in (ZN, F * XA / 756.0)]),
-         ('arcade corner', [pr(XA, Y_FOOT, ZN), pr(XA, Y_ATOP, ZN)]),
+         ('arcade lean-to top', [pr(XA, Y_FOOT, z) for z in (ZN, F * XA / 756.0)]),
          ('near roof slab', [pr(x, Y_LB, ZN) for x in (XP, X_BACK)]),
          ('near floor slab', [(STRIP[0], SLAB_ROWS[0]), (1456, SLAB_ROWS[0])]),
          ('near floor slab foot', [(STRIP[0], SLAB_ROWS[1]), (1456, SLAB_ROWS[1])])]

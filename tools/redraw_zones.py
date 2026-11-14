@@ -382,8 +382,9 @@ ZONES = {
     # coping unbroken), the near side the front's concrete round a lit corner ("on dirait un
     # bâtiment entre Ichiraku et l'arcade": its slabs turning the corner, down to the canopy, a flashing) (the near
     # corner's second pipe gone, the near wall one face with its light); the arcade's low ("Et le mur, juste vire-le :
-    # au-dessus de l'arcade, fais juste un truc clean": the painter's board wall and its high tiled eave gone, a slim
-    # parapet and coping just over its lean-to, one tone; over it Naruto's near side, the building deep ("l'immeuble de
+    # au-dessus de l'arcade, fais juste un truc clean": the painter's board wall and its high tiled eave gone; no parapet
+    # over its lean-to, "Boudin en béton derrière la clim": its roof meets Naruto's near side with a flashing; over it
+    # Naruto's near side, the building deep ("l'immeuble de
     # Naruto fait 50 cm de profondeur": the frontal wall runs past the frame, its coping and slabs level across it, a
     # face redrawn from a draft, tools/src/edits/naruroof_face_draft.webp, "Améliore cette façade": its concrete's
     # streaks, its slab lines, a window lit through a curtain (its light the comp win_naru_side), a frosted one, a vent,
