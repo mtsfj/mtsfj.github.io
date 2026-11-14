@@ -331,6 +331,24 @@ ZONES = {
     # none of their pixels)
     'awall': dict(box=(905, 315, 941, 690), nodraft=True, parts=[
         dict(poly=[(905, 315), (941, 315), (941, 690), (905, 690)], method='tool', tool='narrow_plaster')]),
+    # the roofs on the left (the owner: "gouttière et finition toit sous Kirua et dojo : tuile ancienne, gouttière clean
+    # et vraie perspective du toit"): Kirua's eave, the one he sits on over the dagashi-ya, and the dojo's house's eave end
+    # at the top left, drawn on the pixel grid by tools/left_eaves.py (old round tiles' ends, a half-round gutter with its
+    # lit roll and hangers, both on the street's rays and growing toward the viewer). Kirua's is a hipped roof modelled
+    # whole: its level return round the near corner (the tiles' ends flush there), its eave on past the far wall (it had
+    # stopped 38 cm short of it) and turning the far corner, the overhang's soffit, a collecting box and a swan neck into
+    # the painter's downpipe; the dojo's rim in the painter's dusk, its soffit cleaned whole, its gutter's box and swan neck
+    # into the downpipe the two houses share (eaveP: the pipe by the dojo's corner). Kirua's in narrow boxes along its
+    # slope (they change nothing of his front's boards or the bay window), each its own zone; their street_sun marks (and
+    # night_far's, the dojo's) from tools/src/edits/<zone>_before_{sun,nf}.webp
+    'eaveKs': dict(box=(141, 50, 206, 102), tool='left_eaves'),
+    'eaveK1': dict(box=(206, 56, 236, 136), tool='left_eaves'),
+    'eaveK2': dict(box=(236, 90, 266, 167), tool='left_eaves'),
+    'eaveK3': dict(box=(266, 123, 296, 198), tool='left_eaves'),
+    'eaveK4': dict(box=(296, 157, 322, 225), tool='left_eaves'),
+    'eaveK5': dict(box=(322, 186, 374, 290), tool='left_eaves'),
+    'eaveD': dict(box=(100, 0, 190, 50), tool='left_eaves'),
+    'eaveP': dict(box=(128, 50, 141, 84), tool='left_eaves'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
