@@ -6346,7 +6346,7 @@
   // (majCell: his cell by majority at his height there, at whole px) ----
   const NG = { vx: 700, vy: 615, uzn: 1293.936, kzn: 74.8, zn: 18.7166, ppm: 75, walkD: 1.1011, runD: 2.0376, walkV: 1.2805, runV: 3.705, xa0: 0.2899, xr0: -0.2743, top: 1.78 };
   const NC = { walkT: [0, 65, 153, 16, 31, 145], walkA: [153, 65, 154, 16, 34, 144], runT: [307, 75, 154, 12, 38, 144], runA: [461, 75, 147, 12, 38, 137], settleT: [608, 65, 154, 6, 27, 148], settleA: [914, 65, 154, 6, 38, 142], startT: [762, 65, 152, 4, 27, 146], startA: [1068, 65, 154, 4, 38, 144], turn: [1222, 60, 152, 9, 30, 145], look: [1374, 72, 151, 4, 35, 144], seal: [1525, 60, 151, 3, 35, 144] };   // the sheet's rows: top, cell w, h, frames, the floor point under his pelvis in the cell
-  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_col.webp?v=5');   // (late: he is never due before 26 s; tools/naruto_col.py: his
+  const nSheet = new Image(); lateImg(nSheet, 'assets/naruto_col.webp?v=6');   // (late: he is never due before 26 s; tools/naruto_col.py: his
   // painted frames, case for case on the rig's (each the painting that fits that pose best); his shape by majority, each pixel's colour at its centre)
   const nU = (s) => NG.vx + (NG.uzn - NG.vx) * NG.zn / (NG.zn - s);                 // s (m along the glass) -> scene x
   const nV = (u) => NG.vy + (260 - NG.vy) * (u - NG.vx) / (NG.uzn - NG.vx);          // the floor line under him at x
