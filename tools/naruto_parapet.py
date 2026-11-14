@@ -16,7 +16,7 @@ slab's lit lip, read as a gutter), a darker parapet over it, a box at the near c
 far downpipe and a second downpipe from a socket under that box. A first pass (v1) had the logic right but read at 1:1
 as large plain dark masses; v2 kept the logic and gave every surface its parts, its grain and its light (R27); v4 took
 the painter's tall board wall over the arcade away; v5 gives Naruto's building its depth back over it, the AC unit
-whole, and takes the downpipe away (below).
+whole, and takes the downpipe away; v6 gives that end wall its face (below).
 The camera is the street's (tools/arcade_eave.py, tools/r6_sprites.py): the eye 1.41 m up on the street's axis, f 959.5
 px, the vanishing point (700, 615); a line along the street at X m from the axis and Y m up runs on the ray
 v = (Y - 1.41) / X (redraw_zones.ray's v; the interiors' camera, f 1400 and the eye 1.5 m, tools/ichiraku_interior.py,
@@ -45,8 +45,16 @@ floor under it, the window, the railing and the garden stay where they are).
   side, a frontal plane in this one-point perspective, runs on past the frame's edge (4.2 m of it at x 1456), its
   coping level across it at the roof's height (a joint every 1.6 m), the roof slab's arris and the floor slab across it
   at their rows, the sky only over the coping; that broad wall in a mottled grain of the painter's measure (wall_grain:
-  his streaked texture, repeated over it, showed a motif and read as boards). On it, on Naruto's floor, a small high
-  window (sill 1.6 m over the floor), drawn by the image model (below).
+  his streaked texture, repeated over it, showed a motif and read as boards). Then its face (the owner: "Améliore cette
+  façade": a big plain dark wall with one small window) as the image model painted it in its context crop at 22 h
+  (R28: FACE_CROP x4, brightened; tools/src/edits/naruroof_face_draft.webp from naruroof_face_prompt.txt; lay_face): one
+  tone of concrete with its grain and weathering streaks under the coping and the sills, its slab lines where they
+  were; on Naruto's floor a sliding window lit through a drawn curtain (sill 1.6 m over the floor; its light the comp
+  win_naru_side, a home's window in assets/street.js, on and off by its hours; in the layers its glass off, the
+  curtain's folds faint on dark glass) and to its right a small frosted bathroom window, dark, its vent cap by it; on
+  the ground floor, over the arcade's roof, the ramen shop's kitchen hood. Boxed down to the street's pixels (at 22 h
+  the street's grade leaves the layer as it is), brought to the painter's concrete by a gain per channel (the near
+  side's own median: the building keeps its one tone), laid on the near side's face, two pixels clear of the AC unit.
 - The planters: the roof garden's shrubs, hedge and maple stand in concrete planters behind the parapet, their rims just
   showing over the coping under the plants (a lit top, its edge, the planter's face in shade over the coping's lit edge); the leaves the rims cover leave the garden's
   wind data (roof_sway.webp: no longer leaves, never shown there).
@@ -69,13 +77,12 @@ floor under it, the window, the railing and the garden stay where they are).
   ventilation": its side was a dark open frame) redrawn whole by the image model in its context crop (R28: DRAFT_CROP
   x4, brightened, on this zone's drawing; tools/src/edits/naruroof_ac_draft.webp from naruroof_ac_prompt.txt): its fan
   guard fully round in its casing, its side one solid panel with its service cover, the valves' cover low on it and its
-  pipes into the cover, its warm rim; and the window on Naruto's near side (a thin aluminium frame, two dark sashes, a
-  sill). Boxed down to the street's pixels, brought to the painting's colours by a gain per channel (its wall to this
-  zone's), laid where it differs from this zone's drawing, in the unit's reach and the window's (lay_draft); the power
-  cut at the painter's ratios on his unit and its rim.
+  pipes into the cover, its warm rim. Boxed down to the street's pixels, brought to the painting's colours by a gain per
+  channel (its wall to this zone's), laid where it differs from this zone's drawing, in the unit's reach (lay_draft);
+  the power cut at the painter's ratios on his unit and its rim.
 Colours are the painting's (Naruto's concrete from his pillar and the near strip; the arcade's parapet a blue-grey of its
 lean-to's, in the sky's light only). The power cut (street_unlit): the same, but the street lamp's share (the far end,
-the metal). street_sun (the low sun's
+the metal) and the side window's light (a comp, off). street_sun (the low sun's
 share) is 0 on what is redrawn; night_far stays 0 (the street's, the sky's). Needs Pillow, numpy, scipy.
 """
 import os
@@ -140,13 +147,25 @@ DUCT = (1443, 1447, 264)                       # (the cover's columns, its top r
 # what is detailed there (R28) as the image model redrew it in its context crop (DRAFT_CROP x4, brightened, on this zone's
 # drawing without it; tools/src/edits/naruroof_ac_draft.webp from naruroof_ac_prompt.txt; the owner: "il manque la moitié
 # de la ventilation"): the AC unit whole and solid (its fan guard fully round, its casing, its side panel, its service
-# valves' cover and their pipes into its cover), and a small high window on Naruto's near side, laid where the draft
-# differs from that drawing, in the unit's reach (DRAFT_AC: from its far edge to the frame, from its top down to the
-# lean-to) and the window's (DRAFT_WIN)
+# valves' cover and their pipes into its cover), laid where the draft differs from that drawing, in the unit's reach
+# (DRAFT_AC: from its far edge to the frame, from its top down to the lean-to); the small window it drew too (DRAFT_WIN,
+# kept out of its colours' fit) is the face's now (below)
 DRAFT = 'naruroof_ac_draft.webp'
 DRAFT_CROP = (1280, 96, 1456, 336)
 DRAFT_AC = (1345, 185)
 DRAFT_WIN = (1296, 108, 1362, 186)
+# Naruto's near side, its face (the owner: "Améliore cette façade"; R28): the image model's painting of it in its context
+# crop at 22 h (FACE_CROP x4, brightened, the street as this zone draws it: at that hour the street's grade leaves the
+# layer as it is; tools/src/edits/naruroof_face_draft.webp from naruroof_face_prompt.txt): the concrete in one tone with
+# its grain and weathering streaks under the coping and the sills, its slab lines, on Naruto's floor a sliding window
+# lit through a drawn curtain (LIT: its reach; its glass the draft's warm pixels there) and a small frosted bathroom
+# window (FROST: its glass) with a vent cap by it, on the ground floor the ramen shop's kitchen hood; laid on the near
+# side's face but round the AC unit; the lit window's light a comp (LIT_COMP, a home's window in assets/street.js)
+FACE_DRAFT = 'naruroof_face_draft.webp'
+FACE_CROP = (1216, 0, 1456, 360)
+LIT = (1300, 128, 1358, 188)
+FROST = (1393, 121, 1419, 136)
+LIT_COMP = 'win_naru_side.webp'
 
 GRAIN = 0.05
 
@@ -482,11 +501,14 @@ def lay_draft(city, unlit, box, name, M, done):
     """the image model's draft (DRAFT, R28) laid into the street: boxed down to the street's pixels (its x4 brightened
     input undone), brought to the painting's colours by a gain per channel (its wall to this zone's: their medians on
     Naruto's near side, away from what it redraws), then laid where it differs from what this zone drew (the state it was
-    drawn on) by more than 6 in a channel, within the AC unit's reach and the window's (each a whole: its holes filled,
-    specks dropped). The power cut: the window as lit (it is dark); the unit at the painter's ratio on his unit (0.93,
-    0.96, 0.98), its warm rim (the street lamps' light on it) at his rim's (0.37, 0.5, 0.7)"""
+    drawn on) by more than 6 in a channel, within the AC unit's reach (a whole: its holes filled, specks dropped; its
+    window's reach, DRAFT_WIN, now the face's: lay_face). The power cut: the unit at the painter's ratio on his unit
+    (0.93, 0.96, 0.98), its warm rim (the street lamps' light on it) at his rim's (0.37, 0.5, 0.7). Returns what it laid
+    (a mask over box)"""
+    x0, y0, x1, y1 = box
+    laid = np.zeros((y1 - y0, x1 - x0), bool)
     src = os.path.join(EDITS, DRAFT)
-    if not os.path.exists(src): return
+    if not os.path.exists(src): return laid
     x0, y0, x1, y1 = box
     cx0, cy0, cx1, cy1 = DRAFT_CROP
     d = np.asarray(Image.open(src).convert('RGB').resize((cx1 - cx0, cy1 - cy0), Image.BOX)).astype(float) / 255.0
@@ -504,18 +526,64 @@ def lay_draft(city, unlit, box, name, M, done):
     q = d * gain
     obj = np.abs(q - cur).max(-1) > 6.0
     put = np.zeros((h, w), bool)
-    for part in (reach, win):
-        m = obj & part
-        lab, n = label(m)
-        sizes = np.bincount(lab.ravel())
-        m = np.isin(lab, [i for i in range(1, n + 1) if sizes[i] >= 6])
-        put |= binary_fill_holes(m) & part
+    m = obj & reach
+    lab, n = label(m)
+    sizes = np.bincount(lab.ravel())
+    m = np.isin(lab, [i for i in range(1, n + 1) if sizes[i] >= 6])
+    put |= binary_fill_holes(m) & reach
     warm = (q[..., 0] > q[..., 1] + 25) & (q[..., 0] > q[..., 2] + 15)
-    ku = np.where(win[..., None], 1.0, np.where(warm[..., None], (0.37, 0.5, 0.7), (0.93, 0.96, 0.98)))
+    ku = np.where(warm[..., None], (0.37, 0.5, 0.7), (0.93, 0.96, 0.98))
     ys, xs = np.nonzero(put)
     city[cy0 + ys, cx0 + xs, :3] = q[ys, xs]; unlit[cy0 + ys, cx0 + xs, :3] = (q * ku)[ys, xs]
     city[cy0 + ys, cx0 + xs, 3] = 255; unlit[cy0 + ys, cx0 + xs, 3] = 255
     done[cy0 - y0 + ys, cx0 - x0 + xs] = True
+    laid[cy0 - y0 + ys, cx0 - x0 + xs] = True
+    return laid
+
+
+def lay_face(city, unlit, box, name, M, done, unit):
+    """Naruto's near side's face as the image model painted it (FACE_DRAFT, R28) laid into the street: boxed down to the
+    street's pixels (its x4 brightened input undone: at 22 h the street's grade leaves the layer as it is, so the draft is
+    in the layer's colours already), brought to the painter's concrete by a gain per channel (its wall to this zone's
+    near side: their medians, so the building keeps its one tone), laid on the near side's face (the zone's 'near'
+    pixels), but two pixels round the AC unit (unit: its pixels, the stand's; there the zone's wall and its shade). The
+    lit window: in the layers its glass off (the draft's curtain folds, its light over their mean, on the frosted
+    window's dark glass), its light the comp LIT_COMP (the draft's glass as it painted it, at 22 h, opaque on the glass,
+    clear round it). The power cut: as lit, but the window's light (a comp, off). Returns the comp (RGBA over LIT)"""
+    src = os.path.join(EDITS, FACE_DRAFT)
+    if not os.path.exists(src): return None
+    x0, y0, x1, y1 = box
+    cx0, cy0, cx1, cy1 = FACE_CROP
+    d = np.asarray(Image.open(src).convert('RGB').resize((cx1 - cx0, cy1 - cy0), Image.BOX)).astype(float) / 255.0
+    d = (d ** 2.0) * 255.0
+    cur = city[cy0:cy1, cx0:cx1, :3]
+    nm = name[cy0 - y0:cy1 - y0, cx0 - x0:cx1 - x0]; Mc = M[cy0 - y0:cy1 - y0, cx0 - x0:cx1 - x0]
+    near_unit = np.zeros(nm.shape, bool)
+    u = unit[cy0 - y0:cy1 - y0, cx0 - x0:cx1 - x0]
+    for dy in range(-2, 3):
+        for dx in range(-2, 3):
+            near_unit |= np.roll(np.roll(u, dy, 0), dx, 1)
+    face = (nm == 'near') & Mc & ~near_unit
+    gain = np.median(cur[face], 0) / np.maximum(np.median(d[face], 0), 1e-3)
+    q = d * gain
+    lx0, ly0, lx1, ly1 = LIT
+    reach = np.zeros(nm.shape, bool); reach[ly0 - cy0:ly1 - cy0, lx0 - cx0:lx1 - cx0] = True
+    glass = reach & (d[..., 0] > d[..., 2] + 8) & (d[..., 0] > 20) & face   # (its edge pixels, half glass, too)
+    fx0, fy0, fx1, fy1 = FROST
+    dark = np.median(q[fy0 - cy0:fy1 - cy0, fx0 - cx0:fx1 - cx0].reshape(-1, 3), 0)
+    Lg = d @ LUMA
+    fold = np.clip(Lg / max(np.mean(Lg[glass]), 1.0), 0.6, 1.4)
+    off = dark[None, None, :] * (0.75 + 0.35 * fold)[..., None]
+    q = np.where(glass[..., None], off, q)
+    ys, xs = np.nonzero(face)
+    for lay in (city, unlit):
+        lay[cy0 + ys, cx0 + xs, :3] = q[ys, xs]; lay[cy0 + ys, cx0 + xs, 3] = 255
+    done[cy0 - y0 + ys, cx0 - x0 + xs] = True
+    comp = np.zeros((ly1 - ly0, lx1 - lx0, 4))
+    g = glass[ly0 - cy0:ly1 - cy0, lx0 - cx0:lx1 - cx0]
+    comp[..., :3] = d[ly0 - cy0:ly1 - cy0, lx0 - cx0:lx1 - cx0]
+    comp[..., 3] = np.where(g, 255.0, 0.0)
+    return np.clip(np.round(comp), 0, 255).astype(np.uint8)
 
 
 def draw(city, unlit, box=BOX, write=True):
@@ -595,7 +663,8 @@ def draw(city, unlit, box=BOX, write=True):
         for lay in (city, unlit): lay[y, x, :3] = lay[y, x, :3] * f
         done[y - y0, x - x0] = True
     for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
-    lay_draft(city, unlit, box, name, M, done)
+    laid = lay_draft(city, unlit, box, name, M, done)
+    comp = lay_face(city, unlit, box, name, M, done, laid | acm)
     for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
     changed = (city[y0:y1, x0:x1] != c0).any(-1) | (unlit[y0:y1, x0:x1] != u0).any(-1)
     # street_sun: as 'narufloor' wrote it in its box, this zone's before crop beyond it; 0 on what is redrawn
@@ -605,6 +674,9 @@ def draw(city, unlit, box=BOX, write=True):
     sun[y0:y1, nx1:x1] = bs[:, nx1 - x0:]
     sun[y0:y1, x0:x1][done] = 0
     if write:
+        if comp is not None:
+            Image.fromarray(comp, 'RGBA').save(os.path.join(ASSETS, LIT_COMP), 'WEBP', lossless=True, quality=100, method=6,
+                                               exact=True)
         Image.fromarray(np.clip(np.round(sun), 0, 255).astype(np.uint8), 'RGB').save(
             os.path.join(ASSETS, 'street_sun.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
         Image.fromarray(sw_, 'RGBA').save(swp, 'WEBP', lossless=True, quality=100, method=6, exact=True)
@@ -633,8 +705,8 @@ def model_lines():
     for nm, pts in (('unit face', [(x0, yt, AE.ZF), (x0, yt, AE.ZC), (x0, yb, AE.ZC), (x0, yb, AE.ZF), (x0, yt, AE.ZF)]),
                     ('unit end', [(x0, yt, AE.ZC), (x1, yt, AE.ZC), (x1, yb, AE.ZC), (x0, yb, AE.ZC)])):
         L.append(('arcade ' + nm, [pa(*q) for q in pts]))
-    wx0, wy0, wx1, wy1 = DRAFT_WIN
-    L.append(('window reach', [(wx0, wy0), (wx1, wy0), (wx1, wy1), (wx0, wy1), (wx0, wy0)]))
+    for nm, (wx0, wy0, wx1, wy1) in (('window lit', LIT), ('window frosted', FROST)):
+        L.append((nm, [(wx0, wy0), (wx1, wy0), (wx1, wy1), (wx0, wy1), (wx0, wy0)]))
     return L
 
 

@@ -385,7 +385,9 @@ ZONES = {
     # au-dessus de l'arcade, fais juste un truc clean": the painter's board wall and its high tiled eave gone, a slim
     # parapet and coping just over its lean-to, one tone; over it Naruto's near side, the building deep ("l'immeuble de
     # Naruto fait 50 cm de profondeur": the frontal wall runs past the frame, its coping and slabs level across it, a
-    # small high window from a draft); the AC unit on the lean-to whole ("il manque la moitié de la ventilation"), redrawn
+    # face redrawn from a draft, tools/src/edits/naruroof_face_draft.webp, "Améliore cette façade": its concrete's
+    # streaks, its slab lines, a window lit through a curtain (its light the comp win_naru_side), a frosted one, a vent,
+    # the ramen shop's kitchen hood); the AC unit on the lean-to whole ("il manque la moitié de la ventilation"), redrawn
     # from a draft (tools/src/edits/naruroof_ac_draft.webp), its pipes in a cover into the roof). Last:
     # over narufloor (whose roof edge it redraws: its rows and the garden kept, the planters' rims written into its wind
     # data, assets/roof_sway.webp), fan, arceave and ramen (their pixels it does not draw, as they leave them);
