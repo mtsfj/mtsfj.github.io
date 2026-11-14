@@ -322,16 +322,14 @@ ZONES = {
     # from them), the kiosk's sign, its service window (its comp win_z7_kiosk, handed on in COMP_OUT after the kiosk
     # zone's) and its plates, all in the painter's grain; after the kiosk zones, whose boxes it overlaps
     'soda': dict(box=(227, 405, 390, 735), tool='soda_corner'),
-    # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940; the owner: "le
-    # bâtiment entre Pokécenter et bâtiment refait : mur lisse"): its glazed tiles made one plaster from its cap to the
-    # sidewalk, a tone of its own beside B's (R25), by tools/narrow_plaster.py (zone5's walls() and life() again, A in
-    # plaster: its ledges in it, its lit window, door, mailbox and plant as zone5 drew them); its top redrawn on the
-    # facade's rays (the owner: "le haut est moche, l'espèce de boudin de béton qui fait le contour ; pas droit, angle
-    # bizarre"): a slim coping under the roof edge, the plaster up to it and out to a plain corner, the upper window in
-    # the plain wall with a thin frame and sill; after pokeball, bfloor and bwall, whose boxes it overlaps (it changes
-    # none of their pixels)
-    'awall': dict(box=(905, 315, 941, 690), nodraft=True, parts=[
-        dict(poly=[(905, 315), (941, 315), (941, 690), (905, 690)], method='tool', tool='narrow_plaster')]),
+    # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940) taken away: a roji
+    # in its place (the owner, 2026-11-14: "trop comprimé : soit le refaire entièrement, soit le supprimer et créer une
+    # rue"), drawn in the street's camera by tools/roji_alley.py: the alley's far wall (the Center's side, face on, its
+    # parapet's band, a frosted window, a back door, a wall lamp: its lit comp z5_alley), its floor at the sidewalk's
+    # level with a grate across its mouth, a hydrangea by the door, the sky above the Center's roof (transparent); B's
+    # corner evened, the old mailbox off it; zone5's plant on the sidewalk kept. After pokeball, bfloor and bwall, whose
+    # boxes it overlaps
+    'alley': dict(box=(904, 300, 944, 690), tool='roji_alley'),
     # the roofs on the left (the owner: "gouttière et finition toit sous Kirua et dojo : tuile ancienne, gouttière clean
     # et vraie perspective du toit"): Kirua's eave, the one he sits on over the dagashi-ya, and the dojo's house's eave end
     # at the top left, drawn on the pixel grid by tools/left_eaves.py (old round tiles' ends, a half-round gutter with its
