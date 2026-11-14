@@ -274,8 +274,7 @@ ZONES = {
     # edge, a blurred box under the unit): drawn on the pixel grid in the street's perspective by tools/arcade_eave.py
     # (its eave tiles on the painter's rays, foreshortened; the tufts gone; a steel stand under the unit; a half-round
     # gutter with its hangers, the downpipe at the corner carried up to it; the wall camera moved under it in street.js)
-    'arceave': dict(box=(1232, 262, 1456, 430), nodraft=True, parts=[
-        dict(poly=[(1232, 262), (1456, 262), (1456, 430), (1232, 430)], method='tool', tool='arcade_eave')]),
+    'arceave': dict(box=(1232, 262, 1456, 430), tool='arcade_eave'),
     # the house at the street's end, its ground floor (the owner: "la maison, refaire le bas, pas hyper clean"): blotches
     # drawn as what they are, face on as the house is (tools/end_house.py, ground): a frosted glass window on its sill, the
     # jamb the lantern hangs by, two sliding lattice doors over plain kick panels, the right one open a little (the cat's
