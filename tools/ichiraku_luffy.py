@@ -7,23 +7,27 @@ du milieu, qui dévore ses ramen ; à côté de lui, sur le comptoir, la pile de
                                                         écrit la même chose)
     python3 tools/ichiraku_luffy.py --preview dossier  (des aperçus seulement : l'atlas x6, la ligne ILF en json)
 
-La planche (tools/src/ichiraku_luffy_sheet.webp, un brouillon fait pour lui sur le modèle de la planche du client, sur fond
-blanc, assis sur un tabouret qu'on ne voit pas) : de dos comme le client, ses cheveux noirs en bataille, son chapeau de paille
-pendu dans le dos par son cordon, son gilet rouge, son short bleu au revers clair, ses sandales ; il mange (le bol à hauteur de
-menton, les baguettes à la bouche, la joue pleine), lève ses nouilles, boit le bouillon le bol sur le visage, tend son bol vide,
-mâche les joues pleines ; il se retourne avec son grand sourire, et salue. Retournée (FLIP) : son bol, ses gestes du côté de
-Teuchi et de la pile. Le même chemin que les gens de la boutique (tools/ichiraku_figures.py et ses fonctions : la découpe,
-l'assise sur le tabouret qu'on ne voit pas et les jambes resserrées (sit), les trois parts chacune à sa vraie échelle, la
-lumière chaude d'en haut, ses couleurs vives un peu éteintes (mute), ses familles de tons, pas de trait au bord, le grain) ;
-son style, celui des autres : la couleur (B).
+La planche (tools/src/ichiraku_luffy_sheet.webp : un brouillon fait pour lui, peint, sans contour, ses proportions vraies,
+sur fond blanc, assis sur un tabouret qu'on ne voit pas ; le propriétaire : « juste regen plusieurs planches si besoin », puis
+« la coiffure était mieux avant ») : de dos, sa tignasse d'un noir de jais, de grosses mèches en pointe tout autour de sa tête,
+son chapeau de paille pendu dans le dos par son cordon, au milieu de son dos, sa calotte et son ruban rouge vers nous, son bord
+tout autour ; son gilet rouge sans manches, son short bleu au revers clair, ses sandales ; il mange (le bol blanc à hauteur de
+menton, les baguettes à la bouche), lève ses nouilles, boit le bouillon le bol sur le visage, mâche les joues pleines, tend son
+bol vide, son bras de caoutchouc un peu, puis un peu plus ; il tourne la tête avec son grand sourire, et salue. Ses gestes vont
+à droite, vers Teuchi. Ses dix images refaites ensemble sur un même dos : son torse droit, son chapeau au même endroit de son
+dos. Chaque image prise seule sur son blanc, ramenée à une largeur de hanches (HIPS : la planche dessine ses rangées à des
+échelles un peu différentes), puis le même chemin
+que les gens de la boutique (tools/ichiraku_figures.py et ses fonctions : la découpe, l'assise sur le tabouret qu'on ne voit
+pas et les jambes resserrées (sit), les trois parts chacune à sa vraie échelle, la lumière chaude d'en haut, ses couleurs vives
+un peu éteintes (mute), ses familles de tons, pas de trait au bord, le grain) ; son style, celui des autres : la couleur (B).
+Rien n'y est repeint ni déplacé.
 
 Sa vraie taille : 1,74 m, à la profondeur des clients assis (Z_S : les mêmes tabourets, le même comptoir), assis sur le coussin
-comme le client (SIT : penché sur son bol) ; sa mesure (REF) prise sur la première image : la tête jusqu'au col, le col à
-l'assise, ses hanches (ses épaules de 43 cm, S), la largeur de ses cheveux. Sa colonne (X_COL) : sur le tabouret du milieu,
-un peu à droite de son milieu, sa tête au milieu de la vitrine. Ce qui est fait des images : le
-sourire gardé (le blanc des dents que la découpe prendrait pour le fond, rendu à la tête) ; la cicatrice sous son oeil gauche
-(SCAR) ; le bras tendu, en caoutchouc (stretch : de sa main au bol, poussés de STRETCH pixels, l'avant-bras étiré entre) ; la
-main qui salue d'un pixel de côté (wave_b).
+comme le client (SIT : penché sur son bol) ; sa mesure (REF) prise sur ses images de dos : la tête jusqu'au col, le col à
+l'assise, ses épaules (43 cm, S), la largeur de sa tête. Sa colonne (X_COL) : sur le tabouret du milieu, un peu à droite de son
+milieu, sa tête au milieu de la vitrine ; chaque image posée par le milieu de ses hanches (ANCHOR) : assis, son assise et ses
+jambes ne bougent pas d'une image à l'autre (au pixel près), le haut de son corps seul suit ses gestes, son chapeau avec lui
+(à deux pixels près). Le sourire gardé (le blanc des dents que la découpe prendrait pour le fond, rendu à la tête).
 
 La pile : ses bols vides sur le comptoir, à sa gauche, devant le tabouret du coin, vide (STACK : leur colonne, la rangée du
 comptoir à leur profondeur) : six au plus, une petite pile nette ; des bols de ramen blancs dans la lumière chaude (BOWL),
@@ -47,28 +51,26 @@ SHEET = os.path.join(ICI, 'src', 'ichiraku_luffy_sheet.webp')
 OUT = os.path.join(ROOT, 'assets', 'ichiraku_luffy.webp')
 JS = os.path.join(ROOT, 'assets', 'street.js')
 H_L = 1.74 * FG.SCALE                         # sa taille (mètres de la maquette)
-HN = 60                                       # (de dos : du haut du crâne au col, en pixels de planche)
-REF = dict(H=H_L, head=HN, torso=106 / FG.SIT, sh=85, hw=56, S=0.43 * FG.SCALE)   # (la première image : le crâne à 22, le col
-GROUP = ('L', 1.0, HN, 'seat')                #  à 82, l'assise à 188 ; ses hanches, 106, pour des épaules de 85 ; ses cheveux en
-                                              #  bataille, 64 de large : 27 cm)
+HN = 65                                       # (de dos : du haut du crâne au col, en pixels de planche, ses hanches à HIPS)
+REF = dict(H=H_L, head=HN, torso=138 / FG.SIT, sh=100, hw=58, S=0.43 * FG.SCALE)   # (mesurés sur ses images de dos, les bras
+GROUP = ('L', 1.0, HN, 'seat')                #  le long du corps : du col à l'assise 138 ; ses épaules, 100 ; sa tête, 58 de large)
 HEAD_L = 0.25 * FG.SCALE                      # (du haut du crâne au col, ses cheveux en bataille compris)
 LEGS = 0.7                                    # (ses jambes resserrées d'autant : la planche les écarte, accroupi)
 ANKLE = (14, 0.07)                            # (ses sandales : tant de pixels de planche au-dessus du bas, à tant de m du sol, à l'échelle du
                                               #  corps ; ses jambes seules étirées jusqu'à l'assise)
 INK_FACE = (0.55, 0.65)                       # (le sourire : ses dents blanches gardées, un trait sombre pris s'il couvre au moins tant)
 X_COL = 1197.0                                # la colonne de son milieu (le tabouret du milieu est à 1189,5 : il est assis sur son bord)
-FLIP = True                                   # (la planche retournée : son bol, ses gestes vers la droite, vers Teuchi et la pile)
-# les images de la planche : leur boîte (x0, y0, x1, y1) ; face : le blanc des dents gardé
-FRAMES = {'eat': ((54, 0, 230, 247), {}), 'noodles': ((360, 0, 515, 247), {}), 'drink': ((570, 0, 735, 247), {}),
-          'hold': ((780, 4, 970, 247), {}), 'chew': ((1136, 8, 1290, 247), {}),
-          'grin': ((70, 247, 232, 502), dict(face=True)), 'wave': ((420, 246, 600, 502), dict(face=True))}
-HAT = 1.0                                     # (son chapeau, pendu à son cou par le cordon : ramené vers le milieu de son dos de tant ;
-                                              #  la planche le met sur une épaule)
+# les images de la planche : leur boîte (x0, y0, x1, y1) ; face : le blanc des dents gardé. Ses gestes y vont déjà vers la
+# droite, vers Teuchi : elle n'est pas retournée
+FRAMES = {'eat': ((336, 46, 465, 271), {}), 'noodles': ((485, 27, 613, 272), {}), 'drink': ((635, 46, 763, 271), {}),
+          'chew': ((784, 45, 914, 271), {}), 'hold': ((315, 301, 463, 523), {}), 'stretch': ((484, 299, 680, 523), {}),
+          'stretch2': ((700, 300, 933, 523), {}), 'grin': ((397, 576, 525, 809), dict(face=True)),
+          'wave': ((546, 549, 680, 809), dict(face=True)), 'wave_b': ((700, 567, 852, 809), dict(face=True))}
+HIPS = 136.0                                  # (la largeur de ses hanches, son short juste sous l'assise, où chaque image est ramenée :
+                                              #  la planche dessine ses rangées à des échelles un peu différentes)
+ANCHOR = 'hips'                               # (ce qui pose chaque image en x : le milieu de ses hanches, assis sur le coussin : son
+                                              #  assise ne bouge pas, le haut de son corps seul se penche avec ses gestes)
 CHROMA = 0.8                                  # (ses couleurs vives dans la lumière de la boutique : leur saturation gardée à tant)
-FACE = {'grin': (2, 12), 'wave': (3, 14)}     # (son visage tourné vers nous, trop petit pour que la réduction garde ses traits : redessiné,
-                                              #  le milieu du visage à tant de sa colonne, les yeux à tant de son haut de crâne ; les yeux
-                                              #  fermés de rire, la cicatrice sous son oeil gauche, le grand sourire)
-STRETCH = (9, 18)                             # (le bras tendu, en caoutchouc : de tant de pixels de la scène, puis de tant)
 BOWL = ((226, 208, 178), (204, 184, 156), (150, 128, 108), (112, 92, 78), (96, 52, 34))   # (des bols de ramen blancs, à la lumière chaude :
                                              #  le bord, le flanc, son dessous à l'ombre, le pied, le dedans ; « pas de bouillie »)
 STACK = (1165.5, 641)                         # la pile : la colonne de son milieu (à sa gauche, à la place du tabouret du coin, vide : toute
@@ -98,57 +100,68 @@ def keep_teeth(Q, a, crown):
     return a
 
 
-def centre_hat(Q, a):
-    """son chapeau de paille ramené vers le milieu de son dos (au-dessus du milieu de ses hanches ; de HAT) : le chapeau, un
-    disque (l'ellipse de la boîte de sa paille : le bord, la bande, le fond, leur trait), déplacé ; là où il était, son gilet
-    (le rouge médian de la rangée), ou le fond au-delà du bord de la figure (le gilet : l'autre côté de son dos en miroir, ses plis et son ombre, pas un aplat)"""
-    r, g, b = Q[..., 0], Q[..., 1], Q[..., 2]; fig = a > 0.5; H, W = fig.shape
-    straw = fig & (r > 150) & (g > 105) & (b < 115) & (r - b > 75) & (g - b > 45)
-    lab_, n = FG.label(straw); sz = np.bincount(lab_.ravel()); sz[0] = 0
-    ys, xs = np.nonzero(lab_ == sz.argmax()); y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
-    my, mx = 0.3 * (y1 - y0), 0.3 * (x1 - x0)
-    for j in np.nonzero(sz >= 40)[0]:                         # (le fond du chapeau, que sa bande sépare du bord)
-        jy, jx = np.nonzero(lab_ == j)
-        if jy.min() >= y0 - my and jy.max() <= y1 + my and jx.min() >= x0 - mx and jx.max() <= x1 + mx:
-            y0, y1, x0, x1 = min(y0, jy.min()), max(y1, jy.max()), min(x0, jx.min()), max(x1, jx.max())
-    cy, cx, ry, rx = (y0 + y1) / 2, (x0 + x1) / 2, (y1 - y0) / 2 + 1.5, (x1 - x0) / 2 + 1.5
-    Y, X = np.mgrid[0:H, 0:W]
-    disc = lambda c: ((Y - cy) / ry) ** 2 + ((X - c) / rx) ** 2 <= 1
-    hat = fig & disc(cx)
-    blue = fig & (b > r + 20) & (b > 90)                          # (son short : le milieu de ses hanches)
-    by = np.nonzero(blue.sum(1) >= 0.5 * blue.sum(1).max())[0]; hips = np.nonzero(blue[by].any(0))[0]
-    xs = (hips.min() + hips.max() + 1) / 2; dx = int(round(HAT * (xs - cx)))
-    if dx == 0: return Q, a
-    vest = fig & ~hat & (r > 90) & (g < 0.42 * r) & (b < 0.5 * r)
-    Q2, a2 = Q.copy(), a.copy()
-    for y in np.unique(np.nonzero(hat)[0]):
-        ref = Q[y][vest[y]] if vest[y].any() else Q[vest]; c = np.median(ref, 0)
-        outside = np.nonzero(fig[y] & ~hat[y])[0]
-        for x in np.nonzero(hat[y])[0]:
-            if (dx > 0 and not (outside < x).any()) or (dx < 0 and not (outside > x).any()): a2[y, x] = 0
-            else:                            # (son gilet, l'autre côté de son dos en miroir : ses plis, son ombre ; sinon le rouge de la rangée)
-                xm = int(round(2 * xs - x))
-                Q2[y, x] = Q[y, xm] if 0 <= xm < W and vest[y, xm] else c
-    hy, hx = np.nonzero(hat); ok = (hx + dx >= 0) & (hx + dx < W)
-    Q2[hy[ok], hx[ok] + dx] = Q[hy[ok], hx[ok]]; a2[hy[ok], hx[ok] + dx] = 1.0
-    return Q2, a2
+def hips_of(P, m):
+    """son assise et ses hanches (pixels de la case) : la première rangée pleine de son short bleu, le milieu et la largeur du
+    short juste dessous"""
+    r, b = P[..., 0], P[..., 2]; blue = m & (b > r + 20)
+    by = np.nonzero(blue.sum(1) > 0.3 * blue.sum(1).max())[0]; seat = int(by.min())
+    ed = [(np.nonzero(blue[y])[0].min(), np.nonzero(blue[y])[0].max() + 1) for y in range(seat + 5, seat + 20) if blue[y].sum() > 20]
+    return seat, float(np.median([(a + e) / 2 for a, e in ed])), float(np.median([e - a for a, e in ed]))
+
+
+def load_sheet(path):
+    """une planche, et ses taches d'encre (ce qui n'est pas le blanc, d'un tenant à deux pixels près)"""
+    sheet = np.asarray(Image.open(path).convert('RGB')).astype(float)
+    return sheet, FG.label(FG.grow((765 - sheet.sum(2)) > 60, 2))[0]
+
+
+def frame_of(sheet, lab_, box):
+    """une image de la planche seule sur son blanc (ce qui est d'elle : les taches d'encre de la planche, lab_, dont la moitié
+    au moins tombe dans sa boîte ; pas la tête d'une voisine), ramenée à la largeur de hanches HIPS"""
+    x0, y0, x1, y1 = box; H, W = sheet.shape[:2]; pd = 12
+    a0, b0, a1, b1 = max(0, x0 - pd), max(0, y0 - pd), min(W, x1 + pd), min(H, y1 + pd)
+    inbox = np.zeros((H, W), bool); inbox[y0:y1, x0:x1] = True
+    ids = np.unique(lab_[b0:b1, a0:a1]); ids = ids[ids > 0]
+    keep = [j for j in ids if (inbox & (lab_ == j)).sum() >= 0.5 * (lab_ == j).sum()]
+    m = np.isin(lab_[b0:b1, a0:a1], keep)
+    P = np.where(m[..., None], sheet[b0:b1, a0:a1], 255.0); ink = (765 - P.sum(2)) > 60
+    k = HIPS / hips_of(P, ink & m)[2]
+    im = Image.fromarray(np.clip(np.round(P), 0, 255).astype(np.uint8)).resize((round(P.shape[1] * k), round(P.shape[0] * k)), Image.LANCZOS)
+    return np.asarray(im).astype(float)
+
+
+def hat_x(Q, a):
+    """le milieu de son chapeau (colonne de la case) : la paille entre les bords de son gilet, du haut du gilet à l'assise ; les
+    colonnes où elle est dense"""
+    r, g, b = Q[..., 0], Q[..., 1], Q[..., 2]; m = a > 0.5
+    vest = m & (r > 70) & (g < 0.5 * r) & (b < 0.45 * r) & (r - g > 50)
+    seat = hips_of(Q, m)[0]; inside = np.zeros_like(m)
+    for y in range(int(np.nonzero(vest.sum(1) > 15)[0][0]), seat):
+        xs = np.nonzero(vest[y])[0]
+        if len(xs) > 10: inside[y, xs.min():xs.max() + 1] = True
+    straw = inside & m & (r > 110) & (g > 0.58 * r) & (b < 0.62 * r)
+    lab_, n = FG.label(FG.grow(straw, 2) & inside); sz = np.bincount(lab_.ravel()); sz[0] = 0
+    hat = (lab_ == sz.argmax()) & straw
+    cols = hat.sum(0); c = np.nonzero(cols >= 0.25 * cols.max())[0]
+    return (c.min() + c.max() + 1) / 2
 
 
 def cells():
     """chaque image de la planche à sa profondeur et à sa vraie taille : ses couleurs, son plein, sa tête, et où la poser"""
     FG.REF['L'] = REF; FG.GROUP['luffy'] = GROUP; FG.HEAD['L'] = HEAD_L
     if 'luffy' not in FG.BACK: FG.BACK = FG.BACK + ('luffy',)
-    sheets = {'luffy': np.asarray(Image.open(SHEET).convert('RGB')).astype(float)}
+    sheet = load_sheet(SHEET)
     s = FG.F / FG.Z_S; anchor = FG.row(0, FG.Z_S)
     out = {}
     for name, (box, o) in FRAMES.items():
-        Q, a, _ = FG.cut(sheets, 'luffy', box, 'free', dict(multi=True, flip=FLIP))
+        P = frame_of(*sheet, box); box = (0, 0, P.shape[1], P.shape[0])
+        Q, a, _ = FG.cut({'luffy': P}, 'luffy', box, 'free', dict(multi=True))
         crown = hair_crown(Q, a); face = o.get('face')
         if face: a = keep_teeth(Q, a, crown)
         o = dict(g='luffy', crown=box[1] + crown)
-        Q, a = centre_hat(Q, a)
         Q, a, seat = FG.sit(Q, a, LEGS)
-        g = FG.measure(a, o, box[1]); cx = FG.chest(a)
+        g = FG.measure(a, o, box[1])
+        cx = {'hat': hat_x, 'hips': lambda Q, a: hips_of(Q, a > 0.5)[1], 'chest': lambda Q, a: FG.chest(a)}[ANCHOR](Q, a)
         K, kh, khx, kb = FG.knots('L', o, g, a, seat, s, anchor)
         feet = K[-1][0]; K = K[:-1] + [(feet - ANKLE[0], anchor - s * ANKLE[1] * FG.SCALE), K[-1]]
         C, A, T, Lc, hd = FG.warp(Q, a, K, kh, khx, kb, g, -(cx - g['xn']) * kb)
@@ -180,42 +193,8 @@ def colour(raw):
         g = np.random.default_rng(SEED + i).integers(-FG.GRAIN_B, FG.GRAIN_B + 1, m.shape)
         rgba = np.zeros(m.shape + (4,)); rgba[..., 3] = m * 255
         rgba[..., :3] = np.clip(np.round(famB[np.maximum(idx, 0)] + g[..., None]), 0, 255) * m[..., None]
-        if n in FACE:                         # (son visage : les yeux fermés de rire, la cicatrice, les dents, la lèvre)
-            dx, dy = FACE[n]; x = int(c['ox']) + dx; y = int(np.floor(c['hy'][0])) + dy
-            lab_ = R.lab(famB); dark = famB[np.argmin(lab_[:, 0])]
-            white = famB[np.argmax(lab_[:, 0] - 3 * np.hypot(lab_[:, 1], lab_[:, 2]))]
-            scar = famB[np.argmin(np.abs(lab_[:, 0] - 30) + np.abs(lab_[:, 1] - 30) + np.abs(lab_[:, 2] - 20))]
-            for xx, yy, cc in ([(x - 3, y, dark), (x - 2, y, dark), (x + 1, y, dark), (x + 2, y, dark), (x + 2, y + 2, scar)]
-                               + [(xx, y + 3, white) for xx in range(x - 3, x + 3)] + [(x - 3, y + 4, dark), (x + 2, y + 4, dark)]
-                               + [(xx, y + 4, white) for xx in range(x - 2, x + 2)] + [(xx, y + 5, dark) for xx in range(x - 2, x + 2)]):
-                rgba[yy, xx, :3] = cc
         out[n] = dict(c, rgba=rgba)
     return out
-
-
-def stretch(c, d):
-    """le bras qui tient le bol, tendu en caoutchouc : sur les rangées du bras et du bol, ce qui est à droite de son poignet
-    (sa main, le bol) poussé de d pixels, le poignet étiré entre (sa coupe, répétée) ; le reste tel quel"""
-    rgba = c['rgba']; m = rgba[..., 3] > 0; h, w = m.shape
-    L = rgba[..., :3].mean(2); sat = rgba[..., :3].max(2) - rgba[..., :3].min(2)
-    bowl = m & (sat < 40) & (L < 80); bowl[:, :int(c['ox']) + 8] = False   # (le bol : sombre, peu saturé, loin du buste ; son plus
-    lab_, n = FG.label(bowl); sz = np.bincount(lab_.ravel()); sz[0] = 0      #  grand morceau)
-    ys, xs = np.nonzero(lab_ == sz.argmax()); bx = int(xs.min()); r0, r1 = max(0, ys.min() - 2), ys.max() + 3
-    skin = m & (rgba[..., 0] > rgba[..., 2] + 30) & (rgba[..., 1] > 0.45 * rgba[..., 0])
-    xc = max(range(bx - 5, bx), key=lambda x: (int(skin[r0:r1, x].sum()), x))   # (sa main, juste avant le bol : la peau qu'on étire)
-    new = np.zeros((h, w + d, 4)); new[:, :w] = rgba
-    new[r0:r1, xc:] = 0; new[r0:r1, xc + d:] = rgba[r0:r1, xc:]
-    new[r0:r1, xc:xc + d] = rgba[r0:r1, xc:xc + 1]
-    return dict(c, rgba=new)
-
-
-def wave_b(c):
-    """la main qui salue, d'un pixel vers la gauche : au-dessus du haut de sa tête, à gauche de son milieu"""
-    rgba = c['rgba']; h, w = rgba.shape[:2]
-    wb = np.zeros((h, w + 1, 4)); wb[:, 1:] = rgba
-    hh = int(np.ceil(c['hy'][0])) + 1; x0 = int(c['ox']) - 6
-    hand = wb[:hh, 1:x0 + 1].copy(); wb[:hh, :x0 + 1] = 0; wb[:hh, :x0] = hand
-    return dict(c, rgba=wb, ox=c['ox'] + 1)
 
 
 def bowls():
@@ -233,8 +212,6 @@ def bowls():
 def main():
     prev = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else None
     raw = cells(); col = colour(raw)
-    col['stretch'] = stretch(col['hold'], STRETCH[0]); col['stretch2'] = stretch(col['hold'], STRETCH[1])
-    col['wave_b'] = wave_b(col['wave'])
     side, topb = bowls()
     order = ['eat', 'noodles', 'drink', 'hold', 'chew', 'stretch', 'stretch2', 'grin', 'wave', 'wave_b']
     A = FG.Atlas(512); boxes = {}
