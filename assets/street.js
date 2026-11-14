@@ -6617,7 +6617,7 @@
   // style (look: its kind; the shadows' alpha and grain for Teuchi's pass and the nearer one; the rims' rows). A cell is [sx, sy,
   // w, h, ox, oy]: (ox, oy) the middle of his chest and the top of his head (or the floor) in it
   const IRF = {"T":{"idle":[[0,0,34,63,17,0]],"calm":[[35,0,34,63,17,0]],"nod":[[70,0,33,63,18,0]],"smile":[[104,0,34,63,17,0]],"stir":[[139,0,33,63,15,0],[173,0,29,63,14,0],[203,0,31,63,14,0],[235,0,33,63,15,0],[269,0,28,63,14,0],[298,0,31,63,14,0]],"lift":[[330,0,38,67,22,4]],"serve":[[369,0,46,64,16,0],[416,0,46,64,19,0]],"shelf":[[463,0,41,66,20,1],[505,0,40,67,19,2]],"walk":[[546,0,37,109,18,109],[584,0,36,109,17,109],[621,0,33,109,16,109],[655,0,33,109,15,109],[689,0,36,109,17,109]]},"Ty":{"head":583.26,"feet":692.02},"Tz":27.27,"at":{"counter":1216.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[726,0,57,168,28,168],[784,0,55,168,26,168],[840,0,51,168,25,168],[892,0,51,168,23,168],[944,0,57,168,27,168]],"dfront":[[0,169,48,169,23,169]],"dbrow":[[49,169,62,169,25,169]],"dpole":[[112,169,66,173,31,173],[179,169,66,191,31,191],[246,169,66,209,31,209],[313,169,66,224,31,224]]},"Dz":[1187.0,17.6,734.32],"S":{"seat":[[380,169,49,95,26,95]],"chop":[[430,169,55,95,26,96]],"sip":[[486,169,44,96,24,96],[531,169,44,92,24,96]],"done":[[576,169,56,96,30,96]],"turn":[[633,169,44,93,22,94],[678,169,44,92,22,92]],"rise":[[723,169,45,103,22,103],[769,169,39,112,19,112]],"jacket":[[846,169,54,117,28,117],[901,169,40,117,20,117]],"stand":[[809,169,36,117,18,117]]},"Sx":1165.1,"Sy":696.03,"W":{"h0":116,"cells":[[[942,169,43,116,18,116],[0,394,42,116,20,116],[43,394,42,116,18,116],[86,394,37,116,16,116]],[[124,394,43,117,18,117],[168,394,43,117,20,117],[212,394,43,117,18,117],[256,394,38,117,17,117]],[[295,394,43,118,18,118],[339,394,43,118,20,118],[383,394,43,118,18,118],[427,394,38,118,17,118]],[[466,394,45,119,19,119],[512,394,43,119,20,119],[556,394,43,119,18,119],[600,394,38,119,17,119]],[[639,394,45,120,19,120],[685,394,43,120,20,120],[729,394,43,120,18,120],[773,394,38,120,17,120]],[[812,394,45,121,19,121],[858,394,44,121,21,121],[903,394,43,121,18,121],[947,394,39,121,17,121]],[[0,516,45,122,19,122],[46,516,45,122,21,122],[92,516,44,122,18,122],[137,516,39,122,17,122]],[[177,516,45,123,19,123],[223,516,45,123,21,123],[269,516,45,123,19,123],[315,516,39,123,17,123]],[[355,516,46,124,19,124],[402,516,45,124,21,124],[448,516,45,124,19,124],[494,516,40,124,18,124]],[[535,516,46,125,19,125],[582,516,45,125,21,125],[628,516,45,125,19,125],[674,516,40,125,18,125]],[[715,516,47,126,20,126],[763,516,45,126,21,126],[809,516,45,126,19,126],[855,516,41,126,18,126]],[[897,516,47,127,20,127],[945,516,47,127,22,127],[0,644,46,127,19,127],[47,644,41,127,18,127]],[[89,644,47,128,20,128],[137,644,47,128,22,128],[185,644,46,128,19,128],[232,644,41,128,18,128]],[[274,644,48,129,20,129],[323,644,47,129,22,129],[371,644,46,129,19,129],[418,644,41,129,18,129]],[[460,644,48,130,20,130],[509,644,47,130,22,130],[557,644,47,130,20,130],[605,644,41,130,18,130]],[[647,644,48,131,20,131],[696,644,47,131,22,131],[744,644,47,131,20,131],[792,644,42,131,19,131]],[[835,644,49,132,21,132],[885,644,48,132,22,132],[934,644,48,132,20,132],[0,777,43,132,19,132]],[[44,777,50,133,21,133],[95,777,49,133,23,133],[145,777,48,133,20,133],[194,777,43,133,19,133]],[[238,777,50,134,21,134],[289,777,49,134,23,134],[339,777,48,134,20,134],[388,777,43,134,19,134]],[[432,777,50,135,21,135],[483,777,49,135,23,135],[533,777,48,135,20,135],[582,777,43,135,19,135]],[[626,777,50,136,21,136],[677,777,49,136,23,136],[727,777,49,136,21,136],[777,777,43,136,19,136]],[[821,777,50,137,21,137],[872,777,49,137,23,137],[922,777,50,137,21,137],[973,777,43,137,19,137]],[[0,915,51,138,21,138],[52,915,50,138,23,138],[103,915,50,138,21,138],[154,915,45,138,20,138]],[[200,915,52,139,22,139],[253,915,51,139,24,139],[305,915,50,139,21,139],[356,915,45,139,20,139]],[[402,915,52,140,22,140],[455,915,51,140,24,140],[507,915,50,140,21,140],[558,915,45,140,20,140]],[[604,915,52,141,22,141],[657,915,51,141,24,141],[709,915,51,141,21,141],[761,915,45,141,20,141]],[[807,915,52,142,22,142],[860,915,51,142,24,142],[912,915,51,142,21,142],[964,915,45,142,20,142]],[[0,1058,53,143,22,143],[54,1058,52,143,24,143],[107,1058,52,143,22,143],[160,1058,46,143,20,143]],[[207,1058,53,144,22,144],[261,1058,52,144,24,144],[314,1058,52,144,22,144],[367,1058,46,144,20,144]],[[414,1058,54,145,23,145],[469,1058,53,145,25,145],[523,1058,52,145,22,145],[576,1058,47,145,21,145]],[[624,1058,54,146,23,146],[679,1058,53,146,25,146],[733,1058,53,146,22,146],[787,1058,47,146,21,146]],[[835,1058,55,147,23,147],[891,1058,53,147,25,147],[945,1058,53,147,22,147],[0,1206,47,147,21,147]],[[48,1206,55,148,23,148],[104,1206,54,148,25,148],[159,1206,53,148,22,148],[213,1206,47,148,21,148]],[[261,1206,55,149,23,149],[317,1206,54,149,25,149],[372,1206,53,149,22,149],[426,1206,48,149,21,149]],[[475,1206,55,150,23,150],[531,1206,55,150,26,150],[587,1206,54,150,23,150],[642,1206,48,150,21,150]],[[691,1206,55,151,23,151],[747,1206,55,151,26,151],[803,1206,55,151,23,151],[859,1206,48,151,21,151]],[[908,1206,57,152,24,152],[966,1206,55,152,26,152],[0,1359,55,152,23,152],[56,1359,49,152,22,152]],[[106,1359,57,153,24,153],[164,1359,56,153,26,153],[221,1359,55,153,23,153],[277,1359,49,153,22,153]],[[327,1359,57,154,24,154],[385,1359,56,154,26,154],[442,1359,55,154,23,154],[498,1359,50,154,22,154]],[[549,1359,57,155,24,155],[607,1359,56,155,26,155],[664,1359,55,155,23,155],[720,1359,50,155,22,155]],[[771,1359,57,156,24,156],[829,1359,57,156,27,156],[887,1359,57,156,24,156],[945,1359,50,156,22,156]],[[0,1516,58,157,24,157],[59,1516,57,157,27,157],[117,1516,57,157,24,157],[175,1516,50,157,22,157]],[[226,1516,59,158,25,158],[286,1516,58,158,27,158],[345,1516,57,158,24,158],[403,1516,50,158,22,158]],[[454,1516,59,159,25,159],[514,1516,58,159,27,159],[573,1516,57,159,24,159],[631,1516,51,159,23,159]],[[683,1516,59,160,25,160],[743,1516,58,160,27,160],[802,1516,57,160,24,160],[860,1516,52,160,23,160]],[[913,1516,60,161,25,161],[0,1678,58,161,27,161],[59,1678,58,161,24,161],[118,1678,52,161,23,161]],[[171,1678,60,162,25,162],[232,1678,59,162,28,162],[292,1678,58,162,24,162],[351,1678,52,162,23,162]],[[404,1678,60,163,25,163],[465,1678,60,163,28,163],[526,1678,59,163,25,163],[586,1678,52,163,23,163]],[[639,1678,61,164,26,164],[701,1678,60,164,28,164],[762,1678,59,164,25,164],[822,1678,52,164,23,164]],[[875,1678,61,165,26,165],[937,1678,60,165,28,165],[0,1844,60,165,25,165],[61,1844,52,165,23,165]],[[114,1844,62,166,26,166],[177,1844,60,166,28,166],[238,1844,60,166,25,166],[299,1844,54,166,24,166]],[[354,1844,62,167,26,167],[417,1844,60,167,28,167],[478,1844,60,167,25,167],[539,1844,54,167,24,167]],[[594,1844,62,168,26,168],[657,1844,61,168,29,168],[719,1844,60,168,25,168],[780,1844,54,168,24,168]],[[835,1844,62,169,26,169],[898,1844,62,169,29,169],[961,1844,60,169,25,169],[0,2014,54,169,24,169]],[[55,2014,62,170,26,170],[118,2014,62,170,29,170],[181,2014,62,170,26,170],[244,2014,54,170,24,170]],[[299,2014,64,171,27,171],[364,2014,62,171,29,171],[427,2014,62,171,26,171],[490,2014,55,171,24,171]],[[546,2014,64,172,27,172],[611,2014,62,172,29,172],[674,2014,62,172,26,172],[737,2014,55,172,24,172]],[[793,2014,64,173,27,173],[858,2014,62,173,29,173],[921,2014,62,173,26,173],[0,2188,56,173,25,173]],[[57,2188,64,174,27,174],[122,2188,64,174,30,174],[187,2188,62,174,26,174],[250,2188,56,174,25,174]],[[307,2188,65,175,27,175],[373,2188,64,175,30,175],[438,2188,63,175,26,175],[502,2188,56,175,25,175]],[[559,2188,65,176,27,176],[625,2188,64,176,30,176],[690,2188,64,176,27,176],[755,2188,56,176,25,176]],[[812,2188,66,177,28,177],[879,2188,64,177,30,177],[944,2188,64,177,27,177],[0,2366,57,177,25,177]]],"fix":[[58,2366,65,176,29,176]],"top":2.1658,"from":[8.61,25.92],"to":[5.854,17.25]},"N":{"cells":[[124,2366,36,92,18,92],[161,2366,40,84,20,84],[202,2366,39,85,20,85],[242,2366,38,92,19,92],[281,2366,38,93,19,93],[320,2366,37,89,18,89]],"x":1218.4,"y":696.03},"O":[358,2366,82,110,1150,590],"G":[[1160,522,631,636,681,598],[1161,521,631,636,681,597],[1162,521,631,636,681,597],[1163,521,631,636,681,597],[1164,521,631,636,682,597],[1165,520,631,636,682,597],[1166,520,631,636,682,597],[1167,520,631,636,682,597],[1168,520,631,636,682,597],[1169,520,631,636,682,597],[1170,519,631,636,682,596],[1173,519,631,636,683,596],[1174,519,631,636,683,596],[1175,518,631,636,683,596],[1176,518,631,636,683,596],[1177,518,631,636,683,545],[1178,518,631,636,684,596],[1179,518,631,636,684,596],[1180,517,631,636,684,596],[1181,517,631,636,684,595],[1182,517,631,636,684,595],[1183,517,631,636,684,595],[1184,517,631,636,685,595],[1185,516,631,636,685,595],[1192,515,631,636,686,594],[1193,515,631,636,686,594],[1194,514,631,636,686,594],[1195,514,631,636,686,594],[1196,514,631,636,686,594],[1197,514,631,636,686,594],[1198,514,631,636,687,594],[1199,513,631,636,687,594],[1200,513,631,636,687,594],[1201,513,631,636,687,593],[1202,513,631,636,687,593],[1203,513,631,636,687,593],[1204,512,631,636,687,593],[1205,512,631,636,688,593],[1209,511,631,636,688,593],[1210,511,631,636,688,592],[1211,511,631,636,688,592],[1212,511,631,636,689,592],[1213,511,631,636,689,592],[1214,510,631,636,689,592],[1215,510,631,636,689,592],[1216,510,631,636,689,592],[1217,510,631,636,689,592],[1218,510,631,636,689,592],[1219,509,631,636,690,592],[1220,509,631,636,690,592],[1221,509,631,636,690,591],[1222,509,631,636,690,591],[1223,509,631,636,690,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]],"look":{"kind":"couleur"}};
-  const IRFI = new Image(), IRF_SRC = 'assets/ramen_figures.webp?v=4';
+  const IRFI = new Image(), IRF_SRC = 'assets/ramen_figures.webp?v=5';
   let IRFS = null;                               // what they are drawn from, once in: the sheet decoded off the main thread (an ImageBitmap; drawn
   // as its <img> draws, to the byte), else the <img> (5 Mpx: its decoding in a frame froze the street for a fifth of a second on a phone)
   offView(RL.x, RL.x + RL.w, () => (window.createImageBitmap && window.fetch ? UP.fetch(IRF_SRC).then((r) => (r.ok ? r.blob() : Promise.reject(r.status))).then((b) => createImageBitmap(b)) : Promise.reject(0))
@@ -6834,7 +6834,7 @@
   const LF_MAX = 20, LF_RATE = 2.5;
   const LF = { a: 1, c: 'eat', seq: [], ft: 0, n: 0, wait: -1, hk0: -1, dead: false, cur: false };
   const ILFI = new Image(); ILFI.onerror = () => { LF.dead = true; };
-  offView(RL.x, RL.x + RL.w, () => { ILFI.src = 'assets/ichiraku_luffy.webp?v=2'; });
+  offView(RL.x, RL.x + RL.w, () => { ILFI.src = 'assets/ichiraku_luffy.webp?v=3'; });
   const lfR = (a, b) => a + Math.random() * (b - a);
   function lfMeal() {                            // (his bowl: [frame, seconds], ...; -1: until served)
     const s = [['eat', lfR(0.6, 1.0)]];
@@ -7271,7 +7271,8 @@
   // ---- zone 1's lit windows live (right side, behind the street lamp). Behind the curtained window of the narrow
   // building (win_z1_warm) someone crosses the room now and then: his shadow slides over the lit curtain, in the
   // facade's plane (squeezed across, its lines to the vanishing point), bigger than him and soft. Rarely Red, Pokémon's
-  // trainer, Pikachu on his shoulder, comes to stand at the glass of the balcony door above the shop (win_z1_top), dark
+  // trainer, Pikachu on his shoulder, comes to stand at the glass of the balcony door above the shop (win_z1_top; only while he is
+  // home: from 9:30 to 0:30 he is on the Pokémon Center's roof, CR_H), dark
   // against the lit room and its curtains, the rail in front. Shadows only, the ramen shop's way, over the windows' lit comps (z 1.12) and only while their light is on;
   // the same glass helpers as the oden shop's ----
   const Z1 = { warm: comps.find((c) => c.userData.name === 'win_z1_warm'), top: comps.find((c) => c.userData.name === 'win_z1_top') };
@@ -7375,7 +7376,7 @@
   function stepZ1(dt, t) {
     if (Z1.top) {                                // (the glow serves the reduced-motion still too: only the visit's own start waits for motion)
       const u = Z1.top.userData, m = Z1.top.material;
-      if (!reduced && !RNV.on && !u.on && m.opacity < 0.05 && !Z1F.who && heroNight() && (RNV.next -= dt) < 0) { RNV.on = true; RNV.k = 0; RNV.t = 0; Z1F.next = 2 + Math.random() * 3; }
+      if (!reduced && !RNV.on && !u.on && m.opacity < 0.05 && !Z1F.who && heroNight() && !crIn() && (RNV.next -= dt) < 0) { RNV.on = true; RNV.k = 0; RNV.t = 0; Z1F.next = 2 + Math.random() * 3; }
       if (RNV.on) {
         RNV.t += dt; RNV.k += (((RNV.t < 30 || Z1F.who) && heroNight() ? 1 : 0) - RNV.k) * Math.min(1, dt * 3);
         m.opacity = Math.max(m.opacity, 0.62 * RNV.k); m.color.setRGB(1 - 0.22 * RNV.k, 1 - 0.1 * RNV.k, 1);
@@ -7412,7 +7413,7 @@
       let F = Z1F.who; const light = Z1.top.material.opacity;
       if (!F) {
         Z1F.next -= dt;
-        if (Z1F.next < 0 && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) {
+        if (Z1F.next < 0 && !crIn() && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) {   // (at home: not at the Pokémon Center)
           if (!STAGE.spot('red', 60, { area: [[963, 222, 1006, 363]] })) Z1F.next = 1.5 + Math.random();   // (his place, STAGE: the balcony door's glass; taken, a moment later)
           else { F = Z1F.who = z1RPlan(RNV.on); z1Door.mesh.visible = true; Z1F.acc = 1; }
         }
@@ -7732,7 +7733,7 @@
     gsMesh.visible = true;
   }
   // ---- the four heroes (the secret 'killua': its id and its line in the list kept). Kirua on his roof, Naruto behind
-  // the balcony's lit glass, Red at the balcony door above the shop, Luffy at Ichiraku's counter: each clicked (or
+  // the balcony's lit glass, Red at the balcony door above the shop (or on the Pokémon Center's roof), Luffy at Ichiraku's counter: each clicked (or
   // tapped) once while he is there, in any order. Each answers at once, a second at most, in the scene's own light: the
   // same small star (pixel steps, its light added) and the same soft chime for all four, and a touch of his own: Kirua's
   // lightning crackles on him; a shadow clone pops beside Naruto in a puff (his hand seal too if he faces the glass: a
@@ -7779,6 +7780,7 @@
   function heroAt(k) {                           // where his star shows: by his head
     if (k === 'kirua') return [331 + KOFF[0], 134 + KOFF[1]];
     if (k === 'luffy') { const oy = ILF.cells[LF.c][5]; return [ILF.x + 9, Math.max(ILF.y - oy + ILF.head[LF.c] + 5, 600)]; }
+    if (k === 'red' && CRH.on) return crHead();   // (Red at the Pokémon Center)
     const b = k === 'naruto' ? heroNar() : heroRed();
     return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
   }
@@ -7822,7 +7824,7 @@
     const redStill = (on) => {
       if (on) { Z1F.who = { w: 0, q: [], a: { k: 'frames', seq: [['idle', 0, 1e9]], t: 0 }, fig: null }; z1Door.mesh.visible = true; Z1F.acc = 1; RNV.on = true; RNV.k = 1; RNV.t = 0; }
       else { Z1F.who = null; z1Door.mesh.visible = false; RNV.on = false; RNV.k = 0; if (Z1.top) Z1.top.material.color.setRGB(1, 1, 1); } };
-    const show = (on) => { HS.on = on; try { narStill(on); redStill(on); frame(); } catch (e) {} };
+    const show = (on) => { HS.on = on; try { narStill(on); redStill(on && !crIn()); frame(); } catch (e) {} };   // (Red: at home, else at the Center)
     const tick = () => {
       if (document.hidden || FIN.t >= 0) { setTimeout(tick, 20000); return; }
       show(true); setTimeout(() => { show(false); setTimeout(tick, 60000 + Math.random() * 60000); }, 25000 + Math.random() * 15000); };
@@ -8773,7 +8775,7 @@
     }
     hanaDraw();
   }
-  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
+  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCRed(ev)) { crClick(); CRH.on = true; fourHit('red'); CRH.on = false; return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the sky by the hour (package 1: ciel-01..12, meteo-13). skyHours, from stepNight each frame: the far planes' night
   // and dawn (NRU's uNT, uDW, uDP, uSun: the layers' shaders paint them from their own lightness), the street's far pixels'
@@ -9403,6 +9405,116 @@
     S.lv = Math.max(lv * pz, S.bat * (reduced ? 0.37 : 0.37 + 0.04 * Math.sin(S.out * 2 * Math.PI / 4.5)));
     M.scr.material.opacity = S.lv; M.glow.material.opacity = S.lv * (1.4 - 0.6 * sh * pz);   // (on the wall: more in a dark shop, its power's dark too)
     M.scr.visible = M.glow.visible = S.lv > 0.004;
+  }
+  // ---- Red, Pokémon's trainer, on the Pokémon Center's roof: seated on its edge at the corner over the alley, as Kirua on
+  // his roof, facing us, his legs hanging in the alley before the Center's side wall (the alley's far wall, face on), Pikachu
+  // on his shoulder, in colour (R26). tools/center_red.py made him from a sheet drawn after the owner's Red (tools/src/
+  // center_red_sheet.webp: the same design at true proportions, seated on a ledge), at the scale of that wall (23.08 m,
+  // 41.6 px a metre: his cap 0.88 m over the coping, his soles 0.53 m under it), his seat on the coping (CRD.x, CRD.y);
+  // what passes right of the nearer building's corner (CRD.clip) is behind it. Two layers: the night alone (the sky's and the
+  // street's, always; his shadow on the coping under him and, soft, on the wall under his legs), and the Pokéball sign's red
+  // and white light from his left and below, laid over it at the sign's level and its zone's power (the night light's dimmer
+  // from 1 h, a blackout; the red night takes both). He is here from 9:30 to 0:30 (CR_H), at home the rest of the night (the
+  // four heroes' Red at his balcony door, Z1F, and his Game Boy at night, RNV: only then; a visit still under way, he comes
+  // after it). Quiet: he breathes, swings his legs now and then, tosses his Poké Ball and catches it, rarely waves; from 23 h
+  // he dozes, Pikachu asleep against his neck, waking a moment now and then (he rubs his eye); he comes and goes softly.
+  // Clicked (his own): he throws his Poké Ball up, it pops open in a flash over him, he pumps his fist and Pikachu's cheeks
+  // spark (dozing: he wakes, Pikachu sparks); a click also counts him as the four heroes' Red (the same Red: fourHit('red'),
+  // its star by his cap). Reduced motion: still (seated, or asleep from 23 h) ----
+  const CRD = {"cells":{"idle":[0,0,41,59,18,37],"idle_b":[42,0,41,60,18,38],"swing":[84,0,41,59,18,37],"swing2":[126,0,41,59,18,37],"ball":[168,0,40,59,17,37],"toss":[209,0,43,60,20,38],"cheer":[0,61,44,62,18,39],"doze":[45,61,37,58,16,36],"wake":[83,61,42,60,17,38]},"lit":124,"x":921,"y":441,"clip":941,"pts":{"idle":{"head":[0,-37],"pika":[11,-30]},"idle_b":{"head":[0,-38],"pika":[11,-31]},"swing":{"head":[0,-37],"pika":[11,-30]},"swing2":{"head":[0,-37],"pika":[11,-30]},"ball":{"head":[-1,-37],"pika":[9,-30]},"toss":{"head":[-1,-38],"hand":[-16,-26],"pika":[12,-31]},"cheer":{"head":[-1,-37],"pika":[10,-32]},"doze":{"head":[-1,-36],"pika":[8,-29]},"wake":{"head":[-1,-37],"pika":[10,-32]}}};   // (tools/center_red.py: his cells [sx, sy, w, h, ox, oy] (the night's layer; the sign's lit lower), his seat, the clip, his points)
+  const CR = { a: 0, f: 'idle', seq: [], ft: 0, toss: 30 + Math.random() * 20, wave: 140 + Math.random() * 120, kick: 12 + Math.random() * 10,
+    wake: 25 + Math.random() * 20, ball: null, pop: null, spark: 0, hk0: -1, dead: false, drawn: '', acc: 1 };
+  const CRB = { x: 893, y: 386, w: 48, h: 84 };   // (his canvases, their right edge the nearer building's corner: his cells, the ball and its flash, the sparks)
+  const CRI = new Image(); CRI.onerror = () => { CR.dead = true; };
+  offView(CRB.x, CRB.x + CRB.w, () => { CRI.src = 'assets/center_red.webp?v=3'; });
+  const crLayer = (z, kind) => {
+    const c = document.createElement('canvas'); c.width = CRB.w; c.height = CRB.h;
+    const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(CRB.w, CRB.h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false }));
+    m.position.set(CRB.x + CRB.w / 2, -(CRB.y + CRB.h / 2), z); m.visible = false; scene.add(m); gradeSprite(m.material, kind);
+    return { c, g: c.getContext('2d'), t, m };
+  };
+  const CRL = { night: crLayer(1.12, 'street'), lit: crLayer(1.1201, 'self'), fx: crLayer(1.1202, 'self') };   // (over the Center's comps and the sign's glow)
+  const CREMB = comps.find((c) => c.userData.name === 'z4_emblem') || null;   // (the Pokéball sign: its level, the night light's dimmer in it)
+  const crR = (a, b) => a + Math.random() * (b - a);
+  const CRH = { on: false };                     // (his click, the four heroes': his star by his cap, not at the balcony door)
+  const CR_H = [9.5, 0.5, 23];                   // (here from, until (past midnight), dozing from)
+  const crHour = () => (((CLOCK.h + CLOCK.wake) % 24) + 24) % 24;
+  function crIn() { const h = crHour(); return h >= CR_H[0] || h < CR_H[1]; }   // (Red on the Center's roof: not at home)
+  const crNight = () => { const h = crHour(); return h >= CR_H[2] || h < CR_H[1]; };
+  function crPlay(seq) { CR.seq = seq.slice(); CR.ft = 0; }
+  function crClick() {                           // his own: the throw up and its flash (by day), or he wakes (at night)
+    if (reduced || CR.f === 'cheer' || CR.ball || CR.pop) return;
+    if (crNight()) { crPlay([['wake', 2.2]]); CR.spark = 1.0; return; }
+    crPlay([['ball', 0.3], ['toss', 0.05, 'throw'], ['toss', 0.5], ['cheer', 0.1, 'spark'], ['cheer', 1.3], ['idle', 0.4]]);
+  }
+  function crBox() {                             // (where he shows: his cell, cut at the nearer building's corner)
+    const [, , w, h, ox, oy] = CRD.cells[CR.f], x = CRD.x - ox; return [x, CRD.y - oy, Math.min(w, CRD.clip - x), h];
+  }
+  function crHead() { const p = CRD.pts[CR.f].head; return [CRD.x + p[0] + 3, CRD.y + p[1] + 3]; }
+  function overCRed(ev) { return !CR.dead && CR.a > 0.5 && !!CRD.cells && CRI.naturalWidth > 0 && heroIn(heroPt(ev), crBox(), 1); }
+  function stepCRed(dt) {
+    if (CR.dead || !CRD.cells) return;
+    const away = !crIn() || !!Z1F.who, hk = crHour(), live = CR.hk0 >= 0 && Math.abs(hk - CR.hk0) < 0.05 && !reduced; CR.hk0 = hk;
+    CR.a = away ? (live ? Math.max(0, CR.a - dt / 0.8) : 0) : (live ? Math.min(1, CR.a + dt / 1.2) : 1);   // (in and out: softly when seen)
+    const night = crNight();
+    if (reduced) CR.f = night ? 'doze' : 'idle';
+    else {
+      if (night !== (CR.f === 'doze' || CR.f === 'wake')) { CR.seq = []; CR.ft = 0; CR.ball = null; }
+      if ((CR.ft -= dt) <= 0) {
+        if (!CR.seq.length) {
+          if (night) CR.seq = (CR.wake -= 4) < 0 ? (CR.wake = crR(20, 45), [['wake', crR(1.5, 3)]]) : [['doze', 4]];
+          else if ((CR.toss -= 3.2) < 0) { CR.toss = crR(25, 55); CR.seq = [['ball', 0.5], ['toss', 0.05, 'up'], ['toss', 0.66], ['ball', 0.45]].concat(Math.random() < 0.35 ? [['toss', 0.05, 'up'], ['toss', 0.66], ['ball', 0.5]] : []); }
+          else if ((CR.wave -= 3.2) < 0) { CR.wave = crR(150, 300); CR.seq = [['toss', 1.6]]; }   // (his hand up: he waves at the street)
+          else if ((CR.kick -= 3.2) < 0) { CR.kick = crR(12, 30); CR.seq = [['swing', 0.3], ['idle', 0.3], ['swing2', 0.3], ['idle', 0.3], ['swing', 0.3], ['idle', 0.3], ['swing2', 0.3], ['idle', 0.6]]; }
+          else CR.seq = [['idle', 1.6], ['idle_b', 1.6]];
+        }
+        const [f, d, cue] = CR.seq.shift(); CR.f = f; CR.ft = d;
+        if (cue === 'up' || cue === 'throw') { const h = CRD.pts.toss.hand; CR.ball = { k: cue, t: 0, x: h[0], y: h[1] }; }
+        if (cue === 'spark') CR.spark = 1.2;
+      }
+    }
+    if (CR.ball) {                               // the Poké Ball: up and back into his hand (0.7 s), or thrown up high, and its pop
+      const B = CR.ball; B.t += dt;
+      if (B.k === 'up' && B.t > 0.7) CR.ball = null;
+      if (B.k === 'throw' && B.t > 0.45) { CR.pop = { t: 0, x: B.x - 3, y: B.y - 17 }; CR.ball = null; }
+    }
+    if (CR.pop && (CR.pop.t += dt) > 0.4) CR.pop = null;
+    if (CR.spark > 0) CR.spark -= dt;
+    // the sign's light on him: its level (the night light's dimmer), the zone's power; the night's own, the power too
+    const pz = PW.on && PKS.zone >= 0 ? pwShade.material.uniforms.uPow.value[PKS.zone] : 1, sg = CREMB ? CREMB.material.opacity : 1;
+    const vis = CR.a > 0.004 && CRI.complete && CRI.naturalWidth > 0;
+    CRL.night.m.visible = CRL.lit.m.visible = vis; CRL.fx.m.visible = vis && (!!CR.ball || !!CR.pop || CR.spark > 0);
+    if (!vis) return;
+    CRL.night.m.material.opacity = CR.a; CRL.night.m.material.color.setScalar(0.62 + 0.38 * pz);
+    CRL.lit.m.material.opacity = CR.a * Math.min(1, sg) * pz; CRL.fx.m.material.opacity = CR.a;
+    if (CR.drawn !== CR.f) {                     // his frame, into both layers (only when it changes)
+      CR.drawn = CR.f; const [sx, sy, w, h, ox, oy] = CRD.cells[CR.f], X = CRD.x - ox - CRB.x, Y = CRD.y - oy - CRB.y;
+      for (const [L, dy] of [[CRL.night, 0], [CRL.lit, CRD.lit]]) {
+        L.g.clearRect(0, 0, CRB.w, CRB.h); L.g.imageSmoothingEnabled = false; L.g.drawImage(CRI, sx, sy + dy, w, h, X, Y, w, h); L.t.needsUpdate = true;
+      }
+    }
+    if ((CR.acc += dt) < 1 / 20 || !CRL.fx.m.visible) return; CR.acc = 0;
+    const g = CRL.fx.g, X0 = CRD.x - CRB.x, Y0 = CRD.y - CRB.y; g.clearRect(0, 0, CRB.w, CRB.h);
+    const ball = (x, y) => { x = Math.round(x); y = Math.round(y);   // (3 x 3: its red top, its band and button, its white)
+      g.fillStyle = '#b3263a'; g.fillRect(x - 1, y - 1, 3, 1); g.fillStyle = '#1c1016'; g.fillRect(x - 1, y, 3, 1);
+      g.fillStyle = '#ece6dc'; g.fillRect(x, y, 1, 1); g.fillRect(x - 1, y + 1, 3, 1); };
+    if (CR.ball) {
+      const B = CR.ball, u = B.t;
+      if (B.k === 'up') ball(X0 + B.x, Y0 + B.y - 9 * Math.sin(Math.PI * Math.min(1, u / 0.7)));
+      else { const k = Math.min(1, u / 0.45); ball(X0 + B.x - 3 * k, Y0 + B.y - 17 * (1 - (1 - k) * (1 - k))); }   // (up, slowing)
+    }
+    if (CR.pop) {                                // (the pop: a white star growing, fading, where the ball opened)
+      const P = CR.pop, x = Math.round(X0 + P.x), y = Math.round(Y0 + P.y), r = P.t < 0.12 ? 1 : P.t < 0.24 ? 2 : 3;
+      g.fillStyle = 'rgba(255,248,236,' + (1 - P.t / 0.45) + ')';
+      g.fillRect(x, y - r, 1, 2 * r + 1); g.fillRect(x - r, y, 2 * r + 1, 1); if (r > 1) { g.fillRect(x - 1, y - 1, 1, 1); g.fillRect(x + 1, y + 1, 1, 1); g.fillRect(x + 1, y - 1, 1, 1); g.fillRect(x - 1, y + 1, 1, 1); }
+    }
+    if (CR.spark > 0) {                          // Pikachu's cheeks: a few yellow sparks, flickering
+      const p = (CRD.pts[CR.f] && CRD.pts[CR.f].pika) || CRD.pts.cheer.pika, x = X0 + p[0], y = Y0 + p[1];
+      g.fillStyle = '#ffe14a';
+      for (let i = 0; i < 4; i++) if (Math.random() < 0.6) { const dx = (i % 2 ? 4 : -4) + ((Math.random() * 3) | 0) - 1, dy = (i < 2 ? -2 : 2) + ((Math.random() * 3) | 0) - 1; g.fillRect(Math.round(x + dx), Math.round(y + dy), 1, 1); g.fillRect(Math.round(x + dx + Math.sign(dx)), Math.round(y + dy - 1), 1, 1); }
+    }
+    CRL.fx.t.needsUpdate = true;
   }
   // ---- droite-07: a Gengar in the Pokémon Center at night. The Center never shuts (lumieres-11); in its night mode (1 h-6 h), once in a
   // long while (the street director's 'gengar'), Gengar floats in behind the door glass in front of its PC and reads as himself:
@@ -10150,7 +10262,7 @@
     // the Battle Bus
     stepBBus(dt, t); stepGlide(dt);
     stepWindow(dt); stepRamen(dt, t); stepShop(dt, t); stepGengar(dt); stepOden(dt, t);
-    stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt);
+    stepKillua(dt); stepLightning(dt); stepCat(dt); stepTree(dt); stepPkpc(dt); stepCRed(dt);
     stepLuffy(dt);                                   // Luffy at Ichiraku: his meal, his bowls
     stepFour(dt);                                    // the four heroes' answers (idle otherwise)
     stepSwitch();                                    // the switch box by the Center: its toggles, its light

@@ -23,8 +23,8 @@ Les styles (STYLE, ou --style) :
   - liseré (C) : l'ombre de A, et un liseré d'un pixel de la lumière de la boutique sur les bords tournés vers elle (LIGHT :
     d'en haut, et du côté de la lanterne pour Teuchi au comptoir et le client assis), pris dans les couleurs claires du
     personnage lui-même (ses familles de B), posé après le grain.
-Dans les trois : un pixel plein ou vide, jamais à demi ; pas de trait sombre continu au bord (OUTLINE_DL : un pixel plus sombre
-seulement du côté de l'ombre, SHADOW_COS, ou là où deux parts se touchent).
+Dans les trois : un pixel plein ou vide, jamais à demi ; pas de trait sombre au bord (OUTLINE_DL : nulle part, pas même du
+côté de l'ombre, SHADOW_COS : le propriétaire, « pas de contour au perso » ; là seulement où deux parts se touchent).
 
 La vraie taille. Teuchi fait 1,78 m (son bandeau compris), le client 1,82 m ; la maquette de la rue met l'œil à 1,5 m quand
 les repères du sol de la peinture le mettent à 1,26 m : les gens y sont donc pris à SCALE = 1,19 mètre de maquette pour un vrai
@@ -189,7 +189,8 @@ VALUES = (42.0, 66.0)                        # la clarté (L*) des couleurs, gar
                                              # la lanterne à part) : au-dessus du premier, ramenée sous le second
 OUTLINE_DL = 12.0                            # pas de trait sombre continu au bord : un pixel du bord plus sombre de tant que le dedans en prend
                                              # la couleur, sauf du côté de l'ombre (SHADOW_COS : tourné à l'opposé de la lumière, LIGHT)
-SHADOW_COS = -0.25
+SHADOW_COS = -2.0                            # (le propriétaire, « pas de contour au perso » : plus de côté d'ombre gardé sombre ;
+                                             # c'était -0,25 : un pixel plus sombre du côté opposé à la lumière)
 FACE = (10, 15, (0.42, 0.66))                # le détail selon la tête (pixels de haut) : sous le premier, pas de traits ; jusqu'au second, un
                                              # pixel pour chaque oeil (dans cette bande de la tête) ; au-delà, la bouche, le nez
 POLE_UP = (0.0, 0.35, 0.7, 1.0)              # la perche de Teuchi montée de tant (part de ce qu'il faut pour atteindre la tringle)
@@ -317,6 +318,36 @@ def cut(sheets, sheet, box, kind, o):
         new = ~have & (cnt > 0); Q[new] = acc[new] / cnt[new][:, None]; have |= new
     if o.get('flip'): Q, a = Q[:, ::-1].copy(), a[:, ::-1].copy()
     return Q, a, seat
+
+
+def deink(Q, a, dark=150, sat=45, r=3):
+    """pas de contour (le propriétaire : « pas de contour au perso ») : les traits noirs de la planche, son contour et ses
+    traits du dedans (minces : ce qu'une ouverture de r pixels efface ; un aplat noir épais, un tee-shirt, des cheveux, le bout
+    des oreilles de Pikachu, reste), repeints de la couleur de leurs voisins dans la figure : le bord de la figure se lit par sa
+    valeur contre le fond, les traits du dedans par leurs changements de valeur"""
+    m = a > 0.5; L = Q.sum(2); ink = m & (L < dark) & (Q.max(2) - Q.min(2) < sat)
+    core = ink.copy()
+    for _ in range(r): core = ~grow(~core)                            # (l'ouverture : érodé r fois,
+    for _ in range(r): core = grow(core) & ink                        #  regonflé dans le noir)
+    line = ink & ~core
+    Q = Q.copy(); have = (a > 0) & ~line
+    for _ in range(12):                                                # (repeints du dehors du trait vers son milieu)
+        todo = (a > 0) & ~have
+        if not todo.any(): break
+        acc = np.zeros_like(Q); cnt = np.zeros(have.shape)
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (1, -1), (-1, 1), (-1, -1)):
+            sh = np.roll(np.roll(have, dy, 0), dx, 1); acc += np.roll(np.roll(Q, dy, 0), dx, 1) * sh[..., None]; cnt += sh
+        new = todo & (cnt > 0); Q[new] = acc[new] / cnt[new][:, None]; have |= new
+    return Q
+
+
+def rim(rgb, m, light, col, k, cos=0.35):
+    """une lumière de bord : les pixels du bord tournés vers la lumière (sa direction dans l'image) mêlés de tant de sa couleur"""
+    p = np.pad(m, 1); edge = m & ~(p[:-2, 1:-1] & p[2:, 1:-1] & p[1:-1, :-2] & p[1:-1, 2:])
+    nx, ny = normals(m); l = np.array(light, float); l /= np.hypot(*l)
+    on = edge & (nx * l[0] + ny * l[1] >= cos)
+    out = rgb.copy(); out[on] = rgb[on] * (1 - k) + np.array(col, float) * k
+    return out
 
 
 def sit(Q, a, legs=LEGS):
