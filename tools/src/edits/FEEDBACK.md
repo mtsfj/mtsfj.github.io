@@ -89,6 +89,10 @@ street. Read this before redrawing any zone; add to it after every review.
 - **R29. One tone per plane.** A wall is one material at one base value over its whole plane; only real light (a lamp's
   falloff, the sky from above, contact shade) modulates it; the next face of the same building may differ, but is
   itself uniform. The owner: "soit tout uni, soit côté et façade différents, mais identiques sur le même pan".
+- **R30. Every new element lives.** Whatever is added or redone in the street gets its own subtle life over time, tied to
+  the clock, the weather and the street's systems (its lights on their hours, a figure's idle motion, a machine running,
+  the wind, the passing headlights), never in step with its neighbours, following the power cut and the red night, still
+  under reduced motion. The owner: "Anime toutes les nouveautés au fil du temps".
 - **R19. Whatever copies the wall follows it.** Swinging, sliding or blinking overlays often carry a copy of the wall
   behind them (the oden's lantern frames, its door's sliding leaf); they take the new wall too, or they show the old
   one each time they move.
