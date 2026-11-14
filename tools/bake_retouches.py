@@ -38,6 +38,9 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 WINDOWS = [('winB', 944, 205), ('winC', 1074, 112)]
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in WINDOWS]
+# Ichiraku's shop window, one clear pane (tools/ichiraku_interior.py, by tools/redraw_zones.py's zone vitrine), last
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'vitrine_{_tag}.webp', 1159, 500))
 
 
 def main():

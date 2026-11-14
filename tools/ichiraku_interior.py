@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
-"""Ichiraku : derrière les portes vitrées, la boutique en petite maquette 3D, vue par l'œil de la rue.
+"""Ichiraku : derrière sa vitrine, la boutique en petite maquette 3D, vue par l'œil de la rue.
 
-    python3 tools/ichiraku_interior.py                  (il reprend sa zone au commit BEFORE à chaque fois, on peut donc le
-                                                          relancer : il écrit la même chose)
-    python3 tools/ichiraku_interior.py --preview dossier (des aperçus seulement, rien d'écrit dans assets/)
+    python3 tools/ichiraku_interior.py                  (la boutique fermée, tools/src/edits/shop_off_before.webp, et le
+                                                          masque assets/ramen_glass.webp ; on peut le relancer : il écrit la
+                                                          même chose ; puis la chaîne, tools/redraw_zones.py et la suite)
+    python3 tools/ichiraku_interior.py --preview dossier (des aperçus seulement, rien d'écrit)
+    (un module aussi : la zone 'vitrine' de tools/redraw_zones.py, la dernière, appelle draw() : la vitrine dans les calques)
 
 La caméra de la rue est une perspective à un point : focale F = 1400 px, point de fuite VP (700, 615), l'œil à EYE = 1,5 m
-du trottoir. La façade du ramen est à droite de la rue et court vers VP ; ses deux portes coulissantes vitrées en sont (quatre
-vitres en largeur, VITRES : leurs colonnes de verre ; une traverse entre le haut et le bas, TRAVERSE). Le seuil des portes
+du trottoir. La façade du ramen est à droite de la rue et court vers VP ; sa vitrine en est : une seule glace claire dans un cadre
+mince (VITRE : ses colonnes de verre, d'un montant à l'autre ; ni montant ni traverse entre ; le propriétaire : « refais la
+baie vitrée d'Ichiraku pour qu'elle ne cache rien » ; au commit BEFORE, quatre vitres et une traverse, PEINTES). Le seuil des portes
 (SEUIL : la première rangée du trottoir sous elles, mesurée colonne par colonne) est sur des rayons vers VP à 1,5 m sous
-l'œil : la façade est à X_F = 5,53 m à droite de l'œil, les portes de Z = 14,8 à 16,8 m le long de la rue ; le bas des
-vitres (BAS_RAYON) à 0,69 m du trottoir, la traverse à 1,29 m, l'ourlet du noren à 1,74 m.
+l'œil : la façade est à X_F = 5,53 m à droite de l'œil, la vitrine de Z = 14,8 à 16,8 m le long de la rue ; le bas du
+verre (BAS_RAYON) à 0,69 m du trottoir, l'ourlet du noren à 1,74 m, le haut du cadre (sa tringle, TRINGLE) à 2,64 m.
 
 La boutique, une boîte derrière la façade (D_ROOM de fond, le plafond à CEIL). Par une porte de côté, un rayon file le long de
 la rue (un tiers de mètre vers le fond pour un mètre le long de la rue) : ce qu'il rencontre au bout est le mur du bout de la
@@ -21,7 +24,7 @@ travail (BACK_D, caché par celui des clients), le mur du bout à Z_E = 28,4 m (
 L'image du propriétaire (tools/src/ichiraku_room.webp : étagères, bouteilles, bols, bocaux, casseroles et louches, la
 marmite) est posée sur ce mur à K_WALL = 230 pixels de l'image par mètre (ses étagères à 30 cm l'une de l'autre en
 moyenne, ses bouteilles de 35 à 40 cm, ses bols de 20 cm), le haut de son comptoir de travail (V_REF) à 0,9 m, glissée
-pour que sa marmite soit derrière la troisième vitre (POT). Par le verre, sous le noren, on en voit une bande de 1,3 m de
+pour que sa marmite soit au milieu de la vitrine (POT). Par le verre, sous le noren, on en voit une bande de 1,3 m de
 large, de 1 m à 1,9 m de haut : les casseroles et les louches, la marmite à couvercle, des bocaux, l'armoire aux bols, le
 haut de la grande marmite. Sur le
 comptoir des clients, des objets de l'image (OBJETS : deux bols, chacun devant son tabouret, celui du milieu et celui de
@@ -29,26 +32,28 @@ Naruto ; un verre, des condiments, une bouteille ; de face, posés sur son dessu
 silhouette, shape_ok) ; sa face en planches (PLANK : leur ton tiré
 des planches de l'image, leurs joints), à l'ombre sous son arête, plus sombre vers le sol ; le retrait du pied, la barre pour
 les pieds (RAIL). Devant lui, trois tabourets (STOOLS : sous le client du coin, sous Naruto, un entre eux) : un coussin rond
-rouge, quatre pieds, l'anneau. Au-dessus du comptoir, pendue à 1,6 m, une lanterne de l'image (LANTERN). Le plafond et le sol
-ne se voient pas par ces vitres (la maquette les a quand même) : les rayons du verre montent d'au plus 1,7 % et descendent
-d'au plus 5,4 %, ils rencontrent le comptoir ou le mur du bout bien avant.
+rouge, quatre pieds, l'anneau. Au-dessus du comptoir, pendue à 1,6 m, une lanterne de l'image (LANTERN). Le sol ne se voit
+pas (la maquette l'a quand même) ; le plafond, par le haut de la vitrine derrière le noren (ses fentes, la boutique fermée) :
+son bois, éclairé par les lampes du fond, plus sombre vers la façade (CEIL_C, CEIL_K).
 
-Le rendu. Chaque pixel du verre (de sous l'ourlet du noren, son image au repos, à la traverse ; de la traverse à la rangée
-au-dessus de la lisière claire du bas) est pris sur SS x SS rayons de l'œil, puis ramené au pixel entier selon ses bords
+Le rendu. Chaque pixel du verre (de sous la tringle à la rangée au-dessus de la lisière claire du bas) est pris sur SS x SS
+rayons de l'œil, puis ramené au pixel entier selon ses bords
 (reduce : les surfaces nettes, les éclats gardés). La lumière : le haut à l'ombre du noren (HAUT), la vapeur au-dessus de la
 marmite plus claire (STEAM). Le grain du peintre (GRAIN : fixe, plein sur l'uni, léger sur le chargé), puis chaque pixel
-ramené à la palette de la boutique (40 couleurs tirées de son verre allumé d'avant, du noren et des lanternes allumés), un
-grain ne sautant jamais plus d'une marche. Les arêtes claires des montants contre le verre (ARETES) gardent leurs pixels, à
-la lumière de la nouvelle pièce.
+ramené à la palette de la boutique (40 couleurs tirées de son verre allumé d'avant, ses quatre vitres, du noren et des
+lanternes allumés), un grain ne sautant jamais plus d'une marche. Les arêtes claires des montants du cadre contre le verre
+(ARETES) gardent leurs pixels, à la lumière de la nouvelle pièce. Le reflet de la rue sur la glace (REFLET, REFLET_C : deux
+traînées en biais, sous les têtes, à peine) : fondu dans le verre coupé et fermé ; allumée, assets/street.js le pose sur
+les gens (IRF.refl, de tools/ichiraku_figures.py).
 
 Dans layer_city_off (allumée) ; street_unlit (la coupure de courant : la même pièce dans le bleu nuit du verre coupé, de son
-plus sombre à son plus clair selon la clarté de la pièce allumée, à ses couleurs) ; assets/shop_off.webp (fermée : tout le
-verre couvert de son bleu nuit, posé à 0,88, la pièce allumée n'y passe qu'à 12 %) ; assets/ramen_glass.webp (le masque du
-verre où passent les ombres de Teuchi et du client, la lumière de la pièce qui respire et la vapeur : plein au-dessus du
-comptoir, un peu moins sur le plus sombre, MASK ; une part égale sur sa face, sous la ligne des figures ; sous l'ourlet,
-rien ailleurs que sur le verre : ni sur les montants, ni sur la traverse, ni sur la lisière du bas). Le noren peint
-au-dessus de l'ourlet, les montants, la traverse, la façade : tels qu'au commit BEFORE. night_far et street_sun : 0 ici,
-tels quels. Il faut git, Pillow, numpy.
+plus sombre à son plus clair selon la clarté de la pièce allumée, à ses couleurs) : par draw(), la zone 'vitrine' ;
+tools/src/edits/shop_off_before.webp (fermée : tout le verre couvert de son bleu nuit, posé à 0,88, la pièce allumée n'y
+passe qu'à 12 % ; tools/redraw_zones.py en fait assets/shop_off.webp) ; assets/ramen_glass.webp (le masque du verre où
+passent les ombres de Teuchi et du client, la lumière de la pièce qui respire et la vapeur : plein au-dessus du comptoir, un
+peu moins sur le plus sombre, MASK ; une part égale sur sa face, sous la ligne des figures ; rien ailleurs que sur le verre :
+ni sur le cadre, ni sur la lisière du bas). Le cadre, la façade : tels que les zones d'avant les laissent. night_far et
+street_sun : 0 ici, tels quels. Il faut git, Pillow, numpy.
 """
 import os
 import sys
@@ -61,19 +66,28 @@ import interieur as I
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'tools', 'src', 'ichiraku_room.webp')
+EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
+NAMES = (('layer_city_off.webp', 'RGBA'), ('street_unlit.webp', 'RGBA'))
+SO_BEFORE = os.path.join(EDITS, 'shop_off_before.webp')   # (la boutique fermée, avant tools/redraw_zones.py, qui la pose)
 BEFORE = '402ebae'                   # (les calques avant l'outil d'Ichiraku : sa zone reprise de là à chaque fois)
-ZONE = (1150, 590, 1232, 700)        # x0, y0, x1, y1 : les vitres et leur cadre
-SHOP_OFF, GLASS = (1112, 448), (1150, 520)   # (shop_off.webp, ramen_glass.webp : leur place)
+ZONE = (1150, 500, 1232, 700)        # x0, y0, x1, y1 : la vitrine et son cadre
+SHOP_OFF, GLASS = (1112, 448), (1150, 520)   # (edits/shop_off_before.webp, ramen_glass.webp : leur place)
 
 # ---- la caméra de la rue, la façade et ses portes
 F, VX, VY, EYE = 1400.0, 700.0, 615.0, 1.5
 SEUIL = ((1160, 744), (1170, 744), (1180, 746), (1190, 747), (1200, 749), (1210, 751), (1220, 753))
 X_F = EYE / float(np.mean([(y - VY) / (x - VX) for x, y in SEUIL]))
-VITRES = ((1160, 1170), (1173, 1185), (1192, 1205), (1209, 1223))   # les colonnes de verre de chaque vitre (les montants entre)
-ARETES = ((1159, 1160), (1186, 1185), (1191, 1192), (1206, 1205), (1208, 1209), (1224, 1223))   # (l'arête claire d'un montant,
-                                     # la colonne de verre contre elle)
-TRAVERSE = (631, 636)                # la dernière rangée de verre au-dessus de la traverse, la première au-dessous
+VITRE = (1160, 1223)                 # la vitrine : une seule glace, ses colonnes de verre d'un montant du cadre à l'autre (le
+                                     # propriétaire : « refais la baie vitrée d'Ichiraku pour qu'elle ne cache rien »)
+ARETES = ((1159, 1160), (1224, 1223))   # (l'arête claire d'un montant du cadre, la colonne de verre contre elle)
+TRINGLE = 0.2065                     # le haut du cadre, la tringle du noren : y = VP_y - TRINGLE |x - VP_x| (le verre dessous)
 BAS_RAYON = 0.1467                   # la lisière claire du bas des vitres : y = VP_y + c |x - VP_x| (le verre s'arrête au-dessus)
+PEINTES = (((1160, 1170), (1173, 1185), (1192, 1205), (1209, 1223)), (631, 636))   # (les quatre vitres du peintre au commit
+                                     # BEFORE, leurs colonnes et leur traverse : où prendre les tons de son verre allumé, coupé)
+REFLET = ((-1.0, 1244.0, 6.0, 0.07, 612, 694), (-1.0, 1257.0, 1.5, 0.05, 628, 694))   # le reflet de la rue sur la glace :
+                                     # deux traînées en biais, sous les têtes (x + y - VP_y = leur milieu ; leur demi-largeur, leur
+                                     # part, leurs rangées : fondues sur 12 à chaque bout)
+REFLET_C = (176.0, 186.0, 232.0)     # (sa couleur : la nuit bleue de la rue)
 NOREN = ('ichiraku_noren.webp', 1155, 500, 79, 104)   # (le noren au repos : son ourlet, colonne par colonne)
 
 # ---- la boutique
@@ -88,6 +102,7 @@ AISLE, BACK_D, BACK_H = 0.9, 0.65, 0.9   # l'allée de Teuchi, le comptoir de tr
 Z_E = Z_C + CTR_D + AISLE + BACK_D
 D_ROOM = 5.4                         # (la pièce : son fond depuis la façade, assez pour que le mur du bout couvre les vitres)
 CEIL = 2.7
+CEIL_C, CEIL_K = (88.0, 48.0, 30.0), (0.5, 0.75)   # (le plafond : son bois, sa part de lumière contre la façade, en plus au fond)
 K_WALL = 230.0                       # pixels de l'image par mètre sur le mur du bout
 V_REF = 620.0                        # (la rangée de l'image du haut de son comptoir de travail, à BACK_H)
 POT = (382.0, 1198.0)                # (la colonne de l'image au milieu de la marmite, la colonne de la rue où elle tombe)
@@ -174,18 +189,40 @@ def shape_ok(kind, s, t):
     return np.abs(s) <= 1.0
 
 
-def glass_pixels():
-    """le verre : chaque colonne des vitres, de sous l'ourlet du noren (son image au repos) à la traverse, puis de la traverse
-    à la rangée au-dessus de la lisière claire du bas (un rayon vers VP)"""
+def glass_top(x):                    # (la première rangée de verre de la colonne x : sous la tringle)
+    return int(np.ceil(VY - TRINGLE * (x - VX))) + 1
+
+
+def glass_bot(x):                    # (la dernière : au-dessus de la lisière claire du bas)
+    return int(np.round(VY + BAS_RAYON * (x - VX) - 0.5)) - 1
+
+
+def hems():
+    """la dernière rangée de l'ourlet du noren (son image au repos), colonne par colonne de la vitrine"""
     nr = I.load(NOREN[0], 'RGBA')[:NOREN[4], :NOREN[3], 3]
-    pix, hem = [], {}
-    for a, b in VITRES:
-        for x in range(a, b + 1):
-            hem[x] = NOREN[2] + int(np.max(np.where(nr[:, x - NOREN[1]] > 0)[0]))
-            bot = int(np.round(VY + BAS_RAYON * (x - VX) - 0.5)) - 1
-            for y in list(range(hem[x] + 1, TRAVERSE[0] + 1)) + list(range(TRAVERSE[1], bot + 1)):
-                pix.append((x, y))
+    return {x: NOREN[2] + int(np.max(np.where(nr[:, x - NOREN[1]] > 0)[0])) for x in range(VITRE[0], VITRE[1] + 1)}
+
+
+def glass_pixels():
+    """le verre : la vitrine d'une seule glace, chaque colonne de sous la tringle du noren (le haut du cadre) à la rangée
+    au-dessus de la lisière claire du bas (deux rayons vers VP) ; sous l'ourlet du noren, ce qu'on en voit"""
+    hem = hems()
+    pix = [(x, y) for x in range(VITRE[0], VITRE[1] + 1) for y in range(glass_top(x), glass_bot(x) + 1)]
     return np.array(pix), hem
+
+
+def painted_pixels(hem):
+    """le verre des quatre vitres du peintre (PEINTES), sous l'ourlet : où sont pris les tons de son verre allumé et coupé"""
+    (cols, (ta, tb)) = PEINTES
+    return [(x, y) for a, b in cols for x in range(a, b + 1)
+            for y in list(range(hem[x] + 1, ta + 1)) + list(range(tb, glass_bot(x) + 1))]
+
+
+def reflet(xs, ys):
+    """la part du reflet de la rue sur la glace, pixel par pixel : des traînées en biais (REFLET), pleines en leur milieu"""
+    xs, ys = np.asarray(xs, float), np.asarray(ys, float)
+    return sum(k * np.clip(1 - np.abs(xs - p * (ys - VY) - c) / w, 0, 1) * np.clip(np.minimum(ys - y0, y1 - ys) / 12, 0, 1)
+               for p, c, w, k, y0, y1 in REFLET)
 
 
 def render(src, pix):
@@ -227,7 +264,9 @@ def render(src, pix):
     wall = look(src, POT[0] + (X - X_POT) * K_WALL, V_REF - (h - BACK_H) * K_WALL) * WALL_GAIN
     hit(Z, (h > 0) & (h < CEIL) & (X < X_F + D_ROOM), wall, 1)
     # le plafond, le sol, le mur d'en face (le long de la rue) : on ne les voit pas d'ici, mais ils ferment la boîte
-    Zc = plane_h(CEIL); hit(Zc, (Zc < Z_E) & (DX * Zc < X_F + D_ROOM), np.array([40., 20., 14.]), 10)
+    Zc = plane_h(CEIL); tc = np.clip((Zc - X_F / DX) / (Z_E - X_F / DX), 0, 1)[..., None]   # (le plafond, vu par le haut de la
+    hit(Zc, (Zc < Z_E) & (DX * Zc < X_F + D_ROOM), np.array(CEIL_C) * (CEIL_K[0] + CEIL_K[1] * tc ** 1.5), 10)   # vitrine : les
+                                                                             # lampes du fond l'éclairent, plus sombre vers la façade)
     Zf = plane_h(0.0); hit(Zf, (Zf < Z_E) & (DX * Zf < X_F + D_ROOM), np.array([50., 26., 18.]), 10)
     Zs = (X_F + D_ROOM) / DX; hit(Zs, (Zs < Z_E) & (EYE + DY * Zs > 0) & (EYE + DY * Zs < CEIL), np.array([70., 34., 22.]), 10)
     # le comptoir de travail du fond (caché par celui des clients)
@@ -319,21 +358,20 @@ def reduce(col, sid):
     return out, acc, surf
 
 
-def main():
-    prev = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else None
+def compute():
+    """la vitrine : chacun de ses pixels de verre (pix), allumé (lit), coupé (cut), sa part du masque (a_gl), sa part du reflet
+    (rf) ; la palette de la boutique (pal), les éclats (acc), les calques au commit BEFORE (B)"""
     src = np.asarray(Image.open(SRC).convert('RGB')).astype(float)
-    names = (('layer_city_off.webp', 'RGBA'), ('street_unlit.webp', 'RGBA'))
-    Lc = [I.load(n, m) for n, m in names]; B = [I.load(n, m, BEFORE) for n, m in names]
+    B = [I.load(n, m, BEFORE) for n, m in NAMES]
     zx0, zy0, zx1, zy1 = ZONE
-    for l, b in zip(Lc, B): l[zy0:zy1, zx0:zx1] = b[zy0:zy1, zx0:zx1]       # (la zone comme avant)
-    so = I.load('shop_off.webp', 'RGBA', BEFORE); gl = I.load('ramen_glass.webp', 'RGBA', BEFORE)
     pix, hem = glass_pixels()
     xs, ys = pix[:, 0], pix[:, 1]
     col, sid = render(src * np.array(TINT), pix)
     rgb, acc, surf = reduce(col, sid)
+    painted = painted_pixels(hem)
 
-    # la palette de la boutique : son verre allumé (BEFORE), le noren et les lanternes allumés
-    P = [B[0][y, x, :3] for x, y in pix if y >= 599]
+    # la palette de la boutique : son verre allumé (BEFORE, ses quatre vitres), le noren et les lanternes allumés
+    P = [B[0][y, x, :3] for x, y in painted if y >= 599]
     nr = I.load(NOREN[0], 'RGBA'); n1 = nr[NOREN[4]:2 * NOREN[4], :NOREN[3]]; P += list(n1[n1[..., 3] > 250][:, :3])
     la = I.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'src', 'edits', 'lanterns_before.webp'), 'RGBA')   # (the paper lanterns' atlas this was built from)
     for r in (1, 4):
@@ -341,8 +379,8 @@ def main():
     pal = palette(P, 40)
 
     # la lumière : le haut à l'ombre du noren, la vapeur au-dessus de la marmite plus claire
-    d = ys - np.array([hem[x] for x in xs])
-    rgb = rgb * np.array(HAUT + (1.0,))[np.minimum(d, len(HAUT) + 1) - 1][:, None]
+    d = ys - np.array([hem[x] for x in xs])                                  # (au-dessus de l'ourlet, derrière le noren : rien)
+    rgb = rgb * np.where(d >= 1, np.array(HAUT + (1.0,))[np.clip(d, 1, len(HAUT) + 1) - 1], 1.0)[:, None]
     sx, sb, sh_, sw, sk, sc = STEAM
     w = sk * np.exp(-((xs - sx) / sw) ** 2) * np.clip((sb - ys) / 3, 0, 1) * np.clip(1 - (sb - ys) / sh_, 0, 1) ** 0.7
     rgb = rgb * (1 - w[:, None]) + np.array(sc) * w[:, None]
@@ -361,13 +399,15 @@ def main():
 
     # coupée (street_unlit) : le verre sombre de la coupure, du bleu nuit de son verre le plus sombre à son plus clair (CUT : ses
     # centiles) selon la clarté de la pièce allumée, à ses couleurs ; son grain plus léger, d'une marche au plus
-    Cb = np.array([B[1][y, x, :3] for x, y in pix if y >= 599]); Lb = Cb @ I.LUM
+    Cb = np.array([B[1][y, x, :3] for x, y in painted if y >= 599]); Lb = Cb @ I.LUM
     lo, hi = Cb[Lb <= np.percentile(Lb, CUT[0])].mean(0), Cb[Lb >= np.percentile(Lb, CUT[1])].mean(0)
     t = np.clip((Ll * np.where(surf == 8, 0.45, 1.0) - 30) / 170, 0, 1) ** 0.9   # (la lanterne éteinte)
     cut_c = lo + (hi - lo) * t[:, None]
     cpal = palette(Cb, 20)
     j0 = nearest(cut_c, cpal); j1 = nearest(np.clip(cut_c * np.exp(0.5 * amp * g)[:, None], 0, 255), cpal)
     cut = cpal[np.where(((lab(cpal[j0]) - lab(cpal[j1])) ** 2).sum(1) > 6 ** 2, j0, j1)]
+    rf = reflet(xs, ys)[:, None]                                             # (le reflet de la rue sur le verre sombre, fondu)
+    cut = cut * (1 - rf) + np.array(REFLET_C) * rf
 
     # fermée (shop_off, posé à 0,88) : tout le verre couvert de son bleu nuit, la pièce allumée n'y passe qu'à 12 %. Le masque
     # du verre (ramen_glass : les ombres de Teuchi et du client, la lumière de la pièce qui respire, la vapeur) : plein sur ce
@@ -375,41 +415,71 @@ def main():
     # sur la face du comptoir, sous les figures coupées à sa hauteur, une part égale (la lumière seule)
     Ls = around(xs, ys, Ll)[0]
     a_gl = np.where(ys <= CTR_ROW, np.interp(Ls, MASK[0], MASK[1]), MASK[2])
-    old = B[0].copy()
-    nr0 = I.load(NOREN[0], 'RGBA')[:NOREN[4], :NOREN[3], 3]
-    for x in range(zx0, min(zx1, GLASS[0] + gl.shape[1])):                    # (sous l'ourlet, le masque n'est que sur le verre : rien
-        c = x - NOREN[1]                                                     # sur les montants, la traverse, la lisière du bas)
-        top = NOREN[2] + int(np.max(np.where(nr0[:, c] > 0)[0])) + 1 if 0 <= c < NOREN[3] and nr0[:, c].max() else zy0
-        gl[top - GLASS[1]:zy1 - GLASS[1], x - GLASS[0], 3] = 0
+    return dict(pix=pix, lit=lit, cut=cut, a_gl=a_gl, rf=rf, pal=pal, acc=acc, B=B)
+
+
+def lay(V, city, unlit):
+    """la vitrine dans les deux calques (city : allumée, unlit : coupée ; RGBA, en place) : son verre, et les arêtes claires
+    des montants du cadre contre lui à la lumière de la nouvelle pièce ; rend les pixels faits"""
+    pix, old = V['pix'], V['B'][0]
     for i, (x, y) in enumerate(pix):
-        Lc[0][y, x, :3] = lit[i]; Lc[1][y, x, :3] = cut[i]
-        so[y - SHOP_OFF[1], x - SHOP_OFF[0]] = (14, 9, 22, 255)
-        if y - GLASS[1] < gl.shape[0]: gl[y - GLASS[1], x - GLASS[0]] = (255, 255, 255, a_gl[i])
-    # les arêtes claires des montants contre le verre : la lumière de la nouvelle pièce
+        city[y, x, :3] = V['lit'][i]; unlit[y, x, :3] = V['cut'][i]
     k5 = np.ones(5) / 5
+    sm = lambda v: np.convolve(np.pad(v, 2, mode='edge'), k5, 'valid')
     for ex, gx in ARETES:
         rows = [y for x, y in pix if x == gx]
-        new = np.array([Lc[0][y, gx, :3] @ I.LUM for y in rows]); was = np.array([old[y, gx, :3] @ I.LUM for y in rows])
-        sm = lambda v: np.convolve(np.pad(v, 2, mode='edge'), k5, 'valid')
+        new = np.array([city[y, gx, :3] @ I.LUM for y in rows]); was = np.array([old[y, gx, :3] @ I.LUM for y in rows])
         r = np.clip(sm(new) / np.maximum(sm(was), 1), 0.45, 1.2)
-        for y, rr in zip(rows, r): Lc[0][y, ex, :3] = np.round(old[y, ex, :3] * rr)
+        for y, rr in zip(rows, r): city[y, ex, :3] = np.round(old[y, ex, :3] * rr)
+    return [tuple(p) for p in pix] + [(ex, y) for ex, gx in ARETES for x, y in pix if x == gx]
 
-    print('façade à X_F %.2f m de l\'œil ; portes de Z %.2f à %.2f m ; comptoir à Z %.2f m (dessus à %.2f m, rangée %d) ; mur du '
+
+BOX = (VITRE[0] - 1, 500, VITRE[1] + 2, 700)   # (la zone 'vitrine' de tools/redraw_zones.py : la vitrine et les arêtes du cadre)
+
+
+def draw(city, unlit, box=BOX):
+    """la zone 'vitrine' de tools/redraw_zones.py, la dernière : la vitrine posée sur les calques tels que les zones d'avant
+    les laissent (leurs pixels du peintre gardent les vitres d'avant : elles s'y règlent comme avant) ; rend ce qui a changé"""
+    was = city.copy(), unlit.copy()
+    lay(compute(), city, unlit)
+    return (np.abs(city - was[0]).max(-1) > 0) | (np.abs(unlit - was[1]).max(-1) > 0)
+
+
+def main():
+    prev = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else None
+    V = compute(); pix, pal, acc, B = V['pix'], V['pal'], V['acc'], V['B']
+    xs, ys = pix[:, 0], pix[:, 1]; rf, a_gl = V['rf'], V['a_gl']
+    zx0, zy0, zx1, zy1 = ZONE
+    Lc = [I.load(n, m) for n, m in NAMES]
+    so = np.asarray(Image.open(SO_BEFORE).convert('RGBA')).copy(); gl = I.load('ramen_glass.webp', 'RGBA', BEFORE)
+    lay(V, *Lc)
+    nr0 = I.load(NOREN[0], 'RGBA')[:NOREN[4], :NOREN[3], 3]
+    for x in range(zx0, min(zx1, GLASS[0] + gl.shape[1])):                    # (le masque n'est que sur le verre : rien sur le
+        c = x - NOREN[1]                                                     # cadre, la lisière du bas ; la vitrine, toute sa
+        if VITRE[0] <= x <= VITRE[1]: top = GLASS[1]                         # colonne, son verre posé ensuite)
+        else: top = NOREN[2] + int(np.max(np.where(nr0[:, c] > 0)[0])) + 1 if 0 <= c < NOREN[3] and nr0[:, c].max() else 590
+        gl[top - GLASS[1]:zy1 - GLASS[1], x - GLASS[0], 3] = 0
+    dark = np.array((14.0, 9.0, 22.0)) * (1 - rf) + np.array(REFLET_C) * rf
+    for i, (x, y) in enumerate(pix):
+        so[y - SHOP_OFF[1], x - SHOP_OFF[0]] = tuple(np.round(dark[i]).astype(int)) + (255,)
+        if 0 <= y - GLASS[1] < gl.shape[0]: gl[y - GLASS[1], x - GLASS[0]] = (255, 255, 255, a_gl[i])
+
+    print('façade à X_F %.2f m de l\'œil ; vitrine de Z %.2f à %.2f m ; comptoir à Z %.2f m (dessus à %.2f m, rangée %d) ; mur du '
           'bout à Z %.2f m (%.2f m derrière la porte), %.1f px par mètre ; pièce de %.1f m de fond | %d pixels de verre, %d éclats, '
-          'palette %d couleurs' % (X_F, F * X_F / (VITRES[0][0] - VX), F * X_F / (VITRES[-1][1] - VX), Z_C, CTR_H, CTR_ROW, Z_E,
-                                   Z_E - F * X_F / (VITRES[0][0] - VX), F / Z_E, D_ROOM, len(pix), acc.sum(), len(pal)))
+          'palette %d couleurs' % (X_F, F * X_F / (VITRE[0] - VX), F * X_F / (VITRE[1] - VX), Z_C, CTR_H, CTR_ROW, Z_E,
+                                   Z_E - F * X_F / (VITRE[0] - VX), F / Z_E, D_ROOM, len(pix), acc.sum(), len(pal)))
     if prev:
         for k, im in (('lit', Lc[0]), ('cut', Lc[1])):
-            Image.fromarray(np.clip(im[580:705, 1140:1240, :3], 0, 255).astype(np.uint8)).resize((800, 1000), Image.NEAREST).save(os.path.join(prev, k + '_x8.png'))
+            Image.fromarray(np.clip(im[495:705, 1140:1240, :3], 0, 255).astype(np.uint8)).resize((800, 1680), Image.NEAREST).save(os.path.join(prev, k + '_x8.png'))
         bl = Lc[0][..., :3].copy(); sa = so[..., 3:] / 255 * 0.88
         bl[448:448 + 248, 1112:1112 + 164] = bl[448:448 + 248, 1112:1112 + 164] * (1 - sa) + so[..., :3] * sa
-        Image.fromarray(np.clip(bl[580:705, 1140:1240], 0, 255).astype(np.uint8)).resize((800, 1000), Image.NEAREST).save(os.path.join(prev, 'shut_x8.png'))
-        ga = np.zeros((125, 100, 3)); ga[:110, 10:90] = gl[60:170, :, 3:]
-        Image.fromarray(ga.astype(np.uint8)).resize((800, 1000), Image.NEAREST).save(os.path.join(prev, 'mask_x8.png'))
+        Image.fromarray(np.clip(bl[495:705, 1140:1240], 0, 255).astype(np.uint8)).resize((800, 1680), Image.NEAREST).save(os.path.join(prev, 'shut_x8.png'))
+        ga = np.zeros((185, 100, 3)); ga[:170, 10:90] = gl[:, :, 3:]
+        Image.fromarray(ga.astype(np.uint8)).resize((800, 1480), Image.NEAREST).save(os.path.join(prev, 'mask_x8.png'))
         Image.fromarray(np.repeat(np.repeat(pal[None].astype(np.uint8), 20, 0), 20, 1)).save(os.path.join(prev, 'palette.png'))
         return
-    for (n, m), l in zip(names, Lc): I.save(l, n, m)
-    I.save(so, 'shop_off.webp', 'RGBA'); I.save(gl, 'ramen_glass.webp', 'RGBA')
+    I.save(gl, 'ramen_glass.webp', 'RGBA')
+    Image.fromarray(so.astype(np.uint8), 'RGBA').save(SO_BEFORE, 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
 if __name__ == '__main__':

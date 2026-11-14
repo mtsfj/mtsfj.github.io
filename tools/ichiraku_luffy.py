@@ -20,7 +20,7 @@ son style, celui des autres : la couleur (B).
 Sa vraie taille : 1,74 m, à la profondeur des clients assis (Z_S : les mêmes tabourets, le même comptoir), assis sur le coussin
 comme le client (SIT : penché sur son bol) ; sa mesure (REF) prise sur la première image : la tête jusqu'au col, le col à
 l'assise, ses hanches (ses épaules de 43 cm, S), la largeur de ses cheveux. Sa colonne (X_COL) : sur le tabouret du milieu,
-un peu à droite de son milieu, sa tête derrière la troisième vitre (pas derrière le montant). Ce qui est fait des images : le
+un peu à droite de son milieu, sa tête au milieu de la vitrine. Ce qui est fait des images : le
 sourire gardé (le blanc des dents que la découpe prendrait pour le fond, rendu à la tête) ; la cicatrice sous son oeil gauche
 (SCAR) ; le bras tendu, en caoutchouc (stretch : de sa main au bol, poussés de STRETCH pixels, l'avant-bras étiré entre) ; la
 main qui salue d'un pixel de côté (wave_b).
@@ -63,7 +63,7 @@ FRAMES = {'eat': ((54, 0, 230, 247), {}), 'noodles': ((360, 0, 515, 247), {}), '
           'hold': ((780, 4, 970, 247), {}), 'chew': ((1136, 8, 1290, 247), {}),
           'grin': ((70, 247, 232, 502), dict(face=True)), 'wave': ((420, 246, 600, 502), dict(face=True))}
 HAT = 1.0                                     # (son chapeau, pendu à son cou par le cordon : ramené vers le milieu de son dos de tant ;
-                                              #  la planche le met sur une épaule, derrière un montant de la vitre)
+                                              #  la planche le met sur une épaule)
 CHROMA = 0.8                                  # (ses couleurs vives dans la lumière de la boutique : leur saturation gardée à tant)
 FACE = {'grin': (2, 12), 'wave': (3, 14)}     # (son visage tourné vers nous, trop petit pour que la réduction garde ses traits : redessiné,
                                               #  le milieu du visage à tant de sa colonne, les yeux à tant de son haut de crâne ; les yeux

@@ -431,6 +431,12 @@ ZONES = {
     # on the sidewalk only its pink (the shop window's light beside it kept), its power cut's mauve the building's
     # plaster; drawn by tools/hall_light_b.py, last: over bfloor, pole, poletex and polefoot (it overlaps them)
     'hallB': dict(box=(975, 520, 1023, 762), tool='hall_light_b'),
+    # Ichiraku's shop window (the owner: "refais la baie vitrée d'Ichiraku pour qu'elle ne cache rien"): one clear pane in its
+    # slim frame, no mullion, no transom, the room of tools/ichiraku_interior.py through it, the street's faint reflection on
+    # it in the power cut; drawn by that tool's draw(), last: over ramen, door, base, pole, ichifoot, board and entree, whose
+    # painter's pixels keep the four old panes (they register and match on them as before). Its before crops: the layers in
+    # its box as the first pass leaves them without it
+    'vitrine': dict(box=(1159, 500, 1225, 700), tool='ichiraku_interior'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

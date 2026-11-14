@@ -99,9 +99,9 @@ SCALE = 1.19                                 # les mètres de la maquette (l'œi
                                              # comptoir, les tabourets restent tels quels, les gens seuls à cette échelle
 H_T = 1.78 * SCALE                           # Teuchi (son bandeau compris) : sa taille
 DOOR_Z, POLE_X = 17.6, 1215.0                # Teuchi à la porte : sa profondeur (il y vient de côté, de derrière le montant gauche),
-                                             # la colonne de sa perche (au milieu de la vitre de droite : lui un peu à gauche)
-PLACES = {'counter': 1216.0, 'pots': -0.25, 'shelf': 9.42}   # Teuchi : au comptoir (sa colonne : derrière la quatrième vitre,
-                                             # Luffy assis devant la troisième), à la marmite (à tant de
+                                             # la colonne de sa perche (dans le quart droit de la vitrine : lui un peu à gauche)
+PLACES = {'counter': 1216.0, 'pots': -0.25, 'shelf': 9.42}   # Teuchi : au comptoir (sa colonne : à droite dans la vitrine,
+                                             # Luffy assis devant, à sa gauche), à la marmite (à tant de
                                              # son X, la louche à bout de bras), à l'étagère (son X, devant les bocaux de gauche)
 H_N = 1.66 * SCALE                           # Naruto (ses épis compris) : sa taille
 
@@ -621,15 +621,9 @@ class Atlas:
 
 
 def glass_rows(hem):
-    """chaque colonne de verre : la rangée sous la tringle du noren (un rayon vers VP), la dernière au-dessus de la traverse, la
-    première au-dessous, la dernière au-dessus de la lisière du bas ; la dernière de l'ourlet du noren (sous lui, son ombre)"""
-    out = []
-    for a, b in R.VITRES:
-        for x in range(a, b + 1):
-            top = int(np.ceil(VY - 0.2065 * (x - VX))) + 1
-            bot = int(np.round(VY + R.BAS_RAYON * (x - VX) - 0.5)) - 1
-            out.append([x, top, R.TRAVERSE[0], R.TRAVERSE[1], bot, int(hem[x])])
-    return out
+    """chaque colonne de la vitrine (une seule glace) : la rangée sous la tringle du noren (un rayon vers VP), la dernière
+    au-dessus de la lisière du bas ; la dernière de l'ourlet du noren (sous lui, son ombre)"""
+    return [[x, R.glass_top(x), R.glass_bot(x), int(hem[x])] for x in range(R.VITRE[0], R.VITRE[1] + 1)]
 
 
 DEBUG, QUAL = [], []                         # (ce que chaque case a mesuré, la part de ses pixels seuls : pour les aperçus)
@@ -819,7 +813,8 @@ def main():
            'Dz': [door_x, DOOR_Z, round(row(0, DOOR_Z), 2)],
            'Sz': round(Z_S, 2),
            'N': {'cells': lst('N', 'naruto'), 'x': round(col(Xn, Z_S), 1), 'y': round(row(0, Z_S), 2)},
-           'O': OC + [zx0, zy0], 'G': glass_rows(hem), 'wisps': wisps, 'look': look}
+           'O': OC + [zx0, zy0], 'G': glass_rows(hem), 'wisps': wisps, 'look': look,
+           'refl': {'s': [list(r) for r in R.REFLET], 'vy': VY, 'c': [int(v) for v in R.REFLET_C]}}
     print('style %s | Teuchi Z %.2f (%.1f px/m), à la porte Z %.2f (%.1f px/m, colonne %d, sa perche à %d) | Naruto assis Z %.2f '
           '(%.1f px/m) | %d cases, atlas %d x %d' % (style, Z_T, s_t, DOOR_Z, s_door, door_x, POLE_X, Z_S, s_s, len(A.cells),
           img.shape[1], img.shape[0]))
