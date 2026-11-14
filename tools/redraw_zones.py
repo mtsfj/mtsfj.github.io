@@ -440,6 +440,11 @@ ZONES = {
     # painter's pixels keep the four old panes (they register and match on them as before). Its before crops: the layers in
     # its box as the first pass leaves them without it
     'vitrine': dict(box=(1159, 500, 1225, 700), tool='ichiraku_interior'),
+    # the owner's study window (zone 5, the house at the street's end): his room redrawn, a bedroom-study painted for it
+    # (tools/owner_study.py, R28: its shelves, whiteboard, monitor, chair, lamp, poster, bed), its dark state behind the glass
+    # in both layers (the window's z5_dark.webp; its lit states are the window's own canvas in street.js), the frame and the
+    # mullion as they are; last (it overlaps oden's box)
+    'study': dict(box=(511, 502, 598, 555), tool='owner_study'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

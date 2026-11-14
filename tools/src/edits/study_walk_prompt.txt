@@ -1,0 +1,14 @@
+The first image is a pose guide for an eight-frame walk cycle seen exactly from the side, walking to the right, one frame per cell of a 4 x 2 grid (read left to right, top row then bottom row): grey mannequins on a flat green background. In the guide his NEAR leg and arm (on our side) are LIGHT grey and his FAR leg and arm are DARK grey: follow them exactly, they alternate:
+- frame 1: passing: the far leg straight under him carrying his weight, the near leg bent, its foot lifted behind, swinging forward;
+- frame 2: the near leg swinging forward, its knee bent; the far leg behind;
+- frame 3: contact: the near leg straight in front, its heel touching the ground; the far leg straight behind, on its toes;
+- frame 4: the near leg planted under him taking his weight; the far leg pushing off behind, its knee bending;
+- frame 5: passing: the near leg straight under him, the far leg bent, its foot lifted behind, swinging forward;
+- frame 6: the far leg swinging forward, the near leg behind;
+- frame 7: contact: the far leg straight in front, its heel touching the ground; the near leg straight behind, on its toes;
+- frame 8: the far leg planted under him; the near leg pushing off behind.
+The arms swing against the legs as in the guide.
+
+The second image is a sprite sheet of the character: paint over each mannequin that same young man (short slightly messy dark brown hair, a deep teal hoodie with its hood down on his back, dark charcoal trousers, dark grey sneakers with white soles, black over-ear headphones around his neck), calm, looking straight ahead (not up), his head level. Keep each figure exactly where its mannequin is and exactly its size: his soles on the mannequin's soles, the top of his head at the top of its head. The near leg a little lighter than the far one, as light falls on it, so the two legs read apart; the same face, hair, clothes and colours in all eight frames.
+
+Style: exactly the style of the second image: painted pixel-art, soft painterly shading, a fine dithering, muted night colours, natural proportions, no black outline, no hard cel shading; a warm lamp from the upper right of the picture lights him softly on that side. Around him the flat green background only: no floor, no shadow, no text, no lines between the cells.

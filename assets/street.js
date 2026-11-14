@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=123", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=14", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=17", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=2", "x": 264, "y": 422, "w": 57, "h": 84}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=124", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=14", "x": 230, "y": 575, "w": 40, "h": 73}, "z7_vending": {"src": "assets/z7_vending.webp?v=17", "x": 280, "y": 522, "w": 91, "h": 205}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=2", "x": 264, "y": 422, "w": 57, "h": 84}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=123') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=124') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -3319,31 +3319,34 @@
         killed: CREW.killed, spawned: CREW.spawned, bus: S.active ? (S.wait > 0 ? 'stopped' : 'moving') : 'away', hold: !!S.hold, formation: CREW.lastForm, left: CREW.leftOK, cap: CREW.cap };
     } };
 
-  // ---- the owner's study window (zone 5; zones/zone5.json 'window': the glass x 512.5-596.6, y 503.4-553.6) ----
-  // Someone comes in and switches the lamp on, walks to the chair, sits down facing the monitor and codes: the screen
-  // wakes; they type, nod, look up, glance at the street, lean back, stretch with their arms up; sometimes the lamp goes
-  // off and the screen alone lights the room (they go in the dark, then), else they stand up and walk out, the lamp off
-  // at the door. The room is the painter's own: its lit states (win_z5_room: lamp and screen; z5_lamp, the lamp alone,
-  // the screen asleep: build_zzzanim_z5.py; z5_screen: the screen alone) added over the street's dark room, weighed by
-  // the lamp's and the screen's levels. The person is the owner himself at his PC: the one figure behind lit glass drawn
-  // in colour (his wish; the others stay shadows), lit by the room and clipped by the glass (below). The
-  // body is a rig of joints (the pelvis; two spine joints, the neck, the head; shoulder, elbow, wrist; hip, knee) moved by
-  // joint angles alone, each following its target through a damped spring: eased, the head and the hands a little looser
-  // (overlap, follow-through). 19.8 px a metre on the room's plane. At the scene's own pixels, 15 fps while it moves ----
-  const WIN = { x: 511, y: 502, w: 87, h: 53 }, K = 4, CW = WIN.w * K, CH = WIN.h * K;
-  const RM = { seat: [556.6, 547.2], stand: 536.6, door: 505, glass: 540, keys: [[549.6, 543.6], [550.5, 543.9]], scr: [532, 532, 11, 10] };   // (glass: where he stands at the window)
+  // ---- the owner's study window (zone 5: the glass x 512-596, y 502-554; tools/owner_study.py) ----
+  // His room, a bedroom-study painted for it (shelves of books, a whiteboard of maths, his monitor, his gaming chair, a floor
+  // lamp, a plant, a poster of a starry night, his bed's corner), in four states of one painting: lit by the lamp and the
+  // screen (win_z5_room), the lamp alone, the screen asleep (z5_lamp), the screen alone (z5_screen), dark (z5_dark: the street's
+  // layers hold it behind the glass), weighed by the lamp's and the screen's levels. Him: the owner at his PC, his frames
+  // drawn for him (study_him.webp: a family of tones, the lamp's rim and the screen's light on each pixel; MSA) and played
+  // as sequences: in from the door on the left (a walk, its planted foot on its pixel, the lamp on by the door), he turns
+  // round and sits, types (bursts of keys, a nod, a look up at the screen, a glance at the street), leans back, stretches,
+  // drinks from his mug, thinks, rubs his eyes and yawns late, plays (0:30-3 h, headphones on, tense, a fist at a kill);
+  // then up, a look at the street, and out (the lamp off at the door), or gone in the dark by the screen's light. Lit as the
+  // room is (the lamp's warm rim from up right, the screen's tinted light on his face and hands), graded into its dark as the
+  // lamp goes off, clipped by the glass; at the scene's own pixels, 15 fps while anything moves ----
+  const WIN = { x: 511, y: 502, w: 87, h: 53 };
+  const MSA = {"cells":{"hand3":[0,0,17,40,8,39,0],"front":[18,0,14,38,7,37,0],"standR":[33,0,10,38,5,37,0],"turnR":[44,0,12,38,6,37,0],"walk0":[57,0,16,38,10,37,0],"walk3":[74,0,19,38,13,37,0],"walk4":[94,0,15,38,9,37,0],"walkL0":[110,0,16,38,6,37,0],"walkL3":[127,0,19,38,6,37,0],"walkL4":[147,0,15,38,6,37,0],"hand1":[163,0,15,37,6,36,0],"hand2":[179,0,15,37,6,36,0],"lookL":[195,0,10,37,5,36,0],"lookR":[206,0,10,37,5,36,0],"standL":[217,0,10,37,5,36,0],"stretch1":[228,0,26,37,20,26,1],"turnL":[0,41,12,37,6,36,0],"walk1":[13,41,16,37,10,36,0],"walk2":[30,41,21,37,11,36,0],"walk5":[52,41,16,37,9,36,0],"walk6":[69,41,23,37,11,36,0],"walk7":[93,41,16,37,10,36,0],"walkL1":[110,41,16,37,6,36,0],"walkL2":[127,41,21,37,10,36,0],"walkL5":[149,41,16,37,7,36,0],"walkL6":[166,41,23,37,12,36,0],"walkL7":[190,41,16,37,6,36,0],"stretch2":[207,41,27,36,20,25,1],"hinge":[235,41,17,34,5,33,0],"standup":[0,79,17,34,9,33,0],"gfist":[18,79,26,33,19,21,1],"sip1":[45,79,21,33,19,22,1],"sitdown":[67,79,20,33,19,22,1],"lean":[88,79,27,32,20,20,1],"lean2":[116,79,26,32,19,19,1],"rub1":[143,79,21,32,19,22,1],"sip2":[165,79,21,32,19,22,1],"sip3":[187,79,21,32,19,22,1],"game1":[209,79,21,31,19,21,1],"game3":[231,79,21,31,19,21,1],"glance":[0,114,21,31,19,22,1],"lookup":[22,114,21,31,19,22,1],"think":[44,114,20,31,18,21,1],"type1":[65,114,21,31,19,22,1],"type2":[87,114,21,31,19,22,1],"type3":[109,114,21,31,19,22,1],"game2":[131,114,20,30,18,20,1],"nod":[152,114,21,30,19,21,1],"rub2":[174,114,21,30,19,20,1],"yawn":[196,114,26,30,19,18,1],"mug":[223,114,3,3,18,10,1]},"fam":[[49,31,18,97,64,39,65,64,62],[58,39,26,108,74,47,73,71,69],[63,44,31,114,79,52,77,76,74],[73,53,39,127,89,61,86,85,82],[78,58,44,134,95,66,90,89,87],[96,74,59,155,114,81,105,104,102],[82,61,47,138,99,69,93,92,90],[143,114,78,212,159,105,144,142,128],[205,150,110,255,203,139,193,178,163],[171,152,132,252,203,158,171,177,175],[15,20,29,62,51,45,41,52,62],[19,24,32,67,55,48,45,56,65],[21,27,35,69,59,51,46,59,68],[20,28,32,68,59,49,45,59,67],[24,27,34,72,59,51,48,59,68],[23,26,36,71,58,52,47,58,69],[29,32,40,79,65,57,52,64,74],[15,28,40,65,59,56,43,59,71],[33,37,45,84,70,62,56,68,79],[19,39,51,71,71,67,47,68,81],[41,40,41,93,74,59,62,71,77],[40,42,48,93,76,66,62,73,82],[24,47,58,78,80,74,52,76,88],[40,54,57,96,89,75,64,83,91],[29,53,63,86,87,80,57,82,93],[55,68,66,114,104,84,77,96,101],[34,59,67,92,93,84,61,87,97],[51,50,54,105,85,72,71,81,89],[39,65,70,98,100,87,66,92,101],[65,57,53,121,94,73,81,88,92],[79,76,58,140,115,80,94,105,100],[120,80,55,180,122,80,122,112,104],[148,103,68,214,148,95,145,133,120],[135,119,107,207,165,130,140,146,147]],"walk":[["walk2",0.133,2.59],["walk3",0.07,1.0],["walk0",0.3,6.49],["walk1",0.07,0.56],["walk6",0.238,4.65],["walk7",0.07,0.43],["walk4",0.3,6.08],["walk5",0.07,1.37]],"mug":[557,547],"scrn":{"at":[530,526],"w":17,"h":11,"code":{"g":[16,27,44],"gut":[13,21,30],"num":[67,73,84],"cur":[203,203,196],"pal":[[116,101,120],[209,101,58],[213,87,129],[127,144,190],[125,159,203],[175,169,58]],"lines":["33666332600000","03315566666000","03335550000000","00555355550000","00033666635500","00333556600000","00111111110000","00335550000000","33666200000000","03345500000000","00335510666000","00335516661510","03345500000000","00335550000000","00335550000000","03315500000000"]},"paper":{"g":[22,25,29],"pal":[[102,102,103],[105,104,106],[90,128,61]],"lines":["333330","222200","222000","333300","111000","222210","221000","222200","222000","221100","222220","220000","333300"],"page":[214,213,213],"title":[91,92,93],"text":[164,164,167],"axis":[159,159,161],"bars":[[77,114,148],[207,129,36],[180,46,38]]},"game":{"cross":[203,203,196],"hit":[206,60,52],"feed":[196,196,189],"red":[200,55,45]}},"at":{"seat":[557,547],"stand":544,"floor":556,"door":505,"glass":530,"scr":[530,526,17,11],"lamp":[578,507]}};   // (tools/owner_study.py)
+  const RM = { seat: MSA.at.seat, stand: MSA.at.stand, floor: MSA.at.floor, door: MSA.at.door, glass: MSA.at.glass, scr: MSA.at.scr };   // (scr: the monitor's box)
   const wc = document.createElement('canvas'); wc.width = WIN.w; wc.height = WIN.h; const wg = wc.getContext('2d', { willReadFrequently: true });   // the window, at the scene's own pixels
   const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = wtex.minFilter = THREE.NearestFilter; wtex.generateMipmaps = false;
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.6); scene.add(winMesh);   // (behind the bus on lane A, as the house)
   const RIMG = { n: 0 }, imgOk = (im) => im.complete && im.naturalWidth > 0;
-  for (const [k, src] of [['lit', 'assets/win_z5_room.webp?v=3'], ['lamp', 'assets/z5_lamp.webp?v=3'], ['scr', 'assets/z5_screen.webp'], ['glass', 'assets/z5_glass.webp'], ['dark', 'assets/z5_dark.webp?v=2']]) {
-    const im = new Image(); im.onload = () => { ws.dirty = true; if (++RIMG.n === 5 && reduced) frame(); }; im.src = src; RIMG[k] = im;
+  for (const [k, src] of [['lit', 'assets/win_z5_room.webp?v=4'], ['lamp', 'assets/z5_lamp.webp?v=4'], ['scr', 'assets/z5_screen.webp?v=2'], ['glass', 'assets/z5_glass.webp'], ['dark', 'assets/z5_dark.webp?v=3'], ['him', 'assets/study_him.webp?v=1'], ['scrn', 'assets/study_screens.webp?v=2']]) {
+    const im = new Image(); im.onload = () => { ws.dirty = true; if (++RIMG.n === 7 && reduced) frame(); }; im.src = src; RIMG[k] = im;
   }
-  // ---- the screen's colour tells his night (lumieres-10): the screen's own light (the room lit by it alone, 'scr'; its part of 'lit',
-  // over the lamp's) moved toward the hour's work at its own luminance: the terminal's green-cyan in the evening, the paper's white
-  // late (Overleaf), Valorant's red after half past midnight; asleep (standby), its own blue; the red night greys it as before ----
-  const STINT = { code: [110, 235, 170], paper: [236, 240, 255], game: [255, 86, 96] }, STINT_M = {};
+  // ---- the screen's colour tells his night (lumieres-10): the screen's own light (the room lit by it alone, 'scr', over the
+  // dark room; its part of 'lit', over the lamp's) moved toward the hour's work at its own luminance: the terminal's green-cyan
+  // in the evening, the paper's white late (Overleaf), Valorant's red after half past midnight; asleep (standby), its own
+  // blue; the red night greys it as before ----
+  const STINT = { code: [110, 235, 170], paper: [236, 240, 255], game: [255, 86, 96] };
   function scrTint() {                           // the hour's work on the screen (null: its own blue)
     if (!ws.screen) return null;
     const h = (CLOCK.h + CLOCK.wake) % 24; return h >= 0.5 && h < 3 ? 'game' : h >= 22.5 || h < 0.5 ? 'paper' : 'code';
@@ -3354,14 +3357,13 @@
   }
   function scrTinted(k, tn) {                    // RIMG[k] ('scr' or 'lit') with its screen's light tinted, made once
     const key = k + '_' + tn; if (RIMG[key]) return RIMG[key];
-    if (!imgOk(RIMG[k]) || (k === 'lit' && !imgOk(RIMG.lamp))) return RIMG[k];
+    const base = k === 'lit' ? RIMG.lamp : RIMG.dark;   // (what is under the screen's light: the lamp's room, the dark room)
+    if (!imgOk(RIMG[k]) || !imgOk(base)) return RIMG[k];
     const c = document.createElement('canvas'); c.width = WIN.w; c.height = WIN.h; const g = c.getContext('2d');
-    g.drawImage(RIMG[k], 0, 0); const im = g.getImageData(0, 0, WIN.w, WIN.h), d = im.data, T = STINT[tn], lp = k === 'lit' ? zPix(RIMG.lamp) : null;
+    g.drawImage(RIMG[k], 0, 0); const im = g.getImageData(0, 0, WIN.w, WIN.h), d = im.data, T = STINT[tn], lp = zPix(base);
     for (let i = 0; i < d.length; i += 4) {
-      const a0 = d[i + 3] / 255; if (!a0) continue;
-      let r = d[i], gg = d[i + 1], b = d[i + 2], br = 0, bg = 0, bb = 0;
-      if (lp) { const la = lp[i + 3] / 255 / a0; br = lp[i] * la; bg = lp[i + 1] * la; bb = lp[i + 2] * la; r = Math.max(0, r - br); gg = Math.max(0, gg - bg); b = Math.max(0, b - bb); }
-      const tt = tintPx(r, gg, b, T, 0.75);
+      const br = lp[i], bg = lp[i + 1], bb = lp[i + 2];
+      const tt = tintPx(Math.max(0, d[i] - br), Math.max(0, d[i + 1] - bg), Math.max(0, d[i + 2] - bb), T, 0.75);
       d[i] = Math.min(255, br + tt[0]); d[i + 1] = Math.min(255, bg + tt[1]); d[i + 2] = Math.min(255, bb + tt[2]);
     }
     g.putImageData(im, 0, 0); return (RIMG[key] = c);
@@ -3374,184 +3376,119 @@
     return STUDY.pw ? STUDY.pw.p : 1;
   }
   const studyLate = () => (CLOCK.h + CLOCK.wake) % 24 < 3 && nightOpen('study');   // from midnight to 3 h: the last light is his (direction-09)
-  // the joints (degrees). Spine s1 s2, neck nk, head hd: from up, + toward the face; pv: the pelvis's tilt, the same way.
-  // Shoulders sh: from the torso's line down, + forward; elbows el: bend; wrists wr: + up. Hips hp: from the pelvis's
-  // line down, + forward; knees kn: bend. yaw: the head turned from profile (0) to the street (1). px, py: the pelvis
-  // (scene px). Each: [its spring's stiffness (rad/s), damping]
-  const JW = { pv: [6, 0.9], s1: [7, 0.85], s2: [7, 0.75], nk: [8.5, 0.65], hd: [9.5, 0.55], yaw: [8, 0.8],
-    shA: [8.5, 0.7], elA: [10.5, 0.62], wrA: [13, 0.5], shB: [8, 0.7], elB: [10, 0.62], wrB: [12, 0.5],
-    hpA: [9, 0.8], knA: [10.5, 0.75], hpB: [9, 0.8], knB: [10.5, 0.75], px: [6.5, 0.95], py: [7.5, 0.9] };
-  const RJ = {}; for (const k in JW) RJ[k] = { v: 0, d: 0, t: 0, w: JW[k][0], z: JW[k][1] };
-  const BONE = { s1: 4.6, s2: 5.4, nk: 1.7, hd: 2.3, ua: 6.0, fa: 5.3, hn: 1.9, th: 8.9, sh: 8.9 }, DEG = Math.PI / 180;
-  const POSE = {
-    stand: { pv: 0, s1: 2, s2: 1, nk: 0, hd: 2, yaw: 0, shA: 8, elA: 10, wrA: 0, shB: 4, elB: 12, wrB: 0, hpA: 0, knA: 3, hpB: 0, knB: 3 },
-    hinge: { pv: 10, s1: 16, s2: 10, nk: -8, hd: -4, shA: 34, elA: 34, wrA: 0, shB: 30, elB: 38, wrB: 0, hpA: 62, knA: 60, hpB: 60, knB: 58 },
-    sit: { pv: -6, s1: 6, s2: 10, nk: 6, hd: 7, yaw: 0, hpA: 94, knA: 96, hpB: 90, knB: 92 },
-    lean: { pv: -10, s1: -2, s2: -14, nk: -4, hd: -8, shA: 26, elA: 66, wrA: 12, shB: 22, elB: 72, wrB: 10 },
-    stretch: { pv: -8, s1: -2, s2: -12, nk: -8, hd: -16, shA: 170, elA: 12, wrA: -14, shB: 162, elB: 20, wrB: -10 } };
-  const setT = (Q) => { for (const k in Q) RJ[k].t = Q[k]; };
-  const snap = () => { for (const k in RJ) { RJ[k].v = RJ[k].t; RJ[k].d = 0; } };
-  function rigPts(w) {                           // forward kinematics: the joints' places (scene px), now ('v') or as aimed ('t')
-    const g = (k) => RJ[k][w], fs = ws.f, P = [g('px'), g('py')];
-    const at = (o, th, l) => [o[0] + fs * Math.sin(th * DEG) * l, o[1] - Math.cos(th * DEG) * l];
-    const a1 = g('pv') + g('s1'), a2 = a1 + g('s2'), a3 = a2 + g('nk'), a4 = a3 + g('hd');
-    const S1 = at(P, a1, BONE.s1), C = at(S1, a2, BONE.s2), N = at(C, a3, BONE.nk), H = at(N, a4, BONE.hd);
-    const arm = (s, back) => { const Sh = at(at(C, a2 + 180, 0.8), a2 - 90, back), t1 = a2 + 180 - g('sh' + s), E = at(Sh, t1, BONE.ua);
-      const t2 = t1 - g('el' + s), Wr = at(E, t2, BONE.fa); return [Sh, E, Wr, at(Wr, t2 - g('wr' + s), BONE.hn)]; };
-    const leg = (s) => { const t1 = g('pv') + 180 - g('hp' + s), Kn = at(P, t1, BONE.th); return [P, Kn, at(Kn, t1 + g('kn' + s), BONE.sh)]; };
-    return { P, S1, C, N, H, a2, a4, A: arm('A', 0), B: arm('B', 0.45), LA: leg('A'), LB: leg('B') };
-  }
-  function reachKeys() {                         // the arms' angles that bring the wrists to the keys (the elbows down and back), hands flat
-    const p = rigPts('t'), fs = ws.f;
-    [['A', p.A[0], RM.keys[0]], ['B', p.B[0], RM.keys[1]]].forEach(([s, Sh, Wt]) => {
-      const u = (Wt[0] - Sh[0]) * fs, v = -(Wt[1] - Sh[1]), d = Math.min(Math.hypot(u, v), BONE.ua + BONE.fa - 0.05);
-      const th = Math.atan2(u, v) / DEG, al = Math.acos(Math.max(-1, Math.min(1, (BONE.ua * BONE.ua + d * d - BONE.fa * BONE.fa) / (2 * BONE.ua * d)))) / DEG;
-      const t1 = th + al, E = [Sh[0] + fs * Math.sin(t1 * DEG) * BONE.ua, Sh[1] - Math.cos(t1 * DEG) * BONE.ua];
-      const t2 = Math.atan2((Wt[0] - E[0]) * fs, -(Wt[1] - E[1])) / DEG;
-      RJ['sh' + s].t = p.a2 + 180 - t1; RJ['el' + s].t = t1 - t2; RJ['wr' + s].t = t2 - 108;
-    });
-    ws.base = { shA: RJ.shA.t, elA: RJ.elA.t, wrA: RJ.wrA.t, shB: RJ.shB.t, elB: RJ.elB.t, wrB: RJ.wrB.t };
-  }
-  function walkPose(dt) {                        // a walk: the legs swing from the hips, the knees fold in the swing, the arms against them
-    const W = ws; W.ph += dt * 2 * Math.PI * 0.69; const sn = Math.sin(W.ph), cs = Math.cos(W.ph);
-    setT({ pv: 2, s1: 3, s2: 2, nk: -1, hd: 3, hpA: 22 * sn, hpB: -22 * sn, knA: 5 + 40 * Math.pow(Math.max(0, cs), 1.5), knB: 5 + 40 * Math.pow(Math.max(0, -cs), 1.5),
-      shA: 4 - 15 * sn, elA: 14 + 8 * Math.max(0, -sn), wrA: 0, shB: 4 + 15 * sn, elB: 14 + 8 * Math.max(0, sn), wrB: 0 });
-    RJ.py.t = RM.stand - 0.15 - 0.3 * Math.cos(2 * W.ph);
-  }
-  function walkPlant(dt) {                       // the pelvis from the planted foot (rule 4: no sliding), at any frame rate. The stance foot is
-    const W = ws, p = rigPts('v'), fs = W.f, h = Math.max(1e-3, dt || 1 / 60);   // the one pushing: a foot is planted when it has landed (ahead
-    const fw = { A: fs * (p.LA[2][0] - p.P[0]), B: fs * (p.LB[2][0] - p.P[0]) };   // of the stance foot, its forward motion against the pelvis
-    let side = W.plantSide; const prev = side && W.fw ? W.fw : fw;                 // just reversed); it keeps the x it landed on and the pelvis
-    if (!side) side = fw.A <= fw.B ? 'A' : 'B';                                     // keeps its offset from it, so the body goes the way the feet push
-    const o = side === 'A' ? 'B' : 'A', vS = (fw[side] - prev[side]) / h, vO = (fw[o] - prev[o]) / h;   // (px/s against the pelvis)
-    if ((fw[o] > fw[side] + 0.5 && vO <= 0) || (vS > 1.5 && vO < -1.5)) { side = o; W.plant = null; }   // landed; or the other is the pusher
-    W.fw = fw; W.plantSide = side;
-    const ft = side === 'A' ? p.LA[2] : p.LB[2];
-    if (W.plant === null || W.plant === undefined) W.plant = ft[0];
-    let x = W.plant + (p.P[0] - ft[0]);
-    if (fs * (x - RJ.px.v) < 0) { x = RJ.px.v; W.plant = ft[0] + (x - p.P[0]); }   // never a step back: the foot re-planted by that hair instead
-    RJ.px.v = RJ.px.t = x; RJ.px.d = 0;
-    return x;
-  }
-  // ---- the person: the owner at his PC, the one figure behind lit glass drawn in colour (his wish). Each frame his parts
-  // are laid at 4x as plain shapes (capsules, ellipses, the chair's back), front to back, each 4x sample keeping the first
-  // part over it; a scene pixel is his where half its 16 samples are, and shows the part most of them have: crisp pixels
-  // on the scene's own grid, no outline. Then each pixel is lit by the room: its colour under the lamp's fill (toward the
-  // room's dark as the lamp goes off), the lamp's warm light on the edges that face it (up right, behind him: his hair,
-  // his back, his shoulder and arm), the screen's cool glow on what faces it (his face and hands, the hoodie's front,
-  // flickering with the screen), the painting's grain, a breath of the glass's own dark over him; the glass's mask clips
-  // him (the mullion and the frame stay in front) ----
-  // materials: [lit by the lamp's fill, the lamp's light on an edge facing it, the screen's glow on what faces it]
-  const ZMAT = [null,
-    [[31, 68, 77], [168, 120, 86], [58, 146, 170]],     // 1 the hoodie, deep teal
-    [[22, 50, 58], [150, 106, 80], [44, 112, 132]],     // 2 its hood and collar
-    [[20, 45, 53], [140, 100, 76], [42, 104, 124]],     // 3 its ribbed cuffs
-    [[136, 86, 66], [240, 156, 104], [150, 178, 220]],  // 4 skin
-    [[54, 35, 30], [200, 114, 62], [66, 72, 104]],      // 5 hair, dark brown, warm highlights
-    [[34, 34, 46], [146, 96, 72], [52, 64, 98]],        // 6 trousers
-    [[27, 24, 30], [120, 80, 62], [44, 52, 80]],        // 7 shoes
-    [[39, 33, 45], [156, 94, 66], [56, 66, 102]]];      // 8 the chair
-  const ZLAMP = [584.4, 514.9], ZSCR = [537.5, 537], ZDIR = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
-  const ZB = new Uint16Array(CW * CH), ZID = new Int16Array(WIN.w * WIN.h).fill(-1), ZCNT = new Uint8Array(64);
   const zPix = (im) => { const c = document.createElement('canvas'); c.width = WIN.w; c.height = WIN.h; const g = c.getContext('2d'); g.drawImage(im, 0, 0); return g.getImageData(0, 0, WIN.w, WIN.h).data; };
-  function coderParts(p) {                       // front to back: [material (+8: the far side, in his own shadow), layer, shape, ...]
-    const W = ws, fs = W.f, a4 = p.a4 * DEG, a2 = p.a2 * DEG, yaw = RJ.yaw.v, Q = [];
-    const fH = [fs * Math.cos(a4), Math.sin(a4)], uH = [fs * Math.sin(a4), -Math.cos(a4)], fT = [fs * Math.cos(a2), Math.sin(a2)], uT = [fs * Math.sin(a2), -Math.cos(a2)];
-    const at = (o, f, u, kf, ku) => [o[0] + f[0] * kf + u[0] * ku, o[1] + f[1] * kf + u[1] * ku];
-    const cap = (m, l, a, b, r) => Q.push([m, l, 0, a[0], a[1], b[0], b[1], r]), ell = (m, l, c, u, rx, ry) => Q.push([m, l, 1, c[0], c[1], u[0], u[1], rx, ry]);
-    if (W.front) {                               // (the finale) at the glass, square to the street: a hand flat on the pane, the arms, the head, the hoodie, the legs
-      const bx = p.P[0], by = p.P[1], br = 0.12 * Math.sin(W.t * 1.3), h = W.hand || 0, hc = [bx, by - 13.7 + 0.4 * br];
-      cap(4, 0, [bx + 4.7, by - 10.6 - 2.2 * h], [bx + 5.0, by - 11.8 - 2.2 * h], 1.0);                      // the right hand, up on the glass as it lifts
-      cap(1, 0, [bx + 3.1, by - 9.4], [bx + 4.8, by - 10.4 - 1.6 * h], 1.0);                                   // its arm
-      cap(1, 0, [bx - 3.1, by - 9.4], [bx - 3.9, by - 2.0], 0.95); cap(4, 0, [bx - 3.9, by - 2.0], [bx - 4.0, by - 0.6], 0.62);   // the left arm down, its hand
-      ell(5, 3, [hc[0], hc[1] - 1.2], [1, 0], 2.35, 1.5);                                                      // the hair
-      ell(4, 3, hc, [1, 0], 2.2, 2.35);                                                                        // the face
-      ell(5, 3, [hc[0], hc[1] - 2.0], [1, 0], 2.4, 1.0);                                                       // the fringe
-      cap(2, 4, [bx - 1.7, by - 10.5], [bx + 1.7, by - 10.5], 0.85); cap(4, 4, [bx, by - 11.4], [bx, by - 10.2], 0.75);   // the collar, the neck
-      cap(1, 6, [bx, by - 9.0 + 0.3 * br], [bx, by - 1.2], 3.3);                                               // the torso
-      cap(6, 8, [bx - 1.7, by], [bx - 1.9, by + 16.4], 1.35); cap(6, 8, [bx + 1.7, by], [bx + 1.9, by + 16.4], 1.35);   // the legs
-      cap(7, 8, [bx - 2.4, by + 17.1], [bx - 1.2, by + 17.1], 0.8); cap(7, 8, [bx + 1.2, by + 17.1], [bx + 2.4, by + 17.1], 0.8);   // the shoes
-      return Q;
+  // ---- his screen, alive (the owner: "PC ok"): drawn at the glass's 17 x 11 pixels by the hour (MSA.scrn: the lines and tones
+  // read from screens drawn for it). The evening, his code typed out as he types (a token's pixel a key, a line every other
+  // row, the gutter's numbers, the cursor blinking, the file scrolling on), now and then a terminal with a training run (its
+  // loss curve going down, its progress bar); late, Overleaf (the source typed on the left, the PDF's page on the right,
+  // recompiled now and then: dimmed a moment, a line more); from 0:30 the game (its view a picture, panning a hair as he
+  // aims, the crosshair, a kill feed line at each kill, the crosshair red as it lands) ----
+  const SCN = { t: 0, k: 0, line: 3, top: Math.floor(Math.random() * 8), term: 0, termT: 30 + Math.random() * 40, termD: 10, pk: 0, pl: 3, pageN: 2, comp: 0,
+    compT: 12 + Math.random() * 10, feed: [], hit: 0, pan: 0, panT: 1, cv: null, g: null, img: null, game: null };
+  const inkEnd = (L) => { let e = L.length; while (e > 0 && L[e - 1] === '0') e--; return e; };
+  const inkStart = (L) => { let b = 0; while (b < L.length && L[b] === '0') b++; return b; };
+  function scrKey() {                            // a key: the next pixel of the line he is typing
+    const S = MSA.scrn;
+    if (scrTint() === 'paper') { const L = S.paper.lines[SCN.pl % S.paper.lines.length]; SCN.pk = Math.max(SCN.pk + 1, inkStart(L)); if (SCN.pk > inkEnd(L)) { SCN.pl++; SCN.pk = 0; } return; }
+    if (SCN.term > 0) return;
+    const L = S.code.lines[(SCN.top + SCN.line) % S.code.lines.length]; SCN.k = Math.max(SCN.k + 1, inkStart(L));
+    if (SCN.k > inkEnd(L)) { SCN.k = 0; SCN.line++; if (SCN.line > 4) { SCN.line = 4; SCN.top++; } }
+  }
+  function scrStep(dt) {                         // its time: the terminal's run, the page's compiling, the game's aim and kill feed
+    SCN.t += dt; const tn = scrTint();
+    if (tn === 'code') {
+      if (SCN.term > 0) { SCN.term -= dt; if (SCN.term <= 0) SCN.termT = 40 + Math.random() * 50; }
+      else if ((SCN.termT -= dt) < 0) { SCN.termD = SCN.term = 8 + Math.random() * 6; }
+    } else if (tn === 'paper') {
+      if (SCN.comp > 0) { SCN.comp -= dt; if (SCN.comp <= 0) SCN.pageN = SCN.pageN >= 4 ? 2 : SCN.pageN + 1; }
+      else if ((SCN.compT -= dt) < 0) { SCN.comp = 0.7; SCN.compT = 12 + Math.random() * 14; }
+    } else if (tn === 'game') {
+      if ((SCN.panT -= dt) < 0) { SCN.pan = Math.floor(Math.random() * 3) - 1; SCN.panT = 0.5 + Math.random() * 1.2; }
+      SCN.hit = Math.max(0, SCN.hit - dt); for (const f of SCN.feed) f.t -= dt; SCN.feed = SCN.feed.filter((f) => f.t > 0);
     }
-    const arm = (A, far, l) => { const [Sh, E, Wr, T] = A, dx = Wr[0] - E[0], dy = Wr[1] - E[1], dl = Math.hypot(dx, dy) || 1, Wc = [Wr[0] - dx / dl * 0.85, Wr[1] - dy / dl * 0.85];
-      cap(4 + far, l, Wr, T, 0.62); cap(3 + far, l, Wc, Wr, 0.95); cap(1 + far, l, E, Wc, 0.88); cap(1 + far, l, Sh, E, 1.0); };
-    const leg = (Lg, far, l) => { const [P, Kn, Ft] = Lg; cap(7 + far, l, Ft, [Ft[0] + fs * 1.3, Ft[1]], 0.75); cap(6 + far, l, Kn, Ft, 1.25); cap(6 + far, l, P, Kn, 1.7); };
-    const seated = W.state === 'sit' || W.state === 'gone' || (W.state === 'sitdown' && W.t > 0.55) || (W.state === 'standup' && W.t < 0.85);
-    const Hc = at(p.H, fH, uH, -0.25, 0);
-    arm(p.A, 0, 0);
-    if (seated) { cap(8, 1, [548.6, 544.7], [555.6, 544.7], 0.62); cap(8, 1, [549.4, 544.9], [549.9, 547.6], 0.45); }   // the armrest
-    leg(p.LA, 0, 2);
-    if (yaw < 0.7) cap(4, 3, at(Hc, fH, uH, 1.95, -0.3), at(Hc, fH, uH, 2.25, -0.45), 0.55);                  // the nose
-    if (yaw < 0.5) ell(4, 3, at(Hc, fH, uH, -0.5, -0.15), fH, 0.7, 0.85);                                      // the ear
-    ell(5, 3, at(Hc, fH, uH, 0.95 + 0.4 * yaw, 1.5), fH, 0.95, 0.78);                                          // the fringe
-    ell(5, 3, at(Hc, fH, uH, -0.55 * (1 - yaw), 0.5 + 0.35 * yaw), fH, 1.85 + 0.35 * yaw, 2.0 - 0.3 * yaw);    // the hair
-    ell(4, 3, Hc, fH, 2.05 + 0.25 * yaw, 2.35);                                                                 // the head
-    cap(2, 4, at(p.C, fT, uT, -0.7, 0.25), at(p.C, fT, uT, 0.7, 0.4), 0.72);                                   // the collar
-    cap(4, 4, p.C, p.N, 0.8);                                                                                   // the neck
-    ell(2, 5, at(p.C, fT, uT, -1.25, 0.85), fT, 1.2, 1.0);                                                      // the hood, on his back
-    cap(1, 6, p.S1, p.C, 2.45); cap(1, 6, p.P, p.S1, 2.25);                                                    // the torso
-    arm(p.B, 8, 7); leg(p.LB, 8, 8);
-    if (seated) Q.push([8, 9, 2, 556.5, 538.6, 562.0, 549.0, 1.3]);                                            // the chair's back
-    return Q;
   }
-  function zIn(q, x, y) {
-    if (q[2] === 0) { const ax = q[3], ay = q[4], dx = q[5] - ax, dy = q[6] - ay, l2 = dx * dx + dy * dy, t = l2 ? Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / l2)) : 0;
-      const ex = x - ax - t * dx, ey = y - ay - t * dy; return ex * ex + ey * ey <= q[7] * q[7]; }
-    if (q[2] === 1) { const dx = x - q[3], dy = y - q[4], u = (dx * q[5] + dy * q[6]) / q[7], v = (dy * q[5] - dx * q[6]) / q[8]; return u * u + v * v <= 1; }
-    const r = q[7], cx = Math.max(q[3] + r, Math.min(q[5] - r, x)), cy = Math.max(q[4] + r, Math.min(q[6] - r, y));
-    return x >= q[3] && x <= q[5] && y >= q[4] && y <= q[6] && (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r;
-  }
-  function drawCoder(p) {
-    const W = ws, Q = coderParts(p), n = Q.length, G = RIMG.glassA, D = RIMG.darkA, w1 = WIN.w;
-    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
-    for (const q of Q) { const r = q[2] === 0 ? q[7] : q[2] === 1 ? Math.max(q[7], q[8]) : 0;
-      x0 = Math.min(x0, q[3] - r, q[2] === 1 ? 1e9 : q[5] - r); x1 = Math.max(x1, q[3] + r, q[2] === 1 ? -1e9 : q[5] + r);
-      y0 = Math.min(y0, q[4] - r, q[2] === 1 ? 1e9 : q[6] - r); y1 = Math.max(y1, q[4] + r, q[2] === 1 ? -1e9 : q[6] + r); }
-    const px0 = Math.max(0, Math.floor(x0 - WIN.x) - 1), px1 = Math.min(w1 - 1, Math.ceil(x1 - WIN.x) + 1), py0 = Math.max(0, Math.floor(y0 - WIN.y) - 1), py1 = Math.min(WIN.h - 1, Math.ceil(y1 - WIN.y) + 1);
-    if (px1 < px0 || py1 < py0) return;
-    for (let sy = py0 * K; sy < (py1 + 1) * K; sy++) ZB.fill(0, sy * CW + px0 * K, sy * CW + (px1 + 1) * K);
-    for (let k = 0; k < n; k++) {                // the shapes, front to back: a sample keeps the first over it
-      const q = Q[k], r = q[2] === 0 ? q[7] : q[2] === 1 ? Math.max(q[7], q[8]) : 0;
-      const qx0 = q[2] === 1 ? q[3] - r : Math.min(q[3], q[5]) - r, qx1 = q[2] === 1 ? q[3] + r : Math.max(q[3], q[5]) + r;
-      const qy0 = q[2] === 1 ? q[4] - r : Math.min(q[4], q[6]) - r, qy1 = q[2] === 1 ? q[4] + r : Math.max(q[4], q[6]) + r;
-      const sx0 = Math.max(px0 * K, Math.floor((qx0 - WIN.x) * K)), sx1 = Math.min((px1 + 1) * K - 1, Math.ceil((qx1 - WIN.x) * K));
-      const sy0 = Math.max(py0 * K, Math.floor((qy0 - WIN.y) * K)), sy1 = Math.min((py1 + 1) * K - 1, Math.ceil((qy1 - WIN.y) * K));
-      for (let sy = sy0; sy <= sy1; sy++) for (let sx = sx0; sx <= sx1; sx++) {
-        const i = sy * CW + sx; if (ZB[i] || !zIn(q, WIN.x + (sx + 0.5) / K, WIN.y + (sy + 0.5) / K)) continue; ZB[i] = k + 1;
+  function scrKill() { SCN.feed.unshift({ t: 2.8 }); SCN.feed.length = Math.min(SCN.feed.length, 2); SCN.hit = 0.25; }
+  function scrDraw(tn) {                         // the screen's 17 x 11 pixels now
+    const S = MSA.scrn, w = S.w, h = S.h;
+    if (!SCN.cv) { SCN.cv = document.createElement('canvas'); SCN.cv.width = w; SCN.cv.height = h; SCN.g = SCN.cv.getContext('2d'); SCN.img = SCN.g.createImageData(w, h); }
+    const d = SCN.img.data, on = (SCN.t * 2) % 2 < 1.15;   // (the cursor's blink)
+    const put = (x, y, c) => { if (x < 0 || y < 0 || x >= w || y >= h) return; const i = (y * w + x) * 4; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255; };
+    const rect = (x0, y0, x1, y1, c) => { for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) put(x, y, c); };
+    const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
+    if (tn === 'game') {
+      if (!SCN.game && imgOk(RIMG.scrn)) { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.drawImage(RIMG.scrn, 0, 0); SCN.game = g.getImageData(0, 0, w, h).data; }
+      const G = SCN.game, Q = S.game;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const sx = Math.max(0, Math.min(w - 1, x + SCN.pan)), i = (y * w + sx) * 4; put(x, y, G ? [G[i], G[i + 1], G[i + 2]] : [30, 24, 40]); }
+      put(8, 5, SCN.hit > 0 ? Q.hit : Q.cross);
+      SCN.feed.forEach((f, i) => { const y = 1 + 2 * i; rect(w - 7, y, w - 4, y + 1, Q.feed); put(w - 4, y, Q.red); rect(w - 3, y, w - 1, y + 1, Q.feed); });
+    } else if (tn === 'paper') {
+      const P = S.paper, half = Math.floor(w / 2);
+      rect(0, 0, half, h, P.g);
+      const first = Math.max(0, SCN.pl - 4);
+      for (let li = first; li <= SCN.pl; li++) {
+        const L = P.lines[li % P.lines.length], y = 1 + 2 * (li - first), n = li === SCN.pl ? SCN.pk : L.length;
+        for (let c = 0; c < Math.min(n, L.length); c++) if (L[c] !== '0') put(1 + c, y, P.pal[+L[c] - 1]);
+        if (li === SCN.pl && on) put(1 + Math.min(SCN.pk, L.length), y, MSA.scrn.code.cur);
+      }
+      const pg = SCN.comp > 0 ? mix(P.page, P.g, 0.45) : P.page, k = SCN.comp > 0 ? 0.45 : 0;
+      rect(half, 0, w, h, pg); rect(half + 2, 1, w - 2, 2, mix(P.title, P.g, k));
+      for (let r = 0; r < SCN.pageN; r++) { const y = [3, 5, 9, 10][r]; rect(half + 1, y, half + 4, y + 1, mix(P.text, P.g, k)); rect(half + 5, y, w - 1, y + 1, mix(P.text, P.g, k)); }
+      P.bars.forEach((c, i) => { const hh = [2, 3, 2][i]; rect(half + 2 + 2 * i, 8 - hh, half + 3 + 2 * i, 8, mix(c, P.g, k)); });
+      rect(half + 1, 8, w - 1, 9, mix(P.axis, P.g, k));
+      if (SCN.comp > 0) put(half + 1 + Math.floor(SCN.t * 10) % (w - half - 2), 10, MSA.scrn.code.cur);   // (compiling)
+    } else if (SCN.term > 0) {                   // the terminal: a training run, its loss going down, its progress
+      const C = S.code, p = 1 - SCN.term / SCN.termD, bg = mix(C.g, [0, 0, 0], 0.35);
+      rect(0, 0, w, h, bg); rect(1, 1, 2, 8, C.num); rect(1, 7, w - 1, 8, C.num);
+      const n = Math.floor(p * 14);
+      for (let x = 0; x <= n; x++) { const v = 5.2 * (1 - Math.exp(-x / 3.6)) + 0.5 * Math.sin(x * 2.3), y = Math.max(1, Math.min(6, 1 + Math.round(v))); put(2 + x, y, [118, 196, 112]); }
+      rect(1, 9, w - 1, 10, mix(C.num, bg, 0.5)); rect(1, 9, 1 + Math.round(p * (w - 2)), 10, C.pal[3]);
+      if (on) put(1, 10, C.cur);
+    } else {                                     // the editor: the gutter, the lines typed, the cursor
+      const C = S.code; rect(0, 0, w, h, C.g); rect(0, 0, 2, h, C.gut);
+      for (let r = 0; r < 5; r++) {
+        if (r > SCN.line) break;
+        const L = C.lines[(SCN.top + r) % C.lines.length], y = 1 + 2 * r, n = r === SCN.line ? SCN.k : L.length;
+        put(0, y, C.num);
+        for (let c = 0; c < Math.min(n, L.length); c++) if (L[c] !== '0') put(3 + c, y, C.pal[+L[c] - 1]);
+        if (r === SCN.line && on) put(3 + Math.min(SCN.k, L.length - 1), y, C.cur);
       }
     }
-    for (let py = py0; py <= py1; py++) for (let px = px0; px <= px1; px++) {   // a pixel: his where half its samples are, the part most have
-      ZCNT.fill(0, 0, n + 1); let cov = 0;
-      for (let sy = 0; sy < K; sy++) for (let sx = 0; sx < K; sx++) { const v = ZB[(py * K + sy) * CW + px * K + sx]; if (v) { ZCNT[v]++; cov++; } }
-      let best = -1; if (cov >= 8) { let bc = 0; for (let k = 1; k <= n; k++) if (ZCNT[k] > bc) { bc = ZCNT[k]; best = k - 1; } }
-      ZID[py * w1 + px] = best;
-    }
-    const lay = (x, y) => x < px0 || x > px1 || y < py0 || y > py1 ? 99 : ZID[y * w1 + x] < 0 ? 99 : Q[ZID[y * w1 + x]][1];
-    const dirOf = (tx, ty) => ((Math.round(Math.atan2(ty, tx) / (Math.PI / 4)) % 8) + 8) % 8;
-    const img = wg.getImageData(px0, py0, px1 - px0 + 1, py1 - py0 + 1), d = img.data, L = W.L, S = W.S, f = 0.2 + 0.8 * L, DK = RIMG.darkC;
-    const tn = scrTint(), ZM = tn ? (STINT_M[tn] || (STINT_M[tn] = ZMAT.map((m) => m && [m[0], m[1], tintPx(m[2][0], m[2][1], m[2][2], STINT[tn], 0.75)]))) : ZMAT;   // (the screen's rim on him, its colour)
-    for (let py = py0; py <= py1; py++) for (let px = px0; px <= px1; px++) {
-      const id = ZID[py * w1 + px]; if (id < 0) continue;
-      const gi = (py * w1 + px) * 4, ga = G ? G[gi + 3] / 255 : 1; if (ga <= 0) continue;
-      const q = Q[id], far = q[0] > 8, M = ZM[far ? q[0] - 8 : q[0]], lq = q[1], X = WIN.x + px + 0.5, Y = WIN.y + py + 0.5;
-      const behind = (k, s) => lay(px + ZDIR[k][0] * s, py + ZDIR[k][1] * s) > lq;
-      const ldx = ZLAMP[0] - X, ldy = ZLAMP[1] - Y, lk = dirOf(ldx, ldy), lampK = Math.min(1, 2.2 / (1 + (ldx * ldx + ldy * ldy) / 1024));
-      let rimL = behind(lk, 1) ? 1 : behind((lk + 1) % 8, 1) || behind((lk + 7) % 8, 1) ? 0.5 : 0;
-      if (!rimL && q[0] === 5 && behind(lk, 2)) rimL = 0.35;                       // the hair: a second, softer band of light
-      const sdx = ZSCR[0] - X, sdy = ZSCR[1] - Y, sk = dirOf(sdx, sdy), Sx = S * Math.min(1, 2.1 / (1 + (sdx * sdx + sdy * sdy) / 225));
-      let rimS = behind(sk, 1) ? 1 : behind((sk + 1) % 8, 1) || behind((sk + 7) % 8, 1) ? 0.5 : behind(sk, 2) ? 0.3 : 0;
-      if (q[0] === 4) rimS = Math.max(rimS, 0.55);                                  // a face, a hand: they face the screen
-      const kf = far ? 0.72 : 1, wl = Math.min(1, rimL * lampK * L * (far ? 0.5 : 0.95)), wsc = Math.min(1, rimS * Sx * (far ? 0.5 : 0.85));
+    SCN.g.putImageData(SCN.img, 0, 0); return SCN.cv;
+  }
+  // ---- his frames: each pixel of the atlas a family of his tones (R: MSA.fam: its colour under the lamp's fill, on an edge the
+  // lamp catches, in the screen's light), the lamp's rim on it (G), the screen's light (B), his shape (A); a cell [x, y, w, h,
+  // anchor x, anchor y, seated]: a seated frame stands on the chair's seat (RM.seat), the others on the floor at his place ----
+  const SP = { d: null, w: 0 };
+  const ZLAMP = MSA.at.lamp, ZSCR = [RM.scr[0] + RM.scr[2] / 2, RM.scr[1] + RM.scr[3] / 2];
+  function spData() {
+    if (SP.d || !imgOk(RIMG.him)) return SP.d;
+    const c = document.createElement('canvas'); c.width = RIMG.him.naturalWidth; c.height = RIMG.him.naturalHeight;
+    const g = c.getContext('2d'); g.drawImage(RIMG.him, 0, 0); SP.w = c.width; SP.d = g.getImageData(0, 0, c.width, c.height).data;
+    return SP.d;
+  }
+  function blit(name, ax, ay, img, px0, py0, pw, ph) {   // a frame onto the window's pixels (img: their ImageData from px0, py0)
+    const cl = MSA.cells[name]; if (!cl) return;
+    const W = ws, d = img.data, S0 = SP.d, G = RIMG.glassA, D = RIMG.darkA, L = W.L, Sv = W.S * W.S, f = 0.2 + 0.8 * L + 0.3 * Sv * (1 - L), DK = RIMG.darkC;
+    const tn = scrTint(), T = tn ? STINT[tn] : null, RK = nrWinK();
+    const x0 = Math.round(ax) - cl[4], y0 = Math.round(ay) - cl[5];
+    for (let j = 0; j < cl[3]; j++) for (let i = 0; i < cl[2]; i++) {
+      const si = ((cl[1] + j) * SP.w + cl[0] + i) * 4; if (S0[si + 3] < 128) continue;
+      const px = x0 + i - WIN.x, py = y0 + j - WIN.y; if (px < px0 || py < py0 || px >= px0 + pw || py >= py0 + ph) continue;
+      const gi = (py * WIN.w + px) * 4, ga = G ? G[gi + 3] / 255 : 1; if (ga <= 0) continue;
+      const F = MSA.fam[S0[si]], X = WIN.x + px + 0.5, Y = WIN.y + py + 0.5;
+      const ldx = ZLAMP[0] - X, ldy = ZLAMP[1] - Y, lampK = Math.min(1, 2.2 / (1 + (ldx * ldx + ldy * ldy) / 1024));
+      const sdx = ZSCR[0] - X, sdy = ZSCR[1] - Y, Sx = Sv * Math.min(1, 2.1 / (1 + (sdx * sdx + sdy * sdy) / 225));
+      const wl = Math.min(1, S0[si + 1] / 255 * lampK * L * 0.95), wsc = Math.min(1, S0[si + 2] / 255 * Sx * 0.95);
+      const M2 = T ? tintPx(F[6], F[7], F[8], T, 0.75) : [F[6], F[7], F[8]];
       const hg = (Math.sin(X * 12.9898 + Y * 78.233) * 43758.5453) % 1, gr = (hg < 0 ? hg + 1 : hg) * 7 - 3.5;   // the grain
-      const o = ((py - py0) * (px1 - px0 + 1) + (px - px0)) * 4;
-      let ra = d[o + 3] / 255;                                                          // the room's pixel there (its lit layers)
-      const RK = nrWinK(), M1r = RK > 0 ? nrWinRim(M[1], 0.55) : null, M2r = RK > 0 ? nrWinGrey(M[2]) : null;   // (the red night: his own grade)
-      if (RK > 0) NRWIN.mask.image.data[(py * w1 + px) * 4] = 255;
+      const o = ((py - py0) * pw + (px - px0)) * 4, ra = d[o + 3] / 255;
+      const M1r = RK > 0 ? nrWinRim([F[3], F[4], F[5]], 0.55) : null, M2r = RK > 0 ? nrWinGrey(M2) : null;   // (the red night: his own grade)
+      if (RK > 0) NRWIN.mask.image.data[gi] = 255;
       for (let c = 0; c < 3; c++) {
-        let v = (DK[c] * (1 - f) + M[0][c] * f) * kf;
-        v += (M[1][c] - v) * wl; v += (M[2][c] - v) * wsc; v += gr;
+        let v = DK[c] * (1 - f) + F[c] * f;
+        v += (F[3 + c] - v) * wl; v += (M2[c] - v) * wsc; v += gr;
         if (RK > 0) {                                   // the red night: his body in the room's red ambient, the lamp's rim red and dimmed, the screen's grey
-          let r = (DK[c] * (1 - f) + M[0][c] * f) * kf * NRWIN.amb[c];
+          let r = (DK[c] * (1 - f) + F[c] * f) * NRWIN.amb[c];
           r += (M1r[c] - r) * wl * 0.7; r += (M2r[c] - r) * wsc; r += gr;
           v += (r - v) * RK;
         }
@@ -3561,9 +3498,21 @@
         if (c === 2) d[o + 3] = Math.round(oa * 255);
       }
     }
-    wg.putImageData(img, px0, py0);
   }
-  function drawWindow() {                        // the room, weighed by the lamp and the screen, at the scene's own pixels; the person over it
+  function drawHim() {                           // his frame (seated: on the chair's seat; else on the floor at his place), his mug on the desk
+    const W = ws, cl = MSA.cells[W.fr]; if (!cl || !spData()) return;
+    const seat = cl[6] === 1, ax = seat ? RM.seat[0] : W.x, ay = seat ? RM.seat[1] : RM.floor;
+    const mug = !/^sip/.test(W.fr) || W.state === 'empty';
+    const parts = W.state === 'empty' ? [] : [[W.fr, ax, ay]];
+    if (mug) parts.push(['mug', MSA.mug[0], MSA.mug[1]]);
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (const [n, x, y] of parts) { const c = MSA.cells[n]; const a = Math.round(x) - c[4] - WIN.x, b = Math.round(y) - c[5] - WIN.y; x0 = Math.min(x0, a); y0 = Math.min(y0, b); x1 = Math.max(x1, a + c[2]); y1 = Math.max(y1, b + c[3]); }
+    x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(WIN.w, x1); y1 = Math.min(WIN.h, y1); if (x1 <= x0 || y1 <= y0) return;
+    const img = wg.getImageData(x0, y0, x1 - x0, y1 - y0);
+    for (const [n, x, y] of parts) blit(n, x, y, img, x0, y0, x1 - x0, y1 - y0);
+    wg.putImageData(img, x0, y0);
+  }
+  function drawWindow() {                        // the room, weighed by the lamp and the screen, at the scene's own pixels; him over it
     const W = ws, g = wg; W.dirty = false;
     if (!RIMG.glassA && imgOk(RIMG.glass)) RIMG.glassA = zPix(RIMG.glass);
     if (!RIMG.darkA && imgOk(RIMG.dark)) {        // the dark room behind the glass: per pixel (the veil), and its mean tone (his unlit)
@@ -3574,22 +3523,82 @@
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.clearRect(0, 0, WIN.w, WIN.h); g.imageSmoothingEnabled = false;
     g.globalCompositeOperation = 'lighter';
     const tn = scrTint();                        // (the screen's colour: the hour's work)
-    for (const [k, w] of [['lamp', W.L * (1 - W.S)], ['scr', (1 - W.L) * W.S], ['lit', W.L * W.S]]) if (w > 0.003 && imgOk(RIMG[k])) { g.globalAlpha = Math.min(1, w); g.drawImage(k === 'lamp' || !tn ? RIMG[k] : scrTinted(k, tn), 0, 0); }
+    const Sr = W.S * W.S;                         // (the screen's light on the room: asleep, its standby, a mere breath)
+    for (const [k, w] of [['lamp', W.L * (1 - Sr)], ['scr', (1 - W.L) * Sr], ['lit', W.L * Sr]]) if (w > 0.003 && imgOk(RIMG[k])) { g.globalAlpha = Math.min(1, w); g.drawImage(k === 'lamp' || !tn ? RIMG[k] : scrTinted(k, tn), 0, 0); }
+    if (tn && Sr > 0.01) { const SC = MSA.scrn; g.globalCompositeOperation = 'source-over'; g.globalAlpha = Math.min(1, Sr); g.drawImage(scrDraw(tn), SC.at[0] - WIN.x, SC.at[1] - WIN.y); g.globalCompositeOperation = 'lighter'; }   // what the screen shows: the hour's work
     if (W.flash > 0 && tn === 'game' && imgOk(RIMG.scr)) { g.globalAlpha = Math.min(1, 3 * W.flash) * W.S; g.drawImage(scrTinted('scr', 'paper'), 0, 0); }   // a kill: the screen flashes
     g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     nrWinMask(false);                            // (his mask for the red night's tint: cleared, written as he is drawn)
-    if (W.state !== 'empty' && (W.L > 0.003 || W.S > 0.003) && RIMG.darkC) drawCoder(rigPts('v'));
+    if ((W.L > 0.003 || W.S > 0.003) && RIMG.darkC) drawHim();
     nrWinMask(true); wtex.needsUpdate = true;
   }
-  const ws = { state: 'empty', t: 0, next: 15 + Math.random() * 40, light: Math.random() < 0.15, screen: false, L: 0, S: 0, f: -1, ph: 0, x0: 0,
-    act: 'type', actT: 0, st: 0, look: 3, hT: 0, hv: 7, yT: 0, lampOff: -1, blink: 0, seated: false, dirty: true, acc: 1, base: null, rj: RJ };
+  // ---- his sequences: [frame, its time (s), how far he moves at its end (px)]; the walk's from MSA.walk (each frame as long as
+  // its step at his pace, its planted foot kept), to the left its mirror ----
+  const SEQ = {
+    walkR: MSA.walk.map(([n, t, a]) => [n, t, a]), walkL: MSA.walk.map(([n, t, a]) => [n.replace('walk', 'walkL'), t, -a]),
+    turn: [['standR', 0.14], ['turnR', 0.15], ['front', 0.2], ['turnL', 0.15], ['standL', 0.16, 3]],   // (then a step back: his hips over the seat as he bends)
+    sit: [['hinge', 0.3], ['sitdown', 0.45], ['type1', 0.3]],
+    up: [['sitdown', 0.25], ['standup', 0.32], ['standL', 0.3], ['lookL', 0.8], ['standL', 0.2]],
+    upGlass: [['sitdown', 0.22], ['standup', 0.3], ['standL', 0.25]],
+    toFront: [['standL', 0.12], ['turnL', 0.16], ['front', 0.45], ['hand1', 0.32]],
+    atGlass: [['hand2', 'hold'], ['hand3', 'hold']],   // (his hand on the pane; now and then the other in his pocket, leaning to the glass)
+    fromFront: [['hand1', 0.3], ['front', 0.35], ['turnR', 0.16], ['standR', 0.12]],
+    lean: [['sitdown', 0.22], ['lean2', 0.25], ['lean', 'hold'], ['lean2', 0.3], ['sitdown', 0.2]],
+    relax: [['sitdown', 0.25], ['lean2', 'hold'], ['sitdown', 0.25]],
+    stretch: [['sitdown', 0.2], ['stretch1', 0.3], ['stretch2', 1.4], ['stretch1', 0.35], ['lean2', 0.5], ['sitdown', 0.25]],
+    sip: [['sip1', 0.45], ['sip2', 0.35], ['sip3', 1.4], ['sip2', 0.4], ['sip1', 0.4]],
+    think: [['type1', 0.2], ['think', 'hold'], ['type1', 0.25]],
+    rub: [['sitdown', 0.2], ['rub1', 0.9], ['rub2', 1.3], ['rub1', 0.5], ['sitdown', 0.3]],
+    yawn: [['sitdown', 0.25], ['yawn', 1.6], ['lean2', 0.6], ['sitdown', 0.3]],
+    fist: [['game3', 0.12], ['gfist', 0.7], ['game3', 0.3]] };
+  function play(seq, loop, then) {
+    const W = ws; W.seq = seq.map((s) => [s[0], s[1] === 'hold' ? 2.5 + Math.random() * 3.5 : s[1], s[2] || 0]);
+    W.loop = !!loop; W.si = 0; W.sT = 0; W.then = then || null; W.fr = W.seq[0][0]; W.dirty = true;
+  }
+  function stepSeq(dt) {
+    const W = ws; if (!W.seq) return;
+    W.sT += dt;
+    while (W.seq && W.sT >= W.seq[W.si][1]) {
+      W.sT -= W.seq[W.si][1]; W.x += W.seq[W.si][2]; W.si++; W.dirty = true;
+      if (W.si >= W.seq.length) { if (W.loop) W.si = 0; else { const f = W.then; W.seq = null; if (f) f(); break; } }
+      if (W.seq) { W.fr = W.seq[W.si][0]; if (/^type[23]/.test(W.fr)) scrKey(); }   // (a key: his screen types it)
+    }
+  }
+  function typing() {                            // a burst of keys, a pause; now and then a nod, a look up at the screen, a glance at the street
+    const W = ws, r = Math.random(), K = ['type1', 'type2', 'type3'], seq = [];
+    if (r < 0.14) seq.push(['nod', 0.35 + Math.random() * 0.3]);
+    else if (r < 0.26) seq.push(['lookup', 1 + Math.random() * 1.4]);
+    else if (r < 0.34) seq.push(['glance', 1.2 + Math.random() * 1.2]);
+    else { let k = 0; for (let n = 3 + Math.floor(Math.random() * 7); n > 0; n--) { k = (k + 1 + Math.floor(Math.random() * 2)) % 3; seq.push([K[k], 0.08 + Math.random() * 0.08]); } }
+    seq.push(['type1', 0.25 + Math.random() * 1.1]);
+    play(seq, false, () => seatedNext());
+  }
+  function gaming() {                            // Valorant: tense, leaning in, small shifts
+    const r = Math.random(), seq = [[r < 0.45 ? 'game1' : r < 0.85 ? 'game2' : 'game3', 0.35 + Math.random() * 1.1]];
+    play(seq, false, () => seatedNext());
+  }
+  function seatedNext() {                        // after a sequence at the desk: typing again (or playing), or a new act when it is time
+    const W = ws, game = scrTint() === 'game';
+    if (W.actT > 0) { if (game) gaming(); else typing(); return; }
+    const late = (CLOCK.h + CLOCK.wake) % 24 >= 23 || (CLOCK.h + CLOCK.wake) % 24 < 3, r = Math.random();
+    W.actT = 5 + Math.random() * 12;
+    if (game) { if (r < 0.2) play(SEQ.stretch, false, seatedNext); else if (r < 0.32) play(SEQ.sip, false, seatedNext); else gaming(); return; }
+    const pick = late ? [['lean', 0.16], ['stretch', 0.1], ['sip', 0.18], ['think', 0.12], ['rub', 0.16], ['yawn', 0.12], ['relax', 0.06]]
+      : [['lean', 0.22], ['stretch', 0.14], ['sip', 0.22], ['think', 0.18], ['relax', 0.1], ['rub', 0.04]];
+    let a = Math.random() * pick.reduce((s, p) => s + p[1], 0);
+    for (const [k, w] of pick) { a -= w; if (a <= 0) { play(SEQ[k], false, seatedNext); return; } }
+    typing();
+  }
+  function walkTo(dir) { play(dir > 0 ? SEQ.walkR : SEQ.walkL, true); }
+  const ws = { state: 'empty', t: 0, next: 15 + Math.random() * 40, light: Math.random() < 0.15, screen: false, L: 0, S: 0, x: RM.door, fr: 'standR', seq: null,
+    actT: 0, lampOff: -1, blink: 0, seated: false, dirty: true, acc: 1 };
   if (Math.random() < 0.55 || !!(POSTER && POSTER.on)) Object.assign(ws, { state: 'sit', light: Math.random() < 0.7 || !!(POSTER && POSTER.on), screen: true, next: 25 + Math.random() * 70, S: 1 });   // already at the desk (under a poster: at it, his lamp on, as it shows him)
   ws.L = ws.light ? 1 : 0;
   function stepRoom(dt, t) {
     const W = ws; W.t += dt; W.next -= dt;
     if (!W.finHooked) {                           // the finale (FIN.api, a const declared further down: hooked at run time): at the last stand he gets up
-      W.finHooked = true;                         // and comes to the glass to watch the street (towin, atwin); the blast's flash whitens him with the
-      try {                                       // street; at the dawn he goes back to his desk (or, his room dark, he is gone); the end at the latest
+      W.finHooked = true;                         // and comes to the glass to watch the street (towin, atwin); at the dawn he goes back to his desk (or,
+      try {                                       // his room dark, he is gone); the end at the latest
         FIN.api.on('stand', () => { if (!reduced) ws.toGlass = true; });
         FIN.api.on('dawn', () => { ws.toGlass = false; if (ws.state === 'atwin') ws.finDawn = 0; else if (ws.state === 'towin') ws.rush = true; });
         FIN.api.on('end', () => { ws.toGlass = false; if (ws.state === 'atwin') ws.finDawn = Math.max(ws.finDawn, 4.9); else if (ws.state === 'towin') ws.rush = true; });
@@ -3597,84 +3606,50 @@
     }
     if (W.state === 'empty') {
       if (studyLate() && !OPEN.on && W.next > 4 && W.next < 1e8) W.next = 2 + Math.random() * 2;   // late: he is back soon
-      if (W.next < 0 && nightOpen('study')) {                          // someone at the door: in they come, the lamp goes on
-        Object.assign(W, { state: 'in', t: 0, f: 1, ph: Math.random() * 6, x0: RM.door, seated: false, lampAt: W.light ? -1 : 0.35, plant: null, plantSide: null });
-        setT(POSE.stand); RJ.px.t = RM.door; RJ.py.t = RM.stand; snap();
+      if (W.next < 0 && nightOpen('study')) {                          // at the door: in he comes, the lamp goes on
+        Object.assign(W, { state: 'in', t: 0, x: RM.door, seated: false, lampAt: W.light ? -1 : 0.35 }); walkTo(1);
       }
-    } else if (W.state === 'in') {               // in by the door in the left wall, past the desk, to just before the chair
+    } else if (W.state === 'in') {               // in by the door in the left wall, before the desk, to the chair
       if (W.lampAt >= 0 && W.t > W.lampAt) { W.light = true; W.lampAt = -1; }
-      const x = RJ.px.v;                       // (the pelvis advances from the planted foot, placed at the end of the frame: the stride sets the pace)
-      if (x < RM.seat[0] - 4.5) { walkPose(dt); W.walking = true; }
-      else { setT(POSE.stand); RJ.px.t = RM.seat[0] - 4.5; RJ.py.t = RM.stand; RJ.yaw.t = 1; Object.assign(W, { state: 'turn', t: 0, h1: false }); }
-    } else if (W.state === 'turn') {             // he turns round (through facing the street) to sit, his back to the chair
-      if (W.t > 0.35 && !W.h1) { W.h1 = true; W.f = -1; RJ.yaw.v = 1; RJ.yaw.t = 0; }
-      if (W.t > 0.7) Object.assign(W, { state: 'sitdown', t: 0, h1: false, h2: false });
-    } else if (W.state === 'sitdown') {          // the hips hinge, the knees bend, down onto the seat; then up straight, the hands to the keys
-      if (W.t > 0.15 && !W.h1) { W.h1 = true; setT(POSE.hinge); RJ.px.t = RM.seat[0] + 0.3; RJ.py.t = RM.seat[1]; }
-      if (W.t > 0.8 && !W.h2) { W.h2 = true; setT(POSE.sit); RJ.px.t = RM.seat[0]; reachKeys(); }
-      if (W.t > 1) W.screen = true;
-      if (W.t > 1.7) Object.assign(W, { state: 'sit', t: 0, seated: true, next: 45 + Math.random() * 80, act: 'type', actT: 6 + Math.random() * 10,
-        look: 2 + Math.random() * 3, lampOff: W.light && Math.random() < 0.45 ? 15 + Math.random() * 40 : -1 });
-    } else if (W.state === 'sit' && W.toGlass) {   // (the finale's stand: up, and to the window)
-      W.toGlass = false; Object.assign(W, { state: 'standup', t: 0, h1: false, h2: false, h3: false, glass: true });
+      if (W.x >= RM.stand - 0.5) { W.x = RM.stand; W.state = 'turn'; play(SEQ.turn, false, () => { W.state = 'sitdown'; W.t = 0; play(SEQ.sit, false, () => { W.state = 'sit'; W.t = 0; W.seated = true; W.screen = true;
+        Object.assign(W, { next: 45 + Math.random() * 80, actT: 6 + Math.random() * 10, lampOff: W.light && Math.random() < 0.45 ? 15 + Math.random() * 40 : -1 }); typing(); }); }); }
+    } else if (W.state === 'sitdown') { if (W.t > 0.5) W.screen = true; }   // (the screen wakes as he sits)
+    else if (W.state === 'sit' && W.toGlass) {   // (the finale's stand: up, and to the window)
+      W.toGlass = false; W.state = 'standup'; W.t = 0; W.x = RM.stand + 3;
+      play(SEQ.upGlass, false, () => { W.state = 'towin'; walkTo(-1); });
     } else if (W.state === 'sit') {
-      if (!W.seated) { W.seated = true; W.f = -1; setT(POSE.sit); RJ.px.t = RM.seat[0]; RJ.py.t = RM.seat[1]; reachKeys(); snap(); W.act = 'type'; W.actT = 5 + Math.random() * 8; }
+      if (!W.seated) { W.seated = true; W.x = RM.stand; W.actT = 5 + Math.random() * 8; if (scrTint() === 'game') gaming(); else typing(); }   // (put at his desk: OPEN, a poster, a reload)
       if (W.lampOff >= 0 && W.t > W.lampOff) { W.light = false; W.lampOff = -1; }   // the lamp off: the screen alone
       W.actT -= dt;
-      if (W.actT < 0) {                          // next: mostly typing; leaning back a while; a stretch, the arms up
-        const r = Math.random();
-        if (W.act !== 'type') { W.act = 'type'; W.actT = 8 + Math.random() * 14; setT(POSE.sit); reachKeys(); }
-        else if (r < 0.55) W.actT = 5 + Math.random() * 10;
-        else if (r < 0.85) { W.act = 'lean'; W.actT = 3.5 + Math.random() * 3; setT(POSE.lean); RJ.yaw.t = 0; }
-        else { W.act = 'stretch'; W.actT = 2.6; W.st = 0; setT(POSE.stretch); RJ.yaw.t = 0; }
-      }
-      if (W.act === 'stretch') { W.st += dt; if (W.st > 1.5 && W.st - dt <= 1.5) setT(POSE.lean); }
-      if (W.act === 'type' && W.base) {          // typing: small wrist and elbow motions; now and then a nod, a look up, a glance out
-        W.look -= dt;
-        if (W.look < 0) { const r = Math.random(); W.look = 2.5 + Math.random() * 4;
-          if (r < 0.45) { W.hv = 13; W.hT = 0.45; } else if (r < 0.75) { W.hv = 1; W.hT = 1.4; } else W.yT = 1.3 + Math.random() * 0.8; }
-        W.hT -= dt; W.yT -= dt; RJ.hd.t = W.hT > 0 ? W.hv : 7; RJ.yaw.t = W.yT > 0 ? 1 : 0;
-        const b = W.base;
-        RJ.wrA.t = b.wrA + 8 * Math.sin(t * 19) * (0.5 + 0.5 * Math.sin(t * 2.7)); RJ.elA.t = b.elA + 3 * Math.sin(t * 11 + 1);
-        RJ.wrB.t = b.wrB + 8 * Math.sin(t * 17 + 2) * (0.5 + 0.5 * Math.sin(t * 2.3 + 1)); RJ.elB.t = b.elB + 3 * Math.sin(t * 9 + 2);
-        W.blink -= dt; if (W.blink < -0.5 - Math.random() * 1.5) W.blink = 0.07 + Math.random() * 0.1;   // the screen: a window changes
-      }
+      if (!W.seq) seatedNext();
+      if (W.screen) { W.blink -= dt; if (W.blink < -0.5 - Math.random() * 1.5) W.blink = 0.07 + Math.random() * 0.1; }   // the screen: a window changes
+      if (W.kill1) { W.kill1 = false; if (scrTint() === 'game' && /^game/.test(W.fr) && Math.random() < 0.35) play(SEQ.fist, false, seatedNext); }   // a kill
       if (!nightOpen('study') && W.next > 25) W.next = 5 + Math.random() * 20;   // late: he wraps up
       if (studyLate()) { if (W.next < 30) W.next = 30; W.lampOff = -1; W.light = true; }   // midnight to 3 h: he stays, the lamp on
-      if (W.next < 0) {                          // done: with the lamp on they get up and go; by the screen's light alone, they go in the dark
-        if (W.light) Object.assign(W, { state: 'standup', t: 0, h1: false, h2: false, h3: false });
+      if (W.next < 0 && (!W.seq || /^(type|game)/.test(W.fr))) {   // done: with the lamp on he gets up and goes; by the screen's light alone, in the dark
+        if (W.light) { W.state = 'standup'; W.t = 0; W.x = RM.stand + 3; play(SEQ.up, false, () => { Object.assign(W, { state: 'out', t: 0, lampOff: Math.random() < 0.7 ? 1 : 0 }); walkTo(-1); }); }
         else { W.screen = false; Object.assign(W, { state: 'gone', t: 0 }); }
       }
-    } else if (W.state === 'gone') { if (W.t > 1.2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false }); }
-    else if (W.state === 'standup') {            // the hands off the desk, the hips hinge, up; a look at the street, and off to the left
-      if (W.t > 0.2) W.screen = false;
-      if (W.t > 0.25 && !W.h1) { W.h1 = true; setT(POSE.hinge); RJ.px.t = RM.seat[0] - 1.2; RJ.py.t = RM.stand + 0.4; }
-      if (W.t > 0.85 && !W.h2) { W.h2 = true; setT(POSE.stand); RJ.py.t = RM.stand; RJ.yaw.t = 1; }
-      if (W.t > 1.35 && !W.h3) { W.h3 = true; RJ.yaw.t = W.glass ? 1 : 0; }         // facing the door already (on the left); to the window: the street
-      if (W.t > 1.5) Object.assign(W, W.glass ? { state: 'towin', t: 0, glass: false, plant: null, plantSide: null }
-        : { state: 'out', t: 0, x0: RJ.px.v, ph: 0, lampOff: Math.random() < 0.7 ? 1 : 0, plant: null, plantSide: null });
-    } else if (W.state === 'towin') {            // (the finale) to the middle of the glass, on planted feet
-      walkPose(dt); W.walking = true; const x = RJ.px.v;
-      if (x <= RM.glass || W.rush) { setT(POSE.stand); RJ.py.t = RM.stand; RJ.yaw.t = 1; W.walking = false; Object.assign(W, { state: 'atwin', t: 0, front: 0, hand: 0, finDawn: W.rush ? 4.9 : -1, rush: false }); }
-    } else if (W.state === 'atwin') {            // at the glass: the head turns first, then he squares to the street, a hand flat on the pane
-      if (W.t > 0.35 && !W.front) W.front = 1;
-      W.hand = Math.max(0, Math.min(1, (W.t - 0.6) / 0.4));
+    } else if (W.state === 'gone') { if (W.t > 1.2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false, seq: null, dirty: true }); }
+    else if (W.state === 'standup') { if (W.t > 0.2) W.screen = false; }
+    else if (W.state === 'towin') {              // (the finale) to the glass
+      if (W.x <= RM.glass || W.rush) { W.state = 'atwin'; W.t = 0; W.finDawn = W.rush ? 4.9 : -1; W.rush = false; play(SEQ.toFront, false, () => play(SEQ.atGlass, true)); }
+    } else if (W.state === 'atwin') {            // at the glass, square to the street, a hand flat on the pane
       if (W.finDawn >= 0 && (W.finDawn += dt) > 5) {   // the dawn (or the end): back to his desk the usual way; his room dark, he is gone
-        W.front = 0; W.hand = 0; W.finDawn = -1;
-        if (W.L > 0.1 || W.S > 0.1) { W.f = 1; RJ.yaw.t = 0; Object.assign(W, { state: 'in', t: 0, x0: RJ.px.v, lampAt: -1, seated: false, plant: null, plantSide: null }); }
-        else { W.screen = false; Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false }); }
+        W.finDawn = -1;
+        if (W.L > 0.1 || W.S > 0.1) { W.state = 'leave'; play(SEQ.fromFront, false, () => { Object.assign(W, { state: 'in', t: 0, lampAt: -1, seated: false }); walkTo(1); }); }
+        else { W.screen = false; Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false, seq: null, dirty: true }); }
       }
     } else if (W.state === 'out') {
-      walkPose(dt); W.walking = true; const x = RJ.px.v;
-      if (W.lampOff && x < 516) { W.light = false; W.lampOff = 0; }      // the switch by the door, on the left
-      if (x < RM.door - 2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false });
+      if (W.lampOff && W.x < 516) { W.light = false; W.lampOff = 0; }      // the switch by the door, on the left
+      if (W.x < RM.door - 2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false, seq: null, dirty: true });
     }
+    if (W.state !== 'empty') stepSeq(dt);
     const Lt = (W.light ? 1 : 0) * studyMains(), St = W.screen ? (W.blink > 0 ? 0.92 : 1) : 0.2 * (0.9 + 0.1 * Math.sin(t * 0.7));   // (asleep: standby 0.16-0.2, breathing)
-    if (W.screen && scrTint() === 'game') { W.kill = (W.kill || 6) - dt; if (W.kill < 0) { W.flash = 0.09; W.kill = 4 + Math.random() * 8; } }
+    if (W.screen && scrTint() === 'game') { W.kill = (W.kill || 6) - dt; if (W.kill < 0) { W.flash = 0.09; W.kill1 = true; scrKill(); W.kill = 4 + Math.random() * 8; } }
     if (W.flash > 0) { W.flash -= dt; W.dirty = true; }
+    if (W.screen) scrStep(dt);
     W.L += (Lt - W.L) * Math.min(1, dt * 16); W.S += (St - W.S) * Math.min(1, dt * (St > W.S ? 6 : 8));
-    if (W.state !== 'empty') for (const k in RJ) { const j = RJ[k]; j.d += (j.w * j.w * (j.t - j.v) - 2 * j.z * j.w * j.d) * dt; j.v += j.d * dt; }
-    if (W.walking) { W.walking = false; walkPlant(dt); }   // (a walking frame: the pelvis placed from the planted foot, the joints settled for this frame)
     W.acc += dt;
     const busy = W.state !== 'empty' || Math.abs(Lt - W.L) > 0.003 || Math.abs(St - W.S) > 0.003 || !W.screen;   // (asleep, it breathes)
     if ((busy || W.dirty) && W.acc >= 1 / 15 && camera.right > WIN.x && camera.left < WIN.x + WIN.w) { W.acc = 0; drawWindow(); }
@@ -4144,7 +4119,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=104', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=105', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
