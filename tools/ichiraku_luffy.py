@@ -62,8 +62,9 @@ FLIP = True                                   # (la planche retournée : son bol
 FRAMES = {'eat': ((54, 0, 230, 247), {}), 'noodles': ((360, 0, 515, 247), {}), 'drink': ((570, 0, 735, 247), {}),
           'hold': ((780, 4, 970, 247), {}), 'chew': ((1136, 8, 1290, 247), {}),
           'grin': ((70, 247, 232, 502), dict(face=True)), 'wave': ((420, 246, 600, 502), dict(face=True))}
-HAT = 1.0                                     # (son chapeau, pendu à son cou par le cordon : ramené vers le milieu de son dos de tant ;
-                                              #  la planche le met sur une épaule, derrière un montant de la vitre)
+HAT_PX = (13, 12)                             # son chapeau, pendu à son cou par le cordon (largeur, hauteur à la scène : le chapeau de la planche,
+HAT_PANE = (1192, 1205, 630)                  #  0,38 m) ; la vitre où il pend (ses colonnes) et la dernière rangée au-dessus de la traverse ;
+                                              #  la planche le mettait sur une épaule : un montant et la traverse le coupaient)
 CHROMA = 0.8                                  # (ses couleurs vives dans la lumière de la boutique : leur saturation gardée à tant)
 FACE = {'grin': (2, 12), 'wave': (3, 14)}     # (son visage tourné vers nous, trop petit pour que la réduction garde ses traits : redessiné,
                                               #  le milieu du visage à tant de sa colonne, les yeux à tant de son haut de crâne ; les yeux
@@ -98,40 +99,56 @@ def keep_teeth(Q, a, crown):
     return a
 
 
-def centre_hat(Q, a):
-    """son chapeau de paille ramené vers le milieu de son dos (au-dessus du milieu de ses hanches ; de HAT) : le chapeau, un
-    disque (l'ellipse de la boîte de sa paille : le bord, la bande, le fond, leur trait), déplacé ; là où il était, son gilet
-    (le rouge médian de la rangée), ou le fond au-delà du bord de la figure (le gilet : l'autre côté de son dos en miroir, ses plis et son ombre, pas un aplat)"""
+def take_hat(Q, a, neck, R_=None):
+    """son chapeau de paille ôté de l'image (il est reposé ensuite à la scène, le même partout : hat_sprite) : une ellipse de la
+    taille de celui de la première image (R_ : ses demi-axes ; rendus la première fois), au milieu du plus grand morceau de
+    paille, jamais au-dessus de son cou (sa tête, son visage restent) ; là où il était, le rouge de son gilet sur la rangée (ce
+    coin de son dos est derrière le montant de la vitre et sous le chapeau reposé), ou le fond là où le chapeau dépassait de
+    lui. Rend l'image sans lui, lui (ses couleurs, son plein, à l'échelle de la planche) et ses demi-axes"""
     r, g, b = Q[..., 0], Q[..., 1], Q[..., 2]; fig = a > 0.5; H, W = fig.shape
     straw = fig & (r > 150) & (g > 105) & (b < 115) & (r - b > 75) & (g - b > 45)
     lab_, n = FG.label(straw); sz = np.bincount(lab_.ravel()); sz[0] = 0
     ys, xs = np.nonzero(lab_ == sz.argmax()); y0, y1, x0, x1 = ys.min(), ys.max(), xs.min(), xs.max()
     my, mx = 0.3 * (y1 - y0), 0.3 * (x1 - x0)
-    for j in np.nonzero(sz >= 40)[0]:                         # (le fond du chapeau, que sa bande sépare du bord)
+    for j in np.nonzero(sz >= 40)[0]:                         # (son fond et son bord, que sa bande sépare : un seul disque)
         jy, jx = np.nonzero(lab_ == j)
         if jy.min() >= y0 - my and jy.max() <= y1 + my and jx.min() >= x0 - mx and jx.max() <= x1 + mx:
             y0, y1, x0, x1 = min(y0, jy.min()), max(y1, jy.max()), min(x0, jx.min()), max(x1, jx.max())
-    cy, cx, ry, rx = (y0 + y1) / 2, (x0 + x1) / 2, (y1 - y0) / 2 + 1.5, (x1 - x0) / 2 + 1.5
+    cy, cx = (ys.min() + ys.max()) / 2, (xs.min() + xs.max()) / 2
+    if R_ is None: R_ = ((y1 - y0 + 1) / 2 + 5, (x1 - x0 + 1) / 2 + 5)
     Y, X = np.mgrid[0:H, 0:W]
-    disc = lambda c: ((Y - cy) / ry) ** 2 + ((X - c) / rx) ** 2 <= 1
-    hat = fig & disc(cx)
-    blue = fig & (b > r + 20) & (b > 90)                          # (son short : le milieu de ses hanches)
-    by = np.nonzero(blue.sum(1) >= 0.5 * blue.sum(1).max())[0]; hips = np.nonzero(blue[by].any(0))[0]
-    xs = (hips.min() + hips.max() + 1) / 2; dx = int(round(HAT * (xs - cx)))
-    if dx == 0: return Q, a
+    hat = fig & (((Y - cy) / R_[0]) ** 2 + ((X - cx) / R_[1]) ** 2 <= 1) & (Y > neck)
     vest = fig & ~hat & (r > 90) & (g < 0.42 * r) & (b < 0.5 * r)
-    Q2, a2 = Q.copy(), a.copy()
+    body = fig & ~hat; Q2, a2 = Q.copy(), a.copy()
     for y in np.unique(np.nonzero(hat)[0]):
-        ref = Q[y][vest[y]] if vest[y].any() else Q[vest]; c = np.median(ref, 0)
-        outside = np.nonzero(fig[y] & ~hat[y])[0]
+        bx = np.nonzero(body[y])[0]; ref = Q[y][vest[y]] if vest[y].any() else Q[vest]; c = np.median(ref, 0)
         for x in np.nonzero(hat[y])[0]:
-            if (dx > 0 and not (outside < x).any()) or (dx < 0 and not (outside > x).any()): a2[y, x] = 0
-            else:                            # (son gilet, l'autre côté de son dos en miroir : ses plis, son ombre ; sinon le rouge de la rangée)
-                xm = int(round(2 * xs - x))
-                Q2[y, x] = Q[y, xm] if 0 <= xm < W and vest[y, xm] else c
-    hy, hx = np.nonzero(hat); ok = (hx + dx >= 0) & (hx + dx < W)
-    Q2[hy[ok], hx[ok] + dx] = Q[hy[ok], hx[ok]]; a2[hy[ok], hx[ok] + dx] = 1.0
-    return Q2, a2
+            if len(bx) and bx.min() < x < bx.max(): Q2[y, x] = c
+            else: a2[y, x] = 0
+    own = fig & ((((Y - (y0 + y1) / 2) / ((y1 - y0 + 1) / 2)) ** 2 + ((X - (x0 + x1) / 2) / ((x1 - x0 + 1) / 2)) ** 2) <= 1)   # (lui seul)
+    hy, hx = np.nonzero(own); t, l = hy.min(), hx.min()
+    crop = np.zeros((hy.max() + 1 - t, hx.max() + 1 - l, 4)); crop[hy - t, hx - l, :3] = Q[hy, hx]; crop[hy - t, hx - l, 3] = 1.0
+    return Q2, a2, crop, R_
+
+
+def hat_sprite(crop):
+    """le chapeau à la taille de la scène (HAT_PX) : ses traits noirs repeints (pas de contour) ; chaque pixel de la scène, la
+    part qui l'emporte sur son carré de la planche (la paille, la bande rouge, l'ombre de la paille), sa couleur moyenne : la
+    bande reste rouge, la paille jaune (une moyenne les fondrait en ocre) ; plein dès la moitié couverte"""
+    rgb = FG.deink(crop[..., :3], crop[..., 3]); al = crop[..., 3] > 0.5
+    r, g, b = rgb[..., 0], rgb[..., 1], rgb[..., 2]
+    band = al & (r > 110) & (g < 0.5 * r) & (b < 0.5 * r)
+    shade = al & ~band & (rgb.sum(2) < 330)
+    kind = np.where(band, 1, np.where(shade, 2, 0)); kind[~al] = -1
+    w, h = HAT_PX; H, W = al.shape; C = np.zeros((h, w, 3)); M = np.zeros((h, w), bool)
+    for j in range(h):
+        for i in range(w):
+            y0, y1 = int(j * H / h), max(int(j * H / h) + 1, int((j + 1) * H / h)); x0, x1 = int(i * W / w), max(int(i * W / w) + 1, int((i + 1) * W / w))
+            k = kind[y0:y1, x0:x1]; on = k >= 0
+            if on.mean() < 0.5: continue
+            cnt = np.bincount(k[on], minlength=3); win = int(np.argmax(cnt))
+            C[j, i] = rgb[y0:y1, x0:x1][k == win].mean(0); M[j, i] = True
+    return C, M
 
 
 def cells():
@@ -140,13 +157,14 @@ def cells():
     if 'luffy' not in FG.BACK: FG.BACK = FG.BACK + ('luffy',)
     sheets = {'luffy': np.asarray(Image.open(SHEET).convert('RGB')).astype(float)}
     s = FG.F / FG.Z_S; anchor = FG.row(0, FG.Z_S)
-    out = {}
+    out = {}; hat = hR = None
     for name, (box, o) in FRAMES.items():
         Q, a, _ = FG.cut(sheets, 'luffy', box, 'free', dict(multi=True, flip=FLIP))
         crown = hair_crown(Q, a); face = o.get('face')
         if face: a = keep_teeth(Q, a, crown)
         o = dict(g='luffy', crown=box[1] + crown)
-        Q, a = centre_hat(Q, a)
+        Q, a, hcrop, hR = take_hat(Q, a, crown + HN, hR)
+        if hat is None: hat = hat_sprite(hcrop)        # (son chapeau : celui de la première image, le même partout)
         Q, a, seat = FG.sit(Q, a, LEGS)
         g = FG.measure(a, o, box[1]); cx = FG.chest(a)
         K, kh, khx, kb = FG.knots('L', o, g, a, seat, s, anchor)
@@ -157,6 +175,11 @@ def cells():
         rgb, m = FG.pick(C, A); hd &= m; FG.INK = ink
         ky, kY = [k[0] for k in K], [k[1] for k in K]
         Yc = np.interp(g['crown'], ky, kY); Yn = np.interp(g['neck'], ky, kY)
+        hc, hm = hat; hh, hw = hm.shape               # son chapeau, pendu dans son dos : tout entier derrière la troisième vitre, sous
+        y0 = min(int(round(Yn)) + 1, HAT_PANE[2] - hh + 1) - T  #  son cou, au-dessus de la traverse (ni montant ni traverse ne le coupent)
+        x0 = HAT_PANE[0] + (HAT_PANE[1] - HAT_PANE[0] + 1 - hw) // 2 - int(X_COL) - Lc
+        rr, cc = np.nonzero(hm); ok = (rr + y0 >= 0) & (rr + y0 < m.shape[0]) & (cc + x0 >= 0) & (cc + x0 < m.shape[1])
+        rgb[rr[ok] + y0, cc[ok] + x0] = hc[rr[ok], cc[ok]]; m[rr[ok] + y0, cc[ok] + x0] = True; hd[rr[ok] + y0, cc[ok] + x0] = False
         ys, xs = np.nonzero(m); t, b_, l, r_ = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
         out[name] = dict(rgb=rgb[t:b_, l:r_], m=m[t:b_, l:r_], hd=hd[t:b_, l:r_], hy=(Yc - T - t, Yn - T - t),
                          ox=-(Lc + l), oy=int(round(anchor)) - (T + t))
