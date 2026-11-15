@@ -81,11 +81,11 @@ BASES = [
          keep=[(949, 650, 980, 702)]),                                                   # (the bicycle)
     dict(n='hallB', side='R', x=(1004, 1022), v=-0.283, dy=0.0, h=0.03, g=0.0, mk='sill'),     # (its threshold)
     dict(n='entrance', side='R', x=(1068, 1116), v=-0.283, dy=0.0, h=0.0, g=0.0),      # (its step: entree's)
-    # right of Ichiraku: two recesses 30 cm deep (their back walls' feet 10 rows over the front's ray), a downpipe and a
-    # post between them, the arcade's post
-    dict(n='gap1', side='R', x=(1280, 1302), v=-0.283, dy=-10.0, h=0.0, g=0.0),
-    dict(n='post', side='R', x=(1306, 1320), v=-0.283, dy=-9.0, h=0.06, g=0.0, mk='concrete'),
-    dict(n='gap2', side='R', x=(1320, 1356), v=-0.283, dy=-9.5, h=0.0, g=0.0),
+    # right of Ichiraku: the arcade is set back 30 cm (its feet 10 rows over the front's ray); between them Ichiraku's
+    # building's own end wall, a frontal plane at Z 7.55 m (its foot level, row 775: tools/arcade_shade.py), to the
+    # downpipe in the inside corner; then the arcade's front, its post and its tiled recess, one plinth along them
+    dict(n='endA', side='F', x=(1266, 1302), y=775.0, h=0.08, g=0.0, mk='concrete'),
+    dict(n='arcade', side='R', x=(1306, 1356), v=-0.283, dy=-9.5, h=0.06, g=0.0, mk='concrete'),
     # things on the ground: the bench's low platform in front of Kirua's wall (its front face toward us, level), the
     # downpipes' feet
     dict(n='bench', side='F', x=(351, 400), y=692.0, h=0.0, g=0.0),
@@ -108,7 +108,7 @@ DRAFTS = {'L': dict(crop=(0, 470, 504, 806), k=3, map=(2.05, 0.0, 1.02)),
 GAMMA = 2.0                                       # (the drafts' brightening, as tools/redraw_zones.py's)
 SIGMA_D, CLIP_D, DETAIL = 1.2, 0.3, 0.8           # their grain: over its low frequencies at this scale, bounded, its strength
 BOXES = {'footL': (0, 640, 227, 800), 'footO': (346, 630, 620, 712), 'footB': (860, 620, 1117, 765),
-         'footR': (1280, 740, 1456, 816)}
+         'footR': (1262, 740, 1456, 816)}
 
 
 def active_boxes():
@@ -313,7 +313,7 @@ def ao_factor(shape):
     return np.where(gnd, f, 1.0), gnd
 
 
-AO_FADE = [(1281, 1292), (1116, 1106)]            # (Ichiraku's front, its own sill and step: from x 1117 to 1280)
+AO_FADE = [(1263, 1268), (1116, 1106)]            # (Ichiraku's front, its own sill and step: from x 1117 to 1265)
 
 
 def draw_pipes(img):

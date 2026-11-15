@@ -57,7 +57,7 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # where the fronts meet the sidewalk (tools/facade_foot.py, by tools/redraw_zones.py's zones of the same names): the base
 # courses, sills, grime and contact shade along the left side (footL: the dojo, the dagashi-ya; footO: the bench, the
 # oden, the far corner) and the right (footB: the Center, B, its hall, the entrance; footR: right of Ichiraku); last
-FEET = [('footL', 0, 640), ('footO', 346, 630), ('footB', 860, 620), ('footR', 1280, 740)]
+FEET = [('footL', 0, 640), ('footO', 346, 630), ('footB', 860, 620), ('footR', 1262, 740)]
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in FEET]
 

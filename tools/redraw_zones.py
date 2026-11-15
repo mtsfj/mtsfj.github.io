@@ -480,7 +480,7 @@ ZONES = {
     'footL': dict(box=(0, 640, 227, 800), tool='facade_foot'),
     'footO': dict(box=(346, 630, 620, 712), tool='facade_foot'),
     'footB': dict(box=(860, 620, 1117, 765), tool='facade_foot'),
-    'footR': dict(box=(1280, 740, 1456, 816), tool='facade_foot'),
+    'footR': dict(box=(1262, 740, 1456, 816), tool='facade_foot'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
