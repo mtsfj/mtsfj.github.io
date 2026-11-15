@@ -13,6 +13,11 @@ beside it is left as it is). In the power cut the hall's wall was a dim mauve: i
 lightness kept, the hue of the plaster round the hall in the power cut), so the hall is out like the rest of the
 building. The switch box on its wall takes the same light in street.js (swRim). The red night reads its light from the
 two layers, so it follows. The shop window (x < 1003) and the pole (x > 1022) are outside. Needs numpy.
+
+The hall's old pink ran further than the zone: a band of it along the sidewalk and over the kerb onto the road, down to
+x ~805, the downpipe and the shop window's frame by B's corner lit pink, all cut by a straight line at the zone's left
+edge (x 975), pink on one side and the warm white on the other. The zone 'hallBwalk' (WALK, last in redraw_zones.py)
+retones that pink the same way (draw() called with its box): one source, one tone, no seam.
 """
 import os
 import sys
@@ -24,11 +29,35 @@ import hall_light
 BOX = (975, 520, 1023, 762)                     # the zone (redraw_zones.py 'hallB'): the hall, the sidewalk before it
 HALL = (1003, 520, 1023, 702)                   # the hall itself (x0, y0, x1, y1)
 PLASTER = (945, 452, 1000, 520)                 # (the building's plaster over the shop, in the power cut: its hue)
+WALK = (800, 495, 975, 766)                     # the zone 'hallBwalk': the hall's pink left of BOX (sidewalk, road, B's corner)
+WALK_CORNER = 938                               # (above the sidewalk only B's corner, x >= this: not the Pokemon Center's light)
+WALK_GROUND = 636                               # (the sidewalk and the road from this row down)
 LUMA = np.array([0.299, 0.587, 0.114])
+
+
+def walk(city, unlit, box=WALK):
+    """The zone 'hallBwalk': the hall's pink light left of BOX in the warm white, as draw() does on the sidewalk (each
+    pixel its light's brightness, the power cut under it as it is); the street's layer only."""
+    x0, y0, x1, y1 = box
+    H, W = city.shape[:2]
+    c, u = city[y0:y1, x0:x1, :3], unlit[y0:y1, x0:x1, :3]
+    d = np.clip(c - u, 0, None)
+    Ld = d @ LUMA; Lu = u @ LUMA
+    yy, xx = np.mgrid[y0:y1, x0:x1]
+    pink = (Ld > hall_light.MIN_LIGHT) & (d[..., 0] > d[..., 1] + 1) & (d[..., 2] >= d[..., 1] - 1)
+    pink &= (yy >= WALK_GROUND) | (xx >= WALK_CORNER)
+    t = np.array(hall_light.TONES[hall_light.TONE], float); t = t / (t @ LUMA)
+    w = (Ld / np.maximum(Ld + Lu, 1e-6))[..., None]
+    new = np.clip(u * (1 - w) + Lu[..., None] * w + Ld[..., None] * t, 0, 255)
+    c[pink] = new[pink]
+    ch = np.zeros((H, W), bool); ch[y0:y1, x0:x1] = pink
+    return ch
 
 
 def draw(city, unlit, box=BOX):
     """The zone (redraw_zones.py): both layers changed in place over box; returns what changed (whole scene)."""
+    if tuple(box) == WALK:
+        return walk(city, unlit, box)
     x0, y0, x1, y1 = box
     H, W = city.shape[:2]
     c, u = city[y0:y1, x0:x1, :3], unlit[y0:y1, x0:x1, :3]

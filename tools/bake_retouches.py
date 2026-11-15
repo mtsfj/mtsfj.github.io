@@ -48,6 +48,12 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 STUDY = [('study', 511, 502)]
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in STUDY]
+# the hall's old pink left of hallB's box, retoned to its warm white (tools/hall_light_b.py, walk; zone hallBwalk)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'hallBwalk_{_tag}.webp', 800, 495))
+# B's shop window shut in the layers, its lit room a comp on its hours (tools/bshop_window.py; zone bshop)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'bshop_{_tag}.webp', 948, 536))
 
 
 def main():

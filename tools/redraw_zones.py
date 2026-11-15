@@ -453,6 +453,14 @@ ZONES = {
     # in both layers (the window's z5_dark.webp; its lit states are the window's own canvas in street.js), the frame and the
     # mullion as they are; last (it overlaps oden's box)
     'study': dict(box=(511, 502, 598, 555), tool='owner_study'),
+    # the hall's old pink left of hallB's box (the sidewalk before B, the kerb and the road beside it, the downpipe and the
+    # shop window's frame on B's corner): a light whose source is now the warm white hall, cut by a straight line at
+    # x 975, pink to its left; retoned the same way (tools/hall_light_b.py, walk); last
+    'hallBwalk': dict(box=(800, 495, 975, 766), tool='hall_light_b'),
+    # B's shop window on its hours (it was baked lit: the same at 22 h and at 3 h): its lit room, sill and the light on the
+    # bike's basket into the comp win_b_shop (street.js lights it on the shop's hours), the shut room in the layer (the
+    # power cut's room, the street lamp's light on it as on the plaster round it); tools/bshop_window.py, last
+    'bshop': dict(box=(948, 536, 1004, 664), tool='bshop_window'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
