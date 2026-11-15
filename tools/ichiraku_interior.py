@@ -43,9 +43,11 @@ bords
 (reduce : les surfaces nettes, les éclats gardés). La lumière : le haut à l'ombre du noren (HAUT), la vapeur au-dessus de la
 marmite plus claire (STEAM). Le grain du peintre (GRAIN : fixe, plein sur l'uni, léger sur le chargé), puis chaque pixel
 ramené à la palette de la boutique (40 couleurs tirées de son verre allumé d'avant, ses quatre vitres, du noren et des
-lanternes allumés), un grain ne sautant jamais plus d'une marche. Le reflet de la rue sur la glace (REFLET, REFLET_C : deux
-traînées en biais, sous les têtes, à peine) : fondu dans le verre coupé et fermé ; allumée, assets/street.js le pose sur
-les gens (IRF.refl, de tools/ichiraku_figures.py).
+lanternes allumés), un grain ne sautant jamais plus d'une marche. La glace elle-même (skin : « on dirait zéro vitre ») : la
+rue d'en face qui s'y reflète en miroir, floue, plus forte en haut et aux bords qu'au droit des gens ; son lustre (REFLET) ; un
+fil clair le long de ses bords ; quelques gouttes ; un peu de buée aux coins du bas. Fermée, un miroir sombre (shop_off) ; dans
+la coupure, la rue coupée qu'elle reflète (street_unlit) ; allumée, assets/ramen_glass_skin.webp, que street.js ajoute sur la
+pièce et ses gens, plus fort de jour, la glace prenant un peu de ce qu'on voit au travers.
 
 Dans layer_city_off (allumée) ; street_unlit (la coupure de courant : la même pièce dans le bleu nuit du verre coupé, de son
 plus sombre à son plus clair selon la clarté de la pièce allumée, à ses couleurs) : par draw(), la zone 'vitrine' ;
@@ -84,10 +86,23 @@ ARETES = ()                          # (les arêtes des montants : dessinées pa
 BAS_RAYON = 0.1467                   # (la lisière claire du bas des vitres du peintre : y = VP_y + c |x - VP_x|)
 PEINTES = (((1160, 1170), (1173, 1185), (1192, 1205), (1209, 1223)), (631, 636))   # (les quatre vitres du peintre au commit
                                      # BEFORE, leurs colonnes et leur traverse : où prendre les tons de son verre allumé, coupé)
-REFLET = ((-1.0, 1244.0, 6.0, 0.07, 612, 694), (-1.0, 1257.0, 1.5, 0.05, 628, 694))   # le reflet de la rue sur la glace :
-                                     # deux traînées en biais, sous les têtes (x + y - VP_y = leur milieu ; leur demi-largeur, leur
-                                     # part, leurs rangées : fondues sur 12 à chaque bout)
+REFLET = ((-1.0, 1186.0, 6.0, 0.22, 515, 650), (-1.0, 1199.0, 2.0, 0.15, 520, 655))   # le lustre de la glace : deux bandes
+                                     # en biais, le haut des vitres (x + y - VP_y = leur milieu ; leur demi-largeur, leur part, leurs
+                                     # rangées : fondues sur 12 à chaque bout)
 REFLET_C = (176.0, 186.0, 232.0)     # (sa couleur : la nuit bleue de la rue)
+# la glace (le propriétaire : « on dirait zéro vitre, trop transparent ») : ce qu'elle ajoute de lumière à ce qu'on voit au
+# travers, pixel par pixel (skin) : la rue d'en face qui s'y reflète (miroir : la colonne x montre le trottoir d'en face, à la
+# même rangée, à la colonne VP_x + (x - VP_x) X_O / (2 X_D - X_O), pour les plans X_O de MIRROR ; flou de MIRROR_BLUR), plus
+# forte en haut et au bord des vitres, plus faible sur les gens (SKIN) ; le lustre (REFLET) ; un fil clair le long des bords de
+# chaque vitre ; quelques gouttes ; un peu de buée chaude aux coins du bas. Allumée : assets/ramen_glass_skin.webp, ajouté par
+# street.js (plus fort de jour) ; fermée et coupée : fondu dans le verre sombre, plus fort (un miroir sombre)
+MIRROR = (-4.4, -4.9, -5.6)
+MIRROR_BLUR = 2.0
+SKIN = dict(refl=0.5, top=0.55, edge=0.7, people=0.5, rim=(205.0, 215.0, 232.0, 0.46), drops=16, drop=0.7,
+            fog=(230.0, 214.0, 196.0, 0.36, 14, 10), shut=2.2, cut=1.3, dark=0.6)
+RIM_SIDES = (1.0, 0.7, 0.35, 0.25)   # (le fil des bords : en haut, à gauche, à droite, en bas)
+PEOPLE = ((1176, 588, 1224, 661), (1163, 612, 1173, 642))   # (où se tiennent les gens et la pile : le reflet y est moindre)
+SKIN_OUT = 'ramen_glass_skin.webp'   # (au coin du masque, GLASS)
 NOREN = ('ichiraku_noren.webp', 1150, 500, 79, 104)   # (le noren au repos, pendu dehors devant la porte : son ourlet, colonne par colonne)
 
 # ---- la boutique
@@ -232,6 +247,56 @@ def reflet(xs, ys):
                for p, c, w, k, y0, y1 in REFLET)
 
 
+def skin(pix, layer, k_refl=1.0, k_fx=1.0):
+    """la lumière que la glace ajoute à chaque pixel de verre (pix) : la rue d'en face reflétée (prise sur layer, ses couleurs
+    du calque), le lustre, le fil clair des bords, les gouttes, la buée ; k_refl : le reflet plus ou moins fort (fermée, coupée) ;
+    k_fx : le lustre, le fil et les gouttes (sur une vitre sombre, il en faut moins : SKIN['dark'])"""
+    from scipy.ndimage import gaussian_filter, map_coordinates
+    import ichiraku_front as FR
+    xs, ys = pix[:, 0].astype(float), pix[:, 1].astype(float); XD = X_F + FR.REVEAL
+    blur = np.stack([gaussian_filter(layer[..., c], MIRROR_BLUR) for c in range(3)], -1)
+    refl = np.zeros((len(pix), 3))
+    for XO in MIRROR:
+        xq = VX + (xs + 0.5 - VX) * XO / (2 * XD - XO) - 0.5
+        refl += np.stack([map_coordinates(blur[..., c], [ys, xq], order=1, mode='nearest') for c in range(3)], -1)
+    refl /= len(MIRROR)
+    cols = glass_columns(); hem = hems(); bot = np.array([cols[int(x)][1] for x in xs])
+    top = np.array([max(cols[int(x)][0], hem.get(int(x), 0) + 1) for x in xs])    # (from under the noren: what is seen of it)
+    t = np.clip((ys - top) / np.maximum(bot - top, 1), 0, 1)
+    on = {(int(x), int(y)) for x, y in pix}
+    d = np.full(len(pix), 9.0)                                   # (la distance au bord de sa vitre, jusqu'à 8)
+    for r in range(8, 0, -1):
+        near = np.array([any((int(x) + a, int(y) + b) not in on for a, b in ((r, 0), (-r, 0), (0, r), (0, -r))) for x, y in pix])
+        d[near] = r
+    a = SKIN['refl'] * k_refl * (1 - SKIN['top'] * t) * (1 + SKIN['edge'] * np.exp(-(d - 1) / 2.5))
+    ppl = np.ones(len(pix))
+    for x0, y0, x1, y1 in PEOPLE:
+        ppl = np.where((xs >= x0) & (xs < x1) & (ys >= y0) & (ys < y1), SKIN['people'], ppl)
+    light = refl * (a * ppl)[:, None]
+    light += np.array(REFLET_C)[None] * (k_fx * ppl * reflet(xs, ys))[:, None]   # (le lustre, moindre sur les gens)
+    rr, rg, rb, ra = SKIN['rim']                                  # (le fil clair des bords : le haut et la gauche, vers la rue et
+    ew = np.array([max(w for (a_, b_), w in zip(((0, -1), (-1, 0), (1, 0), (0, 1)), RIM_SIDES)   # ses lampes, plus que la droite et
+                       if (int(x) + a_, int(y) + b_) not in on) if d[i] == 1 else 0.0          # le bas)
+                   for i, (x, y) in enumerate(pix)])
+    light += np.array((rr, rg, rb))[None] * (k_fx * ra * ew)[:, None]
+    rng = np.random.default_rng(31)                               # (les gouttes : plutôt vers le bas, une pointe claire, son
+    at = {(int(x), int(y)): i for i, (x, y) in enumerate(pix)}    # ventre plus doux sous elle ; aucune sur les gens)
+    pd = (0.3 + t) * (ppl == 1)
+    for i in rng.choice(len(pix), SKIN['drops'], replace=False, p=pd / pd.sum()):
+        light[i] += np.array(REFLET_C) * SKIN['drop'] * k_fx
+        j = at.get((int(xs[i]), int(ys[i]) + 1))
+        if j is not None: light[j] += np.array(REFLET_C) * SKIN['drop'] * k_fx * 0.4
+    fr, fg, fb, fa, fh, fw = SKIN['fog']                          # (la buée : aux coins du bas de chaque vitre, en taches)
+    up = np.clip((ys - (bot - fh)) / fh, 0, 1)
+    lft = np.array([min(r for r in range(1, 90) if (int(x) - r, int(y)) not in on) for x, y in pix])
+    rgt = np.array([min(r for r in range(1, 90) if (int(x) + r, int(y)) not in on) for x, y in pix])
+    side = np.clip(1 - (np.minimum(lft, rgt) - 1) / fw, 0, 1)
+    n = gaussian_filter(np.random.default_rng(57).normal(0, 1, (200, 120)), 1.2); n = (n - n.min()) / (n.max() - n.min())
+    fog = fa * up * side * (0.5 + n[(ys - 500).astype(int) % 200, (xs - 1140).astype(int) % 120])
+    light += np.array((fr, fg, fb))[None] * fog[:, None]
+    return np.clip(light, 0, 255)
+
+
 def render(src, pix):
     """chaque pixel du verre pris sur SS x SS rayons de l'œil : ce que chacun rencontre le premier dans la maquette (sa couleur,
     sa surface)"""
@@ -365,9 +430,11 @@ def reduce(col, sid):
     return out, acc, surf
 
 
-def compute():
-    """la vitrine : chacun de ses pixels de verre (pix), allumé (lit), coupé (cut), sa part du masque (a_gl), sa part du reflet
-    (rf) ; la palette de la boutique (pal), les éclats (acc), les calques au commit BEFORE (B)"""
+def compute(layers=None):
+    """la vitrine : chacun de ses pixels de verre (pix), allumé (lit), coupé (cut, la glace et son reflet compris), sa part du
+    masque (a_gl) ; la palette de la boutique (pal), les éclats (acc), les calques au commit BEFORE (B), ceux d'où la glace prend
+    la rue qu'elle reflète (layers : ceux de la chaîne, sinon ceux d'assets/)"""
+    if layers is None: layers = [I.load(n, m) for n, m in NAMES]
     src = np.asarray(Image.open(SRC).convert('RGB')).astype(float)
     B = [I.load(n, m, BEFORE) for n, m in NAMES]
     zx0, zy0, zx1, zy1 = ZONE
@@ -413,8 +480,7 @@ def compute():
     cpal = palette(Cb, 20)
     j0 = nearest(cut_c, cpal); j1 = nearest(np.clip(cut_c * np.exp(0.5 * amp * g)[:, None], 0, 255), cpal)
     cut = cpal[np.where(((lab(cpal[j0]) - lab(cpal[j1])) ** 2).sum(1) > 6 ** 2, j0, j1)]
-    rf = reflet(xs, ys)[:, None]                                             # (le reflet de la rue sur le verre sombre, fondu)
-    cut = cut * (1 - rf) + np.array(REFLET_C) * rf
+    cut = np.clip(cut + skin(pix, layers[1][..., :3], SKIN['cut'], SKIN['dark']), 0, 255)   # (la glace : la rue coupée qu'elle reflète)
 
     # fermée (shop_off, posé à 0,88) : tout le verre couvert de son bleu nuit, la pièce allumée n'y passe qu'à 12 %. Le masque
     # du verre (ramen_glass : les ombres de Teuchi et du client, la lumière de la pièce qui respire, la vapeur) : plein sur ce
@@ -422,7 +488,7 @@ def compute():
     # sur la face du comptoir, sous les figures coupées à sa hauteur, une part égale (la lumière seule)
     Ls = around(xs, ys, Ll)[0]
     a_gl = np.where(ys <= CTR_ROW, np.interp(Ls, MASK[0], MASK[1]), MASK[2])
-    return dict(pix=pix, lit=lit, cut=cut, a_gl=a_gl, rf=rf, pal=pal, acc=acc, B=B)
+    return dict(pix=pix, lit=lit, cut=cut, a_gl=a_gl, pal=pal, acc=acc, B=B, layers=layers)
 
 
 def lay(V, city, unlit):
@@ -448,14 +514,14 @@ def draw(city, unlit, box=BOX):
     """la zone 'vitrine' de tools/redraw_zones.py, la dernière : la vitrine posée sur les calques tels que les zones d'avant
     les laissent (leurs pixels du peintre gardent les vitres d'avant : elles s'y règlent comme avant) ; rend ce qui a changé"""
     was = city.copy(), unlit.copy()
-    lay(compute(), city, unlit)
+    lay(compute((city, unlit)), city, unlit)
     return (np.abs(city - was[0]).max(-1) > 0) | (np.abs(unlit - was[1]).max(-1) > 0)
 
 
 def main():
     prev = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else None
     V = compute(); pix, pal, acc, B = V['pix'], V['pal'], V['acc'], V['B']
-    xs, ys = pix[:, 0], pix[:, 1]; rf, a_gl = V['rf'], V['a_gl']
+    xs, ys = pix[:, 0], pix[:, 1]; a_gl = V['a_gl']
     zx0, zy0, zx1, zy1 = ZONE
     Lc = [I.load(n, m) for n, m in NAMES]
     so = np.asarray(Image.open(SO_BEFORE).convert('RGBA')).copy(); gl = I.load('ramen_glass.webp', 'RGBA', BEFORE)
@@ -477,10 +543,12 @@ def main():
     ok = (yy >= 0) & (yy < so.shape[0]) & (xx >= 0) & (xx < so.shape[1]); so[yy[ok], xx[ok]] = 0
     yy, xx = fy - SHOP_OFF[1], fx - SHOP_OFF[0]; ok = (yy >= 0) & (yy < so.shape[0]) & (xx >= 0) & (xx < so.shape[1])
     so[yy[ok], xx[ok], :3] = np.clip(np.round(fc[ok]), 0, 255); so[yy[ok], xx[ok], 3] = 255
-    dark = np.array((14.0, 9.0, 22.0)) * (1 - rf) + np.array(REFLET_C) * rf
+    dark = np.clip(np.array((14.0, 9.0, 22.0))[None] + skin(pix, Lc[0][..., :3], SKIN['shut'], SKIN['dark']), 0, 255)   # (un miroir sombre)
+    sk = np.zeros(gl.shape[:2] + (4,)); lt = skin(pix, Lc[0][..., :3])                # (allumée : la glace, ajoutée par street.js)
     for i, (x, y) in enumerate(pix):
         so[y - SHOP_OFF[1], x - SHOP_OFF[0]] = tuple(np.round(dark[i]).astype(int)) + (255,)
-        if 0 <= y - GLASS[1] < gl.shape[0]: gl[y - GLASS[1], x - GLASS[0]] = (255, 255, 255, a_gl[i])
+        if 0 <= y - GLASS[1] < gl.shape[0]:
+            gl[y - GLASS[1], x - GLASS[0]] = (255, 255, 255, a_gl[i]); sk[y - GLASS[1], x - GLASS[0]] = tuple(lt[i]) + (255,)
 
     print('façade à X_F %.2f m de l\'œil ; vitrine de Z %.2f à %.2f m ; comptoir à Z %.2f m (dessus à %.2f m, rangée %d) ; mur du '
           'bout à Z %.2f m (%.2f m derrière la porte), %.1f px par mètre ; pièce de %.1f m de fond | %d pixels de verre, %d éclats, '
@@ -490,13 +558,15 @@ def main():
         for k, im in (('lit', Lc[0]), ('cut', Lc[1])):
             Image.fromarray(np.clip(im[495:705, 1140:1240, :3], 0, 255).astype(np.uint8)).resize((800, 1680), Image.NEAREST).save(os.path.join(prev, k + '_x8.png'))
         bl = Lc[0][..., :3].copy(); sa = so[..., 3:] / 255 * 0.88
-        bl[448:448 + 248, 1112:1112 + 164] = bl[448:448 + 248, 1112:1112 + 164] * (1 - sa) + so[..., :3] * sa
+        h_ = so.shape[0]; bl[448:448 + h_, 1112:1112 + 164] = bl[448:448 + h_, 1112:1112 + 164] * (1 - sa) + so[..., :3] * sa
+        lt_ = bl.copy(); lt_[520:690, 1150:1230] = np.clip(Lc[0][520:690, 1150:1230, :3] + sk[..., :3] * sk[..., 3:] / 255 * 0.55, 0, 255)
+        Image.fromarray(np.clip(lt_[495:705, 1140:1240], 0, 255).astype(np.uint8)).resize((800, 1680), Image.NEAREST).save(os.path.join(prev, 'lit_skin_x8.png'))
         Image.fromarray(np.clip(bl[495:705, 1140:1240], 0, 255).astype(np.uint8)).resize((800, 1680), Image.NEAREST).save(os.path.join(prev, 'shut_x8.png'))
         ga = np.zeros((185, 100, 3)); ga[:170, 10:90] = gl[:, :, 3:]
         Image.fromarray(ga.astype(np.uint8)).resize((800, 1480), Image.NEAREST).save(os.path.join(prev, 'mask_x8.png'))
         Image.fromarray(np.repeat(np.repeat(pal[None].astype(np.uint8), 20, 0), 20, 1)).save(os.path.join(prev, 'palette.png'))
         return
-    I.save(gl, 'ramen_glass.webp', 'RGBA')
+    I.save(gl, 'ramen_glass.webp', 'RGBA'); I.save(sk, SKIN_OUT, 'RGBA')
     Image.fromarray(so.astype(np.uint8), 'RGBA').save(SO_BEFORE, 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 

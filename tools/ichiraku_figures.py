@@ -813,8 +813,7 @@ def main():
            'Dz': [door_x, DOOR_Z, round(row(0, DOOR_Z), 2)],
            'Sz': round(Z_S, 2),
            'N': {'cells': lst('N', 'naruto'), 'x': round(col(Xn, Z_S), 1), 'y': round(row(0, Z_S), 2)},
-           'O': OC + [zx0, zy0], 'G': glass_rows(hem), 'wisps': wisps, 'look': look,
-           'refl': {'s': [list(r) for r in R.REFLET], 'vy': VY, 'c': [int(v) for v in R.REFLET_C]}}
+           'O': OC + [zx0, zy0], 'G': glass_rows(hem), 'wisps': wisps, 'look': look}
     print('style %s | Teuchi Z %.2f (%.1f px/m), à la porte Z %.2f (%.1f px/m, colonne %d, sa perche à %d) | Naruto assis Z %.2f '
           '(%.1f px/m) | %d cases, atlas %d x %d' % (style, Z_T, s_t, DOOR_Z, s_door, door_x, POLE_X, Z_S, s_s, len(A.cells),
           img.shape[1], img.shape[0]))

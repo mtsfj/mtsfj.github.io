@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=133", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=22", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=6", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=5fc1ab9e", "x": 231, "y": 408, "w": 106, "h": 142}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=134", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=22", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=6", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=5fc1ab9e", "x": 231, "y": 408, "w": 106, "h": 142}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=133') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=134') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4170,7 +4170,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=114', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=115', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -6647,24 +6647,16 @@
   // rises (the bowls, the stock pot), the street's faint reflection on the pane (refl: its streaks, over the people), the
   // style (look: its kind; the shadows' alpha and grain for Teuchi's pass and the nearer one; the rims' rows). A cell is [sx, sy,
   // w, h, ox, oy]: (ox, oy) the middle of his chest and the top of his head (or the floor) in it
-  const IRF = {"T":{"idle":[[0,0,34,63,17,0]],"calm":[[35,0,34,63,17,0]],"nod":[[70,0,33,63,18,0]],"smile":[[104,0,34,63,17,0]],"stir":[[139,0,33,63,15,0],[173,0,29,63,14,0],[203,0,31,63,14,0],[235,0,33,63,15,0],[269,0,28,63,14,0],[298,0,31,63,14,0]],"lift":[[330,0,38,67,22,4]],"serve":[[369,0,46,64,16,0],[416,0,46,64,19,0]],"shelf":[[463,0,41,66,20,1],[505,0,40,67,19,2]],"walk":[[546,0,37,109,18,109],[584,0,36,109,17,109],[621,0,33,109,16,109],[655,0,33,109,15,109],[689,0,36,109,17,109]]},"Ty":{"head":583.26,"feet":692.02},"Tz":27.27,"at":{"counter":1216.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[726,0,57,168,28,168],[784,0,55,168,26,168],[840,0,51,168,25,168],[892,0,51,168,23,168],[944,0,57,168,27,168]],"dfront":[[0,169,48,169,23,169]],"dbrow":[[49,169,62,169,25,169]],"dpole":[[112,169,66,173,31,173],[179,169,66,191,31,191],[246,169,66,209,31,209],[313,169,66,224,31,224]]},"Dz":[1187.0,17.6,734.32],"Sz":25.92,"N":{"cells":[[380,169,36,92,18,92],[417,169,40,84,20,84],[458,169,39,85,20,85],[498,169,38,92,19,92],[537,169,38,93,19,93],[576,169,37,89,18,89]],"x":1218.4,"y":696.03},"O":[614,169,82,200,1150,500],"G":[[1164,524,654,597],[1165,523,655,596],[1166,523,655,596],[1167,523,655,596],[1168,522,655,596],[1169,522,655,596],[1170,522,655,596],[1171,522,656,596],[1172,522,656,545],[1176,521,656,595],[1177,521,656,595],[1178,521,656,595],[1179,520,656,595],[1180,520,656,595],[1181,520,656,595],[1182,520,657,595],[1183,520,657,595],[1184,519,657,595],[1185,519,657,594],[1186,519,657,594],[1187,519,657,594],[1188,519,657,594],[1189,518,657,594],[1190,518,657,594],[1191,518,657,594],[1192,518,657,594],[1193,518,657,594],[1194,517,658,594],[1195,517,658,594],[1196,517,658,593],[1197,517,658,593],[1198,517,658,593],[1199,516,658,593],[1200,516,658,593],[1201,516,658,593],[1202,516,658,593],[1203,516,658,593],[1204,515,658,593],[1205,515,659,592],[1206,515,659,592],[1207,515,659,592],[1208,515,659,592],[1209,514,659,592],[1210,514,659,592],[1211,514,659,592],[1212,514,659,592],[1213,514,659,592],[1214,513,659,592],[1215,513,659,592],[1216,513,659,591],[1217,513,660,591],[1218,513,660,591],[1219,512,660,591],[1220,512,660,591],[1221,512,660,591],[1222,512,660,591],[1223,512,660,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]],"look":{"kind":"couleur"},"refl":{"s":[[-1.0,1244.0,6.0,0.07,612,694],[-1.0,1257.0,1.5,0.05,628,694]],"vy":615.0,"c":[176,186,232]}};
+  const IRF = {"T":{"idle":[[0,0,34,63,17,0]],"calm":[[35,0,34,63,17,0]],"nod":[[70,0,33,63,18,0]],"smile":[[104,0,34,63,17,0]],"stir":[[139,0,33,63,15,0],[173,0,29,63,14,0],[203,0,31,63,14,0],[235,0,33,63,15,0],[269,0,28,63,14,0],[298,0,31,63,14,0]],"lift":[[330,0,38,67,22,4]],"serve":[[369,0,46,64,16,0],[416,0,46,64,19,0]],"shelf":[[463,0,41,66,20,1],[505,0,40,67,19,2]],"walk":[[546,0,37,109,18,109],[584,0,36,109,17,109],[621,0,33,109,16,109],[655,0,33,109,15,109],[689,0,36,109,17,109]]},"Ty":{"head":583.26,"feet":692.02},"Tz":27.27,"at":{"counter":1216.0,"pots":1205.3,"shelf":1183.7},"D":{"dwalk":[[726,0,57,168,28,168],[784,0,55,168,26,168],[840,0,51,168,25,168],[892,0,51,168,23,168],[944,0,57,168,27,168]],"dfront":[[0,169,48,169,23,169]],"dbrow":[[49,169,62,169,25,169]],"dpole":[[112,169,66,173,31,173],[179,169,66,191,31,191],[246,169,66,209,31,209],[313,169,66,224,31,224]]},"Dz":[1187.0,17.6,734.32],"Sz":25.92,"N":{"cells":[[380,169,36,92,18,92],[417,169,40,84,20,84],[458,169,39,85,20,85],[498,169,38,92,19,92],[537,169,38,93,19,93],[576,169,37,89,18,89]],"x":1218.4,"y":696.03},"O":[614,169,82,200,1150,500],"G":[[1164,524,654,597],[1165,523,655,596],[1166,523,655,596],[1167,523,655,596],[1168,522,655,596],[1169,522,655,596],[1170,522,655,596],[1171,522,656,596],[1172,522,656,545],[1176,521,656,595],[1177,521,656,595],[1178,521,656,595],[1179,520,656,595],[1180,520,656,595],[1181,520,656,595],[1182,520,657,595],[1183,520,657,595],[1184,519,657,595],[1185,519,657,594],[1186,519,657,594],[1187,519,657,594],[1188,519,657,594],[1189,518,657,594],[1190,518,657,594],[1191,518,657,594],[1192,518,657,594],[1193,518,657,594],[1194,517,658,594],[1195,517,658,594],[1196,517,658,593],[1197,517,658,593],[1198,517,658,593],[1199,516,658,593],[1200,516,658,593],[1201,516,658,593],[1202,516,658,593],[1203,516,658,593],[1204,515,658,593],[1205,515,659,592],[1206,515,659,592],[1207,515,659,592],[1208,515,659,592],[1209,514,659,592],[1210,514,659,592],[1211,514,659,592],[1212,514,659,592],[1213,514,659,592],[1214,513,659,592],[1215,513,659,592],[1216,513,659,591],[1217,513,660,591],[1218,513,660,591],[1219,512,660,591],[1220,512,660,591],[1221,512,660,591],[1222,512,660,591],[1223,512,660,591]],"wisps":[[1181.2,635,18.5,3.2],[1207.2,636,18.5,3.2],[1198.0,622,24.7,4.9]],"look":{"kind":"couleur"}};
   const IRFI = new Image(), IRF_SRC = 'assets/ramen_figures.webp?v=8';
   let IRFS = null;                               // what they are drawn from, once in: the sheet decoded off the main thread (an ImageBitmap; drawn
   // as its <img> draws, to the byte), else the <img> (5 Mpx: its decoding in a frame froze the street for a fifth of a second on a phone)
   offView(RL.x, RL.x + RL.w, () => (window.createImageBitmap && window.fetch ? UP.fetch(IRF_SRC).then((r) => (r.ok ? r.blob() : Promise.reject(r.status))).then((b) => createImageBitmap(b)) : Promise.reject(0))
     .then((b) => { IRFS = b; }, () => { IRFI.onload = () => { IRFS = IRFI; }; IRFI.src = IRF_SRC; }));
   const irGlass = new Path2D(), irHem = [new Path2D(), new Path2D(), new Path2D()];   // (the glass, in scene px: the people only there; the rows under the hem)
-  const irRefl = document.createElement('canvas'); irRefl.width = RL.w; irRefl.height = RL.h;   // (the street's reflection on the pane)
-  { const g = irRefl.getContext('2d'), R = IRF.refl || { s: [], c: [0, 0, 0], vy: 0 };
-    for (const [x, top, bot, hem] of IRF.G || []) {
-      irGlass.rect(x, top, 1, bot - top + 1);
-      if (hem) irHem.forEach((P, i) => P.rect(x, hem + 1 + i, 1, 1));
-      for (let y = Math.max(top, RL.y); y <= bot; y++) {           // (as tools/ichiraku_interior.py's reflet: its streaks, faded at their ends)
-        let a = 0;
-        for (const [p, c, w, k, y0, y1] of R.s) a += k * Math.max(0, 1 - Math.abs(x - p * (y - R.vy) - c) / w) * Math.max(0, Math.min(1, (y - y0) / 12, (y1 - y) / 12));
-        if (a > 0) { g.fillStyle = 'rgba(' + R.c.join(',') + ',' + a.toFixed(3) + ')'; g.fillRect(x - RL.x, y - RL.y, 1, 1); }
-      }
-    }
+  for (const [x, top, bot, hem] of IRF.G || []) {
+    irGlass.rect(x, top, 1, bot - top + 1);
+    if (hem) irHem.forEach((P, i) => P.rect(x, hem + 1 + i, 1, 1));
   }
   const IR_HAUT = [0.6, 0.8, 0.92];                                            // (the noren's shadow on them, as on the room: the share kept, row by row)
   // they are drawn at scene res (in scene coordinates), crisp, then into the room's canvas (RL.K texels a scene pixel)
@@ -6934,7 +6926,8 @@
     if (tc && T.where === 'D') IRNEAR.push({ c: tc, x: T.x, y: IRF.Dz[2], flip: T.flip, z: IRF.Dz[1] });
     IRNEAR.sort((a, b) => b.z - a.z);
     if (ok && IRNEAR.length) sprites(IRNEAR, false);
-    rlg.globalAlpha = irPow(); rlg.drawImage(irRefl, 0, 0, rlC.width, rlC.height); rlg.globalAlpha = 1;   // (the pane's reflection, over them; the power cut's in its layer)
+    rlg.save(); rlg.setTransform(K, 0, 0, K, -RL.x * K, -RL.y * K);   // (the glass takes a little of what is seen through it: by day more,
+    rlg.fillStyle = 'rgba(10,14,28,' + (0.09 + 0.08 * SKYF.dw).toFixed(3) + ')'; rlg.fill(irGlass); rlg.restore();   // the street brighter than the room)
     rlTex.needsUpdate = true;
   }
 
@@ -6960,7 +6953,12 @@
   function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
   LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
-  const shopOff = addTex('assets/shop_off.webp?v=11', 1112, 420, 164, 348, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its shop window dark, the street's reflection on it (the lanterns and the noren carry their own)
+  const shopOff = addTex('assets/shop_off.webp?v=12', 1112, 420, 164, 348, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its shop window dark, the street's reflection on it (the lanterns and the noren carry their own)
+  const irSkin = addTex('assets/ramen_glass_skin.webp?v=2', 1150, 520, 80, 170, 0.48, true); irSkin.material.opacity = 0;   // the glass itself, lit:
+  // the street opposite mirrored in it, soft, stronger at its top and its edges, faint over the people; its sheen, the light along its
+  // edges, a few drops, warm mist in its bottom corners (tools/ichiraku_interior.py, skin: added light); stronger by day, when the street
+  // outshines the room; with the kitchen (shut, the closed shop's overlay carries its own dark mirror) and the zone's power
+  irSkin.material.map.magFilter = irSkin.material.map.minFilter = THREE.NearestFilter;
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
   const IRA = { W: 1472, H: 600, cw: 64, ch: 100 };                              // the lights' atlas: 23 columns x 6 rows; the wall lamps, the same in every column, their arms on the wall's perspective line (tools/redraw_lamps.py)
@@ -7003,7 +7001,7 @@
   }
   function stepShop(dt, t) {
     SHOP.t += dt;
-    if (!IR.graded) { IR.graded = true; for (const L of IRL) L.m.forEach((m, r) => gradeSprite(m.material, r ? 'self' : 'street')); gradeSprite(IRNR.m[0].material, 'street'); gradeSprite(IRNR.m[1].material, 'self'); gradeSprite(rlMesh.material, 'self'); }
+    if (!IR.graded) { IR.graded = true; for (const L of IRL) L.m.forEach((m, r) => gradeSprite(m.material, r ? 'self' : 'street')); gradeSprite(IRNR.m[0].material, 'street'); gradeSprite(IRNR.m[1].material, 'self'); gradeSprite(rlMesh.material, 'self'); gradeSprite(irSkin.material, 'street'); }
     const hk = openK('ramen'), pz = irPow();
     if (!SHOP.open && !OPEN.on && hk > 0.99 && SHOP.t > 2) { SHOP.open = true; SHOP.t = 0; }   // (shut by the opening's script at night: open again in its hours)
     const sc = SHOP.open, nW = sc && hk > 0.92, lW = [sc && hk > 0.78, sc && hk > 0.7], kW = sc && hk > 0.2, oW = hk > 0.5;   // the stage: each part at its own share of the hour's ease
@@ -7014,6 +7012,7 @@
     SHOP.neon = neonMesh.material.opacity * IRN.k;
     SHOP.k = Math.max(0, Math.min(1, SHOP.k + (kW ? dt / 0.8 : -dt / 0.5)));   // the kitchen, last
     shopOff.material.opacity = (1 - SHOP.k) * 0.88 * pz;                       // (its panes lit by the street: none with the zone's power out, the unlit street's own front then)
+    irSkin.material.opacity = SHOP.k * pz * (0.85 + 0.15 * SKYF.dw);
     rlMesh.material.opacity = SHOP.k;
     rlMesh.material.color.setRGB(0.1 + 0.9 * pz, 0.1 + 0.9 * pz, 0.15 + 0.85 * pz);   // (its people: in the dark with the zone's power out)
     IRL.forEach((L, i) => {                                                      // the lanterns: their light, their swing
@@ -7049,6 +7048,7 @@
     if (lf !== IRNR.f) { IRNR.f = lf; IRNR.m.forEach((m, r) => irUV(m, lf * 79, r * 104, 79, 104, IRNR.AW, IRNR.AH)); }
     IRNR.m.forEach((m) => { m.visible = vis; m.position.y = -(IRNR.box[1] + IRNR.box[3] / 2) - dy; });
     IRNR.m[1].material.opacity = SHOP.k * pz;                                    // lit from behind, by the kitchen
+    IRNR.m[0].material.color.setRGB(0.25 + 0.75 * pz, 0.28 + 0.72 * pz, 0.45 + 0.55 * pz);   // (its lamps' and the street's light: gone with the zone's power, the cut's blue)
   }
 
   // ---- the oden shop across the street (left, x 400-510): its roof light box stutters now and then, the red paper
@@ -8574,7 +8574,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=33') }, tMirror: { value: tex('assets/wet_mirror.webp?v=24') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=34') }, tMirror: { value: tex('assets/wet_mirror.webp?v=26') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -8630,6 +8630,7 @@
     { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=7', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
     { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=3', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
     { src: 'dojo', url: 'assets/gl_dojo.webp?v=3', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
+    { src: 'ramen_wet', url: 'assets/gl_ramen_wet.webp?v=1', box: [820, 716, 536, 100], place: 'ramen', x: 1195, seed: 7 },   // Ichiraku before its step: its panes' light on the wet paving and their sheen in it, its stutter (tools/ichiraku_front.py)
   ], m: [] };
   (function () {
     const byName = {}; for (const c of comps) byName[c.userData.name] = c;
@@ -8641,7 +8642,7 @@
       m.onBeforeRender = () => {                       // (just before it is drawn: its source's level is drawn the same frame, the fuses' too)
         let k = 0, nr = 0;
         if (c) { const cm = c.material; k = c.visible ? cm.opacity : 0; nr = cm.userData.nrk ? cm.userData.nrk.value : 0; mat.color.copy(cm.color); }
-        else if (g.place) { k = openK(g.place) * (PW.on ? pwAt(g.x, i) : 1); nr = REDN.wave ? twAt(g.x, i)[0] : REDN.k; mat.color.setRGB(1, 1, 1); }
+        else if (g.place) { const sd = g.seed != null ? g.seed : i; k = openK(g.place) * (PW.on ? pwAt(g.x, sd) : 1); nr = REDN.wave ? twAt(g.x, sd)[0] : REDN.k; mat.color.setRGB(1, 1, 1); }
         mat.color.multiply(city.material.color);       // (the street's night multiply)
         mat.opacity = Math.max(0, Math.min(1, k)) * SKYF.dayL; mat.userData.nrk.value = nr;   // (by day the daylight drowns the shops' light on the ground)
       };

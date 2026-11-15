@@ -136,7 +136,8 @@ DRAFTS = {'lit': ('front_draft.webp', None),         # (the shop open, at 22 h)
           'shut': ('front_draft_shut.webp', (1.02, 9, 13))}   # (the shop shut, relit from the lit one: its scale and shift on it)
 REFS = [(1095, 525, 1140, 735), (1240, 520, 1262, 735), (1060, 772, 1300, 790)]   # (the walls beside the entrance and the
                                      # pavement: where the drafts are brought to the street's own tones, far from the lamps)
-LIGHT_CUT = 0.0                      # (in the power cut: the shut front at the walls' own ratio, unlit / lit)
+CUT_BLUE = 0.9                       # (in the power cut: the front in the cut's own blue, the facade's beside it, so much of it)
+LIP = (16.0, 18.0, 24.0)             # (the frame's inner lip against the glass: the street's light added)
 CONTACT = (0.72, 0.86)               # (the step's foot on the pavement: the rows just under it darkened so much, then so much)
 
 
@@ -197,7 +198,10 @@ def paint(kind, layer, box=BOX):
     for name, c in faces():
         m = raster(c, None, box)
         out[m] = fill(d, m, any(t in name for t in THIN))[m]; done |= m
-    done &= ~glass_mask(box)
+    g = glass_mask(box); done &= ~g
+    lip = np.zeros_like(g); lip[1:] |= g[:-1]; lip[:-1] |= g[1:]; lip[:, 1:] |= g[:, :-1]; lip[:, :-1] |= g[:, 1:]
+    lip &= done                                  # (the frame's inner lip against the glass: catching the street's light)
+    out[lip] = np.clip(out[lip] + np.array(LIP), 0, 255)
     return out, done
 
 
@@ -214,19 +218,138 @@ def contact(box=BOX):
 
 def draw(city, unlit, box=BOX):
     """the zone 'front' (tools/redraw_zones.py): the front on the layers as the zones before it leave them, the power cut's
-    at the walls' own ratio; the pavement under the step's foot in its contact shade; returns what changed"""
+    at the walls' own ratio and in the cut's blue (cut_blue); the pavement under the step's foot in its contact shade; returns
+    what changed"""
     x0, y0, x1, y1 = box
     was = city[y0:y1, x0:x1, :3].copy(), unlit[y0:y1, x0:x1, :3].copy()
     lit, m = paint('lit', city, box); shut, _ = paint('shut', city, box)
     ratio = np.array([np.median([np.median(unlit[b:e, a:c, k] / np.maximum(city[b:e, a:c, k], 1)) for a, b, c, e in REFS[:2]]) for k in range(3)])
     city[y0:y1, x0:x1, :3][m] = np.round(lit[m])
-    unlit[y0:y1, x0:x1, :3][m] = np.round(np.clip(shut[m] * ratio, 0, 255))
+    blue = cut_blue(unlit)
+    unlit[y0:y1, x0:x1, :3][m] = np.round(np.clip(blue(shut[m] * ratio), 0, 255))
     one, two = contact(box)
     for mm, k in ((one, CONTACT[0]), (two, CONTACT[1])):
         for L in (city, unlit): L[y0:y1, x0:x1, :3][mm] = np.round(L[y0:y1, x0:x1, :3][mm] * k)
+    transom_cut(city, unlit, blue)               # (the lattice transom dark in the power cut; the door zone's patch carries it)
+    wet_ground(); ground_light()                 # (the wet paving before the front, the shop's light on it)
     ch = np.zeros(city.shape[:2], bool)
     ch[y0:y1, x0:x1] = (np.abs(city[y0:y1, x0:x1, :3] - was[0]).max(-1) > 0) | (np.abs(unlit[y0:y1, x0:x1, :3] - was[1]).max(-1) > 0)
     return ch
+
+
+TRANSOM_CUT = 0.12                   # (in the power cut, the lattice transom's lit pixels: so much of their light left, in the cut's blue)
+WET_BOX = (1108, 734, 1264, 816)     # the wet ground before the front (x0, scene row 0, x1, row 1): wet.webp from row 600
+WET = dict(near=150.0, far=70.0, reach=1.8, puddle=110.0, step=36.0)   # (wetness at the step's foot, 1.8 m out; a shallow
+                                     # puddle's stillness; the step's own faces: as the pavement was)
+GL = dict(box=(820, 716, 536, 100), fade=(830, 900), warm=(255.0, 178.0, 104.0), peak=46.0, n=6, rough=0.12, gloss=190.0,
+          sheen=(255.0, 156.0, 72.0))
+                                     # the shop's light on the wet ground (assets/gl_ramen_wet.webp, street.js GL 'ramen_wet': its
+                                     # box, faded in over these columns on its left, short of the road marking's; its tone, at
+                                     # most so much at the step's foot; the panes sampled n x n; the wet paving's sheen: its
+                                     # roughness (Beckmann), at most so much, its tone)
+
+
+LUM = np.array([0.299, 0.587, 0.114])
+
+
+def cut_blue(unlit):
+    """the power cut's own grade (the owner: « bleue »): a colour to the hue of the facade beside the entrance in the cut layer
+    (REFS[0]), at its own luminance; CUT_BLUE of it"""
+    a, b, c, e = REFS[0]
+    w = unlit[b:e, a:c, :3].reshape(-1, 3).mean(0); hue = w / (w @ LUM)
+    return lambda px: (1 - CUT_BLUE) * px + CUT_BLUE * (px @ LUM)[..., None] * hue
+
+
+def transom_cut(city, unlit, blue):
+    """the lattice transom over the doorway in the power cut: dark and blue like the rest of the shop (the door zone's first
+    part; its lit pixels, warm and bright in the lit layer, at TRANSOM_CUT of their light; all of it in the cut's blue)"""
+    import redraw_zones as RZ
+    zb = RZ.ZONES['door']['box']; poly = RZ.ZONES['door']['parts'][0]['poly']
+    m = raster([(float(x), float(y)) for x, y in poly], None, zb)
+    px = city[zb[1]:zb[3], zb[0]:zb[2], :3]
+    lit = m & (px[..., 0] > px[..., 2] + 15) & (px @ LUM > 40)
+    sub = unlit[zb[1]:zb[3], zb[0]:zb[2], :3]; sub[lit] = px[lit] * TRANSOM_CUT
+    sub[m] = np.round(np.clip(blue(sub[m]), 0, 255))
+    return int(lit.sum())
+
+
+def step_faces(box):
+    """the step's faces' pixels in a box (its top, its riser, its end)"""
+    m = np.zeros((box[3] - box[1], box[2] - box[0]), bool)
+    for name, c in faces():
+        if name.startswith('step'): m |= raster(c, None, box)
+    return m
+
+
+def wet_ground():
+    """the wet paving before the front (assets/wet.webp, wet_mirror.webp in WET_BOX, from their before copies): wetter toward
+    the step, a shallow still puddle at its foot, the step's own faces as they were; the mirror line at the step's foot, so the
+    lit front and its step stand in the water. The same bytes each run"""
+    from scipy.ndimage import gaussian_filter
+    x0, r0, x1, r1 = WET_BOX
+    pw, pm = os.path.join(ROOT, 'assets', 'wet.webp'), os.path.join(ROOT, 'assets', 'wet_mirror.webp')
+    wet = np.asarray(Image.open(pw).convert('RGB')).copy(); mir = np.asarray(Image.open(pm).convert('RGB')).copy()
+    wb = np.asarray(Image.open(os.path.join(EDITS, 'front_wet_before.webp')).convert('RGB')).astype(float)
+    mb = np.asarray(Image.open(os.path.join(EDITS, 'front_mirror_before.webp')).convert('RGB')).copy()
+    box = (x0, r0, x1, r1); st = step_faces(box)
+    ys, xs = np.mgrid[r0:r1, x0:x1] + 0.5
+    Z = F * EYE / np.maximum(ys - VY, 1e-3); X = (xs - VX) * Z / F          # (the ground under each pixel)
+    out = X_F - STEP['out'] - X                                               # (how far out of the step's riser, m)
+    zl0, zr0 = Z_L + JAMB[0], Z_R - JAMB[1]
+    along = np.clip(np.minimum(Z - (zr0 - 0.5), (zl0 + 0.5) - Z) / 0.6, 0, 1)   # (before the doorway, fading past it)
+    k = np.clip(1 - out / WET['reach'], 0, 1) * along * (out >= -0.02)
+    R = np.maximum(wb[..., 0], WET['far'] * along * (out >= -0.02) + (WET['near'] - WET['far']) * k)
+    n = gaussian_filter(np.random.default_rng(71).normal(0, 1, R.shape), 2.0); n = (n - n.mean()) / n.std()
+    pud = np.clip(1 - out / 0.9, 0, 1) * along * np.clip(0.4 + 0.6 * n, 0, 1) * (out >= 0)
+    Bc = np.maximum(wb[..., 2], WET['puddle'] * pud)
+    R = np.where(st, WET['step'], R); Bc = np.where(st, 0, Bc); G = np.where(st, 0, wb[..., 1])
+    wet[r0 - 600:r1 - 600, x0:x1] = np.clip(np.round(np.stack([R, G, Bc], -1)), 0, 255).astype(np.uint8)
+    # the mirror line: under the step's riser and end (their foot), the pavement mirrors about it
+    cols = np.nonzero(st.any(0))[0]
+    mir[:, x0:x1] = mb
+    for j in cols:
+        foot = r0 + int(np.nonzero(st[:, j])[0].max()) + 1; v = foot - 560
+        mir[0, x0 + j] = (min(255, max(0, v)), 0, 0)
+    Image.fromarray(wet, 'RGB').save(pw, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    Image.fromarray(mir, 'RGB').save(pm, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+
+
+def ground_light():
+    """the shop's warm light on the wet paving before it (assets/gl_ramen_wet.webp, all its own, beside the shop's older ground
+    light gl_ramen.webp): the two panes as an area light (sampled n x n) on the ground in front of the step, falling off with
+    distance and the angles; and their sheen in the wet paving (a rough mirror: the panes' reflection toward the eye, a streak
+    under the doorway down to the frame's edge, broken into short dashes as the wet pass breaks its own); nothing on the step's
+    own faces (their picture has its light)"""
+    x0, y0, w, h = GL['box']
+    out = np.zeros((h, w, 4))
+    ys, xs = np.mgrid[y0:y0 + h, x0:x0 + w] + 0.5
+    Z = F * EYE / np.maximum(ys - VY, 1e-3); X = (xs - VX) * Z / F
+    XD = X_F + REVEAL; I = np.zeros(Z.shape); S = np.zeros(Z.shape); m2 = GL['rough'] ** 2
+    vl = np.sqrt(X * X + Z * Z + EYE * EYE); Vx, Vz, Vh = -X / vl, -Z / vl, EYE / vl          # (toward the eye)
+    for za, zb, h0, h1 in panes():
+        for u in (np.arange(GL['n']) + 0.5) / GL['n']:
+            for v in (np.arange(GL['n']) + 0.5) / GL['n']:
+                pz, ph = za + (zb - za) * u, h0 + (h1 - h0) * v
+                dx, dz = XD - X, pz - Z; d2 = dx * dx + dz * dz + ph * ph; dl = np.sqrt(d2)
+                I += np.clip(dx, 0, None) * ph / d2 ** 2 * abs(zb - za) * (h1 - h0)   # (cos at the pane, cos on the ground)
+                hx, hz, hh = dx / dl + Vx, dz / dl + Vz, ph / dl + Vh; hl = np.sqrt(hx * hx + hz * hz + hh * hh)
+                ch = hh / hl; vh = (Vx * hx + Vz * hz + Vh * hh) / hl
+                Dm = np.exp(-(1 - ch * ch) / (ch * ch * m2)) / (np.pi * m2 * ch ** 4)   # (the paving's facets: Beckmann)
+                S += Dm * (0.02 + 0.98 * (1 - vh) ** 5) / (4 * Vh) * np.clip(dx, 0, None) / dl / d2 * abs(zb - za) * (h1 - h0)
+    front = X < X_F - STEP['out'] + 0.02
+    I = I * front; S = S * front
+    ref = I[(np.abs(X - (X_F - STEP['out'] - 0.1)) < 0.08) & (Z > Z_R) & (Z < Z_L)]
+    I = I / (ref.max() if ref.size else I.max()) * GL['peak']
+    sx0, sy0 = x0, y0; st = step_faces((sx0, sy0, sx0 + w, sy0 + h))
+    I = np.where(st, 0, I); S = np.where(st, 0, S)
+    S = S / S.max() * GL['gloss']
+    rng = np.random.default_rng(23); ph_ = rng.random(h) * 3                     # (the dashes: 3 px, a phase per row)
+    dash = rng.random((h, w // 3 + 2))[np.arange(h)[:, None], ((np.arange(w)[None] + ph_[:, None]) // 3).astype(int)]
+    S = S * (0.6 + 0.4 * dash)
+    fade = np.clip((xs - GL['fade'][0]) / (GL['fade'][1] - GL['fade'][0]), 0, 1)
+    rgb = (np.array(GL['warm'])[None, None] * np.clip(I, 0, GL['peak'])[..., None] + np.array(GL['sheen'])[None, None] * S[..., None]) / 255.0 * fade[..., None]
+    out[..., :3] = np.clip(rgb, 0, 255); out[..., 3] = np.where(np.round(out[..., :3]).max(-1) > 0, 255, 0)
+    Image.fromarray(np.round(out).astype(np.uint8), 'RGBA').save(os.path.join(ROOT, 'assets', 'gl_ramen_wet.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
 def shut_pixels(city, box=BOX):
