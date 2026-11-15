@@ -7,16 +7,17 @@ du milieu, qui dévore ses ramen ; à côté de lui, sur le comptoir, la pile de
                                                         écrit la même chose)
     python3 tools/ichiraku_luffy.py --preview dossier  (des aperçus seulement : l'atlas x6, la ligne ILF en json)
 
-La planche (tools/src/ichiraku_luffy_sheet.webp : un brouillon fait pour lui, peint, sans contour, ses proportions vraies,
-sur fond blanc, assis sur un tabouret qu'on ne voit pas ; le propriétaire : « juste regen plusieurs planches si besoin », puis
-« la coiffure était mieux avant ») : de dos, sa tignasse d'un noir de jais, de grosses mèches en pointe tout autour de sa tête,
-son chapeau de paille pendu dans le dos par son cordon, au milieu de son dos, sa calotte et son ruban rouge vers nous, son bord
-tout autour ; son gilet rouge sans manches, son short bleu au revers clair, ses sandales ; il mange (le bol blanc à hauteur de
-menton, les baguettes à la bouche), lève ses nouilles, boit le bouillon le bol sur le visage, mâche les joues pleines, tend son
-bol vide, son bras de caoutchouc un peu, puis un peu plus ; il tourne la tête avec son grand sourire, et salue. Ses gestes vont
-à droite, vers Teuchi. Ses dix images refaites ensemble sur un même dos : son torse droit, son chapeau au même endroit de son
-dos. Chaque image prise seule sur son blanc, ramenée à une largeur de hanches (HIPS : la planche dessine ses rangées à des
-échelles un peu différentes), puis le même chemin
+Les planches (tools/src/ichiraku_luffy_sheet.webp, _b, _c : des brouillons faits pour lui, peints, sans contour, ses
+proportions vraies, sur fond blanc, assis sur un tabouret qu'on ne voit pas ; le propriétaire : « juste regen plusieurs planches
+si besoin », puis « la coiffure était mieux avant ») : de dos, sa tignasse d'un noir de jais, de grosses mèches en pointe tout
+autour de sa tête, son chapeau de paille pendu dans le dos par son cordon, au milieu de son dos, sa calotte et son ruban rouge
+vers nous, son bord tout autour ; son gilet rouge sans manches, son short bleu au revers clair, ses sandales ; il mange, lève
+ses nouilles, boit le bouillon, mâche les joues pleines, tend son bol vide, son bras de caoutchouc un peu, puis un peu plus ; il
+tourne la tête avec son grand sourire, et salue. Ses gestes vont à droite, vers Teuchi. Le bol dont il mange est devant lui :
+de dos on ne le voit pas (« Luffy, le bol, on doit pas le voir s'il est de dos »), sauf levé au-dessus de son visage (son bord
+dépasse au-dessus de sa tête, derrière ses cheveux) ou tendu vers Teuchi. Toutes refaites sur un même dos : son torse droit,
+son chapeau au même endroit de son dos. Chaque image prise seule sur son blanc, ramenée à une largeur de hanches (HIPS : les
+planches dessinent leurs images à des échelles un peu différentes), puis le même chemin
 que les gens de la boutique (tools/ichiraku_figures.py et ses fonctions : la découpe, l'assise sur le tabouret qu'on ne voit
 pas et les jambes resserrées (sit), les trois parts chacune à sa vraie échelle, la lumière chaude d'en haut, ses couleurs vives
 un peu éteintes (mute), ses familles de tons, pas de trait au bord, le grain) ; son style, celui des autres : la couleur (B).
@@ -47,7 +48,7 @@ import ichiraku_figures as FG                                    # noqa: E402
 import ichiraku_interior as R                                    # noqa: E402
 
 ROOT = os.path.dirname(ICI)
-SHEET = os.path.join(ICI, 'src', 'ichiraku_luffy_sheet.webp')
+SHEETS = {k: os.path.join(ICI, 'src', f'ichiraku_luffy_sheet{s}.webp') for k, s in (('a', ''), ('b', '_b'), ('c', '_c'))}
 OUT = os.path.join(ROOT, 'assets', 'ichiraku_luffy.webp')
 JS = os.path.join(ROOT, 'assets', 'street.js')
 H_L = 1.74 * FG.SCALE                         # sa taille (mètres de la maquette)
@@ -60,12 +61,15 @@ ANKLE = (14, 0.07)                            # (ses sandales : tant de pixels d
                                               #  corps ; ses jambes seules étirées jusqu'à l'assise)
 INK_FACE = (0.55, 0.65)                       # (le sourire : ses dents blanches gardées, un trait sombre pris s'il couvre au moins tant)
 X_COL = 1197.0                                # la colonne de son milieu (le tabouret du milieu est à 1189,5 : il est assis sur son bord)
-# les images de la planche : leur boîte (x0, y0, x1, y1) ; face : le blanc des dents gardé. Ses gestes y vont déjà vers la
-# droite, vers Teuchi : elle n'est pas retournée
-FRAMES = {'eat': ((336, 46, 465, 271), {}), 'noodles': ((485, 27, 613, 272), {}), 'drink': ((635, 46, 763, 271), {}),
-          'chew': ((784, 45, 914, 271), {}), 'hold': ((315, 301, 463, 523), {}), 'stretch': ((484, 299, 680, 523), {}),
-          'stretch2': ((700, 300, 933, 523), {}), 'grin': ((397, 576, 525, 809), dict(face=True)),
-          'wave': ((546, 549, 680, 809), dict(face=True)), 'wave_b': ((700, 567, 852, 809), dict(face=True))}
+# les images des planches : la planche, leur boîte (x0, y0, x1, y1) ; face : le blanc des dents gardé. Ses gestes y vont déjà
+# vers la droite, vers Teuchi : elles ne sont pas retournées. Le bol dont il mange est devant lui : de dos, sa tête, ses épaules
+# et son dos le cachent (le propriétaire : « Luffy, le bol, on doit pas le voir s'il est de dos ») ; refaites sur le dos de la
+# planche a (son image chew), la b : il mange (ses coudes seuls de part et d'autre), il boit (le bord du bol levé dépasse
+# au-dessus de sa tête, derrière ses cheveux) ; la c : il lève ses nouilles, le bol caché devant sa poitrine
+FRAMES = {'eat': ('b', (119, 199, 379, 613), {}), 'noodles': ('c', (178, 54, 537, 703), {}), 'drink': ('b', (878, 166, 1144, 613), {}),
+          'chew': ('a', (784, 45, 914, 271), {}), 'hold': ('a', (315, 301, 463, 523), {}), 'stretch': ('a', (484, 299, 680, 523), {}),
+          'stretch2': ('a', (700, 300, 933, 523), {}), 'grin': ('a', (397, 576, 525, 809), dict(face=True)),
+          'wave': ('a', (546, 549, 680, 809), dict(face=True)), 'wave_b': ('a', (700, 567, 852, 809), dict(face=True))}
 HIPS = 136.0                                  # (la largeur de ses hanches, son short juste sous l'assise, où chaque image est ramenée :
                                               #  la planche dessine ses rangées à des échelles un peu différentes)
 ANCHOR = 'hips'                               # (ce qui pose chaque image en x : le milieu de ses hanches, assis sur le coussin : son
@@ -150,11 +154,11 @@ def cells():
     """chaque image de la planche à sa profondeur et à sa vraie taille : ses couleurs, son plein, sa tête, et où la poser"""
     FG.REF['L'] = REF; FG.GROUP['luffy'] = GROUP; FG.HEAD['L'] = HEAD_L
     if 'luffy' not in FG.BACK: FG.BACK = FG.BACK + ('luffy',)
-    sheet = load_sheet(SHEET)
+    sheets = {k: load_sheet(p) for k, p in SHEETS.items()}
     s = FG.F / FG.Z_S; anchor = FG.row(0, FG.Z_S)
     out = {}
-    for name, (box, o) in FRAMES.items():
-        P = frame_of(*sheet, box); box = (0, 0, P.shape[1], P.shape[0])
+    for name, (sk, box, o) in FRAMES.items():
+        P = frame_of(*sheets[sk], box); box = (0, 0, P.shape[1], P.shape[0])
         Q, a, _ = FG.cut({'luffy': P}, 'luffy', box, 'free', dict(multi=True))
         crown = hair_crown(Q, a); face = o.get('face')
         if face: a = keep_teeth(Q, a, crown)
