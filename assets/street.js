@@ -11614,6 +11614,112 @@
   }
   FEAT.push(stepOba);
   // ==== end of DGO ====
+  //
+  //
+  //
+  // ==== feature: the AC unit on the arcade's lean-to (ACU) — its own block ====
+  // The unit against Naruto's end wall (tools/naruto_parapet.py's, the guard of the old 'fan' zone) runs as the arcade under it
+  // does: in the hot afternoon (13-17:30) and the evening (18:30-0:45), in cycles (on 4-9 min, off 1-3), off in the morning and
+  // late at night, never without power (the zone's, as its unlit quad reads it: the power cut, the finale's dark). Its fan behind
+  // the guard: three swept blades seen through the dark between the guard's rings (only those pixels; the rings, the hub and the
+  // frame stay the layer's), in the face's perspective (the guard's ellipse, its lines to the vanishing point), lighter than the
+  // dark behind them; they spin up over a second or two and run down over a few (the blades' contrast with their speed: a stopped
+  // fan is the layer's picture), crisp while slow, blurred and shimmering at speed (twelve pictures a third of a turn, made once
+  // from the layer's own pixels). After it has run a while, now and then a drop of condensate gathers under its base (a bead that
+  // swells), lets go and falls onto the stand's crossbar (a two-pixel splash). Both under the power cut's unlit quad (z 0.005 and
+  // 0.006: the cut takes them with the street), graded as the street; drawn only while on screen and changing; still under reduced
+  // motion (the layer's picture) ----
+  const ACU = { x: 1358, y: 206, w: 34, h: 100, cx: 1373.5, cy: 255.5, rx: 11.6, ry: 38.6, sh: -0.53, n: 12, state: 0, run: false,
+    next: 0, s: 0, ph: 0, f: -1, wet: 0, drop: null, dnext: 8 + Math.random() * 10, mesh: null, tex: null, g: null, fr: null,
+    dm: null, dg: null, dt: null, dx: 1384, dy: 304, dh: 9, foot: 7, dd: '' };   // (the drip's canvas: its corner, height, where it lands)
+  function acuInit() {                                // once, when the layer's image is in: the blades' pictures from its pixels
+    const A = ACU, im = city.material.map && city.material.map.image;
+    if (!im || !im.complete || !im.naturalWidth) return;
+    try {
+      const c = document.createElement('canvas'); c.width = A.w; c.height = A.h; const g = c.getContext('2d', { willReadFrequently: true });
+      g.drawImage(im, -A.x, -A.y); const src = g.getImageData(0, 0, A.w, A.h).data, N = A.w * A.h;
+      const px = [];                                  // the dark between the rings: its pixels (inside the guard, out of the hub)
+      let ring = [0, 0, 0], nr = 0;
+      for (let j = 0; j < A.h; j++) for (let i = 0; i < A.w; i++) {
+        const x = A.x + i + 0.5, y = A.y + j + 0.5, u = (x - A.cx) / A.rx, v = (y - A.cy - A.sh * (x - A.cx)) / A.ry, r = Math.hypot(u, v), o = (j * A.w + i) * 4;
+        if (r > 0.97 || r < 0.2) continue;
+        const L = 0.3 * src[o] + 0.59 * src[o + 1] + 0.11 * src[o + 2];
+        if (L < 24) px.push(o); else if (L > 34 && L < 80) { ring[0] += src[o]; ring[1] += src[o + 1]; ring[2] += src[o + 2]; nr++; }
+      }
+      if (!px.length || !nr) { A.state = -1; return; }
+      ring = ring.map((v) => v / nr);
+      const blade = (o, ph, blur) => {                // a pixel's share of blade (4 x 4 samples), a third of a turn per picture set
+        const i = (o / 4) % A.w, j = ((o / 4) / A.w) | 0, P = 2 * Math.PI / 3, bw = blur ? 1.25 : 0.82; let k = 0;
+        for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) {
+          const x = A.x + i + (a + 0.5) / 4, y = A.y + j + (b + 0.5) / 4, u = (x - A.cx) / A.rx, v = (y - A.cy - A.sh * (x - A.cx)) / A.ry, r = Math.hypot(u, v);
+          let m = (Math.atan2(v, u) - ph - 0.95 * r) % P; if (m < 0) m += P;   // (swept: the blade's angle grows out to its tip)
+          if (blur) k += Math.max(0, 1 - Math.abs(m - bw / 2) / (bw / 2 + 0.3)); else k += m < bw ? 1 : 0;
+        }
+        return k / 16;
+      };
+      A.fr = [];
+      for (const blur of [0, 1]) for (let f = 0; f < A.n; f++) {
+        const d = new ImageData(A.w, A.h), q = d.data, ph = f / A.n * 2 * Math.PI / 3;
+        for (const o of px) {
+          const k = blade(o, ph, blur) * (blur ? 0.46 : 0.5), up = (((o / 4) / A.w) | 0) < 0.45 * A.h ? 1.08 : 0.94;   // (the blade lighter toward the lit top)
+          for (let c = 0; c < 3; c++) q[o + c] = Math.round(src[o + c] + (ring[c] * up - src[o + c]) * k);
+          q[o + 3] = 255;
+        }
+        A.fr.push(d);
+      }
+      c.width = A.w; A.g = c.getContext('2d');
+      A.tex = new THREE.CanvasTexture(c); A.tex.magFilter = A.tex.minFilter = THREE.NearestFilter; A.tex.generateMipmaps = false;
+      A.mesh = new THREE.Mesh(new THREE.PlaneGeometry(A.w, A.h), new THREE.MeshBasicMaterial({ map: A.tex, transparent: true, depthWrite: false, opacity: 0 }));
+      A.mesh.position.set(A.x + A.w / 2, -(A.y + A.h / 2), 0.005); A.mesh.visible = false; scene.add(A.mesh); gradeSprite(A.mesh.material, 'street');
+      const dc = document.createElement('canvas'); dc.width = 5; dc.height = A.dh; A.dg = dc.getContext('2d');
+      A.dt = new THREE.CanvasTexture(dc); A.dt.magFilter = A.dt.minFilter = THREE.NearestFilter; A.dt.generateMipmaps = false;
+      A.dm = new THREE.Mesh(new THREE.PlaneGeometry(5, A.dh), new THREE.MeshBasicMaterial({ map: A.dt, transparent: true, depthWrite: false }));
+      A.dm.position.set(A.dx - 2 + 2.5, -(A.dy + A.dh / 2), 0.006); A.dm.visible = false; scene.add(A.dm); gradeSprite(A.dm.material, 'street');
+      A.state = 1;
+    } catch (e) { A.state = -1; }
+  }
+  function acuHours() {                               // may it run at this hour: the hot afternoon, the evening (the arcade open)
+    const h = (((CLOCK.h + CLOCK.wake) % 24) + 24) % 24;
+    return ((h >= 13 && h < 17.5) || h >= 18.5 || h < 0.75) && openK('arcade') > 0.5;
+  }
+  function stepAcu(dt) {
+    const A = ACU; if (reduced || A.state < 0) return;
+    if (!A.state) { acuInit(); if (A.state !== 1) return; A.run = acuHours() && Math.random() < 0.85; A.next = 30 + Math.random() * 240; A.s = A.run ? 1 : 0; A.wet = A.run ? 1 : 0; }
+    const hrs = acuHours();
+    if ((A.next -= dt) < 0) { A.run = hrs && !A.run; A.next = A.run ? 240 + Math.random() * 300 : 60 + Math.random() * 120; }   // its cycles
+    if (A.run && !hrs) { A.run = false; A.next = 60 + Math.random() * 60; }                                                     // (its hours over)
+    const pw = PW.on ? roofPow(A.cx, A.cy) : 1, want = A.run && pw > 0.5 ? 1 : 0;
+    A.s += (want - A.s) * Math.min(1, dt / (want > A.s ? 1.3 : 3.2)); if (A.s < 0.004) A.s = 0;
+    A.ph += dt * A.s * 2 * Math.PI * 1.15;          // (1.15 turns a second at speed: the guard's rings make it read)
+    A.wet = Math.max(0, Math.min(1, A.wet + (A.run ? dt / 300 : -dt / 900)));
+    const seen = !(camera.right < A.x || camera.left > A.x + A.w || -camera.top > A.y + A.h || -camera.bottom < A.y);
+    const op = A.s < 0.004 ? 0 : Math.min(1, A.s / 0.35);
+    A.mesh.visible = op > 0 && seen; A.mesh.material.opacity = op * op * (3 - 2 * op);
+    if (A.mesh.visible) {
+      const P = 2 * Math.PI / 3, f = (A.s > 0.6 ? A.n : 0) + Math.floor(((A.ph % P) + P) % P / P * A.n) % A.n;
+      if (f !== A.f) { A.f = f; A.g.putImageData(A.fr[f], 0, 0); A.tex.needsUpdate = true; }
+    }
+    // the condensate: a bead under its base swells (1.5-3 s), lets go, falls on the crossbar, splashes; more often while it runs
+    if (!A.drop && A.wet > 0.05 && (A.dnext -= dt * A.wet) < 0) { A.drop = { t: 0, hang: 1.5 + Math.random() * 1.5, y: 0, v: 0, sp: 0 }; A.dnext = 9 + Math.random() * 16; }
+    let key = '';
+    if (A.drop) {
+      const D = A.drop; D.t += dt;
+      if (D.t > D.hang) { if (D.y < A.foot) { D.v += 300 * dt; D.y = Math.min(A.foot, D.y + D.v * dt); } else D.sp += dt; }
+      if (D.sp > 0.12) A.drop = null;
+      else key = D.t <= D.hang ? 'b' + Math.min(3, Math.floor(D.t / D.hang * 4)) : D.y < A.foot ? 'f' + Math.floor(D.y) + (D.v > 120 ? 't' : '') : 's';
+    }
+    A.dm.visible = !!key && seen;
+    if (key !== A.dd && seen) {                       // (its picture: only when it changes)
+      A.dd = key; const g = A.dg; g.clearRect(0, 0, 5, A.dh);
+      const dot = (x, y, a) => { g.fillStyle = 'rgba(176,190,222,' + a + ')'; g.fillRect(x, y, 1, 1); };
+      if (key[0] === 'b') dot(2, 0, [0.18, 0.3, 0.42, 0.55][+key[1]]);
+      else if (key[0] === 'f') { const y = Math.floor(A.drop.y); dot(2, y, 0.6); if (key.endsWith('t') && y > 0) dot(2, y - 1, 0.25); }
+      else if (key === 's') { dot(1, A.foot - 1, 0.45); dot(3, A.foot - 1, 0.45); dot(2, A.foot, 0.3); }
+      A.dt.needsUpdate = true;
+    }
+  }
+  FEAT.push(stepAcu);
+  // ==== end of ACU ====
 
   { const a = view.cx - view.w / 2 - 64, b = view.cx + view.w / 2 + 64; for (const [x0, x1, load] of OFFVIEW) if (x1 < a || x0 > b) LATE.q.push(load); else load(); }
   setupEnd();
