@@ -6806,11 +6806,11 @@
   // is gone, the stack cleared for the morning. Clicked
   // (the four heroes): his arm stretches out, the bowl held out, then he turns round with his big grin (the scar under his
   // left eye) and waves. Reduced motion: still, the stack as the hour has it ----
-  const ILF = {"cells":{"eat":[0,0,38,90,19,90],"noodles":[39,0,38,99,19,99],"drink":[78,0,42,94,19,94],"hold":[121,0,48,95,19,95],"chew":[170,0,38,95,19,95],"stretch":[209,0,64,93,19,93],"stretch2":[274,0,79,95,19,95],"grin":[354,0,39,97,19,97],"wave":[394,0,44,107,19,107],"wave_b":[439,0,50,101,19,101]},"x":1197.0,"y":696.03,"head":{"eat":0.9,"noodles":13.9,"drink":8.0,"hold":1.1,"chew":0.2,"stretch":0.3,"stretch2":1.1,"grin":-0.2,"wave":9.8,"wave_b":5.3},"bowl":[490,0,9,4],"top":[500,0,9,5],"stack":[1165.5,641,3]};   // (tools/ichiraku_luffy.py: his cells [sx, sy, w, h, ox, oy], his column, the floor's row, the bowls, the stack)
+  const ILF = {"cells":{"eat":[0,0,38,89,19,89],"noodles":[39,0,31,99,16,99],"drink":[71,0,43,94,20,94],"hold":[115,0,46,94,17,94],"chew":[162,0,34,94,17,94],"stretch":[197,0,63,92,17,92],"stretch2":[261,0,79,94,17,94],"grin":[341,0,36,96,16,96],"wave":[378,0,43,106,17,106],"wave_b":[422,0,47,100,16,100]},"x":1197.0,"y":696.03,"head":{"eat":0.4,"noodles":13.9,"drink":7.6,"hold":1.0,"chew":0.7,"stretch":0.3,"stretch2":0.7,"grin":-0.1,"wave":9.9,"wave_b":4.8},"bowl":[470,0,9,4],"top":[480,0,9,5],"stack":[1165.5,641,3]};   // (tools/ichiraku_luffy.py: his cells [sx, sy, w, h, ox, oy], his column, the floor's row, the bowls, the stack)
   const LF_MAX = 6, LF_RATE = 0.45;
   const LF = { a: 1, c: 'eat', seq: [], ft: 0, n: 0, wait: -1, hk0: -1, dead: false, cur: false };
   const ILFI = new Image(); ILFI.onerror = () => { LF.dead = true; };
-  offView(RL.x, RL.x + RL.w, () => { ILFI.src = 'assets/ichiraku_luffy.webp?v=7'; });
+  offView(RL.x, RL.x + RL.w, () => { ILFI.src = 'assets/ichiraku_luffy.webp?v=8'; });
   const lfR = (a, b) => a + Math.random() * (b - a);
   function lfMeal() {                            // (his bowl: [frame, seconds], ...; -1: until served)
     const s = [['eat', lfR(0.6, 1.0)]];
