@@ -314,14 +314,14 @@ ZONES = {
     # downpipes; it writes the window's lit overlay too (assets/window_panes.webp, window_lit_ukki.webp), the garden's
     # wind data (roof_sway.webp) and the low sun's glint on the lip (street_sun.webp)
     'narufloor': dict(box=(1120, 0, 1381, 390), tool='naruto_floor'),
-    # the drinks corner on the left sidewalk (the owner: "à refaire : le haut-vent toit tuile au-dessus soda, les soda, la
-    # caisse soda", then "le haut-vent juste trop grand, pentu, faut le refaire entier"), drawn in the street's camera by
-    # tools/soda_corner.py: the kiosk with its top at 3 m, Kirua's wall and the tree run on where the old lean-to hid
-    # them, a small low-pitched tiled canopy over the machines, the three machines (their comps z7_vending and z7_vendoff
-    # written for tools/bake_retouches.py; their perks' shields; street.js PERKS, BZ.soda and DRIPS 'kiosk' written
-    # from them), the kiosk's sign, its service window (its comp win_z7_kiosk, handed on in COMP_OUT after the kiosk
-    # zone's) and its plates, all in the painter's grain; after the kiosk zones, whose boxes it overlaps
-    'soda': dict(box=(227, 405, 390, 735), tool='soda_corner'),
+    # the drinks corner on the left sidewalk, rebuilt whole (the owner: "faut refaire toute cette zone"; "la dernière
+    # soda prend la place de là où il y a la caisse"): Kirua's house's ground floor under the painter's boards down to
+    # the sidewalk, laid out in 3D by tools/soda_corner.py (the machines side by side against the house, no two volumes
+    # meeting, a small tiled canopy over them on the dagashi-ya's lintel line), painted from that layout by the image API
+    # (tools/src/soda_<V>_{lit,off}.webp) and brought into the street's pixels; its comps (z7_vending and z7_vendoff for
+    # tools/bake_retouches.py, z7_adscreen, win_z7_kiosk handed on in COMP_OUT after the kiosk zone's) and street.js's
+    # PERKS, BZ.soda and DRIPS 'kiosk' from the layout; after the kiosk zones, whose boxes it overlaps
+    'soda': dict(box=(227, 395, 390, 745), tool='soda_corner'),
     # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940) taken away: a roji
     # in its place (the owner, 2026-11-14: "trop comprimé : soit le refaire entièrement, soit le supprimer et créer une
     # rue"), drawn in the street's camera by tools/roji_alley.py: the alley's far wall (the Center's side, face on, its
