@@ -124,9 +124,9 @@ ZONES = {
     # the oden shop's front: its blotchy walls and eave cleaned (the painter's light, the drawing's planks), its noren
     # redrawn crisp; the glass of its door and window (tools/oden_interior.py), its roof light box (oden_sign_*), its
     # paper lantern left as they are (its frames and the door's sliding leaf carry the wall: oden_overlays). It shuts.
-    # the tobacco kiosk (the cabin behind its glass: tools/tabako_window.py, lit by its comp win_z7_kiosk; the draft was
-    # asked of it lit): the two enamel plates under the window, its pale ledge, its planks cleaned. Shut and power cut
-    # are the same layer here.
+    # the tobacco kiosk (the cabin behind its glass, lit by its comp win_z7_kiosk; the draft was asked of it lit): the two
+    # enamel plates under the window, its pale ledge, its planks cleaned. Shut and power cut are the same layer here. (The
+    # drinks corner, 'soda', redraws over it since; with no booth there, it drops this zone's comp: no win_z7_kiosk.)
     # the Pokemon Center's ball sign (lit by its comp z4_emblem): a clean sphere, no outline (the owner: "si c'est une
     # sphère, il y a de l'ombre sur le côté, pas de contour"): the painter's dark rim around it gives way to the street
     # behind; the ball itself lit in the comp, the same darkened in the street (the sign off, the power cut)
@@ -319,7 +319,7 @@ ZONES = {
     # the sidewalk (its face the dagashi-ya's boards: "tout ça c'est le même bâtiment"), laid out in 3D by tools/soda_corner.py (the machines side by side against the house, no two volumes
     # meeting, a small tiled canopy over them on the dagashi-ya's lintel line), painted from that layout by the image API
     # (tools/src/soda_<V>_{lit,off}.webp) and brought into the street's pixels; its comps (z7_vending and z7_vendoff for
-    # tools/bake_retouches.py, z7_adscreen, win_z7_kiosk handed on in COMP_OUT after the kiosk zone's) and street.js's
+    # tools/bake_retouches.py, z7_adscreen; the booth's win_z7_kiosk in COMP_OUT, if its layout has one) and street.js's
     # PERKS, BZ.soda and DRIPS 'kiosk' from the layout; after the kiosk zones, whose boxes it overlaps
     'soda': dict(box=(227, 320, 390, 745), tool='soda_corner'),
     # the house's face left of it, behind the tree (the owner: "tout ça c'est le même bâtiment"): its boards seen between
