@@ -462,10 +462,6 @@ ZONES = {
     # bike's basket into the comp win_b_shop (street.js lights it on the shop's hours), the shut room in the layer (the
     # power cut's room, the street lamp's light on it as on the plaster round it); tools/bshop_window.py, last
     'bshop': dict(box=(948, 536, 1004, 664), tool='bshop_window'),
-    # 止まれ on the road as a real road marking (an audit: 止 sat on ま with no space, the two read as 集): the three characters
-    # from the font, each long on the ground, a space between them, in the road's perspective; the paint the painter's in
-    # each layer and in the ground lights that carry it (tools/tomare_marking.py), last
-    'tomare': dict(box=(600, 682, 800, 790), tool='tomare_marking'),
     # the arcade's front wall in its eave's deep shade, beside Ichiraku and beside its door (an audit: two flat navy slabs,
     # 37 x 380 px, that read as a hole): vertical boards on the street's rays (tools/arcade_shade.py), last
     'arcwall': dict(box=(1262, 400, 1360, 792), tool='arcade_shade'),
@@ -481,6 +477,11 @@ ZONES = {
     'footO': dict(box=(346, 630, 620, 712), tool='facade_foot'),
     'footB': dict(box=(860, 620, 1117, 765), tool='facade_foot'),
     'footR': dict(box=(1262, 740, 1456, 816), tool='facade_foot'),
+    # 止まれ on the road as a real road marking (an audit: 止 sat on ま with no space, the two read as 集): the three characters
+    # from the font, each long on the ground, a space between them, in the road's perspective; the paint the painter's in
+    # each layer and in the ground lights that carry it (tools/tomare_marking.py), last: after the fronts' feet, whose
+    # tool writes those ground lights from their before copies (tools/facade_foot.py), so the new letters stay in them
+    'tomare': dict(box=(600, 682, 800, 790), tool='tomare_marking'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

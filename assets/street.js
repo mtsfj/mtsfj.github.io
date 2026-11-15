@@ -8619,15 +8619,15 @@
   // street lamp's pool is one of them: at its glass's centre (881) at the pole's depth, the painted pool and the live one in one
   // place (the old faint lamp_pool plane retired); in the red night it keeps half its light, as its glass ----
   const GL = { list: [
-    { src: 'lamp', url: 'assets/gl_lamp.webp?v=10', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
-    { src: 'oden', url: 'assets/gl_oden.webp?v=8', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
+    { src: 'lamp', url: 'assets/gl_lamp.webp?v=11', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
+    { src: 'oden', url: 'assets/gl_oden.webp?v=9', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
     { src: 'z7_vending', url: 'assets/gl_z7_vending.webp?v=3', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
-    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=5', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
-    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=3', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
-    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=5', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
-    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=5', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
+    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=6', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
+    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=4', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
+    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=6', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
+    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=6', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
     { src: 'ramen', url: 'assets/gl_ramen.webp?v=7', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
-    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=7', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
+    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=8', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
     { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=3', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
     { src: 'dojo', url: 'assets/gl_dojo.webp?v=3', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
     { src: 'ramen_wet', url: 'assets/gl_ramen_wet.webp?v=1', box: [820, 716, 536, 100], place: 'ramen', x: 1195, seed: 7 },   // Ichiraku before its step: its panes' light on the wet paving and their sheen in it, its stutter (tools/ichiraku_front.py)
