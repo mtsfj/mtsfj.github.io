@@ -10,7 +10,7 @@
     python3 tools/owner_study.py --input room    writes the room's input for the image model (the street round the window,
                                                  its room blocked out: tools/src/edits/study_room_in.webp)
     python3 tools/owner_study.py --ask NAME      asks the image model for NAME (room, room2, sheetS, sheetB, sheetC, walk,
-                                                 screens: its
+                                                 screens, herA, herB: its
                                                  input and prompt in tools/src/edits/study_NAME_in.webp, _prompt.txt, its
                                                  references REFS; its answer study_NAME_model.webp; about 0.26 $ each)
     python3 tools/owner_study.py --preview DIR   (only shows the room's four states at x4; nothing written in assets/)
@@ -45,6 +45,10 @@ flat orange shapes, the figure a rig of capsules. Both redone from pictures draw
   facing it, his face and hands), which street.js weighs with the lamp's and the screen's levels. The walk's frames in a
   step's order, each frame as long as its step at his pace, his planted foot kept on its pixel (walk_steps); its mirror to
   walk out. His mug on the desk where he takes it (a cell of its own, hidden while he drinks).
+- her (the owner: "Faut ajouter ma copine"; from a description only, no picture of her): two sheets drawn after pose
+  guides at 1.65 m (study_herA, study_herB), in his style, cut whole (a figure may reach past its cell), at her true size,
+  a little darker (HER_DIM: her bare skin), her own families after his in the atlas; her walk's and her mug walk's steps;
+  her mug (cut from the frame where she sets it down); her places (HER_BED, HER_AT, HER_MUG_X) in MSA.her.
 Needs Pillow, numpy, scipy (and tools/ichiraku_interior.py, tools/ichiraku_figures.py).
 """
 import base64
@@ -223,18 +227,33 @@ def reduce_cell(a, m, ax, ay, s):
     return rgb, A.mean(2) >= 0.5, -X0, -Y0      # (its anchor in the cell: column, row)
 
 
-def cells():
-    """every frame: its colours and its mask at the scene's pixels, its anchor"""
+def cells(sheets=None, files=None, seated=None, feet=('hinge', 'standup'), px=None):
+    """every frame: its colours and its mask at the scene's pixels, its anchor (a sheet's scale a number, or 'h': each frame
+    brought to px pixels tall)"""
+    sheets, files, seated = sheets or SHEETS, files or SHEET_FILE, seated or SEATED
     out = {}
-    for S, ((nc, nr), names, s) in SHEETS.items():
-        a = np.asarray(Image.open(os.path.join(EDITS, SHEET_FILE[S])).convert('RGB')).astype(float)
+    for S, ((nc, nr), names, s0) in sheets.items():
+        a = np.asarray(Image.open(os.path.join(EDITS, files[S])).convert('RGB')).astype(float)
         H, W = a.shape[:2]; cw, ch = W / nc, H / nr
+        free = files is not SHEET_FILE                     # (her sheets: a figure may reach past its cell: each taken whole,
+        if free:                                           # the figure whose middle is in the cell, with a margin round it)
+            from scipy import ndimage as ndi
+            g = a[..., 1]; fig = ~((g > a[..., 0] + 45) & (g > a[..., 2] + 35)); lab_, k = ndi.label(ndi.binary_opening(fig))
+            com = ndi.center_of_mass(fig, lab_, range(1, k + 1)); sz = ndi.sum(fig, lab_, range(1, k + 1))
         for i, n in enumerate(names):
             if n == '-': continue
             x0, y0 = int((i % nc) * cw), int((i // nc) * ch)
-            sub, m = key_out(a[y0:int(y0 + ch), x0:int(x0 + cw)])
-            kind = 'seat' if n in SEATED else 'feet' if n in ('hinge', 'standup') else 'stand'
+            if free:
+                js = [j for j in range(k) if sz[j] > 400 and x0 <= com[j][1] < x0 + cw and y0 <= com[j][0] < y0 + ch]
+                ys, xs = np.nonzero(np.isin(lab_, [j + 1 for j in js]))
+                bx0, by0, bx1, by1 = max(0, xs.min() - 12), max(0, ys.min() - 12), min(W, xs.max() + 13), min(H, ys.max() + 13)
+                sub, m = key_out(a[by0:by1, bx0:bx1])
+            else:
+                sub, m = key_out(a[y0:int(y0 + ch), x0:int(x0 + cw)])
+            kind = 'seat' if n in seated else 'feet' if n in feet else 'stand'
             ax, ay = anchor(m, kind)
+            s = s0.get(n, s0['*']) if isinstance(s0, dict) else s0
+            if s == 'h': ys = np.nonzero(m.any(1))[0]; s = (ys[-1] - ys[0] + 1) / px
             rgb, mm, cx, cy = reduce_cell(sub, m, ax, ay, s)
             out[n] = dict(rgb=rgb, m=mm, ax=cx, ay=cy, kind=kind, sheet=S, sub=sub, mask=m, sax=ax, say=ay, s=s)
     return out
@@ -261,12 +280,12 @@ def feet(c):
     return out
 
 
-def walk_steps(C):
+def walk_steps(C, order=None):
     """[frame, its time (s), the step to the next (scene px)]: the planted foot (on the ground in both frames) moved back the
     least (a foot that lands, a foot that goes on bearing)"""
-    out = []
-    for k, n in enumerate(WALK_ORDER):
-        a, b = feet(C[n]), feet(C[WALK_ORDER[(k + 1) % len(WALK_ORDER)]])
+    out = []; order = order or WALK_ORDER
+    for k, n in enumerate(order):
+        a, b = feet(C[n]), feet(C[order[(k + 1) % len(order)]])
         cand = [fa[0] - fb[0] for fa in a for fb in b if fa[1] > -0.6 and fb[1] > -0.6 and fa[0] >= fb[0]]
         adv = min(cand) if cand else 2.9
         out.append([n, round(float(np.clip(adv / WALK_V, *FRAME_T)), 3), round(float(adv), 2)])
@@ -422,6 +441,53 @@ def mug_cell(c):
     return dict(rgb=c['rgb'][y0:y1, x0:x1], m=m[y0:y1, x0:x1], ax=c['ax'] - x0, ay=c['ay'] - y0, kind='prop')
 
 
+# ---- his girlfriend (the owner: "Faut ajouter ma copine"; from a description only, no picture of her anywhere): two sheets
+# drawn for her after pose guides at 1.65 m (study_herA: her walk, standing, turning, at the glass, holding a mug; study_herB:
+# on the bed with her phone, getting up, setting a mug down, leaning over his chair, turning to him, a kiss on his cheek,
+# walking with a mug), in his style; at her true size (33 px standing: HER_PX), her own families (her light-chestnut hair,
+# her skin, her black clothes), the same light on her as on him ----
+HER_PX = 33.0
+HER_DIM = 0.74
+HER_SHEETS = {   # (A's walk at its rows' height, 200 px; its standing frames each at its own height; B at its walk's, 250 px)
+    'HA': ((4, 4), ['hwalk0', 'hwalk1', 'hwalk2', 'hwalk3', 'hwalk4', 'hwalk5', 'hwalk6', 'hwalk7', 'hstandR', 'hstandL', 'hfront',
+                    'hturnL', 'hturnR', 'hglass', 'hjoin', 'hmugStand'], {'*': 'h', **{f'hwalk{k}': 200.0 / HER_PX for k in range(8)}}),
+    'HB': ((4, 3), ['hbed1', 'hbed2', 'hbedLook', 'hrise', 'hset', 'hwatch', 'hlook', 'hkiss', 'hmug0', 'hmug1', 'hmug2', 'hmug3'], 250.0 / HER_PX)}
+HER_FILE = {'HA': 'study_herA_model.webp', 'HB': 'study_herB_model.webp'}
+HER_SEATED = {'hbed1', 'hbed2', 'hbedLook'}
+HER_FEET = ('hrise', 'hset', 'hwatch', 'hlook', 'hkiss')   # (bent: anchored on her feet)
+HER_WALKS = (['hwalk0', 'hwalk1', 'hwalk2', 'hwalk3', 'hwalk4', 'hwalk5', 'hwalk6', 'hwalk7'],   # (the order a step's frames come in:
+             ['hwalk2', 'hwalk3', 'hwalk0', 'hwalk1', 'hwalk6', 'hwalk7', 'hwalk4', 'hwalk5'])   #  the one whose steps are the evenest)
+HER_BED = (584, 546)                             # her seat on the bed's edge (the duvet's top, local 73, 44)
+HER_AT = dict(watch=566, glass=543, sit=574)     # (her places, her feet's middle: by his chair's back, at the glass by him, before the bed)
+HER_MUG_X = 526                                  # (where she sets her mug down on the desk, left of the monitor: its left edge)
+
+
+def her_mug(c):
+    """her mug, from the frame where she sets it down (facing right): its few pixels at the tip of her reach (not her skin)"""
+    lab = RI.lab(c['rgb'].reshape(-1, 3)).reshape(c['rgb'].shape)
+    m = c['m'].copy(); xs = np.nonzero(m.any(0))[0]; m[:, :xs[-1] - 2] = False
+    skin = (lab[..., 1] > 10) & (lab[..., 2] > 12) & (lab[..., 0] > 40); m &= ~skin
+    ys, xs = np.nonzero(m); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    return dict(rgb=c['rgb'][y0:y1, x0:x1], m=m[y0:y1, x0:x1], ax=c['ax'] - x0, ay=c['ay'] - y0, kind='prop')
+
+
+def her():
+    """her frames (her walk's mirror to the left, her mug walk's to the right, her mug), her steps"""
+    C = cells(HER_SHEETS, HER_FILE, HER_SEATED, HER_FEET, HER_PX)
+    for c in C.values(): c['rgb'] = c['rgb'] * HER_DIM       # (her bare skin, much of her: as dark as the room round her)
+    st = min((walk_steps(C, o) for o in HER_WALKS), key=lambda w: np.std([a for _, _, a in w]))
+    for k in range(8): C[f'hwalkL{k}'] = mirrored(C[f'hwalk{k}'])
+    for k in range(4): C[f'hmugR{k}'] = mirrored(C.pop(f'hmug{k}'))
+    mst = min((walk_steps(C, o) for o in (['hmugR0', 'hmugR1', 'hmugR2', 'hmugR3'], ['hmugR2', 'hmugR3', 'hmugR0', 'hmugR1'])),
+              key=lambda w: np.std([a for _, _, a in w]))
+    adv = [a for _, _, a in mst]                      # (her mug walk's four frames: a step that jumps, all steps the same)
+    if max(adv) > 2.2 * np.median(adv):
+        u = float(np.mean(adv)); mst = [[n, round(float(np.clip(u / WALK_V, *FRAME_T)), 3), round(u, 2)] for n, _, _ in mst]
+    C['hsetR'] = mirrored(C.pop('hset')); C['hmugStandR'] = mirrored(C.pop('hmugStand'))   # (she sets it down facing right: from the
+    C['hmugProp'] = her_mug(C['hsetR'])                                                    #  door's side, on the desk's free left part)
+    return C, st, mst
+
+
 def him():
     """his frames (and the walk's mirrors, the mug) as the atlas street.js reads: R a family, G the lamp's rim, B the screen's
     light, A his shape; their cells [x, y, w, h, anchor x, anchor y]; the families' colours; the walk's steps"""
@@ -429,6 +495,11 @@ def him():
     for n in MIRROR: C[n.replace('walk', 'walkL')] = mirrored(C[n])
     C['mug'] = mug_cell(C['sip1'])
     fam, c1, c2, skinf, idx = families(C)
+    CH, hsteps, hmsteps = her()                       # (hers after his: her families' indices after his)
+    hfam, hc1, hc2, hskin, hidx = families(CH); off = len(fam)
+    for n, v in hidx.items(): idx[n] = np.where(v >= 0, v + off, -1)
+    fam, c1, c2, skinf = np.concatenate([fam, hfam]), np.concatenate([c1, hc1]), np.concatenate([c2, hc2]), np.concatenate([skinf, hskin])
+    C.update(CH)
     names = sorted(C, key=lambda n: (-C[n]['m'].shape[0], n))
     W, x, y, rowh, boxes = 256, 0, 0, 0, {}
     for n in names:
@@ -448,7 +519,7 @@ def him():
     mug = C['mug']                                   # (its place: where he holds it as he takes it, its foot on the desk's top)
     mug_at = [SEAT[0], WIN[1] + DESK_Y - (mug['m'].shape[0] - mug['ay'])]
     famt = [[int(round(v)) for v in list(fam[i]) + list(c1[i]) + list(c2[i])] for i in range(len(fam))]
-    return img, dict(cells=boxes, fam=famt, walk=steps, mug=mug_at, C=C, idx=idx, fam_rgb=(fam, c1, c2))
+    return img, dict(cells=boxes, fam=famt, walk=steps, mug=mug_at, C=C, idx=idx, fam_rgb=(fam, c1, c2), hwalk=hsteps, hmug=hmsteps)
 
 
 INPUTS = {'room': room_input}
@@ -456,7 +527,9 @@ REFS = {'room': ['study_room0_model.webp'], 'sheetA': ['study_room_model.webp'],
         'sheetB': ['study_sheetA_model.webp', 'study_room_model.webp'],             # first room for the room's second ask,
         'sheetC': ['study_sheetA_model.webp', 'study_room_model.webp'],             # the room and sheet A for his sheets)
         'walk': ['study_sheetA_model.webp'],
-        'sheetS': ['study_sheetB_model.webp', 'study_walk_model.webp']}
+        'sheetS': ['study_sheetB_model.webp', 'study_walk_model.webp'],
+        'herA': ['study_sheetS_model.webp', 'study_room2_model.webp'],          # (her sheets: his for the style, the room;
+        'herB': ['study_herA_model.webp', 'study_sheetS_model.webp']}            # then her first sheet for herself)
 
 
 # ---- what his screen shows by the hour (the owner: "remplacer ce qu'il y a sur l'écran", then "PC ok": alive): four screens
@@ -561,12 +634,13 @@ def build():
     img, meta = him()
     Image.fromarray(img, 'RGBA').save(os.path.join(ASSETS, 'study_him.webp'), 'WEBP', lossless=True, quality=100, method=6, exact=True)
     seated = SEATED
-    cells_ = {n: b + [1 if n in seated or n == 'mug' else 0] for n, b in meta['cells'].items()}
+    cells_ = {n: b + [1 if n in seated or n == 'mug' else 2 if n in HER_SEATED else 0] for n, b in meta['cells'].items()}   # (1: on his seat, 2: on the bed)
     wx, wy = WIN[0], WIN[1]; sx0, sy0, sx1, sy1 = SCREEN
     sc, scd = screens()
     save(np.dstack([sc, np.full(sc.shape[:2], 255.0)]), os.path.join(ASSETS, 'study_screens.webp'))
     msa = dict(cells=cells_, fam=meta['fam'], walk=meta['walk'], mug=[int(v) for v in meta['mug']],
                scrn=dict(at=[WIN[0] + sx0, WIN[1] + sy0], w=sx1 - sx0, h=sy1 - sy0, **scd),
+               her=dict(walk=meta['hwalk'], mug=meta['hmug'], bed=list(HER_BED), mugX=HER_MUG_X, **HER_AT),
                at=dict(seat=list(SEAT), stand=STAND, floor=FLOOR, door=DOOR, glass=AT_GLASS, scr=[wx + sx0, wy + sy0, sx1 - sx0, sy1 - sy0],
                        lamp=[wx + LAMP_AT[0], wy + LAMP_AT[1]]))
     js = open(JS, encoding='utf-8').read()

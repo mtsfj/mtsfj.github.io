@@ -3382,14 +3382,14 @@
   // room is (the lamp's warm rim from up right, the screen's tinted light on his face and hands), graded into its dark as the
   // lamp goes off, clipped by the glass; at the scene's own pixels, 15 fps while anything moves ----
   const WIN = { x: 511, y: 502, w: 87, h: 53 };
-  const MSA = {"cells":{"hand3":[0,0,17,40,8,39,0],"front":[18,0,14,38,7,37,0],"standR":[33,0,10,38,5,37,0],"turnR":[44,0,12,38,6,37,0],"walk0":[57,0,16,38,10,37,0],"walk3":[74,0,19,38,13,37,0],"walk4":[94,0,15,38,9,37,0],"walkL0":[110,0,16,38,6,37,0],"walkL3":[127,0,19,38,6,37,0],"walkL4":[147,0,15,38,6,37,0],"hand1":[163,0,15,37,6,36,0],"hand2":[179,0,15,37,6,36,0],"lookL":[195,0,10,37,5,36,0],"lookR":[206,0,10,37,5,36,0],"standL":[217,0,10,37,5,36,0],"stretch1":[228,0,26,37,20,26,1],"turnL":[0,41,12,37,6,36,0],"walk1":[13,41,16,37,10,36,0],"walk2":[30,41,21,37,11,36,0],"walk5":[52,41,16,37,9,36,0],"walk6":[69,41,23,37,11,36,0],"walk7":[93,41,16,37,10,36,0],"walkL1":[110,41,16,37,6,36,0],"walkL2":[127,41,21,37,10,36,0],"walkL5":[149,41,16,37,7,36,0],"walkL6":[166,41,23,37,12,36,0],"walkL7":[190,41,16,37,6,36,0],"stretch2":[207,41,27,36,20,25,1],"hinge":[235,41,17,34,5,33,0],"standup":[0,79,17,34,9,33,0],"gfist":[18,79,26,33,19,21,1],"sip1":[45,79,21,33,19,22,1],"sitdown":[67,79,20,33,19,22,1],"lean":[88,79,27,32,20,20,1],"lean2":[116,79,26,32,19,19,1],"rub1":[143,79,21,32,19,22,1],"sip2":[165,79,21,32,19,22,1],"sip3":[187,79,21,32,19,22,1],"game1":[209,79,21,31,19,21,1],"game3":[231,79,21,31,19,21,1],"glance":[0,114,21,31,19,22,1],"lookup":[22,114,21,31,19,22,1],"think":[44,114,20,31,18,21,1],"type1":[65,114,21,31,19,22,1],"type2":[87,114,21,31,19,22,1],"type3":[109,114,21,31,19,22,1],"game2":[131,114,20,30,18,20,1],"nod":[152,114,21,30,19,21,1],"rub2":[174,114,21,30,19,20,1],"yawn":[196,114,26,30,19,18,1],"mug":[223,114,3,3,18,10,1]},"fam":[[49,31,18,97,64,39,65,64,62],[58,39,26,108,74,47,73,71,69],[63,44,31,114,79,52,77,76,74],[73,53,39,127,89,61,86,85,82],[78,58,44,134,95,66,90,89,87],[96,74,59,155,114,81,105,104,102],[82,61,47,138,99,69,93,92,90],[143,114,78,212,159,105,144,142,128],[205,150,110,255,203,139,193,178,163],[171,152,132,252,203,158,171,177,175],[15,20,29,62,51,45,41,52,62],[19,24,32,67,55,48,45,56,65],[21,27,35,69,59,51,46,59,68],[20,28,32,68,59,49,45,59,67],[24,27,34,72,59,51,48,59,68],[23,26,36,71,58,52,47,58,69],[29,32,40,79,65,57,52,64,74],[15,28,40,65,59,56,43,59,71],[33,37,45,84,70,62,56,68,79],[19,39,51,71,71,67,47,68,81],[41,40,41,93,74,59,62,71,77],[40,42,48,93,76,66,62,73,82],[24,47,58,78,80,74,52,76,88],[40,54,57,96,89,75,64,83,91],[29,53,63,86,87,80,57,82,93],[55,68,66,114,104,84,77,96,101],[34,59,67,92,93,84,61,87,97],[51,50,54,105,85,72,71,81,89],[39,65,70,98,100,87,66,92,101],[65,57,53,121,94,73,81,88,92],[79,76,58,140,115,80,94,105,100],[120,80,55,180,122,80,122,112,104],[148,103,68,214,148,95,145,133,120],[135,119,107,207,165,130,140,146,147]],"walk":[["walk2",0.133,2.59],["walk3",0.07,1.0],["walk0",0.3,6.49],["walk1",0.07,0.56],["walk6",0.238,4.65],["walk7",0.07,0.43],["walk4",0.3,6.08],["walk5",0.07,1.37]],"mug":[557,547],"scrn":{"at":[530,526],"w":17,"h":11,"code":{"g":[16,27,44],"gut":[13,21,30],"num":[67,73,84],"cur":[203,203,196],"pal":[[116,101,120],[209,101,58],[213,87,129],[127,144,190],[125,159,203],[175,169,58]],"lines":["33666332600000","03315566666000","03335550000000","00555355550000","00033666635500","00333556600000","00111111110000","00335550000000","33666200000000","03345500000000","00335510666000","00335516661510","03345500000000","00335550000000","00335550000000","03315500000000"]},"paper":{"g":[22,25,29],"pal":[[102,102,103],[105,104,106],[90,128,61]],"lines":["333330","222200","222000","333300","111000","222210","221000","222200","222000","221100","222220","220000","333300"],"page":[214,213,213],"title":[91,92,93],"text":[164,164,167],"axis":[159,159,161],"bars":[[77,114,148],[207,129,36],[180,46,38]]},"game":{"cross":[203,203,196],"hit":[206,60,52],"feed":[196,196,189],"red":[200,55,45]}},"at":{"seat":[557,547],"stand":544,"floor":556,"door":505,"glass":530,"scr":[530,526,17,11],"lamp":[578,507]}};   // (tools/owner_study.py)
+  const MSA = {"cells":{"hand3":[0,0,17,40,8,39,0],"front":[18,0,14,38,7,37,0],"hmugR2":[33,0,19,38,9,37,0],"hmugR3":[53,0,21,38,11,37,0],"standR":[75,0,10,38,5,37,0],"turnR":[86,0,12,38,6,37,0],"walk0":[99,0,16,38,10,37,0],"walk3":[116,0,19,38,13,37,0],"walk4":[136,0,15,38,9,37,0],"walkL0":[152,0,16,38,6,37,0],"walkL3":[169,0,19,38,6,37,0],"walkL4":[189,0,15,38,6,37,0],"hand1":[205,0,15,37,6,36,0],"hand2":[221,0,15,37,6,36,0],"hmugR0":[0,41,20,37,10,36,0],"hmugR1":[21,41,20,37,10,36,0],"lookL":[42,41,10,37,5,36,0],"lookR":[53,41,10,37,5,36,0],"standL":[64,41,10,37,5,36,0],"stretch1":[75,41,26,37,20,26,1],"turnL":[102,41,12,37,6,36,0],"walk1":[115,41,16,37,10,36,0],"walk2":[132,41,21,37,11,36,0],"walk5":[154,41,16,37,9,36,0],"walk6":[171,41,23,37,11,36,0],"walk7":[195,41,16,37,10,36,0],"walkL1":[212,41,16,37,6,36,0],"walkL2":[229,41,21,37,10,36,0],"walkL5":[0,79,16,37,7,36,0],"walkL6":[17,79,23,37,12,36,0],"walkL7":[41,79,16,37,6,36,0],"hwalk0":[58,79,15,36,10,35,0],"hwalkL0":[74,79,15,36,5,35,0],"stretch2":[90,79,27,36,20,25,1],"hfront":[118,79,12,35,6,34,0],"hglass":[131,79,13,35,5,34,0],"hjoin":[145,79,11,35,6,34,0],"hmugStandR":[157,79,15,35,5,34,0],"hstandL":[173,79,9,35,4,34,0],"hstandR":[183,79,9,35,5,34,0],"hturnL":[193,79,12,35,6,34,0],"hturnR":[206,79,12,35,6,34,0],"hwalk1":[219,79,14,35,9,34,0],"hwalk2":[234,79,20,35,11,34,0],"hwalk3":[0,117,20,35,12,34,0],"hwalk4":[21,117,14,35,9,34,0],"hwalk5":[36,117,15,35,10,34,0],"hwalk7":[52,117,20,35,12,34,0],"hwalkL1":[73,117,14,35,5,34,0],"hwalkL2":[88,117,20,35,9,34,0],"hwalkL3":[109,117,20,35,8,34,0],"hwalkL4":[130,117,14,35,5,34,0],"hwalkL5":[145,117,15,35,5,34,0],"hwalkL7":[161,117,20,35,8,34,0],"hinge":[182,117,17,34,5,33,0],"hsetR":[200,117,22,34,5,33,0],"hwalk6":[223,117,20,34,11,33,0],"hwalkL6":[0,153,20,34,9,33,0],"standup":[21,153,17,34,9,33,0],"gfist":[39,153,26,33,19,21,1],"hwatch":[66,153,18,33,13,32,0],"sip1":[85,153,21,33,19,22,1],"sitdown":[107,153,20,33,19,22,1],"hlook":[128,153,17,32,12,31,0],"hrise":[146,153,15,32,5,31,0],"lean":[162,153,27,32,20,20,1],"lean2":[190,153,26,32,19,19,1],"rub1":[217,153,21,32,19,22,1],"sip2":[0,188,21,32,19,22,1],"sip3":[22,188,21,32,19,22,1],"game1":[44,188,21,31,19,21,1],"game3":[66,188,21,31,19,21,1],"glance":[88,188,21,31,19,22,1],"hbedLook":[110,188,18,31,17,21,2],"lookup":[129,188,21,31,19,22,1],"think":[151,188,20,31,18,21,1],"type1":[172,188,21,31,19,22,1],"type2":[194,188,21,31,19,22,1],"type3":[216,188,21,31,19,22,1],"game2":[0,221,20,30,18,20,1],"hbed1":[21,221,18,30,17,20,2],"hbed2":[40,221,19,30,17,20,2],"hkiss":[60,221,20,30,15,29,0],"nod":[81,221,21,30,19,21,1],"rub2":[103,221,21,30,19,20,1],"yawn":[125,221,26,30,19,18,1],"hmugProp":[152,221,3,3,-12,18,0],"mug":[156,221,3,3,18,10,1]},"fam":[[49,31,18,97,64,39,65,64,62],[58,39,26,108,74,47,73,71,69],[63,44,31,114,79,52,77,76,74],[73,53,39,127,89,61,86,85,82],[78,58,44,134,95,66,90,89,87],[96,74,59,155,114,81,105,104,102],[82,61,47,138,99,69,93,92,90],[143,114,78,212,159,105,144,142,128],[205,150,110,255,203,139,193,178,163],[171,152,132,252,203,158,171,177,175],[15,20,29,62,51,45,41,52,62],[19,24,32,67,55,48,45,56,65],[21,27,35,69,59,51,46,59,68],[20,28,32,68,59,49,45,59,67],[24,27,34,72,59,51,48,59,68],[23,26,36,71,58,52,47,58,69],[29,32,40,79,65,57,52,64,74],[15,28,40,65,59,56,43,59,71],[33,37,45,84,70,62,56,68,79],[19,39,51,71,71,67,47,68,81],[41,40,41,93,74,59,62,71,77],[40,42,48,93,76,66,62,73,82],[24,47,58,78,80,74,52,76,88],[40,54,57,96,89,75,64,83,91],[29,53,63,86,87,80,57,82,93],[55,68,66,114,104,84,77,96,101],[34,59,67,92,93,84,61,87,97],[51,50,54,105,85,72,71,81,89],[39,65,70,98,100,87,66,92,101],[65,57,53,121,94,73,81,88,92],[79,76,58,140,115,80,94,105,100],[120,80,55,180,122,80,122,112,104],[148,103,68,214,148,95,145,133,120],[135,119,107,207,165,130,140,146,147],[50,31,19,98,65,40,66,65,62],[58,39,26,108,74,47,73,72,69],[60,41,28,111,76,49,75,73,71],[71,47,33,124,83,55,84,79,77],[84,53,32,137,90,55,93,85,79],[97,59,32,151,98,57,103,92,82],[109,70,29,166,110,56,113,102,84],[143,97,70,207,142,96,141,128,120],[146,104,56,211,149,85,144,133,113],[164,118,82,234,166,110,159,147,135],[20,21,27,67,52,44,44,54,62],[23,23,25,70,54,43,47,55,62],[26,26,30,74,58,48,50,58,66],[19,24,28,66,55,45,44,56,63],[29,27,29,77,59,47,52,59,65],[25,31,30,74,63,48,50,62,67],[37,32,33,86,65,51,58,64,70],[37,29,27,85,62,45,57,61,65],[37,34,29,87,67,48,58,66,68],[48,35,29,97,69,49,65,68,69],[56,40,30,107,75,51,72,73,72],[67,46,31,119,82,53,80,78,75],[73,49,32,126,85,54,85,81,77],[79,53,34,133,90,57,90,85,80],[85,57,36,139,95,59,94,89,83],[91,62,38,147,100,62,99,94,86],[98,64,41,154,103,65,104,96,89],[99,67,42,156,107,66,106,99,90],[107,71,45,164,112,70,112,103,94],[113,74,45,172,115,71,116,106,96],[117,80,51,177,122,76,120,111,101],[123,83,51,184,125,77,125,114,102],[131,90,56,194,134,82,132,121,108],[132,90,51,194,133,78,132,121,105]],"walk":[["walk2",0.133,2.59],["walk3",0.07,1.0],["walk0",0.3,6.49],["walk1",0.07,0.56],["walk6",0.238,4.65],["walk7",0.07,0.43],["walk4",0.3,6.08],["walk5",0.07,1.37]],"mug":[557,547],"scrn":{"at":[530,526],"w":17,"h":11,"code":{"g":[16,27,44],"gut":[13,21,30],"num":[67,73,84],"cur":[203,203,196],"pal":[[116,101,120],[209,101,58],[213,87,129],[127,144,190],[125,159,203],[175,169,58]],"lines":["33666332600000","03315566666000","03335550000000","00555355550000","00033666635500","00333556600000","00111111110000","00335550000000","33666200000000","03345500000000","00335510666000","00335516661510","03345500000000","00335550000000","00335550000000","03315500000000"]},"paper":{"g":[22,25,29],"pal":[[102,102,103],[105,104,106],[90,128,61]],"lines":["333330","222200","222000","333300","111000","222210","221000","222200","222000","221100","222220","220000","333300"],"page":[214,213,213],"title":[91,92,93],"text":[164,164,167],"axis":[159,159,161],"bars":[[77,114,148],[207,129,36],[180,46,38]]},"game":{"cross":[203,203,196],"hit":[206,60,52],"feed":[196,196,189],"red":[200,55,45]}},"her":{"walk":[["hwalk2",0.07,0.7],["hwalk3",0.15,2.92],["hwalk0",0.3,6.81],["hwalk1",0.07,1.33],["hwalk6",0.07,1.02],["hwalk7",0.199,3.88],["hwalk4",0.289,5.63],["hwalk5",0.077,1.5]],"mug":[["hmugR0",0.258,5.02],["hmugR1",0.258,5.02],["hmugR2",0.258,5.02],["hmugR3",0.258,5.02]],"bed":[584,546],"mugX":526,"watch":566,"glass":543,"sit":574},"at":{"seat":[557,547],"stand":544,"floor":556,"door":505,"glass":530,"scr":[530,526,17,11],"lamp":[578,507]}};   // (tools/owner_study.py)
   const RM = { seat: MSA.at.seat, stand: MSA.at.stand, floor: MSA.at.floor, door: MSA.at.door, glass: MSA.at.glass, scr: MSA.at.scr };   // (scr: the monitor's box)
   const wc = document.createElement('canvas'); wc.width = WIN.w; wc.height = WIN.h; const wg = wc.getContext('2d', { willReadFrequently: true });   // the window, at the scene's own pixels
   const wtex = new THREE.CanvasTexture(wc); wtex.magFilter = wtex.minFilter = THREE.NearestFilter; wtex.generateMipmaps = false;
   const winMesh = new THREE.Mesh(new THREE.PlaneGeometry(WIN.w, WIN.h), new THREE.MeshBasicMaterial({ map: wtex, transparent: true, depthWrite: false }));
   winMesh.position.set(WIN.x + WIN.w / 2, -(WIN.y + WIN.h / 2), 0.6); scene.add(winMesh);   // (behind the bus on lane A, as the house)
   const RIMG = { n: 0 }, imgOk = (im) => im.complete && im.naturalWidth > 0;
-  for (const [k, src] of [['lit', 'assets/win_z5_room.webp?v=4'], ['lamp', 'assets/z5_lamp.webp?v=4'], ['scr', 'assets/z5_screen.webp?v=2'], ['glass', 'assets/z5_glass.webp'], ['dark', 'assets/z5_dark.webp?v=3'], ['him', 'assets/study_him.webp?v=1'], ['scrn', 'assets/study_screens.webp?v=2']]) {
+  for (const [k, src] of [['lit', 'assets/win_z5_room.webp?v=4'], ['lamp', 'assets/z5_lamp.webp?v=4'], ['scr', 'assets/z5_screen.webp?v=2'], ['glass', 'assets/z5_glass.webp'], ['dark', 'assets/z5_dark.webp?v=3'], ['him', 'assets/study_him.webp?v=2'], ['scrn', 'assets/study_screens.webp?v=2']]) {
     const im = new Image(); im.onload = () => { ws.dirty = true; if (++RIMG.n === 7 && reduced) frame(); }; im.src = src; RIMG[k] = im;
   }
   // ---- the screen's colour tells his night (lumieres-10): the screen's own light (the room lit by it alone, 'scr', over the
@@ -3549,19 +3549,33 @@
       }
     }
   }
-  function drawHim() {                           // his frame (seated: on the chair's seat; else on the floor at his place), his mug on the desk
-    const W = ws, cl = MSA.cells[W.fr]; if (!cl || !spData()) return;
-    const seat = cl[6] === 1, ax = seat ? RM.seat[0] : W.x, ay = seat ? RM.seat[1] : RM.floor;
-    const mug = !/^sip/.test(W.fr) || W.state === 'empty';
-    const parts = W.state === 'empty' ? [] : [[W.fr, ax, ay]];
-    if (mug) parts.push(['mug', MSA.mug[0], MSA.mug[1]]);
+  function drawHim() {                           // him (seated: on the chair's seat; else on the floor at his place), her (behind him when she leans over
+    const W = ws; if (!spData()) return;         // his chair, else in front: on the bed, walking before the desk, at the glass), the mugs on the desk
+    const parts = [], cl = MSA.cells[W.fr], hc = MSA.cells[hs.fr], her = hs.state !== 'away' && hs.state !== 'outside' && hc;
+    const herPart = () => [hs.fr, hc[6] === 2 ? HER.bed[0] : hs.x, hc[6] === 2 ? HER.bed[1] : RM.floor];
+    const behind = her && /^h(watch|look|kiss)/.test(hs.fr);
+    if (behind) parts.push(herPart());
+    if (W.state !== 'empty' && cl) parts.push([W.fr, cl[6] === 1 ? RM.seat[0] : W.x, cl[6] === 1 ? RM.seat[1] : RM.floor]);
+    if (her && !behind) parts.push(herPart());
+    if (!/^sip/.test(W.fr) || W.state === 'empty') parts.push(['mug', MSA.mug[0], MSA.mug[1]]);
+    if (hs.mug) parts.push(['hmugProp', hs.mugAx, RM.floor]);
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
     for (const [n, x, y] of parts) { const c = MSA.cells[n]; const a = Math.round(x) - c[4] - WIN.x, b = Math.round(y) - c[5] - WIN.y; x0 = Math.min(x0, a); y0 = Math.min(y0, b); x1 = Math.max(x1, a + c[2]); y1 = Math.max(y1, b + c[3]); }
-    x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(WIN.w, x1); y1 = Math.min(WIN.h, y1); if (x1 <= x0 || y1 <= y0) return;
-    const img = wg.getImageData(x0, y0, x1 - x0, y1 - y0);
-    for (const [n, x, y] of parts) blit(n, x, y, img, x0, y0, x1 - x0, y1 - y0);
-    wg.putImageData(img, x0, y0);
+    x0 = Math.max(0, x0); y0 = Math.max(0, y0); x1 = Math.min(WIN.w, x1); y1 = Math.min(WIN.h, y1);
+    if (x1 > x0 && y1 > y0) {
+      const img = wg.getImageData(x0, y0, x1 - x0, y1 - y0);
+      for (const [n, x, y] of parts) blit(n, x, y, img, x0, y0, x1 - x0, y1 - y0);
+      wg.putImageData(img, x0, y0);
+    }
+    if (hs.heart >= 0) {                         // the kiss's little heart: up from between their heads, fading
+      const k = Math.min(1, hs.heart / HEART_T), a = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.55) / 0.45);
+      const hx = Math.round(RM.seat[0] - 8 - WIN.x), hy = Math.round(RM.seat[1] - 28 - 7 * k - WIN.y);
+      wg.globalAlpha = Math.max(0, a) * 0.95;
+      HEART.forEach((row, j) => { for (let i = 0; i < row.length; i++) if (row[i] !== '.') { wg.fillStyle = row[i] === 'o' ? '#ffb3c6' : '#e8466e'; wg.fillRect(hx + i, hy + j, 1, 1); } });
+      wg.globalAlpha = 1;
+    }
   }
+  const HEART = ['.x.x.', 'xoxxx', '.xxx.', '..x..'], HEART_T = 1.8;   // (5 x 4: two lobes, its point; a lighter pixel where the lamp catches it)
   function drawWindow() {                        // the room, weighed by the lamp and the screen, at the scene's own pixels; him over it
     const W = ws, g = wg; W.dirty = false;
     if (!RIMG.glassA && imgOk(RIMG.glass)) RIMG.glassA = zPix(RIMG.glass);
@@ -3640,6 +3654,134 @@
     typing();
   }
   function walkTo(dir) { play(dir > 0 ? SEQ.walkR : SEQ.walkL, true); }
+  // ---- his girlfriend (the owner: "Faut ajouter ma copine"): some evenings she is there, not in step with him. In by the door
+  // (the lamp on if the room is dark), to the bed: she sits on its edge with her phone (its glow on her face), looks up at him
+  // now and then (and he turns to her); she gets up to fetch a mug and sets it on his desk, leans over his chair to watch him
+  // play (from 0:30) or to read his screen, turns to him; she leaves by the door, or with him when he goes (the lamp then his
+  // to switch off), or stays and switches it off herself; at the finale she comes to the glass beside him. Her frames in MSA
+  // (her cells' last flag 2: on the bed's edge, HER.bed), her places in MSA.her. Clicked (the window, him at his desk): she
+  // comes and kisses him on the cheek, a little heart rising (from the door if she was not there); 'la bise' ----
+  const HER = MSA.her;
+  const HSEQ = {
+    walkR: HER.walk.map(([n, t, a]) => [n, t, a]), walkL: HER.walk.map(([n, t, a]) => [n.replace('hwalk', 'hwalkL'), t, -a]),
+    mugR: HER.mug.map(([n, t, a]) => [n, t, a]),
+    toBed: [['hstandR', 0.14], ['hturnR', 0.15], ['hfront', 0.2], ['hturnL', 0.15], ['hstandL', 0.15], ['hrise', 0.4]],
+    up: [['hrise', 0.35], ['hstandL', 0.2]],
+    set: [['hmugStandR', 0.35], ['hsetR', 0.7], ['hstandR', 0.25]],
+    watch: [['hstandL', 0.15], ['hwatch', 'hold'], ['hlook', 1.5], ['hwatch', 'hold'], ['hstandL', 0.2]],
+    kiss: [['hstandL', 0.12], ['hwatch', 0.3], ['hkiss', 1.5], ['hlook', 1.0], ['hstandL', 0.2]],
+    toFront: [['hstandL', 0.12], ['hturnL', 0.15], ['hfront', 0.45], ['hglass', Infinity]],
+    fromFront: [['hfront', 0.35], ['hturnR', 0.15], ['hstandR', 0.12]] };
+  const hs = { state: 'away', t: 0, x: RM.door, fr: 'hstandR', seq: null, eve: Math.random() < 0.45 && !(POSTER && POSTER.on), next: 30 + Math.random() * 90,
+    act: 0, mug: 0, mugAx: 0, heart: -1, cool: 0, kiss: 0, after: null, visits: 0 };
+  const herHours = () => { const h = (CLOCK.h + CLOCK.wake) % 24; return h >= 19 || h < 2; };
+  const herIn = () => hs.state !== 'away' && hs.state !== 'outside';
+  function hPlay(seq, loop, then) {
+    hs.seq = seq.map((q) => [q[0], q[1] === 'hold' ? 2.5 + Math.random() * 4 : q[1], q[2] || 0]);
+    hs.loop = !!loop; hs.si = 0; hs.sT = 0; hs.then = then || null; hs.fr = hs.seq[0][0]; ws.dirty = true;
+  }
+  function hStep(dt) {
+    if (!hs.seq) return;
+    hs.sT += dt;
+    while (hs.seq && hs.sT >= hs.seq[hs.si][1]) {
+      hs.sT -= hs.seq[hs.si][1]; hs.x += hs.seq[hs.si][2]; hs.si++; ws.dirty = true;
+      if (hs.si >= hs.seq.length) { if (hs.loop) hs.si = 0; else { const f = hs.then; hs.seq = null; if (f) f(); break; } }
+      if (hs.seq) { hs.fr = hs.seq[hs.si][0]; if (hs.fr === 'hkiss') hs.heart = 0; }
+    }
+  }
+  function hWalk(to, then, mug) {                // walking to a place (with her mug: its own frames), then
+    const dir = to > hs.x ? 1 : -1; hs.state = 'walk'; hs.goal = { to, dir, then };
+    hPlay(mug ? HSEQ.mugR : dir > 0 ? HSEQ.walkR : HSEQ.walkL, true);
+  }
+  function hBed() {                              // on the bed's edge, her phone; now and then she looks up at him
+    hs.state = 'bed'; hs.act = 6 + Math.random() * 14;
+    const loop = () => { if (hs.state !== 'bed') return; const r = Math.random(); hPlay([[r < 0.55 ? 'hbed1' : 'hbed2', 'hold']], false, loop); };
+    loop();
+  }
+  function hToBed() { hWalk(HER.sit, () => { hs.state = 'sitting'; hPlay(HSEQ.toBed, false, hBed); }); }
+  function hGetUp(then) { hs.state = 'getup'; hPlay(HSEQ.up, false, then); }
+  function hLeave() {                            // out by the door; the lamp hers to switch off if he is not there
+    const go = () => hWalk(RM.door - 3, () => { Object.assign(hs, { state: 'away', seq: null, mug: 0, next: 90 + Math.random() * 150 }); hs.visits++; if (hs.visits > 1 && Math.random() < 0.5) hs.eve = false; ws.dirty = true; });
+    if (hs.state === 'bed' || hs.state === 'sitting') hGetUp(go); else go();
+  }
+  function hKiss() {                             // to his chair's back, the kiss; then back to the bed (or, called in, she may go)
+    const from = hs.state;
+    const after = () => { if (hs.kissThen === 'leave') hLeave(); else hToBed(); };
+    const at = () => { hs.state = 'kissing'; hPlay(HSEQ.kiss, false, after); };
+    hs.kiss = 0;
+    if (from === 'bed' || from === 'sitting') hGetUp(() => hWalk(HER.watch, at)); else if (from === 'watching') at(); else hWalk(HER.watch, at);
+  }
+  function hEnter(then, to) {                    // in by the door (the lamp on if the room is dark)
+    Object.assign(hs, { state: 'in', t: 0, x: RM.door, seq: null, lampAt: ws.light ? -1 : 0.35 });
+    hWalk(to || HER.sit, then);
+  }
+  function herFollow() { if (herIn() && !hs.glass) { hs.kiss = 0; hs.follow = 0.9 + Math.random() * 1.5; } }   // (a moment after him)
+  function herStep(dt) {
+    hs.cool = Math.max(0, hs.cool - dt);
+    if (hs.heart >= 0 && !hs.still) { hs.heart += dt; if (hs.heart > HEART_T) hs.heart = -1; ws.dirty = true; }
+    if (hs.still) return;
+    if (hs.follow > 0 && (hs.follow -= dt) <= 0 && herIn() && !hs.glass) { hs.follow = 0; hLeave(); }
+    if (hs.state === 'outside') { if (!nightOpen('study')) hs.state = 'away'; else if ((hs.wait -= dt) < 0) hBack(); return; }
+    if (hs.lampAt >= 0 && hs.state === 'walk' && (hs.t += dt) > hs.lampAt) { ws.light = true; hs.lampAt = -1; }
+    if (hs.state === 'away') {
+      if (hs.kiss) { hEnter(hKiss, HER.watch); return; }
+      if (hs.eve && herHours() && nightOpen('study') && !hs.glass && (hs.next -= dt) < 0) hEnter(hToBedHere);
+      return;
+    }
+    if (hs.state === 'walk') {
+      const g = hs.goal;
+      if (ws.state === 'empty' && ws.light && hs.x < 516 && g.dir < 0 && !hs.lit) { ws.light = false; hs.lit = 1; }   // (the switch by the door)
+      if ((g.dir > 0 && hs.x >= g.to) || (g.dir < 0 && hs.x <= g.to)) { hs.x = g.to; hs.lit = 0; const f = g.then; hs.seq = null; if (f) f(); else hToBedHere(); }
+    } else if (hs.state === 'bed') {
+      if (hs.kiss) { hKiss(); return; }
+      if ((hs.act -= dt) < 0) {
+        const r = Math.random(), sitting = ws.state === 'sit';
+        if (sitting && r < 0.28 && !hs.mug) hGetUp(hFetch);
+        else if (sitting && r < (scrTint() === 'game' ? 0.75 : 0.55)) hGetUp(() => hWalk(HER.watch, hWatch));
+        else if (r < 0.8) { hs.state = 'looking'; hPlay([['hbedLook', 1.8 + Math.random() * 1.5]], false, hBed);   // she looks up at him; he turns to her
+          if (sitting && /^type/.test(ws.fr)) play([['glance', 1.6 + Math.random()]], false, seatedNext); }
+        else if (!studyLate() || ws.state === 'empty') hLeave(); else hs.act = 8 + Math.random() * 10;
+      }
+    } else if (hs.state === 'watching') {
+      if (hs.kiss) { hKiss(); return; }
+      if (ws.state !== 'sit') { hToBed(); return; }
+    }
+    hStep(dt);
+  }
+  function hToBedHere() { hs.state = 'sitting'; hPlay(HSEQ.toBed, false, hBed); }
+  function hWatch() { hs.state = 'watching'; const s0 = HSEQ.watch.map((q) => q.slice()); if (scrTint() === 'game') s0[1][1] = s0[3][1] = 'hold';
+    hPlay(s0, false, () => { if (hs.state === 'watching') hToBed(); }); }
+  function hFetch() {                            // out to fetch a mug, back with it to his desk
+    hWalk(RM.door - 3, () => { Object.assign(hs, { state: 'outside', seq: null, wait: 3.5 + Math.random() * 3 }); });
+  }
+  function hBack() {                             // back with the mug, set on his desk
+    hs.x = RM.door - 3; const pc = MSA.cells.hmugProp, setX = HER.mugX + pc[4];
+    hWalk(setX, () => { hs.state = 'setting'; hPlay(HSEQ.set, false, () => { hs.mug = 1; hs.mugAx = setX; hToBed(); }); }, true);
+  }
+  function hToGlass() { hWalk(HER.glass, () => { if (!hs.glass) { hToBed(); return; } hs.state = 'atglass'; hPlay(HSEQ.toFront); }); }
+  function herFinale(on) {                       // the finale: to the glass beside him; at the dawn back to the bed (or gone)
+    if (!herIn()) return;
+    if (on) { hs.glass = true; hs.kiss = 0; if (hs.state === 'atglass') return; if (/^(bed|sitting|looking)$/.test(hs.state)) hGetUp(hToGlass); else hToGlass(); }
+    else { hs.glass = false; if (hs.state === 'atglass') { hs.state = 'leaving'; hPlay(HSEQ.fromFront, false, () => (ws.L > 0.1 || ws.S > 0.1 ? hToBed() : hLeave())); } }
+  }
+  function overStudy(ev) {                       // the window's glass, him at his desk
+    if (ws.state !== 'sit') return false;
+    const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
+    const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top));
+    return x >= WIN.x + 1 && x <= WIN.x + WIN.w - 1 && y >= WIN.y && y <= WIN.y + WIN.h;
+  }
+  function studyKiss() {                         // 'la bise': she comes to kiss him (a cooldown: not a button to mash)
+    if (hs.cool > 0) return true;
+    hs.cool = 22; foundSecret('bise');
+    if (reduced) {                               // (reduced motion: the moment, still, its heart; then as before)
+      const keep = { state: hs.state, fr: hs.fr, x: hs.x, seq: hs.seq };
+      Object.assign(hs, { still: true, state: 'kissing', fr: 'hkiss', x: HER.watch, seq: null, heart: HEART_T * 0.4 }); drawWindow(); frame();
+      setTimeout(() => { Object.assign(hs, keep, { still: false, heart: -1 }); drawWindow(); frame(); }, 4000);
+      return true;
+    }
+    hs.kiss = 1; if (!herIn()) hs.kissThen = Math.random() < 0.5 ? 'leave' : 'stay'; else hs.kissThen = 'stay';
+    return true;
+  }
   const ws = { state: 'empty', t: 0, next: 15 + Math.random() * 40, light: Math.random() < 0.15, screen: false, L: 0, S: 0, x: RM.door, fr: 'standR', seq: null,
     actT: 0, lampOff: -1, blink: 0, seated: false, dirty: true, acc: 1 };
   if (Math.random() < 0.55 || !!(POSTER && POSTER.on)) Object.assign(ws, { state: 'sit', light: Math.random() < 0.7 || !!(POSTER && POSTER.on), screen: true, next: 25 + Math.random() * 70, S: 1 });   // already at the desk (under a poster: at it, his lamp on, as it shows him)
@@ -3649,9 +3791,9 @@
     if (!W.finHooked) {                           // the finale (FIN.api, a const declared further down: hooked at run time): at the last stand he gets up
       W.finHooked = true;                         // and comes to the glass to watch the street (towin, atwin); at the dawn he goes back to his desk (or,
       try {                                       // his room dark, he is gone); the end at the latest
-        FIN.api.on('stand', () => { if (!reduced) ws.toGlass = true; });
-        FIN.api.on('dawn', () => { ws.toGlass = false; if (ws.state === 'atwin') ws.finDawn = 0; else if (ws.state === 'towin') ws.rush = true; });
-        FIN.api.on('end', () => { ws.toGlass = false; if (ws.state === 'atwin') ws.finDawn = Math.max(ws.finDawn, 4.9); else if (ws.state === 'towin') ws.rush = true; });
+        FIN.api.on('stand', () => { if (!reduced) { ws.toGlass = true; herFinale(true); } });
+        FIN.api.on('dawn', () => { ws.toGlass = false; herFinale(false); if (ws.state === 'atwin') ws.finDawn = 0; else if (ws.state === 'towin') ws.rush = true; });
+        FIN.api.on('end', () => { ws.toGlass = false; herFinale(false); if (ws.state === 'atwin') ws.finDawn = Math.max(ws.finDawn, 4.9); else if (ws.state === 'towin') ws.rush = true; });
       } catch (e) {}
     }
     if (W.state === 'empty') {
@@ -3677,8 +3819,9 @@
       if (!nightOpen('study') && W.next > 25) W.next = 5 + Math.random() * 20;   // late: he wraps up
       if (studyLate()) { if (W.next < 30) W.next = 30; W.lampOff = -1; W.light = true; }   // midnight to 3 h: he stays, the lamp on
       if (W.next < 0 && (!W.seq || /^(type|game)/.test(W.fr))) {   // done: with the lamp on he gets up and goes; by the screen's light alone, in the dark
-        if (W.light) { W.state = 'standup'; W.t = 0; W.x = RM.stand + 3; play(SEQ.up, false, () => { Object.assign(W, { state: 'out', t: 0, lampOff: Math.random() < 0.7 ? 1 : 0 }); walkTo(-1); }); }
-        else { W.screen = false; Object.assign(W, { state: 'gone', t: 0 }); }
+        if (W.light) { W.state = 'standup'; W.t = 0; W.x = RM.stand + 3; play(SEQ.up, false, () => { Object.assign(W, { state: 'out', t: 0, lampOff: Math.random() < 0.7 ? 1 : 0 }); walkTo(-1);
+          if (herIn()) { if (Math.random() < 0.6) herFollow(); else W.lampOff = 0; } }); }   // (she goes with him, or stays: the lamp then hers)
+        else { W.screen = false; Object.assign(W, { state: 'gone', t: 0 }); herFollow(); }
       }
     } else if (W.state === 'gone') { if (W.t > 1.2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false, seq: null, dirty: true }); }
     else if (W.state === 'standup') { if (W.t > 0.2) W.screen = false; }
@@ -3695,13 +3838,15 @@
       if (W.x < RM.door - 2) Object.assign(W, { state: 'empty', next: 25 + Math.random() * 45, seated: false, seq: null, dirty: true });
     }
     if (W.state !== 'empty') stepSeq(dt);
+    herStep(dt);
     const Lt = (W.light ? 1 : 0) * studyMains(), St = W.screen ? (W.blink > 0 ? 0.92 : 1) : 0.2 * (0.9 + 0.1 * Math.sin(t * 0.7));   // (asleep: standby 0.16-0.2, breathing)
-    if (W.screen && scrTint() === 'game') { W.kill = (W.kill || 6) - dt; if (W.kill < 0) { W.flash = 0.09; W.kill1 = true; scrKill(); W.kill = 4 + Math.random() * 8; } }
+    if (W.screen && scrTint() === 'game') { W.kill = (W.kill || 6) - dt; if (W.kill < 0) { W.flash = 0.09; W.kill1 = true; scrKill(); W.kill = 4 + Math.random() * 8;
+      if (hs.state === 'watching' && /^hwatch/.test(hs.fr) && Math.random() < 0.5) hPlay([['hlook', 0.9], ['hwatch', 'hold'], ['hstandL', 0.2]], false, () => { if (hs.state === 'watching') hToBed(); }); } }   // (a kill: she turns to him)
     if (W.flash > 0) { W.flash -= dt; W.dirty = true; }
     if (W.screen) scrStep(dt);
     W.L += (Lt - W.L) * Math.min(1, dt * 16); W.S += (St - W.S) * Math.min(1, dt * (St > W.S ? 6 : 8));
     W.acc += dt;
-    const busy = W.state !== 'empty' || Math.abs(Lt - W.L) > 0.003 || Math.abs(St - W.S) > 0.003 || !W.screen;   // (asleep, it breathes)
+    const busy = W.state !== 'empty' || herIn() || hs.heart >= 0 || Math.abs(Lt - W.L) > 0.003 || Math.abs(St - W.S) > 0.003 || !W.screen;   // (asleep, it breathes)
     if ((busy || W.dirty) && W.acc >= 1 / 15 && camera.right > WIN.x && camera.left < WIN.x + WIN.w) { W.acc = 0; drawWindow(); }
   }
 
@@ -4007,8 +4152,8 @@
     if (!reduced) pwUnlit();
   }
   function closeFuse() { fz.classList.remove('on'); }
-  // the eleventh's lever, under the switches: red, MAIN, only once the ten are found. The year on the switches arms it
-  // (at 10/10 the box powers up and waits for it); pulled, the box goes dark and shuts, and the street's power goes
+  // the eleventh's lever, under the switches: red, MAIN, only once all the secrets are found. The year on the switches arms it
+  // (all found, the box powers up and waits for it); pulled, the box goes dark and shuts, and the street's power goes
   // red. Unarmed, it clacks back with the main LED's stutter
   const fzLever = fz.querySelector('.fz-lever');
   function fzArm() { fz.classList.add('won', 'armed'); fzStatus.textContent = FZ_T().on + ' · MAIN'; FZ.won = true; }
@@ -5210,7 +5355,8 @@
   const SECRETS = { slab: ['la carte en vitrine', 'the card in the showcase'], konami: ['le code aux 30 vies', 'the 30-lives code'],
     killua: ['les quatre héros', 'the four heroes'],          // (its id kept: Kirua, Naruto, Red and Luffy, each clicked: fourHit)
     stars: ['les seize étoiles', 'the sixteen stars'], fuses: ['les fusibles', 'the fuses'], mars: ['mars', 'Mars'], om: ["l'affiche de l'OM", 'the OM flyer'],
-    ace: ["l'ACE", 'the ACE'], jugg: ["l'atout Mastodonte", 'Juggernog'], catch: ['la capture', 'the catch'] };
+    ace: ["l'ACE", 'the ACE'], jugg: ["l'atout Mastodonte", 'Juggernog'], catch: ['la capture', 'the catch'],
+    bise: ['la bise', 'a kiss'] };                  // (the study's window clicked: she kisses him)
   const SECRET_N = Object.keys(SECRETS).length, SECRET_KEY = 'mtsfj-secrets';
   // what this browser found; ids that are no longer secrets (dojo, pc, terminal) are dropped, from the stored list too
   let found = [];
@@ -5218,16 +5364,16 @@
     if (found.length !== kept.length) localStorage.setItem(SECRET_KEY, JSON.stringify(found)); } catch (e) { found = []; }
   const secBtn = document.createElement('button'); secBtn.type = 'button'; secBtn.className = 'secrets'; hero.appendChild(secBtn);
   const secList = document.createElement('ul'); secList.className = 'secrets-list'; secList.hidden = true; hero.appendChild(secList);
-  // the eleventh is not one of the ten (SECRET_N stays 10): once the ten are found, the list gains a line that counts
+  // the eleventh is not one of the secrets (SECRET_N counts only them): once they are all found, the list gains a line that counts
   // for nothing, the way to it; found (the fuse box's red MAIN lever, armed by 2003), it is kept as { at, order }, the
-  // order the ten were found in. When each was found is kept too, from now on (the trophies' trajectory)
+  // order the secrets were found in. When each was found is kept too, from now on (the trophies' trajectory)
   const lsJSON = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v === null || v === undefined ? d : v; } catch (e) { return d; } };
   let eleven = lsJSON('mtsfj-eleven', null);
   const secAt = lsJSON('mtsfj-secrets-at', {});
   const FOUR = (() => { const v = lsJSON('mtsfj-four', null), k = v && Array.isArray(v.k) ? v.k : [];   // the four heroes clicked so far
     return { k: k.filter((q, i) => ['kirua', 'naruto', 'red', 'luffy'].includes(q) && k.indexOf(q) === i), at: v && Array.isArray(v.at) ? v.at : null }; })();
   function paintSecrets(pop) {
-    secBtn.hidden = !found.length; secBtn.textContent = 'secrets ' + (eleven ? '11/' + SECRET_N + ' ✦' : found.length + '/' + SECRET_N);
+    secBtn.hidden = !found.length; secBtn.textContent = 'secrets ' + (eleven ? (SECRET_N + 1) + '/' + SECRET_N + ' ✦' : found.length + '/' + SECRET_N);
     const en = document.documentElement.lang === 'en' ? 1 : 0;
     secList.innerHTML = Object.keys(SECRETS).map(k => found.includes(k) ? '<li class="got">✦ ' + SECRETS[k][en] + '</li>'
       : '<li>· ???' + (k === 'killua' && FOUR.k.length ? ' ' + '✧'.repeat(FOUR.k.length) : '') + '</li>').join('')
@@ -8588,7 +8734,7 @@
     }
     hanaDraw();
   }
-  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCRed(ev)) { crClick(); fourHit('red'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
+  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCRed(ev)) { crClick(); fourHit('red'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overStudy(ev) && studyKiss()) return; if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the sky by the hour (package 1: ciel-01..12, meteo-13). skyHours, from stepNight each frame: the far planes' night
   // and dawn (NRU's uNT, uDW, uDP, uSun: the layers' shaders paint them from their own lightness), the street's far pixels'
@@ -9854,6 +10000,7 @@
       if (!NIGHT.init) {
         NIGHT.init = NIGHT.snap = true;
         for (const c of comps) { const u = c.userData; if (!u.shop && (u.kind === 'home' || u.kind === 'window' || u.kind === 'tv') && !nightLit(u)) { u.on = false; c.material.opacity = 0; u.next = 20 + Math.random() * 40; } }
+        if (!nightOpen('study') && herIn()) Object.assign(hs, { state: 'away', seq: null, mug: 0 });   // (the study shut: she has gone too)
         if (!nightOpen('study') && ws.state !== 'empty') Object.assign(ws, { state: 'empty', t: 0, next: 30, light: false, screen: false, L: 0, S: 0, seated: false, dirty: true });
         if (!nightOpen('ramen')) Object.assign(SHOP, { open: false, k: 0, t: 99, neon: 0 });
       } else NIGHT.snap = false;
