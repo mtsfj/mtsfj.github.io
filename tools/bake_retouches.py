@@ -59,6 +59,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'tomare_{_tag}.webp', 600, 682))
 
+# (an audit's second round: zone arcwall)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'arcwall_{_tag}.webp', 1262, 400))
+
 
 def main():
     for layer, patches in LAYERS.items():
