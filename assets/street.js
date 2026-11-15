@@ -11798,6 +11798,75 @@
   //
   //
   //
+  // ==== feature: leaves off the roof garden (ROOFL) — its own block ====
+  // The garden over Naruto's window sways in each gust (ROOF); a strong one (a gust past 0.8, a squall) now and then also tears a few
+  // leaves off its potted maple (one to three, four to six in a squall, none most gusts): each lifted from a pixel of the maple's red
+  // crown (read once off the layer), carried up and off to the left by the wind (the rain's: more in the gust, less as it drops),
+  // tumbling (its shape turning through three, its two tones, lit and shaded, the maple's own), then falling past the building's
+  // corner or over the pole's top, gone behind the pole or fading out in three or four seconds. A leaf at that depth is a few pixels: 2 x 1, 1 x 2, 2 x 2.
+  // One small canvas over that corner (z 0.014: over the garden's sway), 24 pictures a second while a leaf is out and on screen,
+  // graded as the street; none under reduced motion ----
+  const RLF = { x: 960, y: 16, w: 248, h: 210, crown: null, tones: null, L: [], seen: 0, acc: 0, cv: null, g: null, tex: null, mesh: null, state: 0 };
+  const RLF_SH = [[[0, 0], [1, 0]], [[0, 0], [0, 1]], [[0, 0], [1, 0], [0, 1], [1, 1]], [[0, 0], [1, 1]]];   // (its shapes as it turns)
+  function rlfInit() {
+    const B = RLF, im = city.material.map && city.material.map.image; if (!im || !im.complete || !im.naturalWidth) return;
+    try {
+      const X0 = 1128, Y0 = 44, W = 76, H = 52, c = document.createElement('canvas'); c.width = W; c.height = H;
+      const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(im, -X0, -Y0); const d = g.getImageData(0, 0, W, H).data;
+      B.crown = []; B.tones = [];
+      for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) {
+        const o = (j * W + i) * 4, r = d[o], gg = d[o + 1], b = d[o + 2];
+        if (r > 50 && r > 1.6 * gg && r > 1.15 * b) { B.crown.push([X0 + i, Y0 + j]); B.tones.push([r, gg, b]); }
+      }
+      if (B.crown.length < 20) { B.state = -1; return; }
+      B.tones.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
+      const cv = document.createElement('canvas'); cv.width = B.w; cv.height = B.h; B.cv = cv; B.g = cv.getContext('2d');
+      B.tex = new THREE.CanvasTexture(cv); B.tex.magFilter = B.tex.minFilter = THREE.NearestFilter; B.tex.generateMipmaps = false;
+      B.mesh = new THREE.Mesh(new THREE.PlaneGeometry(B.w, B.h), new THREE.MeshBasicMaterial({ map: B.tex, transparent: true, depthWrite: false }));
+      B.mesh.position.set(B.x + B.w / 2, -(B.y + B.h / 2), 0.014); B.mesh.visible = false; scene.add(B.mesh); gradeSprite(B.mesh.material, 'street');
+      B.state = 1;
+    } catch (e) { B.state = -1; }
+  }
+  function stepRlf(dt) {
+    const B = RLF; if (reduced || B.state < 0) return;
+    if (gust.on && gust.phase === 'push' && !gust.legacy && B.seen !== gust.t0) {   // a gust reaching its push (each once)
+      B.seen = gust.t0;
+      if (!B.state) rlfInit();
+      const p = gust.peak, onScr = !(camera.right < 1128 || camera.left > 1204 || -camera.top > 96 || -camera.bottom < 44);
+      if (B.state === 1 && onScr && p > 0.8 && Math.random() < (p > 1.2 ? 1 : (p - 0.75) / 0.3)) {
+        const n = p > 1.2 ? 4 + ((Math.random() * 3) | 0) : 1 + ((Math.random() * 3) | 0);
+        for (let i = 0; i < n && B.L.length < 8; i++) {
+          const k = (Math.random() * B.crown.length) | 0, [x, y] = B.crown[k], lo = B.tones[(Math.random() * B.tones.length * 0.5) | 0], hi = B.tones[(B.tones.length * (0.5 + Math.random() * 0.5)) | 0];
+          B.L.push({ x, y, vx: -(10 + 20 * Math.random()), vy: -(20 + 30 * Math.random()), t: -Math.random() * 1.2, life: 3.2 + Math.random() * 1.4, sh: (Math.random() * 4) | 0, st: 0, sp: 0.07 + Math.random() * 0.08, ph: Math.random() * 6.28, lo, hi });
+        }
+      }
+    }
+    if (!B.L.length) { if (B.mesh) B.mesh.visible = false; return; }
+    const wind = -(18 + 75 * Math.max(0, gust.k));
+    for (const L of B.L) {
+      L.t += dt; if (L.t < 0) continue;
+      L.vx += (wind - L.vx) * Math.min(1, 1.2 * dt); L.vy += (16 - 1.1 * L.vy) * dt;   // (the wind takes it, it falls to its own pace)
+      L.x += L.vx * dt; L.y += L.vy * dt; if ((L.st += dt) > L.sp) { L.st = 0; L.sh = (L.sh + 1) % 4; }
+    }
+    B.L = B.L.filter((L) => L.t < L.life && L.x > B.x + 1 && L.y < B.y + B.h - 3 && !(L.x < 1069 && L.x > 1022 && L.y > 49));   // (behind the pole: gone)
+    const seen = !(camera.right < B.x || camera.left > B.x + B.w || -camera.top > B.y + B.h || -camera.bottom < B.y);
+    B.mesh.visible = B.L.some((L) => L.t >= 0) && seen;
+    if (!B.mesh.visible) return;
+    if ((B.acc += dt) < 1 / 24) return; B.acc = 0;
+    const g = B.g; g.clearRect(0, 0, B.w, B.h);
+    for (const L of B.L) {
+      if (L.t < 0) continue;
+      const a = Math.min(1, L.t / 0.15, (L.life - L.t) / 0.6), c = L.sh % 2 ? L.lo : L.hi, x = Math.round(L.x + 1.5 * Math.sin(L.t * 6 + L.ph)) - B.x, y = Math.round(L.y) - B.y;
+      g.fillStyle = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a.toFixed(3) + ')';
+      for (const [dx, dy] of RLF_SH[L.sh]) g.fillRect(x + dx, y + dy, 1, 1);
+    }
+    B.tex.needsUpdate = true;
+  }
+  FEAT.push(stepRlf);
+  // ==== end of ROOFL ====
+  //
+  //
+  //
   // ==== feature: the roji's emergency exit at night (RJX) — its own block ====
   // The exit's green sign stays steady (its comp, z5_alley: a tube, never a flicker); round it, on the warmer nights (two
   // sessions in three, 20 h-4:30), a few moths flutter in its light, one pixel each, lit green-white close to the panel, dimmer
