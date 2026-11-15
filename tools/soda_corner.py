@@ -28,8 +28,8 @@ edge to the bench, laid out in 3D first, then painted from that layout by the im
    under Kirua's bay, a giant screen (its box, frame, bolts; its clips: SCREEN_CLIPS says how to change
    them); the house's boards round it the painter's own; then a grain pass over the machines, the panel, the canopy
    and the ground at their feet (EDIT: generated from the corner as composed here, laid on those parts only), the
-   machines brought into the painting's range (MACH_TONE), the perks' emblems repainted in their lit header panels
-   (LOGO); the house's boards round the screen his as they are round Kirua's bay (painter_boards, WALL_SRC).
+   machines brought into the painting's range (MACH_TONE), their headers backlit drinks banners (heads(), HEADS);
+   the house's boards round the screen his pattern in the tone of the front on its left (painter_boards, WALL_REF).
 2. The takes (tools/src/soda_<V>_lit.webp, soda_<V>_off.webp; R28): the street around the corner at 22 h and the
    layout's blocked-in render over it (tools/src/soda_<V>_guide.webp, --guide) given to the image API with the parts
    to paint (the prompts: tools/src/soda_prompts.txt); the lit take first, the off ones an edit of the lit corners
@@ -50,8 +50,13 @@ edge to the bench, laid out in 3D first, then painted from that layout by the im
    from the take), A's window win_z7_low; B's giant screen z7_bigscreen (its clips in its glass in perspective, a sheet a
    clip, their light on the boards and the canopy round it; B's side panel the perks' retro ads; street.js's ADS gets
    the clips, their frames and versions, SODA_FX the corner's small lights' places).
+   The rain (drip_points(), wet_ground()): the canopy's drips off its round tile ends (DRIPS 'kiosk': a trickle every
+   other channel, bigger ones at its two corners, little bursts at the channels between); the ground under it in the
+   street's water map (assets/wet.webp, wet_mirror.webp, from their before copies: WET_SRC): dry under the things, the
+   mirror line at their feet, damp in the canopy's shelter, a wetter splash line where the drops land with a small puddle
+   under each trickle, the painter's old drip line's band dried, the ground his lean-to stood on wet as the sidewalk.
    The perks' shields (assets/*_perk.webp, their first frame) laid on the headers, as the takes drew their badges
-   (B: painted into its lit header panels by its grain pass). street.js: PERKS' columns and BZ.soda from the machines' fronts, the drips
+   (B: none, the side panel's ads carry the perks). street.js: PERKS' columns and BZ.soda from the machines' fronts, the drips
    off the canopy's eave (DRIPS 'kiosk'), the comps' places. Needs Pillow, numpy, scipy.
 """
 import os
@@ -542,7 +547,8 @@ def screen_paint(v, box, ss=3):
             col[bolt] = S['bolt']
     col[hit & (f == 4)] = S['side']; col[hit & (f == 2)] = S['under']
     u = (Zw - b[4] - I) / (b[5] - b[4] - 2 * I); w_ = (b[3] - I - Yw) / (b[3] - b[2] - 2 * I)
-    refl = np.clip(1 - (u + w_) * 0.6, 0, 1)[..., None] * 8.0              # (a faint sheen on the dark glass)
+    refl = np.zeros(dx.shape + (1,))                                         # (a faint sheen on the dark glass)
+    refl[glass] = np.clip(1 - (u[glass] + w_[glass]) * 0.6, 0, 1)[:, None] * 8.0
     col[glass] = (S['glass'] + refl)[glass]
     h, wd = box[3] - box[1], box[2] - box[0]
     c_ = hit.reshape(h, ss, wd, ss).mean((1, 3))
@@ -699,15 +705,56 @@ EDIT_CROP = (195, 360, 420, 760)
 EDIT_FIT = {'B': {"lit": {"s": 6.8814, "sy": 6.88, "ox": -6.0, "oy": 0.0, "o": [195, 360], "M": [[1.0577, 0.0, 0.0, -2.868], [0.0, 1.0577, 0.0, -0.973], [0.0, 0.0, 1.0577, -5.544]]}, "off": {"s": 6.8608, "sy": 6.88, "ox": -4.5, "oy": 0.0, "o": [195, 360], "M": [[1.0577, 0.0, 0.0, -2.868], [0.0, 1.0577, 0.0, -0.973], [0.0, 0.0, 1.0577, -5.544]]}}}
 FEET = 6                                       # (the ground at the machines' feet taken from the edits: so many rows)
 MACH_TONE = (14.0, 0.80, 0.15)                 # (the machines: their darks lifted so much, a gain, a share of grey)
-# the perks' emblems (the owner: "logo des atouts mal intégré", "logo pas top"): the machines' tops as the grain pass and
-# the tone leave them (over LOGO_CROP, x8), with the zombies game's three icons (assets/*_perk.webp, their first frame),
-# given to the image API to repaint the three header panels as backlit sign panels each showing its emblem large and
-# clean (tools/src/soda_prompts.txt); laid on the headers only (each front's band HEAD, Y in m), lit; off, unlit
-LOGO = {'B': 'soda_B_logos.webp'}
-LOGO_CROP = (262, 553, 362, 633)
-LOGO_FIT = {'B': {"s": 23.0857, "sy": 23.2, "ox": -2.0, "oy": -0.5, "o": [262, 553], "M": [[1.0037, 0.0, 0.0, -2.173], [0.0, 1.0037, 0.0, 1.468], [0.0, 0.0, 1.0037, -0.745]]}}
-HEAD = (1.68, 2.0)
-HEAD_OFF = (0.34, 5.0)                         # (the panels unlit: their lit colour times so much, plus so much)
+# the machines' headers (the owner: "j'aurais viré les logos des machines, ça rend mal, et la pub fait ce qu'il faut
+# maintenant", then "sans logo, aplat de couleur moche"): what real Japanese machines have on top, a backlit printed
+# drinks banner, each in its machine's colour family: Speed Cola's green with cold cans and つめた〜い, Double Tap's
+# amber-brown with hot coffee and tea and あったか〜い, Juggernog's brick red with cola cans and コーラ. The machines' tops
+# as composed here (over HEADS_CROP, x8, the headers plain panels) given to the image API to repaint the three panels
+# (tools/src/soda_prompts.txt; R28); registered on the corner and its colours mapped on what it was told to keep
+# (HEADS_FIT), brought down to the street's pixels by area, laid on each front's panel (HEAD, Y in m) only. There, its
+# lightness brought into the painting's night (HEAD_TONE: its own p2..p98 to that range, its chroma times so much), a
+# little darker to its edges as a print lit from a tube behind it (HEAD_FALL, HEAD_ENDS), a thin frame in its body's
+# tone (HEAD_FRAME), a dark bezel under it to the display (HEAD_RIM); then the painting's grain (tools/regrain.py,
+# regrain_group: so many tone families a panel, HEAD_FAMILIES, a fine baked grain, Bayer). Unlit in the power cut
+# (HEAD_OFF); its light on the shade over the machines and the fascia's lower edge (HEAD_GLOW); it breathes with the machines' (street.js, 'vend')
+HEADS = {'B': 'soda_B_heads.webp'}
+HEADS_CROP = (262, 553, 362, 633)
+HEADS_FIT = {'B': {"s": 23.1552, "sy": 23.2, "ox": -5.5, "oy": 0.0, "o": [262, 553], "M": [[1.0125, 0.0, 0.0, -0.647], [0.0, 1.0125, 0.0, 0.387], [0.0, 0.0, 1.0125, -2.716]]}}
+HEAD = (1.66, 2.0)                             # (the panel on each front, Y in m: over the grain pass's old badges)
+HEAD_RIM, HEAD_BEZEL = 1.635, (22.0, 24.0, 34.0)   # (the dark bezel between it and the display: from Y, its colour)
+HEAD_TONE = (0.25, 0.53, 1.3, 0.72)            # (OKLab lightness: the banners' p2 and p98 to these, a gamma; their chroma
+                                               #  times so much)
+HEAD_FALL, HEAD_ENDS = 0.22, 0.35              # (so much darker at its edges than across its middle; at its two ends)
+HEAD_FRAME = 0.25                              # (the frame: its body's tone, so much of the panel's edge in it)
+HEAD_OFF = (0.34, 5.0)                         # (unlit: its lit colour times so much, plus so much)
+HEAD_FAMILIES = {'lit': 10, 'off': 6}          # (the grain: so many tone families a panel)
+HEAD_GLOW = (0.4, 3.5, 0.45)                   # (its light on the shade over the machines: a gain, its falloff up in px;
+                                               #  on the fascia's lower edge: a gain)
+# the rain under the canopy (the owner: "faut refaire les gouttes, flaques : le haut-vent a bougé"): its drips off the
+# round tile ends' lower edge (DRIP_LIP: out of the fascia, under the tiles' line, m), in the channels between them as
+# painted (DRIP_CHANNELS: their x on that line, read off the grain pass's tile ends, the dark gaps between them): a
+# trickle every DRIP_EVERY channels at the rates of zone 9's channels (DRIP_RATE /s), a bigger one at each corner
+# (DRIP_CORNER: the near one's and the far one's rates, how far in from the ends, m), a little burst at the others (their
+# interval DRIP_BURST s). The ground under it in the water map (WET_SRC: wet.webp's rows WET_BOX and wet_mirror.webp's
+# columns as the painter left them, under his lean-to): the mirror line at the side panel's and the fronts' feet (the
+# painter's own past them, from column WET_OLD[2]); no water where the things stand; in the canopy's shelter, damp
+# (WET_SHELTER: R at most); the band of the old drip line along his lean-to's foot taken down (WET_OLD: so much at the
+# foot, its falloff in rows); the ground the lean-to stood on, wet as the sidewalk round it (its pattern mirrored about
+# the old foot); the splash line where the drops land (WET_SPLASH: R added, its half-width and its centre out of the lip,
+# m) and a small puddle under each trickle (WET_PUDDLE: half-length along the street and half-width across, m; its R;
+# the corners' times so much)
+DRIP_LIP = (0.02, -0.038)
+DRIP_CHANNELS = (307, 313, 320, 327, 334, 341, 347, 353, 358, 364, 370, 376)
+DRIP_EVERY = 2
+DRIP_RATE = (5.5, 10.0)
+DRIP_CORNER = (18.0, 15.0, 0.04)
+DRIP_BURST = (1.5, 4.5)
+WET_SRC = ('soda_wet_before.webp', 'soda_mirror_before.webp')
+WET_BOX = (200, 680, 440, 780)                 # (x0, row0, x1, row1: scene rows; wet.webp starts at row 600)
+WET_SHELTER = 6.0
+WET_OLD = (0.45, 6.0, 356)
+WET_SPLASH = (20.0, 0.07, 0.03)
+WET_PUDDLE = (0.11, 0.07, 112.0, 1.5)
 
 
 def compose(v, city, off, lit, m, what, box):
@@ -768,16 +815,71 @@ def apply_edit(v, off, lit, m, what, box):
     for a in (off, lit):                       # black, their lights less hot; their grain as it is)
         c = a[mt]; g_ = (c @ [0.299, 0.587, 0.114])[:, None]
         a[mt] = MACH_TONE[0] + (c * (1 - MACH_TONE[2]) + g_ * MACH_TONE[2]) * MACH_TONE[1]
-    if v in LOGO:                              # the perks' emblems in their lit header panels
-        lf = LOGO_FIT[v]
-        lg = colours(sample(sat(np.asarray(Image.open(os.path.join(SRC, LOGO[v])).convert('RGB')).astype(float)), lf, box), lf['M'])
-        w_, f_, z_, dx_, dy_, X_, Y_ = cast(v, box)
-        Yh = EYE + dy_ * z_
-        hm = np.isin(w_, ['mach0', 'mach1', 'mach2']) & (f_ == 1) & (Yh >= HEAD[0]) & (Yh <= HEAD[1])
-        hm = bd(hm, iterations=1) & mach & m
-        lit[hm] = lg[hm]; off[hm] = lg[hm] * HEAD_OFF[0] + HEAD_OFF[1]
-        part = part | hm
+    if v == 'B':                               # the headers: a lit panel each, no emblem
+        part = part | heads(v, off, lit, m, box)
     return m | feet, part
+
+
+def heads(v, off, lit, m, box):
+    """B's headers (off and lit in place): on each machine's front over HEAD, its banner (HEADS, HEADS_FIT) toned, a
+    little darker to its edges, framed, the bezel under it (HEAD_*), through the painting's grain (regrain_group); its
+    light under the canopy (HEAD_GLOW). Returns the pixels drawn."""
+    from scipy.ndimage import binary_dilation as bd, binary_erosion as be
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import regrain as RG
+    L = layout(v); ms = L['mach']
+    w_, f_, z_, dx_, dy_, X_, Y_ = cast(v, box)
+    with np.errstate(invalid='ignore'):
+        Yh = EYE + dy_ * z_
+    t = np.clip((Yh - HEAD[0]) / (HEAD[1] - HEAD[0]), 0, 1)
+    hf = HEADS_FIT[v]
+    gen = np.clip(colours(sample(sat(np.asarray(Image.open(os.path.join(SRC, HEADS[v])).convert('RGB')).astype(float)), hf, box), hf['M']), 0, 255)
+    four = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], bool)
+    hms = [bd((w_ == 'mach%d' % i) & (f_ == 1) & (Yh >= HEAD[0]) & (Yh <= HEAD[1]), iterations=1) & (w_ == 'mach%d' % i) & m
+           for i in range(len(ms))]
+    lab = RG.oklab(gen)
+    lo, hi = np.percentile(lab[np.any(hms, 0)][:, 0], [2, 98])        # (the three banners' range together)
+    drawn = np.zeros(m.shape, bool); light = []
+    for i, b in enumerate(ms):
+        on_ = (w_ == 'mach%d' % i) & (f_ == 1)
+        hm = hms[i]; inner = be(hm, structure=four); frame = hm & ~inner
+        u = np.clip((z_ - b[4]) / (b[5] - b[4]), 0, 1)
+        lum = np.sin(np.pi * t) ** 0.7 * (1 - HEAD_ENDS * np.abs(2 * u - 1) ** 3)     # (the tube behind the print)
+        Lk = HEAD_TONE[0] + np.clip((lab[..., 0] - lo) / (hi - lo), 0, 1.08) ** HEAD_TONE[2] * (HEAD_TONE[1] - HEAD_TONE[0])
+        Lk = Lk * (1 - HEAD_FALL * (1 - lum))
+        tl = np.dstack([Lk, lab[..., 1] * HEAD_TONE[3], lab[..., 2] * HEAD_TONE[3]])
+        body = on_ & (Yh > 0.25) & (Yh < 0.95)
+        ys, xs = np.nonzero(hm); r = (int(xs.min()), int(ys.min()), int(xs.max() + 1 - xs.min()), int(ys.max() + 1 - ys.min()))
+        lit_rgb = RG.from_oklab(tl)
+        for name, a in (('lit', lit), ('off', off)):
+            rgb = lit_rgb if name == 'lit' else lit_rgb * HEAD_OFF[0] + HEAD_OFF[1]
+            edge = np.median(rgb[inner & (t < 0.15)], 0)
+            rgb = rgb.copy(); rgb[frame] = np.median(a[body], 0) * (1 - HEAD_FRAME) + edge * HEAD_FRAME
+            at = np.zeros(m.shape + (4,), np.uint8)
+            at[..., :3] = np.clip(np.round(rgb), 0, 255); at[..., 3] = 255 * hm
+            P = dict(RG.DEF, families=HEAD_FAMILIES[name], p95=None, stray=0)
+            RG.regrain_group([{'a': at, 'box': r}], P, 'head%d_%s' % (i, name))
+            a[hm] = at[..., :3][hm]
+            rim = on_ & (Yh >= HEAD_RIM) & (Yh < HEAD[0]) & ~hm & m       # (the dark bezel under it, to the display)
+            a[rim] = HEAD_BEZEL
+            drawn |= hm | rim
+        light.append((b, lit[inner].mean(0)))
+    # its light under the canopy: on the shade over the machines' tops (the house's wall seen there), falling off up
+    # from each panel's top, and on the fascia's lower edge over it; a touch wider than the panel
+    sh = (w_ == 'wall') & m & ~drawn; fa = (w_ == 'canopy') & (f_ == 2) & m
+    add = np.zeros(m.shape + (3,)); rows = np.arange(m.shape[0])[:, None]
+    for (b, col), hm in zip(light, hms):
+        cols = np.nonzero(hm.any(0))[0]
+        top = np.full(m.shape[1], -1); top[cols] = hm[:, cols].argmax(0)
+        fb = np.where(fa.any(0), m.shape[0] - 1 - fa[::-1].argmax(0), -1)       # (the fascia's lowest row a column)
+        up = (top[None, :] - rows).astype(float)
+        on = (top[None, :] >= 0) & (up > 0)
+        wsh = np.where(on & sh, HEAD_GLOW[0] * np.exp(-up / HEAD_GLOW[1]), 0)
+        wfa = np.where(on & fa, HEAD_GLOW[2] * np.exp(-(fb[None, :] - rows) / 1.5) * np.exp(-(top - fb)[None, :] / 12.0), 0)
+        add += (wsh + wfa)[..., None] * col
+    add = gaussian_filter(add, (0, 1.0, 0)) * (sh | fa)[..., None]
+    lit[:] = np.clip(lit + add, 0, 255)
+    return drawn | ((add @ [0.299, 0.587, 0.114]) > 0.5)
 
 
 def build(v, city, unlit, box=BOX):
@@ -1077,17 +1179,16 @@ def street_js(v, cps):
     assert n == 1, 'gl_z7_vending'
     m = re.search(r'  const DRIPS = (\[.*?\]);   // per eave', s)
     D = json.loads(m.group(1))
-    C = L['canopy']; xe = XH + C['proj']; ylip = C['y_wall'] - C['pitch'] * C['proj'] - C['th']
-    st = []; k = 1
-    while C['z0'] + k * C['tile'] < C['z1'] - 0.05:
-        Z = C['z0'] + k * C['tile']
-        x, y = P(xe, ylip, Z)
-        rate = 20.0 if k == 1 else round(7.0 + 7.0 * (np.sin(k * 12.9898 + 41 * 78.233) * 43758.5453 % 1.0), 2)
-        st.append([int(np.floor(x)), int(np.floor(y)), round(VY + F * EYE / Z, 2), round(14045.0 / Z, 1), round(13.46 / Z, 3), 0.0, rate, int(round(122.6 / Z)), int(round(52.5 / Z))])
-        k += 1
+    st, bu = [], []
+    for Z, rate, _ in drip_points(v):
+        x, y = lip_xy(v, Z)
+        q = [int(np.floor(x)), int(np.floor(y)), round(VY + F * EYE / Z, 2), round(14045.0 / Z, 1), round(13.46 / Z, 3), 1.0 if rate else 0.0,
+             rate, int(round(122.6 / Z)), int(round(52.5 / Z))]
+        (st if rate else bu).append(q)
     for E in D:
         if E['n'] == 'kiosk':
-            E['st'] = st; E['px'] = int(round(np.mean([q[0] for q in st]))); E['py'] = int(round(np.mean([q[1] for q in st])))
+            E['st'] = st; E['bu'] = bu; E['bi'] = list(DRIP_BURST)
+            E['px'] = int(round(np.mean([q[0] for q in st]))); E['py'] = int(round(np.mean([q[1] for q in st])))
     s = s[:m.start(1)] + json.dumps(D, separators=(',', ':'), ensure_ascii=False) + s[m.end(1):]
     edges = [int(round(P(ms[0][1], 1.0, ms[0][4] + i)[0])) for i in range(4)]
     for name, (a, b) in zip(PERK_NAMES, zip(edges[:-1], edges[1:])):
@@ -1098,6 +1199,80 @@ def street_js(v, cps):
     assert n == 1, 'BZ.soda'
     if s != s0: open(path, 'w', encoding='utf-8').write(s)
     return edges
+
+
+def lip_xy(v, Z):
+    """Where a drop leaves the canopy at Z (street px): the round tile ends' lower edge, a little out of the fascia."""
+    C = layout(v)['canopy']; xe = XH + C['proj']
+    return P(xe + DRIP_LIP[0], C['y_wall'] - C['pitch'] * C['proj'] + DRIP_LIP[1], Z)
+
+
+def drip_points(v):
+    """The canopy's drip points along its eave, near to far: (Z, rate /s or 0 for a burst point, its puddle's size)."""
+    C = layout(v)['canopy']; xl = XH + C['proj'] + DRIP_LIP[0]
+    out = [(C['z0'] + DRIP_CORNER[2], DRIP_CORNER[0], WET_PUDDLE[3])]
+    for k, x in enumerate(DRIP_CHANNELS):
+        Z = F * xl / (x + 0.5 - VX)
+        if k % DRIP_EVERY == DRIP_EVERY - 1:
+            u = np.sin(k * 12.9898 + 41 * 78.233) * 43758.5453 % 1.0
+            out.append((Z, round(DRIP_RATE[0] + (DRIP_RATE[1] - DRIP_RATE[0]) * u, 2), 1.0))
+        else:
+            out.append((Z, 0.0, 0.0))
+    out.append((C['z1'] - DRIP_CORNER[2], DRIP_CORNER[1], WET_PUDDLE[3]))
+    return out
+
+
+def wet_ground(v):
+    """assets/wet.webp and wet_mirror.webp round the corner, from their before copies (WET_SRC, WET_BOX): the ground under
+    the canopy as the rain has it now (WET_*, drip_points). The same bytes each run."""
+    L = layout(v); ms = L['mach']; C = L['canopy']; xe = XH + C['proj']
+    x0, r0, x1, r1 = WET_BOX
+    pw, pm = os.path.join(ROOT, 'assets', 'wet.webp'), os.path.join(ROOT, 'assets', 'wet_mirror.webp')
+    wet = np.asarray(Image.open(pw).convert('RGB')).copy(); mir = np.asarray(Image.open(pm).convert('RGB')).copy()
+    wb = np.asarray(Image.open(os.path.join(EDITS, WET_SRC[0])).convert('RGB')).astype(float)
+    mb = np.asarray(Image.open(os.path.join(EDITS, WET_SRC[1])).convert('RGB')).astype(float)[0]
+    R, G, B = wb[..., 0].copy(), wb[..., 1].copy(), wb[..., 2].copy()
+    xs = np.arange(x0, x1) + 0.5; rows = np.arange(r0, r1) + 0.5
+    Xc, Yc = np.meshgrid(xs, rows)
+    Zg = F * EYE / np.maximum(Yc - VY, 1e-3); Xg = (Xc - VX) * Zg / F
+    # the mirror line: the side panel's foot, the fronts' foot, the painter's own past them
+    ym0 = 560 + mb[:, 0] + mb[:, 1] / 256; ym = ym0.copy()
+    near, far = P(ms[0][1], 0, ms[0][4]), P(ms[-1][1], 0, ms[-1][5])
+    jo = WET_OLD[2] - x0
+    for j, x in enumerate(xs):
+        if x < BOX[0] or x >= WET_OLD[2]: continue
+        if x < near[0]: ym[j] = near[1]
+        elif x < far[0]: ym[j] = VY + F * EYE * (x - VX) / (F * ms[0][1])
+        else: ym[j] = ym0[jo]
+    cols = (xs >= BOX[0]) & (xs < WET_OLD[2])
+    ground = Yc >= ym[None, :]
+    # the old foot (the painter's lean-to's: the first wet row a column), its band taken down, the ground it stood on wet
+    b_ = np.where((R > 0).any(0), (R > 0).argmax(0), R.shape[0])
+    d = np.arange(R.shape[0])[:, None] - b_[None, :]
+    R = np.where(cols[None, :] & (d >= 0), R * (1 - WET_OLD[0] * np.exp(-d / WET_OLD[1])), R)
+    src = np.clip(2 * b_[None, :] - 1 - np.arange(R.shape[0])[:, None], 0, R.shape[0] - 1)
+    fill = cols[None, :] & (d < 0) & ground
+    R = np.where(fill, np.take_along_axis(R, src, 0), R)
+    R = np.where(cols[None, :] & ~ground, 0, R); G = np.where(cols[None, :] & ~ground, 0, G); B = np.where(cols[None, :] & ~ground, 0, B)
+    # the canopy's shelter: damp
+    under = np.clip((xe - Xg) / 0.04, 0, 1) * np.clip((Zg - C['z0']) / 0.04, 0, 1) * np.clip((C['z1'] - Zg) / 0.04, 0, 1)
+    R = np.where(ground & (R > 0), R * (1 - under) + np.clip(R * 0.25, 2, WET_SHELTER) * under, R)
+    # the splash line, and a small puddle under each trickle
+    xl = xe + DRIP_LIP[0]
+    ends = np.clip((Zg - C['z0'] + 0.05) / 0.1, 0, 1) * np.clip((C['z1'] - Zg + 0.05) / 0.1, 0, 1)
+    R = np.where(ground & (R > 0), R + WET_SPLASH[0] * np.exp(-((Xg - xl - WET_SPLASH[2]) / WET_SPLASH[1]) ** 2) * ends, R)
+    for n_, (Z, rate, size) in enumerate(drip_points(v)):
+        if not size: continue
+        u = np.sin(n_ * 78.233 + 12.9898) * 43758.5453 % 1.0          # (each its own size and place, a little)
+        size = size * (0.8 + 0.4 * u); xo = xl + WET_SPLASH[2] + 0.03 * (u - 0.5)
+        e = ((Zg - Z) / (WET_PUDDLE[0] * size)) ** 2 + ((Xg - xo) / (WET_PUDDLE[1] * size)) ** 2
+        k = np.clip((1 - e) / 0.35, 0, 1) * ground
+        B = np.maximum(B, 255 * k); R = np.maximum(R, WET_PUDDLE[2] * k)
+    wet[r0 - 600:r1 - 600, x0:x1] = np.dstack([np.clip(np.round(c), 0, 255) for c in (R, G, B)]).astype(np.uint8)
+    q = np.clip(ym - 560, 0, 255.996); hi = np.floor(q); lo = np.clip(np.round((q - hi) * 256), 0, 255)
+    mir[0, x0:x1, 0] = hi.astype(np.uint8); mir[0, x0:x1, 1] = lo.astype(np.uint8)
+    Image.fromarray(wet, 'RGB').save(pw, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    Image.fromarray(mir, 'RGB').save(pm, 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
 def load(path):
@@ -1129,6 +1304,7 @@ def draw(city, unlit, box=BOX):
     rz = sys.modules.get('__main__')
     if hasattr(rz, 'COMP_OUT'): rz.COMP_OUT['soda'] = ['win_z7_kiosk', cps['win_z7_kiosk'][0], None]
     street_js(v, cps)
+    wet_ground(v)
     return m
 
 
