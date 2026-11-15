@@ -10,7 +10,10 @@ His sheet (tools/src/roji_grunt_sheet.webp: the image model's answer to tools/sr
 the style taken from roji_grunt_in_style.webp, R28): a grunt in the black uniform, the red R on his chest, a black cap, white
 gloves and boots, painted, no outline, on white, eight frames: sneaking out toward the left (step), glancing left (look_l)
 and right (look_r), lighting a cigarette in his cupped hands (light), smoking at ease (hold), electrocuted, stiff, his cap
-off (zap1), blackened with soot (zap2), fleeing to the right (flee). Each cut off its white (tools/ichiraku_figures.py: cut),
+off (zap1), blackened with soot (zap2); and his run off down the alley (tools/src/
+roji_grunt_run_sheet.webp: the image model's answer to tools/src/edits/roji_grunt_run_in.webp and _prompt.txt, the first sheet
+its reference, R28): no cap, frizzled, sooty, running to the right seen from behind (run_a..run_d, a cycle), glancing back in
+terror (run_look), stumbling (stumble). Each cut off its white (tools/ichiraku_figures.py: cut),
 the sheet's painted smoke and the lighter's flame taken out (CLEAR: street.js draws the flame, the ember and the smoke,
 alive), brought down to his size at his place by one scale (each scene pixel the mean of the sheet's pixels it covers,
 solid from half covered), set by his feet.
@@ -38,15 +41,18 @@ import ichiraku_interior as R                                    # noqa: E402
 
 ROOT = os.path.dirname(ICI)
 SHEET = os.path.join(ICI, 'src', 'roji_grunt_sheet.webp')
+RUN_SHEET = os.path.join(ICI, 'src', 'roji_grunt_run_sheet.webp')   # (the same grid, the same scale)
 OUT = os.path.join(ROOT, 'assets', 'roji_grunt.webp')
 JS = os.path.join(ROOT, 'assets', 'street.js')
 F, VPX, VPY, EYE, HS = 960.0, 700.0, 615.0, 1.41, 1.41 - 0.2555 * 5.0   # (the street's camera; the alley's floor, m)
 X_M, Z_M, H_M = 5.15, 22.48, 1.75                # his place (m across, m deep) and his height
 FOOT = (int(round(VPX + F * X_M / Z_M)), int(round(VPY - F * (HS - EYE) / Z_M)))   # his feet in the street (920, 670)
 CELLS = {'step': (5, 4, 287, 452), 'look_l': (297, 4, 579, 452), 'look_r': (589, 4, 871, 452), 'light': (881, 4, 1163, 452),
-         'hold': (5, 462, 287, 908), 'zap1': (297, 462, 579, 908), 'zap2': (589, 462, 871, 908), 'flee': (881, 462, 1163, 908)}
+         'hold': (5, 462, 287, 908), 'zap1': (297, 462, 579, 908), 'zap2': (589, 462, 871, 908)}   # (its 8th, fleeing to the right, unused)
 CLEAR = {'hold': [(80, 494, 103, 548)], 'light': [(1056, 123, 1070, 145)]}   # (the painted smoke, the flame)
 EMBER = {'hold': (105, 551), 'light': (1062, 136)}   # (the cigarette's tip, the flame: in the sheet)
+RUN_CELLS = {'run_a': (297, 4, 579, 452), 'run_b': (589, 4, 871, 452), 'run_c': (5, 462, 287, 908), 'run_d': (297, 462, 579, 908),
+             'run_look': (881, 4, 1163, 452), 'stumble': (589, 462, 871, 908)}   # (the run sheet's cells, in the order of the cycle)
 REF = 'hold'                                     # (his height measured on this image: standing)
 AMB = (0.40, 0.40, 0.52)                         # the alley's night on him (cold, low)
 VALUES = (10.0, 24.0)                            # (L*: the plaster round him is 22-25 at 22 h; he is a little darker)
@@ -64,10 +70,10 @@ def values(P):
 
 
 def cut_all():
-    sheet = {'s': np.asarray(Image.open(SHEET).convert('RGB')).astype(float)}
+    sheet = {'s': np.asarray(Image.open(SHEET).convert('RGB')).astype(float), 'r': np.asarray(Image.open(RUN_SHEET).convert('RGB')).astype(float)}
     out = {}
-    for n, box in CELLS.items():
-        Q, a, _ = FG.cut(sheet, 's', box, 'free', {})
+    for n, (k, box) in [(n, ('s', b)) for n, b in CELLS.items()] + [(n, ('r', b)) for n, b in RUN_CELLS.items()]:
+        Q, a, _ = FG.cut(sheet, k, box, 'free', {})
         a = a.astype(float).copy()
         for x0, y0, x1, y1 in CLEAR.get(n, ()):
             a[y0 - box[1]:y1 - box[1], x0 - box[0]:x1 - box[0]] = 0
@@ -80,6 +86,8 @@ def shrink(Q, a, box, s, n):
     scene pixel the mean of the sheet's pixels it covers (6 x 6 samples), solid from half covered; (ax, ay) its feet in it"""
     m = a > 0.5; ys, xs = np.nonzero(m); bot = ys.max() + 1
     low = ys >= bot - 0.1 * (bot - ys.min()); fx = (xs[low].min() + xs[low].max() + 1) / 2
+    if n in RUN_CELLS:                           # (running: set by his hips, the middle of his body's middle band, not a foot)
+        hb = (ys >= ys.min() + 0.42 * (bot - ys.min())) & (ys < ys.min() + 0.58 * (bot - ys.min())); fx = xs[hb].mean() + 0.5
     H, W = m.shape
     x0 = int(np.floor(-fx * s)) - 1; x1 = int(np.ceil((W - fx) * s)) + 1; y0 = int(np.floor(-bot * s)) - 1
     w, h = x1 - x0, -y0 + 1
@@ -129,11 +137,11 @@ def main():
     cells = {n: shrink(Q, a, box, s, n) for n, (Q, a, box) in raw.items()}
     layers(cells)
     U = FG.Atlas(128); boxes = {}
-    for n in CELLS:
+    for n in list(CELLS) + list(RUN_CELLS):
         c = cells[n]; boxes[n] = U.add(np.round(c['night']).astype(np.uint8), np.round(c['warm']).astype(np.uint8)) + [int(c['ax']), int(c['ay'])]
     img, dy = U.image()
     RJS = {'cells': boxes, 'warm': dy, 'x': FOOT[0], 'y': FOOT[1],
-           'ember': {n: [int(e) for e in cells[n]['em']] for n in CELLS if cells[n]['em'] is not None}}
+           'ember': {n: [int(e) for e in cells[n]['em']] for n in cells if cells[n]['em'] is not None}}
     print('the grunt: %.3f scene px a sheet px, %d px tall, feet at %s | atlas %d x %d' % (
         s, boxes[REF][3], FOOT, img.shape[1], img.shape[0]))
     if prev:
