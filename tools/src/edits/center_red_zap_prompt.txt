@@ -1,0 +1,9 @@
+This is a sprite sheet of four identical frames (a 2 x 2 grid, thin grey lines between the cells) of a seated character in a soft painted pixel-art style (smooth painterly shading, chunky pixels, no black outlines, natural proportions): Red, the trainer from the original Pokemon games (red and white cap, red vest, black T-shirt, jeans), seated on a ledge we do not see (his hands resting on it, his legs hanging), Pikachu sitting on his left shoulder.
+
+Keep every cell exactly as it is (Red unchanged in all four: the same size and position in its cell, the same pose, the same colours) and change ONLY Pikachu, as follows:
+1. top left: nothing, identical.
+2. top right: Pikachu alert: his ears shot straight up, his body turned and leaning forward, his head turned down toward the ground below in front of Red (toward our lower left), staring, his cheeks red.
+3. bottom left: Pikachu zapping: leaning far down toward our lower left, eyes shut tight, mouth open in a cry, ears flat back, his tail stiff and raised, his red cheeks glowing bright (no lightning bolt drawn, no sparks drawn).
+4. bottom right: Pikachu just after: sitting back up on Red's shoulder, ears up, a proud smug grin, looking down toward our lower left, his red cheeks still glowing.
+
+Plain pure white background in every cell, keep the grid and the cells' size, no text, no lightning, no new objects, no shadows.

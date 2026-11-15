@@ -71,6 +71,15 @@ FRAMES_B = {'ctrl': ((8, 6, 287, 404), 0), 'pk_ear': ((299, 6, 580, 404), 0), 'p
             'pk_out': ((8, 415, 287, 816), 1), 'cap': ((299, 415, 580, 816), 1), 'look': ((592, 415, 876, 816), 1)}
 LEDGE_B = (260, 672)                          # (le rebord dans la réponse : la rangée de ses mains, mesurée sur la case de contrôle)
 TRANSPLANT = {'pk_ear': 'pika', 'pk_look': 'pika', 'pk_out': 'pika', 'cap': 'arm', 'look': 'head'}
+# son éclair (tools/src/center_red_sheet_c.webp : la réponse du modèle d'image à tools/src/edits/center_red_zap_in.webp et
+# _prompt.txt, quatre fois l'image au repos, seul Pikachu changé) : la case de contrôle (ctrl2), Pikachu en alerte, les
+# oreilles dressées, penché vers la ruelle (pk_alert), qui foudroie, les yeux fermés, les joues rouges (pk_zap), fier de lui
+# après (pk_smug) ; pris sur la case au repos comme les autres (la région de Pikachu)
+SHEET_C = os.path.join(ICI, 'src', 'center_red_sheet_c.webp')
+FRAMES_C = {'ctrl2': ((4, 4, 428, 604), 0), 'pk_alert': ((438, 4, 860, 604), 0), 'pk_zap': ((4, 614, 428, 1212), 1),
+            'pk_smug': ((438, 614, 860, 1212), 1)}
+LEDGE_C = (385, 993)                          # (le rebord dans la réponse, mesuré sur la case de contrôle)
+TRANSPLANT_C = {'pk_alert': 'pika', 'pk_zap': 'pika', 'pk_smug': 'pika'}
 SWING = 4                                     # (ses jambes qui balancent : sous le rebord, à tant de rangées, ses tibias d'un pixel d'un côté, de l'autre)
 AMB = (0.46, 0.45, 0.60)                      # le ciel de nuit et la rue sur lui (froids)
 # « plus sombre, comme ce qui l'entoure » (le propriétaire) : autour de lui à 22 h (le chaperon, les bandes, le mur de côté,
@@ -290,12 +299,15 @@ def main():
     raw, s = frames()
     sB = s * height(SHEET, FRAMES['idle'][0]) / height(SHEET_B, FRAMES_B['ctrl'][0])   # (la réponse à l'échelle de la planche)
     rawB, _ = frames(SHEET_B, FRAMES_B, LEDGE_B, sB)
-    col = layers(dict(raw, **rawB), fit=list(raw))
+    sC = s * height(SHEET, FRAMES['idle'][0]) / height(SHEET_C, FRAMES_C['ctrl2'][0])
+    rawC, _ = frames(SHEET_C, FRAMES_C, LEDGE_C, sC)
+    col = layers(dict(raw, **rawB, **rawC), fit=list(raw))
     col['idle_b'] = breathe(col['idle']); col['swing'] = swing(col['idle'], 1); col['swing2'] = swing(col['idle'], -1)
     for n, kind in TRANSPLANT.items(): col[n] = transplant(col['idle'], col['ctrl'], col[n], kind)
+    for n, kind in TRANSPLANT_C.items(): col[n] = transplant(col['idle'], col['ctrl2'], col[n], kind)
     for n in ('pk_ear', 'pk_look', 'pk_out'): col[n + '_b'] = breathe(col[n])
     order = ['idle', 'idle_b', 'swing', 'swing2', 'ball', 'toss', 'cheer', 'doze', 'wake',
-             'pk_ear', 'pk_ear_b', 'pk_look', 'pk_look_b', 'pk_out', 'pk_out_b', 'cap', 'look']
+             'pk_ear', 'pk_ear_b', 'pk_look', 'pk_look_b', 'pk_out', 'pk_out_b', 'cap', 'look', 'pk_alert', 'pk_zap', 'pk_smug']
     U = FG.Atlas(256); boxes = {}
     for n in order:
         c = col[n]; box = U.add(np.round(c['night']).astype(np.uint8), np.round(c['lit']).astype(np.uint8))

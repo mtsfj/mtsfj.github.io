@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
-"""The roji's emergency exit (tools/roji_alley.py): now and then someone of the Center's night staff steps out of it for a smoke.
+"""The roji's emergency exit (tools/roji_alley.py): now and then a Team Rocket grunt sneaks out of it for a smoke, and Pikachu,
+on the Center's roof right above him with Red (tools/center_red.py), zaps him.
 
-    python3 tools/roji_smoker.py                    (writes assets/roji_smoker.webp and, in assets/street.js, the line RJS:
+    python3 tools/roji_grunt.py                     (writes assets/roji_grunt.webp and, in assets/street.js, the line RJS:
                                                      it can be run again, it writes the same bytes)
-    python3 tools/roji_smoker.py --preview DIR      (only shows it: the atlas x6 on the alley's wall, RJS in json)
+    python3 tools/roji_grunt.py --preview DIR       (only shows it: the atlas x6 on the alley's wall, RJS in json)
 
-His sheet (tools/src/roji_smoker_sheet.webp: the lower half of the image model's answer to tools/src/edits/
-center_red_life_in.webp and _prompt.txt, center_red_life_model.webp, R28): a tired man in a dark navy work jacket over a grey
-shirt, natural proportions, painted, no outline, on white: stepping out toward the door (step), lighting a cigarette in his
-cupped hands (light), at rest, the cigarette down at his side (rest), taking a drag (drag). Each cut off its white
-(tools/ichiraku_figures.py: cut), the sheet's painted smoke and the lighter's flame taken out (CLEAR: street.js draws the
-flame, the ember and the smoke, alive), brought down to his size at his place by one scale (each scene pixel the mean of the
-sheet's pixels it covers, solid from half covered), set by his feet.
+His sheet (tools/src/roji_grunt_sheet.webp: the image model's answer to tools/src/edits/roji_grunt_in.webp and _prompt.txt,
+the style taken from roji_grunt_in_style.webp, R28): a grunt in the black uniform, the red R on his chest, a black cap, white
+gloves and boots, painted, no outline, on white, eight frames: sneaking out toward the left (step), glancing left (look_l)
+and right (look_r), lighting a cigarette in his cupped hands (light), smoking at ease (hold), electrocuted, stiff, his cap
+off (zap1), blackened with soot (zap2), fleeing to the right (flee). Each cut off its white (tools/ichiraku_figures.py: cut),
+the sheet's painted smoke and the lighter's flame taken out (CLEAR: street.js draws the flame, the ember and the smoke,
+alive), brought down to his size at his place by one scale (each scene pixel the mean of the sheet's pixels it covers,
+solid from half covered), set by his feet.
 
 His place: in the alley, in front of its far wall (the Center's side, 23.08 m: tools/roji_alley.py), 0.6 m out from it,
 between the Center's corner and the door (X 5.15 m, Z 22.48 m: 42.7 px a metre), on its floor (the sidewalk's level): his
-feet at FOOT, 1.72 m tall (73 px). Light: the alley's night (AMB, cold and low: the man a silhouette against the lilac
-plaster, as dark as what is round him, VALUES), the exit sign's green over him from above and to his right (RIM_SIGN, on
-his top edges); and a second layer, the door's light on his right edge (WARM: laid by street.js, added, while the door
-is open). In its families of tones (FAMILIES), no dark line at the edge on the lit side, few lone pixels, a fine grain.
-Where the cigarette's tip is in each image (EMBER: the lighter's flame in 'light'), for street.js. Needs Pillow, numpy
-(and what tools/ichiraku_figures.py needs).
+feet at FOOT, 1.75 m tall. Light: the alley's night (AMB, cold and low: as dark as what is round him, VALUES), the exit
+sign's green over him from above and to his right (RIM_SIGN, on his top edges); and a second layer, the door's light on his
+right edge (WARM: laid by street.js, added, while the door is open). In its families of tones (FAMILIES), no dark line at
+the edge on the lit side, few lone pixels, a fine grain. Where the cigarette's tip is in each image (EMBER: the lighter's
+flame in 'light'), for street.js. Needs Pillow, numpy (and what tools/ichiraku_figures.py needs).
 """
 import json
 import os
@@ -36,16 +37,17 @@ import ichiraku_figures as FG                                    # noqa: E402
 import ichiraku_interior as R                                    # noqa: E402
 
 ROOT = os.path.dirname(ICI)
-SHEET = os.path.join(ICI, 'src', 'roji_smoker_sheet.webp')
-OUT = os.path.join(ROOT, 'assets', 'roji_smoker.webp')
+SHEET = os.path.join(ICI, 'src', 'roji_grunt_sheet.webp')
+OUT = os.path.join(ROOT, 'assets', 'roji_grunt.webp')
 JS = os.path.join(ROOT, 'assets', 'street.js')
 F, VPX, VPY, EYE, HS = 960.0, 700.0, 615.0, 1.41, 1.41 - 0.2555 * 5.0   # (the street's camera; the alley's floor, m)
-X_M, Z_M, H_M = 5.15, 22.48, 1.72                # his place (m across, m deep) and his height
+X_M, Z_M, H_M = 5.15, 22.48, 1.75                # his place (m across, m deep) and his height
 FOOT = (int(round(VPX + F * X_M / Z_M)), int(round(VPY - F * (HS - EYE) / Z_M)))   # his feet in the street (920, 670)
-CELLS = {'step': (4, 4, 217, 385), 'light': (225, 4, 437, 385), 'rest': (445, 4, 657, 385), 'drag': (666, 4, 876, 385)}
-CLEAR = {'rest': [(466, 178, 488, 232)], 'drag': [(802, 56, 820, 80)], 'light': [(365, 82, 380, 102)]}   # (smoke, the flame)
-EMBER = {'rest': (489, 234), 'drag': (801, 80), 'light': (372, 93)}   # (the cigarette's tip, the flame: in the sheet)
-REF = 'rest'                                     # (his height measured on this image: standing)
+CELLS = {'step': (5, 4, 287, 452), 'look_l': (297, 4, 579, 452), 'look_r': (589, 4, 871, 452), 'light': (881, 4, 1163, 452),
+         'hold': (5, 462, 287, 908), 'zap1': (297, 462, 579, 908), 'zap2': (589, 462, 871, 908), 'flee': (881, 462, 1163, 908)}
+CLEAR = {'hold': [(80, 494, 103, 548)], 'light': [(1056, 123, 1070, 145)]}   # (the painted smoke, the flame)
+EMBER = {'hold': (105, 551), 'light': (1062, 136)}   # (the cigarette's tip, the flame: in the sheet)
+REF = 'hold'                                     # (his height measured on this image: standing)
 AMB = (0.40, 0.40, 0.52)                         # the alley's night on him (cold, low)
 VALUES = (10.0, 24.0)                            # (L*: the plaster round him is 22-25 at 22 h; he is a little darker)
 RIM_SIGN = ((92, 196, 142), 0.30)                # the exit sign's green on his top edges (from above, a little to his right)
@@ -132,12 +134,12 @@ def main():
     img, dy = U.image()
     RJS = {'cells': boxes, 'warm': dy, 'x': FOOT[0], 'y': FOOT[1],
            'ember': {n: [int(e) for e in cells[n]['em']] for n in CELLS if cells[n]['em'] is not None}}
-    print('the smoker: %.3f scene px a sheet px, %d px tall, feet at %s | atlas %d x %d' % (
+    print('the grunt: %.3f scene px a sheet px, %d px tall, feet at %s | atlas %d x %d' % (
         s, boxes[REF][3], FOOT, img.shape[1], img.shape[0]))
     if prev:
         os.makedirs(prev, exist_ok=True)
         bg = np.full(img.shape[:2] + (3,), (54, 51, 85), float); al = img[..., 3:] / 255
-        Image.fromarray((bg * (1 - al) + img[..., :3] * al).astype(np.uint8)).resize((img.shape[1] * 6, img.shape[0] * 6), Image.NEAREST).save(os.path.join(prev, 'smoker_x6.png'))
+        Image.fromarray((bg * (1 - al) + img[..., :3] * al).astype(np.uint8)).resize((img.shape[1] * 6, img.shape[0] * 6), Image.NEAREST).save(os.path.join(prev, 'grunt_x6.png'))
         json.dump(RJS, open(os.path.join(prev, 'rjs.json'), 'w'))
         return
     Image.fromarray(img, 'RGBA').save(OUT, 'WEBP', lossless=True, quality=100, method=6, exact=True)

@@ -9371,18 +9371,19 @@
   // from 1 h, a blackout; the red night takes both). He is here from 9:30 to 0:30 (CR_H), at home the rest of the night (the
   // four heroes' Red at his balcony door, Z1F, and his Game Boy at night, RNV: only then; a visit still under way, he comes
   // after it). Quiet: he breathes, swings his legs now and then, tosses his Poké Ball and catches it, sets his cap right, turns to
-  // Pikachu (who looks back), rarely waves; Pikachu on his rest twitches his ears, turns his head to him or to the street; from 23 h
+  // Pikachu (who looks back), rarely waves; Pikachu on his rest twitches his ears, turns his head to him or to the street, and
+  // now and then zaps a Team Rocket grunt sneaking out into the alley below (RJX: CR.ev, his alert, zapping, smug frames); from 23 h
   // he dozes, Pikachu asleep against his neck, waking a moment now and then (he rubs his eye); he comes and goes softly.
   // Clicked (his own): he throws his Poké Ball up, it pops open in a flash over him, he pumps his fist and Pikachu's cheeks
   // spark (dozing: he wakes, Pikachu sparks); a click also counts him as the four heroes' Red (the same Red: fourHit('red'),
   // its star by his cap). Reduced motion: still (seated, or asleep from 23 h) ----
-  const CRD = {"cells":{"idle":[0,0,41,59,18,37],"idle_b":[42,0,41,60,18,38],"swing":[84,0,41,59,18,37],"swing2":[126,0,41,59,18,37],"ball":[168,0,40,59,17,37],"toss":[209,0,43,60,20,38],"cheer":[0,61,44,62,18,39],"doze":[45,61,37,58,16,36],"wake":[83,61,42,60,17,38],"pk_ear":[126,61,41,58,18,37],"pk_ear_b":[168,61,41,59,18,38],"pk_look":[210,61,41,58,18,37],"pk_look_b":[0,124,41,59,18,38],"pk_out":[42,124,41,58,18,37],"pk_out_b":[84,124,41,59,18,38],"cap":[126,124,38,58,15,37],"look":[165,124,41,58,18,37]},"lit":184,"x":921,"y":441,"clip":941,"pts":{"idle":{"head":[0,-37],"pika":[11,-30]},"idle_b":{"head":[0,-38],"pika":[11,-31]},"swing":{"head":[0,-37],"pika":[11,-30]},"swing2":{"head":[0,-37],"pika":[11,-30]},"ball":{"head":[-1,-37],"pika":[9,-30]},"toss":{"head":[-1,-38],"hand":[-16,-26],"pika":[12,-31]},"cheer":{"head":[-1,-37],"pika":[10,-32]},"doze":{"head":[-1,-36],"pika":[8,-29]},"wake":{"head":[-1,-37],"pika":[10,-32]},"pk_ear":{"head":[0,-37],"pika":[12,-30]},"pk_ear_b":{"head":[0,-38],"pika":[12,-31]},"pk_look":{"head":[0,-37],"pika":[11,-29]},"pk_look_b":{"head":[0,-38],"pika":[11,-30]},"pk_out":{"head":[0,-37],"pika":[10,-30]},"pk_out_b":{"head":[0,-38],"pika":[10,-31]},"cap":{"head":[-1,-37],"pika":[11,-30]},"look":{"head":[-1,-37],"pika":[10,-30]}}};   // (tools/center_red.py: his cells [sx, sy, w, h, ox, oy] (the night's layer; the sign's lit lower), his seat, the clip, his points)
+  const CRD = {"cells":{"idle":[0,0,41,59,18,37],"idle_b":[42,0,41,60,18,38],"swing":[84,0,41,59,18,37],"swing2":[126,0,41,59,18,37],"ball":[168,0,40,59,17,37],"toss":[209,0,43,60,20,38],"cheer":[0,61,44,62,18,39],"doze":[45,61,37,58,16,36],"wake":[83,61,42,60,17,38],"pk_ear":[126,61,41,58,18,37],"pk_ear_b":[168,61,41,59,18,38],"pk_look":[210,61,41,58,18,37],"pk_look_b":[0,124,41,59,18,38],"pk_out":[42,124,41,58,18,37],"pk_out_b":[84,124,41,59,18,38],"cap":[126,124,38,58,15,37],"look":[165,124,41,58,18,37],"pk_alert":[207,124,41,58,18,37],"pk_zap":[0,184,41,58,18,37],"pk_smug":[42,184,41,58,18,37]},"lit":243,"x":921,"y":441,"clip":941,"pts":{"idle":{"head":[0,-37],"pika":[11,-30]},"idle_b":{"head":[0,-38],"pika":[11,-31]},"swing":{"head":[0,-37],"pika":[11,-30]},"swing2":{"head":[0,-37],"pika":[11,-30]},"ball":{"head":[-1,-37],"pika":[9,-30]},"toss":{"head":[-1,-38],"hand":[-16,-26],"pika":[12,-31]},"cheer":{"head":[-1,-37],"pika":[10,-32]},"doze":{"head":[-1,-36],"pika":[8,-29]},"wake":{"head":[-1,-37],"pika":[10,-32]},"pk_ear":{"head":[0,-37],"pika":[12,-30]},"pk_ear_b":{"head":[0,-38],"pika":[12,-31]},"pk_look":{"head":[0,-37],"pika":[11,-29]},"pk_look_b":{"head":[0,-38],"pika":[11,-30]},"pk_out":{"head":[0,-37],"pika":[10,-30]},"pk_out_b":{"head":[0,-38],"pika":[10,-31]},"cap":{"head":[-1,-37],"pika":[11,-30]},"look":{"head":[-1,-37],"pika":[10,-30]},"pk_alert":{"head":[0,-37],"pika":[9,-31]},"pk_zap":{"head":[0,-37],"pika":[9,-28]},"pk_smug":{"head":[0,-37],"pika":[9,-30]}}};   // (tools/center_red.py: his cells [sx, sy, w, h, ox, oy] (the night's layer; the sign's lit lower), his seat, the clip, his points)
   const CR = { a: 0, f: 'idle', d: 'idle', seq: [], ft: 0, toss: 30 + Math.random() * 20, wave: 140 + Math.random() * 120, kick: 12 + Math.random() * 10,
     wake: 25 + Math.random() * 20, cap: 50 + Math.random() * 60, look: 30 + Math.random() * 40, ball: null, pop: null, spark: 0, hk0: -1, dead: false, drawn: '', acc: 1,
     pk: { f: null, ft: 0, seq: [], t: 2 + Math.random() * 4, lt: 10 + Math.random() * 15 } };   // (d: the frame shown, Pikachu's own life laid on his rest)
   const CRB = { x: 893, y: 386, w: 48, h: 84 };   // (his canvases, their right edge the nearer building's corner: his cells, the ball and its flash, the sparks)
   const CRI = new Image(); CRI.onerror = () => { CR.dead = true; };
-  offView(CRB.x, CRB.x + CRB.w, () => { CRI.src = 'assets/center_red.webp?v=4'; });
+  offView(CRB.x, CRB.x + CRB.w, () => { CRI.src = 'assets/center_red.webp?v=5'; });
   const crLayer = (z, kind) => {
     const c = document.createElement('canvas'); c.width = CRB.w; c.height = CRB.h;
     const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
@@ -9446,6 +9447,7 @@
     }
     CR.d = P.f && CRD.cells[P.f] ? P.f + (CR.f === 'idle_b' ? '_b' : '') : CR.f;
     if (!CRD.cells[CR.d]) CR.d = CR.f;
+    if (CR.ev && CRD.cells[CR.ev] && (CR.f === 'idle' || CR.f === 'idle_b')) CR.d = CR.ev;   // (the grunt in the alley: Pikachu alert, zapping, smug: RJX)
     if (CR.ball) {                               // the Poké Ball: up and back into his hand (0.7 s), or thrown up high, and its pop
       const B = CR.ball; B.t += dt;
       if (B.k === 'up' && B.t > 0.7) CR.ball = null;
@@ -11941,74 +11943,140 @@
   // The exit's green sign stays steady (its comp, z5_alley: a tube, never a flicker); round it, on the warmer nights (two
   // sessions in three, 20 h-4:30), a few moths flutter in its light, one pixel each, lit green-white close to the panel, dimmer
   // further out, now and then bumping into it; the rain keeps them down to one, a lull brings them out (three or four), a strong
-  // gust sends them off; behind B's corner they are hidden with the sign's other half. Now and then (every few minutes, less by
-  // day) the steel door opens (its leaf swinging out on its hinge behind B's corner, the layer's own door squeezed as it turns, the
-  // Center's back corridor lit behind it, its light on the step and the floor) and someone of the Center's night staff steps out
-  // (tools/roji_smoker.py: RJS, his cells, his feet, where his cigarette's tip is), lets the door shut, lights a cigarette (his
-  // lighter's flame flickering in his cupped hands), smokes half a minute or so (the ember glowing brighter at each drag, a thin
-  // breath of smoke after it), flicks the butt (it falls, glows a moment on the floor) and goes back in. A silhouette against the
-  // plaster (the alley's night, the sign's green on his top edges, the door's warm light on his right while it is open). Never
-  // starting in the power cut, nor in the finale; the corridor's light and the moths' with the power (the sign on its battery
-  // then); his flame and his ember their own light. Three small canvases over the exit (the corridor's light, own light; the leaf
-  // and him, graded as the street; the glows, the moths and the smoke, added), 20 pictures a second while anything moves there
-  // and it is on screen; nothing under reduced motion ----
-  const RJS = {"cells":{"step":[0,0,30,72,15,72],"light":[31,0,24,72,11,72],"rest":[56,0,28,74,13,74],"drag":[85,0,27,74,15,74]},"warm":75,"x":920,"y":670,"ember":{"light":[7,-58],"rest":[-13,-30],"drag":[4,-61]}};   // (tools/roji_smoker.py: his cells [sx, sy, w, h, ax, ay] (the night's; the door's warm edge lower), his feet, his cigarette's tip from his feet)
-  const RJX = { x: 900, y: 556, w: 41, h: 120, dead: false, ok: false, img: null, door: null, L: null, th: 0, want: 0, seq: [], st: null, stt: 0,
-    next: 90 + Math.random() * 200, puff: [], butt: null, flame: 0, moths: [], warm: Math.random() < 0.67, acc: 0, live: false, near: false,
-    sign: [936, 573.5], dx: [929, 941, 583, 661] };   // (the doorway inside its frame: x0, x1, y0, y1)
+  // gust sends them off; behind B's corner they are hidden with the sign's other half.
+  // Now and then (every few minutes at most in the evening, rarely by day, only while Red sits awake on the Center's roof right
+  // above, 9:30-23 h) a Team Rocket grunt sneaks out of it (the owner: "un sbire qui sort en douce, et Pikachu qui l'électrocute
+  // juste au-dessus depuis le toit"; tools/roji_grunt.py: RJS, his cells, his feet, where his cigarette's tip is): the steel
+  // door eases ajar (its leaf swinging out on its hinge behind B's corner, the layer's own door squeezed as it turns, the
+  // Center's back corridor lit behind it, its light on the step and the floor), he peeks out left and right, sneaks out, lets it
+  // close, looks round again, lights a cigarette (his lighter's flame in his cupped hands) and smokes; Pikachu notices (ears up,
+  // turned down toward him: CR.ev, the frames of tools/center_red.py), and zaps him: a short pixel-crisp thunderbolt from his
+  // cheeks down to the grunt, jagged and redrawn every few hundredths of a second, its forks, while the alley flashes
+  // yellow-white a few times (the far wall, the Center's corner, the wet floor's sheen brightest; Red and Pikachu lit too); the
+  // grunt jolts (stiff, his cap off, then blackened and smoking), flees back inside, the door flung open and slammed; Pikachu's
+  // cheeks crackle a moment more, smug, and Red glances at him. The grunt as dark as the alley (its night, the sign's green on
+  // his top edges, the door's warm light on his right while it is open). Never starting in the power cut (the bolt its own
+  // light if one comes during it), nor in the finale; the corridor's light and the moths' with the power. Small canvases over
+  // the exit (the corridor's light, own light; the leaf and him, graded as the street; the glows, the moths and the smoke,
+  // added), the bolt over Red (own light, added), the flash (one picture made once, added, its level alone moving), 20 pictures
+  // a second while anything moves there and it is on screen (the bolt every frame while it strikes); nothing under reduced
+  // motion ----
+  const RJS = {"cells":{"step":[0,0,39,67,21,67],"look_l":[40,0,30,70,15,70],"look_r":[71,0,31,70,15,70],"light":[103,0,25,71,12,71],"hold":[0,72,31,75,13,75],"zap1":[32,72,50,74,30,74],"zap2":[0,148,49,75,28,75],"flee":[50,148,49,71,39,71]},"warm":224,"x":920,"y":670,"ember":{"light":[6,-55],"hold":[-7,-62]}};   // (tools/roji_grunt.py: his cells [sx, sy, w, h, ax, ay] (the night's; the door's warm edge lower), his feet, his cigarette's tip from his feet)
+  const RJX = { x: 884, y: 556, w: 57, h: 120, dead: false, ok: false, img: null, door: null, L: null, th: 0, want: 0, k: 3, seq: [], st: null, stt: 0, bt: 0,
+    next: 90 + Math.random() * 200, puff: [], moths: [], warm: Math.random() < 0.67, acc: 0, live: false, near: false, zap: -1, bolt: null, bacc: 1,
+    sign: [936, 573.5], dx: [929, 941, 583, 661], BL: null, FL: null, RF: null };   // (the doorway inside its frame: x0, x1, y0, y1)
   const RJ_ZF = 23.08, RJ_XH = 6.124, RJ_W = 0.66, RJ_MAX = 1.3;   // (the far wall's depth, the hinge, the leaf's width (m), its widest angle (rad))
+  const RJ_BOLT = { x: 884, y: 396, w: 60, h: 230 }, RJ_FLASH = { x: 884, y: 436, w: 60, h: 262 };   // (the bolt's canvas, the flash's picture)
+  const RJ_FLK = [1, 0.4, 0.95, 0.3, 0.85, 0.5, 0.75, 0.25, 0.55];   // (the flash's level, a twentieth of a second each, then it dies)
   function rjxInit() {
     const B = RJX, im = city.material.map && city.material.map.image; if (!im || !im.complete || !im.naturalWidth) return;
     try {
       const c = document.createElement('canvas'); c.width = 14; c.height = 81; const g = c.getContext('2d', { willReadFrequently: true });
       g.drawImage(im, -927, -581); B.door = g.getImageData(0, 0, 14, 81).data;   // (the closed door as the layer has it: x 927-940, y 581-661)
-      const mk = (z, kind, add) => {
-        const cv = document.createElement('canvas'); cv.width = B.w; cv.height = B.h;
+      const mk = (z, kind, add, R) => {
+        R = R || B; const cv = document.createElement('canvas'); cv.width = R.w; cv.height = R.h;
         const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(B.w, B.h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
-        m.position.set(B.x + B.w / 2, -(B.y + B.h / 2), z); m.visible = false; scene.add(m); gradeSprite(m.material, kind);
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(R.w, R.h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
+        m.position.set(R.x + R.w / 2, -(R.y + R.h / 2), z); m.visible = false; scene.add(m); gradeSprite(m.material, kind);
         return { cv, g: cv.getContext('2d'), t, m };
       };
       B.L = [mk(0.6005, 'self', false), mk(0.601, 'street', false), mk(0.6015, 'self', true)];
+      B.BL = mk(1.13, 'self', true, RJ_BOLT);                              // the bolt, over Red
+      B.RF = mk(1.1203, 'self', true, CRB);                                // Red and Pikachu in its light
+      B.FL = mk(0.602, 'self', true, RJ_FLASH);                            // the alley in its light: made once
+      const F = RJ_FLASH, fd = B.FL.g.createImageData(F.w, F.h);
+      for (let j = 0; j < F.h; j++) for (let i = 0; i < F.w; i++) {
+        const x = F.x + i, y = F.y + j; let a = 0;
+        if (y >= 441) {                                                    // (round the bolt, fading out sideways and upward: the far wall,
+          const d = Math.abs(x - 924), u = Math.max(0, Math.min(1, (y - 470) / 170));   // the Center's corner, brighter low by the grunt)
+          a = 0.5 * Math.exp(-d / 20) * (0.35 + 0.65 * u * u * (3 - 2 * u));
+          if (y >= 667) { const w = 1 - (y - 667) / 29; a = Math.max(a * w, 0.7 * Math.exp(-d / 14) * w); }   // (the wet floor's sheen)
+          a *= Math.max(0, 1 - Math.max(0, x - 940) / 4);                  // (B's corner)
+        }
+        const o = (j * F.w + i) * 4; fd.data[o] = 255; fd.data[o + 1] = 246; fd.data[o + 2] = 205; fd.data[o + 3] = Math.round(255 * Math.min(1, a));
+      }
+      B.FL.g.putImageData(fd, 0, 0); B.FL.t.needsUpdate = true;
       B.ok = true;
     } catch (e) { B.dead = true; }
   }
   const rjEdge = (th) => { const a = th * RJ_MAX, X = RJ_XH - RJ_W * Math.cos(a), Z = RJ_ZF - RJ_W * Math.sin(a); return [700 + 960 * X / Z, X, Z, a]; };   // the leaf's free edge on screen
-  function rjxPlay(back) {                            // his visit's beats: [what, seconds, his frame, his feet x, y]
-    const r = (a, b) => a + Math.random() * (b - a), S = [];
-    if (!back) {
-      S.push(['open', 0.5], ['man', 0.55, 'step', 936, 662], ['man', 0.4, 'step', 928, 666], ['shut', 0.1, 'light', RJS.x, RJS.y], ['light', r(2, 3), 'light', RJS.x, RJS.y]);
-      for (let k = 0, n = 3 + ((Math.random() * 4) | 0); k < n; k++) S.push(['rest', r(3.5, 8), 'rest', RJS.x, RJS.y], ['drag', r(1, 1.6), 'drag', RJS.x, RJS.y], ['puff', 0.05, 'rest', RJS.x, RJS.y]);
-      S.push(['rest', r(2, 5), 'rest', RJS.x, RJS.y], ['flick', 0.05, 'rest', RJS.x, RJS.y], ['man', 0.6, 'rest', RJS.x, RJS.y], ['man', 0.4, 'step', 928, 666],
-        ['open', 0.45, 'step', 928, 666], ['man', 0.5, 'step', 936, 662], ['gone', 0.5], ['shut', 0.1]);
-    }
-    RJX.seq = S; RJX.st = null; RJX.stt = 0;
+  const rjRedOk = () => !reduced && !CR.dead && CR.a > 0.95 && crIn() && !crNight() && !Z1F.who && CRI.naturalWidth > 0;   // (Red there, awake)
+  function rjxPlay() {                                // his visit's beats: [what, seconds, his frame, his feet x, y, the door: [where, how fast]]
+    const r = (a, b) => a + Math.random() * (b - a), X = RJS.x, Y = RJS.y;
+    RJX.seq = [['door', r(0.6, 1), null, 0, 0, [0.55, 3]], ['man', r(0.5, 0.8), 'look_l', 935, 662], ['man', r(0.4, 0.7), 'look_r', 935, 662],
+      ['man', 0.35, 'step', 928, 666], ['man', r(0.4, 0.7), 'look_l', X, Y, [0, 2.5]], ['man', r(0.3, 0.6), 'look_r', X, Y], ['light', r(1.8, 2.6), 'light', X, Y],
+      ['hold', r(2.5, 4.5), 'hold', X, Y], ['notice', r(1, 1.5), 'hold', X, Y], ['zap', 0.5, 'zap1', X, Y], ['singed', r(0.5, 0.75), 'zap2', X, Y],
+      ['flee', 0.16, 'flee', 925, 667, [1, 16]], ['flee', 0.16, 'flee', 934, 663], ['gone', 0.18], ['slam', 0.35, null, 0, 0, [0, 30]]];
+    RJX.st = null; RJX.stt = 0;
+  }
+  function rjxBolt() {                                // the bolt's path: from Pikachu's cheeks down to the grunt, jagged, with forks
+    const p = CRD.pts.pk_zap ? CRD.pts.pk_zap.pika : [9, -28], x0 = CRD.x + p[0], y0 = CRD.y + p[1], x1 = RJS.x - 1, y1 = RJS.y - 66, n = 11, P = [];
+    for (let i = 0; i <= n; i++) { const u = i / n, j = i === 0 || i === n ? 0 : (Math.random() * 2 - 1) * 3.5 * Math.sin(Math.PI * u) + (Math.random() < 0.25 ? (Math.random() < 0.5 ? -2 : 2) : 0); P.push([Math.round(x0 + (x1 - x0) * u + j), Math.round(y0 + (y1 - y0) * u)]); }
+    const forks = [];
+    for (let k = 0; k < 2; k++) { const i = 2 + ((Math.random() * (n - 4)) | 0), s = Math.random() < 0.5 ? -1 : 1, L = 6 + Math.random() * 10; forks.push([P[i], [Math.round(P[i][0] + s * L * 0.6), Math.round(P[i][1] + L * 0.8)], [Math.round(P[i][0] + s * L * 0.9 + (Math.random() * 4 - 2)), Math.round(P[i][1] + L * 1.4)]]); }
+    return { P, forks };
+  }
+  function rjxLine(g, a, b, put) {                    // a pixel line (whole pixels, no smoothing)
+    let [x, y] = a; const [x1, y1] = b, dx = Math.abs(x1 - x), dy = -Math.abs(y1 - y), sx = x < x1 ? 1 : -1, sy = y < y1 ? 1 : -1; let e = dx + dy;
+    for (let i = 0; i < 600; i++) { put(x, y); if (x === x1 && y === y1) break; const e2 = 2 * e; if (e2 >= dy) { e += dy; x += sx; } if (e2 <= dx) { e += dx; y += sy; } }
   }
   function stepRjx(dt) {
     const B = RJX; if (reduced || B.dead) return;
     if (!B.ok) { rjxInit(); if (!B.ok) return; }
     const h = (((CLOCK.h + CLOCK.wake) % 24) + 24) % 24, night = h >= 20 || h < 4.5, pw = PW.on ? roofPow(936, 600) : 1;
-    // his visits
+    // his visits: only with Red awake above, never in the power cut nor the finale
     if (!B.seq.length && !B.st) {
-      B.next -= dt * (h >= 7 && h < 17 ? 0.5 : 1);
+      B.next -= dt * (h >= 18 ? 1 : 0.4);
       if (B.next < 0) {
-        if (!PW.on && FINS.t < 0 && RJS.cells.rest && (!B.img || B.img.complete)) {
-          if (!B.img) { B.img = new Image(); B.img.onerror = () => { B.dead = true; }; B.img.src = 'assets/roji_smoker.webp?v=1'; B.next = 3; }
-          else if (B.img.naturalWidth) { rjxPlay(false); B.next = 180 + Math.random() * 300; }
+        if (!PW.on && FINS.t < 0 && RJS.cells.hold && rjRedOk() && (!B.img || B.img.complete)) {
+          if (!B.img) { B.img = new Image(); B.img.onerror = () => { B.dead = true; }; B.img.src = 'assets/roji_grunt.webp?v=1'; B.next = 3; }
+          else if (B.img.naturalWidth) { rjxPlay(); B.next = 180 + Math.random() * 240; }
         } else B.next = 20 + Math.random() * 30;
       }
     }
     if ((B.stt -= dt) <= 0 && B.seq.length) {
-      const s = B.seq.shift(); B.st = s; B.stt = s[1];
-      if (s[0] === 'open') B.want = 1; else if (s[0] === 'shut') B.want = 0;
-      if (s[0] === 'puff') B.puff.push({ t: 0, x: s[3] + RJS.ember.drag[0] - 1, y: s[4] + RJS.ember.drag[1] + 1 });
-      if (s[0] === 'flick') { const e = RJS.ember.rest; B.butt = { t: 0, x: s[3] + e[0], y: s[4] + e[1], y0: s[4] + e[1], v: 0 }; }
+      const s = B.seq.shift(); B.st = s; B.stt = s[1]; B.bt = 0;
+      if (s[5]) { B.want = s[5][0]; B.k = s[5][1]; }
+      if (s[0] === 'notice') { CR.seq = [['idle', 6]]; CR.ft = 0; CR.ball = null; CR.pop = null; CR.ev = 'pk_alert'; }   // (Pikachu has seen him)
+      if (s[0] === 'zap') { CR.ev = 'pk_zap'; CR.spark = 0.7; B.zap = 0; B.bolt = rjxBolt(); B.bacc = 0; }
+      if (s[0] === 'singed') for (let i = 0; i < 3; i++) B.puff.push({ t: -0.15 * i, x: RJS.x - 3 + 3 * i, y: RJS.y - 70, big: true });
+      if (s[0] === 'flee' && CR.ev === 'pk_zap') { CR.ev = 'pk_smug'; CR.spark = 1.3; }
+      if (s[0] === 'slam') { CR.ev = null; CR.seq = [['idle', 0.3], ['look', 1.3 + Math.random() * 0.6], ['idle', 0.8]]; CR.ft = 0; }   // (Red glances at him)
     } else if (B.stt <= 0 && !B.seq.length) B.st = null;
+    if (B.st && CR.ev && !rjRedOk()) CR.ev = null;     // (Red gone meanwhile)
+    B.bt += dt;
     const man = B.st && B.st[2] ? B.st : null;
-    B.th = Math.max(0, Math.min(1, B.th + (B.want ? dt / 0.45 : -dt / 0.6)));
-    B.flame = man && man[0] === 'light' ? 1 : 0;
-    for (const P of B.puff) P.t += dt; B.puff = B.puff.filter((P) => P.t < 2.2);
-    if (B.butt) { const U = B.butt; U.t += dt; if (U.y < RJS.y - 1) { U.v += 300 * dt; U.y = Math.min(RJS.y - 1, U.y + U.v * dt); U.x -= 8 * dt; } if (U.t > 5) B.butt = null; }
+    B.th += (B.want - B.th) * Math.min(1, dt * B.k); if (B.th < 0.002 && !B.want) B.th = 0;   // (the door, eased; flung, slammed)
+    for (const P of B.puff) P.t += dt; B.puff = B.puff.filter((P) => P.t < (P.big ? 1.6 : 2.2));
+    // the zap: the bolt (redrawn every 1/20 s, a new path), the flash's level, Red and Pikachu lit
+    let fl = 0;
+    if (B.zap >= 0) {
+      B.zap += dt; const i = Math.floor(B.zap / 0.05);
+      fl = i < RJ_FLK.length ? RJ_FLK[i] : Math.max(0, 0.3 * (1 - (B.zap - 0.45) / 0.3));
+      if (B.zap > 0.75) { B.zap = -1; fl = 0; }
+    }
+    const bolting = B.zap >= 0 && B.zap < 0.45;
+    if (B.BL) {
+      B.BL.m.visible = bolting; B.FL.m.visible = fl > 0.004; B.FL.m.material.opacity = fl; B.RF.m.visible = fl > 0.004;
+      if (bolting && (B.bacc -= dt) <= 0) {
+        B.bacc = 0.05; if (B.zap > 0.04) B.bolt = rjxBolt();
+        const g = B.BL.g, R = RJ_BOLT, put = (a) => (x, y) => { g.fillStyle = a; g.fillRect(x - R.x, y - R.y, 1, 1); }, { P, forks } = B.bolt;
+        g.clearRect(0, 0, R.w, R.h);
+        for (let k = 0; k < P.length - 1; k++) {
+          rjxLine(g, [P[k][0] - 2, P[k][1]], [P[k + 1][0] - 2, P[k + 1][1]], put('rgba(255,214,80,0.16)')); rjxLine(g, [P[k][0] + 2, P[k][1]], [P[k + 1][0] + 2, P[k + 1][1]], put('rgba(255,214,80,0.16)'));
+          rjxLine(g, [P[k][0] - 1, P[k][1]], [P[k + 1][0] - 1, P[k + 1][1]], put('rgba(255,232,110,0.55)')); rjxLine(g, [P[k][0] + 1, P[k][1]], [P[k + 1][0] + 1, P[k + 1][1]], put('rgba(255,232,110,0.55)'));
+        }
+        for (let k = 0; k < P.length - 1; k++) rjxLine(g, P[k], P[k + 1], put('rgba(255,255,236,1)'));
+        for (const f of forks) { rjxLine(g, f[0], f[1], put('rgba(255,240,170,0.75)')); rjxLine(g, f[1], f[2], put('rgba(255,236,140,0.5)')); }
+        const [ix, iy] = P[P.length - 1]; g.fillStyle = 'rgba(255,250,220,0.6)'; g.fillRect(ix - 2 - R.x, iy - 1 - R.y, 5, 3);   // (where it strikes)
+        B.BL.t.needsUpdate = true;
+      }
+      if (fl > 0.004) {                                   // Red and Pikachu in the flash: their picture, filled with its light
+        const g = B.RF.g, C = CRD.cells[CR.d]; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, CRB.w, CRB.h);
+        if (C) { const [sx, sy, w, hh, ox, oy] = C; g.imageSmoothingEnabled = false; g.drawImage(CRI, sx, sy, w, hh, CRD.x - ox - CRB.x, CRD.y - oy - CRB.y, w, hh); g.globalCompositeOperation = 'source-in'; g.fillStyle = 'rgb(255,246,205)'; g.fillRect(0, 0, CRB.w, CRB.h); g.globalCompositeOperation = 'source-over'; }
+        B.RF.m.material.opacity = 0.42 * fl * CR.a; B.RF.t.needsUpdate = true;
+      }
+    }
     // the moths: on the warmer nights; one in the rain, more in a lull, none in a strong gust
     const want = !B.warm || !night ? 0 : gust.k > 0.7 ? 0 : Math.round(1 + 2.6 * (1 - LULL.k));
     while (B.moths.filter((M) => !M.off).length < want) B.moths.push({ a: 0, off: false, ph: Math.random() * 6.28, w: (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 5), r: 3 + Math.random() * 5, e: 0.45 + Math.random() * 0.2, jx: 0, jy: 0, hit: 0 });
@@ -12020,15 +12088,24 @@
       M.r += ((M.hit > 0 ? 1.2 : 3 + 3 * Math.sin(M.ph * 0.31)) - M.r) * Math.min(1, dt * 6);
     }
     B.moths = B.moths.filter((M) => !(M.off && M.a <= 0));
-    const busy = !!B.st || B.th > 0 || B.puff.length || !!B.butt || B.moths.length;
+    const busy = !!B.st || B.th > 0 || B.puff.length || B.moths.length;
     const seen = !(camera.right < B.x || camera.left > B.x + B.w || -camera.top > B.y + B.h || -camera.bottom < B.y);
     for (const L of B.L) L.m.visible = busy && seen;
     if (!busy || !seen) { B.live = false; return; }
-    if (B.live && (B.acc += dt) < 1 / 20) return; B.acc = 0; B.live = true;
+    if (B.live && (B.acc += dt) < 1 / 20 && !bolting) return; B.acc = 0; B.live = true;
     const [g0, g1, g2] = B.L.map((L) => L.g), X = (x) => x - B.x, Y = (y) => y - B.y, [dx0, dx1, dy0, dy1] = B.dx;
-    const near = B.th > 0 || !!man, redo = near || B.near;              // (the door and him: only while there, and once more to clear them)
+    const near = B.th > 0 || !!man || B.puff.length > 0, redo = near || B.near;   // (the door and him: only while there, and once more to clear them)
     for (const g of redo ? [g0, g1, g2] : [g2]) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, B.w, B.h); }
     const light = B.th > 0 ? Math.min(1, B.th * 3) * pw : 0;              // (the corridor's light: as the gap opens, with the power)
+    let frame = man ? man[2] : null;
+    if (man && man[0] === 'zap') frame = Math.floor(B.bt / 0.07) % 2 ? 'zap2' : 'zap1';   // (jolted: his two frames flickering)
+    const C = frame && B.img && B.img.naturalWidth ? RJS.cells[frame] : null, inDoor = !!man && man[4] <= 664;
+    const drawMan = () => {                                               // him (and his edge in the door's light)
+      const [sx, sy, w, hh, ax, ay] = C, x = X(man[3]) - ax, y = Y(man[4]) - ay;
+      g1.fillStyle = 'rgba(6,8,16,0.4)'; g1.fillRect(X(man[3]) - 7, Y(man[4]) - 1, 15, 1); g1.fillStyle = 'rgba(6,8,16,0.22)'; g1.fillRect(X(man[3]) - 9, Y(man[4]) - 1, 2, 1); g1.fillRect(X(man[3]) + 8, Y(man[4]) - 1, 2, 1);   // (his contact shade on the floor)
+      g1.imageSmoothingEnabled = false; g1.drawImage(B.img, sx, sy, w, hh, x, y, w, hh);
+      if (light > 0.02) { g2.globalAlpha = 0.32 * light; g2.drawImage(B.img, sx, sy + RJS.warm, w, hh, x, y, w, hh); g2.globalAlpha = 1; }
+    };
     if (B.th > 0) {                                                       // the doorway, the leaf on its hinge
       const [xe, Xe, Ze, a] = rjEdge(B.th), xeR = Math.max(dx0, Math.min(dx1, Math.round(xe)));
       for (let y = dy0; y <= dy1; y++) {                                  // the corridor's light: a ceiling tube's, falling off to the floor
@@ -12038,6 +12115,7 @@
       g0.fillStyle = 'rgba(0,0,0,0.35)'; g0.fillRect(X(dx0), Y(dy0), 1, dy1 - dy0 + 1);   // (its jamb's shade)
       g0.fillRect(X(dx0), Y(dy1 - 2), xeR - dx0, 3);                                 // (the corridor's floor)
       B.L[0].m.material.opacity = Math.max(0.12, light);
+      if (C && inDoor) drawMan();                                         // (in the doorway: behind the leaf)
       const im = g1.getImageData(0, 0, B.w, B.h), d = im.data, c = Math.cos(a), s = Math.sin(a);
       for (let x = xeR; x < 941; x++) {                                   // the leaf: each column, the closed door's at that point of it
         const kx = (x + 0.5 - 700) / 960, p = Math.max(0, Math.min(RJ_W, (kx * Ze - Xe) / (c - kx * s)));
@@ -12050,34 +12128,28 @@
         if (al > 0.005) { g2.fillStyle = 'rgba(236,226,200,' + al.toFixed(3) + ')'; g2.fillRect(X(x0), Y(y), xeR - x0 + 2, 1); }
       }
     } else B.L[0].m.material.opacity = 1;
-    if (man && B.img && B.img.naturalWidth) {                             // him (and his edge in the door's light)
-      const C = RJS.cells[man[2]];
-      if (C) {
-        const [sx, sy, w, hh, ax, ay] = C, x = X(man[3]) - ax, y = Y(man[4]) - ay;
-        g1.fillStyle = 'rgba(6,8,16,0.4)'; g1.fillRect(X(man[3]) - 7, Y(man[4]) - 1, 15, 1); g1.fillStyle = 'rgba(6,8,16,0.22)'; g1.fillRect(X(man[3]) - 9, Y(man[4]) - 1, 2, 1); g1.fillRect(X(man[3]) + 8, Y(man[4]) - 1, 2, 1);   // (his contact shade on the floor)
-        g1.imageSmoothingEnabled = false; g1.drawImage(B.img, sx, sy, w, hh, x, y, w, hh);
-        if (light > 0.02) { g2.globalAlpha = 0.32 * light; g2.drawImage(B.img, sx, sy + RJS.warm, w, hh, x, y, w, hh); g2.globalAlpha = 1; }
-        const e = RJS.ember[man[2]];
-        if (e && man[2] === 'light') {                                    // the lighter's flame, flickering, and its glow on his hands and face
-          const f = 0.75 + 0.25 * Math.sin(t * 31) * Math.sin(t * 17.3), ex = X(man[3]) + e[0], ey = Y(man[4]) + e[1];
-          const gr = g2.createRadialGradient(ex + 0.5, ey, 0, ex + 0.5, ey, 5); gr.addColorStop(0, 'rgba(255,170,80,' + (0.45 * f).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,150,60,0)');
-          g2.fillStyle = gr; g2.fillRect(ex - 5, ey - 5, 11, 11);
-          g2.fillStyle = 'rgba(255,232,160,' + (0.95 * f).toFixed(3) + ')'; g2.fillRect(ex, ey - 1, 1, 2);
-        } else if (e) {                                                   // the ember: brighter at a drag
-          const ex = X(man[3]) + e[0], ey = Y(man[4]) + e[1], k = man[0] === 'drag' ? 0.95 : 0.5 + 0.08 * Math.sin(t * 2.3);
-          g2.fillStyle = 'rgba(255,120,50,' + k.toFixed(3) + ')'; g2.fillRect(ex, ey, 1, 1);
-          if (man[0] === 'drag') { g2.fillStyle = 'rgba(255,110,40,0.22)'; g2.fillRect(ex - 1, ey, 3, 1); g2.fillRect(ex, ey - 1, 1, 3); }
-        }
+    if (C && !(inDoor && B.th > 0)) drawMan();
+    if (C) {
+      const e = RJS.ember[frame];
+      if (e && frame === 'light') {                                       // the lighter's flame, flickering, and its glow on his hands and face
+        const f = 0.75 + 0.25 * Math.sin(t * 31) * Math.sin(t * 17.3), ex = X(man[3]) + e[0], ey = Y(man[4]) + e[1];
+        const gr = g2.createRadialGradient(ex + 0.5, ey, 0, ex + 0.5, ey, 5); gr.addColorStop(0, 'rgba(255,170,80,' + (0.45 * f).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,150,60,0)');
+        g2.fillStyle = gr; g2.fillRect(ex - 5, ey - 5, 11, 11);
+        g2.fillStyle = 'rgba(255,232,160,' + (0.95 * f).toFixed(3) + ')'; g2.fillRect(ex, ey - 1, 1, 2);
+      } else if (e) {                                                     // the ember, glowing up now and then (a drag)
+        const ex = X(man[3]) + e[0], ey = Y(man[4]) + e[1], dr = Math.sin(B.bt * 1.9) > 0.8, k = dr ? 0.95 : 0.5 + 0.08 * Math.sin(t * 2.3);
+        g2.fillStyle = 'rgba(255,120,50,' + k.toFixed(3) + ')'; g2.fillRect(ex, ey, 1, 1);
+        if (dr) { g2.fillStyle = 'rgba(255,110,40,0.22)'; g2.fillRect(ex - 1, ey, 3, 1); g2.fillRect(ex, ey - 1, 1, 3); }
       }
     }
-    for (const P of B.puff) {                                             // his breath of smoke: a few pixels rising, drifting with the wind
-      const k = P.t / 2.2, a = 0.16 * Math.sin(Math.PI * Math.min(1, k * 1.4)) * (1 - k);
-      for (let i = 0; i < 4; i++) {
-        const yy = P.y - 1 - P.t * 7 - i * 2, xx = P.x - P.t * (4 + 14 * Math.max(0, gust.k)) + Math.sin(P.t * 3 + i) * 1.2;
-        g2.fillStyle = 'rgba(150,160,170,' + (a * (1 - i / 5)).toFixed(3) + ')'; g2.fillRect(Math.round(X(xx)), Math.round(Y(yy)), 1, 1);
+    for (const P of B.puff) {                                             // smoke: a few pixels rising, drifting with the wind (his singed head's, thicker)
+      if (P.t < 0) continue;
+      const T = P.big ? 1.6 : 2.2, k = P.t / T, a = (P.big ? 0.34 : 0.16) * Math.sin(Math.PI * Math.min(1, k * 1.4)) * (1 - k);
+      for (let i = 0; i < (P.big ? 6 : 4); i++) {
+        const yy = P.y - 1 - P.t * (P.big ? 12 : 7) - i * 2, xx = P.x - P.t * (4 + 14 * Math.max(0, gust.k)) + Math.sin(P.t * 3 + i) * 1.2;
+        g2.fillStyle = 'rgba(150,160,170,' + (a * (1 - i / 7)).toFixed(3) + ')'; g2.fillRect(Math.round(X(xx)), Math.round(Y(yy)), 1, 1);
       }
     }
-    if (B.butt) { const U = B.butt, a = U.t < 0.5 ? 0.8 : 0.6 * Math.max(0, 1 - (U.t - 0.5) / 4.5); g2.fillStyle = 'rgba(255,110,40,' + a.toFixed(3) + ')'; g2.fillRect(Math.round(X(U.x)), Math.round(Y(U.y)), 1, 1); }
     const mk = 0.35 + 0.65 * pw, [cx, cy] = B.sign;                        // the moths in the sign's light (dimmer on its battery)
     for (const M of B.moths) {
       if (Math.random() < 0.5) { M.jx = Math.round(Math.random() * 2 - 1); M.jy = Math.round(Math.random() * 2 - 1); }

@@ -1,0 +1,11 @@
+Two images: the first is a style reference (one figure of a painted pixel-art sprite sheet: a man standing at night), the second an empty sprite-sheet grid (4 x 2 cells, thin grey lines). Fill the empty grid, in exactly the reference's style (soft painted pixel art, smooth painterly shading, chunky pixels, no black outlines, natural proportions, about 7.5 heads tall, the figure filling about four fifths of the cell's height), with eight full-body frames of one new character: a Team Rocket grunt from the Pokemon games, a young man in the grunt's black uniform (a black long-sleeved top with a big red letter R on the chest, black trousers, a grey belt), a black cap, white gloves and white boots. Every frame the same character at the same height, all feet on the same baseline, one figure per cell:
+1. sneaking out of a door, a step toward our left, hunched, seen three-quarter, looking ahead.
+2. standing hunched, glancing furtively over his shoulder toward our left.
+3. standing hunched, glancing furtively toward our right.
+4. standing, head bowed, both gloved hands cupped in front of his mouth lighting a cigarette (a tiny flame between his hands).
+5. standing at ease three-quarter toward our left, one gloved hand holding a lit cigarette at his lips, the other hand on his hip.
+6. electrocuted, comic: stiff as a board, arms and legs spread wide, back arched, eyes wide, mouth open in a yell, his hair standing up and his cap lifted off his head (no lightning or sparks drawn).
+7. right after: the same stiff pose, his face and uniform blackened with soot, his hair frizzled, dazed (no smoke drawn).
+8. fleeing in panic toward our right, running, arms flailing, seen three-quarter from the side.
+
+Plain pure white background everywhere, keep the grid lines, no text, no labels, no ground line, no cast shadows, no other objects.
