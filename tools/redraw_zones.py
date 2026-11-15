@@ -323,9 +323,10 @@ ZONES = {
     # PERKS, BZ.soda and DRIPS 'kiosk' from the layout; after the kiosk zones, whose boxes it overlaps
     'soda': dict(box=(227, 320, 390, 745), tool='soda_corner'),
     # the house's face left of it, behind the tree (the owner: "tout ça c'est le même bâtiment"): its boards seen between
-    # the leaves below Kirua's bay the dagashi-ya's, as soda_corner lays them over the rest of the face, his dark line
-    # down the dagashi-ya's edge gone, the tree's shade on his boards softened (its face_left)
-    'sodaface': dict(box=(184, 300, 227, 496), tool='soda_corner'),
+    # the leaves below Kirua's bay, and over the dagashi-ya from its left post down to its sign, his boards under the bay
+    # as soda_corner lays them over the rest of the face (its face_left); after dojo and dojofoot (it overlaps their
+    # boxes, where they leave the painter's pixels)
+    'sodaface': dict(box=(138, 300, 227, 496), tool='soda_corner'),
     # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940) taken away: a roji
     # in its place (the owner, 2026-11-14: "trop comprimé : soit le refaire entièrement, soit le supprimer et créer une
     # rue"), drawn in the street's camera by tools/roji_alley.py: the alley's far wall (the Center's side, face on, its
