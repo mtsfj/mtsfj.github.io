@@ -55,6 +55,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'bshop_{_tag}.webp', 948, 536))
 
+# (an audit's second round: zone tomare)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'tomare_{_tag}.webp', 600, 682))
+
 
 def main():
     for layer, patches in LAYERS.items():

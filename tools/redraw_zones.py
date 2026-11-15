@@ -461,6 +461,10 @@ ZONES = {
     # bike's basket into the comp win_b_shop (street.js lights it on the shop's hours), the shut room in the layer (the
     # power cut's room, the street lamp's light on it as on the plaster round it); tools/bshop_window.py, last
     'bshop': dict(box=(948, 536, 1004, 664), tool='bshop_window'),
+    # 止まれ on the road as a real road marking (an audit: 止 sat on ま with no space, the two read as 集): the three characters
+    # from the font, each long on the ground, a space between them, in the road's perspective; the paint the painter's in
+    # each layer and in the ground lights that carry it (tools/tomare_marking.py), last
+    'tomare': dict(box=(600, 682, 800, 790), tool='tomare_marking'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

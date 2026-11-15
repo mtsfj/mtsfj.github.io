@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """止まれ sur la chaussée, dans le bon ordre : 止 au loin, ま, れ au plus près.
 
-    python3 tools/tomare.py      (il reprend sa zone au commit BEFORE à chaque fois, on peut donc le relancer)
+    python3 tools/tomare.py      (remplacé par tools/tomare_marking.py, la zone tomare de tools/redraw_zones.py : il s'arrête)
 
 Le marquage au sol se lit dans le sens de la marche, du plus loin au plus près : 止 contre le passage piéton, puis ま, puis
 れ. Le peintre avait mis れ au loin et 止 au plus près. ま reste ; 止 et れ changent de place.
@@ -30,6 +30,7 @@ import io
 import os
 import re
 import subprocess
+import sys
 import numpy as np
 from PIL import Image
 from scipy import ndimage as nd
@@ -115,6 +116,7 @@ def calques():
 
 
 def main():
+    sys.exit('superseded by tools/tomare_marking.py (the zone tomare in tools/redraw_zones.py): run again, this would put the old marking back')
     x0, y0, x1, y1 = ZONE
     cov = couverture(load('layer_city_off.webp', BEFORE))
     loin, pres = place(cov, LOIN), place(cov, PRES)
