@@ -468,6 +468,18 @@ ZONES = {
     # the arcade's front wall in its eave's deep shade, beside Ichiraku and beside its door (an audit: two flat navy slabs,
     # 37 x 380 px, that read as a hole): vertical boards on the street's rays (tools/arcade_shade.py), last
     'arcwall': dict(box=(1262, 400, 1360, 792), tool='arcade_shade'),
+    # where each front meets the sidewalk (the owner: "faudra faire toutes les liaisons façade-trottoir proprement, car là
+    # ça fait coupé net"): drawn by tools/facade_foot.py in the street's camera, once for the whole street, each zone its
+    # box of it: a concrete or stone base course along each foot (its top edge lit, its face darker, the rain's grime
+    # over it, their grain the image model's: tools/src/edits/foot_{L,R}_model.webp), the contact shade on the ground
+    # along every foot, step, post, pipe and thing standing there (the bicycle's tyres), the downpipes' feet (collars; B's
+    # corner one as painted); it also shades the shops' light on the ground (assets/gl_*.webp, from their before copies) and
+    # carries the lit windows' comps over the feet. Last: over every zone at the feet (hallBwalk's sidewalk included);
+    # Ichiraku's front (x 1117..1280, its own zone front) and the drinks machines (x 227..345) left out of the boxes
+    'footL': dict(box=(0, 640, 227, 800), tool='facade_foot'),
+    'footO': dict(box=(346, 630, 620, 712), tool='facade_foot'),
+    'footB': dict(box=(860, 620, 1117, 765), tool='facade_foot'),
+    'footR': dict(box=(1280, 740, 1456, 816), tool='facade_foot'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

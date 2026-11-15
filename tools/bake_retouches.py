@@ -54,6 +54,12 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # B's shop window shut in the layers, its lit room a comp on its hours (tools/bshop_window.py; zone bshop)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'bshop_{_tag}.webp', 948, 536))
+# where the fronts meet the sidewalk (tools/facade_foot.py, by tools/redraw_zones.py's zones of the same names): the base
+# courses, sills, grime and contact shade along the left side (footL: the dojo, the dagashi-ya; footO: the bench, the
+# oden, the far corner) and the right (footB: the Center, B, its hall, the entrance; footR: right of Ichiraku); last
+FEET = [('footL', 0, 640), ('footO', 346, 630), ('footB', 860, 620), ('footR', 1280, 740)]
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in FEET]
 
 # (an audit's second round: zone tomare)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):

@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=133", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=21", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=5", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_ramune.webp?v=2e08fcdf", "x": 229, "y": 406, "w": 110, "h": 146}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=132", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=21", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=5", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_ramune.webp?v=2e08fcdf", "x": 229, "y": 406, "w": 110, "h": 146}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=133') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=132') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4164,7 +4164,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=114', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=113', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7172,7 +7172,7 @@
   // back. Drawn a scene pixel at a time (crisp), on the glass only (its lattice and the window's mullion before him), the
   // leaf's wooden half before his legs; the street's night multiply on him as on the room. Reduced motion: he never comes
   const OMF = {"A":{"stand":[0,0,16,60,6,59],"w1":[17,0,33,59,14,58],"w2":[51,0,20,59,11,58],"w3":[72,0,27,59,11,58],"w4":[100,0,33,59,15,58],"w5":[134,0,18,59,9,58],"w6":[153,0,35,59,15,58],"laugh":[189,0,33,22,16,60],"offer":[223,0,30,22,14,60],"happy":[0,61,32,21,15,59],"idle":[33,61,33,21,16,59],"ladle":[67,61,33,21,17,59],"lift":[101,61,33,21,16,59],"pick":[135,61,33,21,17,59],"serve":[169,61,33,21,17,59],"wipe":[203,61,35,21,18,59],"wipe2":[0,83,31,21,14,59],"nod":[32,83,33,20,16,58],"z":47.1,"floor":659.59,"from":411.97,"at":473.42,"v":29.72},"D":{"stand2":[66,83,39,75,14,74],"grab":[106,83,34,74,8,73],"stand":[141,83,20,74,8,73],"stand_m":[162,83,20,74,11,73],"w1":[183,83,40,73,17,72],"w1_m":[0,159,40,73,22,72],"w2":[41,159,25,73,14,72],"w2_m":[67,159,25,73,10,72],"w3":[93,159,34,73,14,72],"w3_m":[128,159,34,73,19,72],"w4":[163,159,41,73,19,72],"w4_m":[205,159,41,73,21,72],"w5":[0,233,23,73,12,72],"w5_m":[24,233,23,73,10,72],"w6":[48,233,43,73,19,72],"w6_m":[92,233,43,73,23,72],"z":38.2,"floor":669.97,"from":391.12,"at":431.46,"look":445.29,"v":36.65},"step":0.17,"walk":["w1","w2","w3","w4","w5","w6"]};
-  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=3'; OMI.src = 'assets/oden_master.webp?v=5';
+  const ODI = new Image(), OMI = new Image(); ODI.src = 'assets/oden_door.webp?v=4'; OMI.src = 'assets/oden_master.webp?v=5';
   const ODOOR = (function () {                   // (drawn in one canvas over ODM.box, shown by two: the door's, the window's)
     const mk = (b, show) => {
       const c = document.createElement('canvas'); c.width = b[2]; c.height = b[3];
@@ -8613,17 +8613,17 @@
   // street lamp's pool is one of them: at its glass's centre (881) at the pole's depth, the painted pool and the live one in one
   // place (the old faint lamp_pool plane retired); in the red night it keeps half its light, as its glass ----
   const GL = { list: [
-    { src: 'lamp', url: 'assets/gl_lamp.webp?v=8', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
-    { src: 'oden', url: 'assets/gl_oden.webp?v=6', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
+    { src: 'lamp', url: 'assets/gl_lamp.webp?v=9', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
+    { src: 'oden', url: 'assets/gl_oden.webp?v=8', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
     { src: 'z7_vending', url: 'assets/gl_z7_vending.webp?v=3', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
-    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=3', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
-    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=2', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
-    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=3', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
-    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=3', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
+    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=5', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
+    { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=3', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
+    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=5', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
+    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=5', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
     { src: 'ramen', url: 'assets/gl_ramen.webp?v=7', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
-    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=5', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
-    { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
-    { src: 'dojo', url: 'assets/gl_dojo.webp?v=1', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
+    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=7', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
+    { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=3', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
+    { src: 'dojo', url: 'assets/gl_dojo.webp?v=3', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
   ], m: [] };
   (function () {
     const byName = {}; for (const c of comps) byName[c.userData.name] = c;
