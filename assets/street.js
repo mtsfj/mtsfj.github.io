@@ -11403,6 +11403,18 @@
   }
   FEAT.push(stepRoof);
   // ==== end of ROOF ====
+  // ==== feature: the belvedere's railing at the street's end, dimmed with the far city (RAILD) — its own block ====
+  // (tools/belvedere_rail.py) The railing is painted lit by the city's glow behind and below it; as the far windows go out
+  // after midnight (NIGHT.home, the share of homes lit) its dark picture comes over it, eased over half a minute: a
+  // silhouette at 3 h, as lit as ever through the evening. Graded as the street; over the far city's quad (z 0.59) ----
+  const RAILD = { init: false, m: plane('assets/rail_dark.webp?v=1', 604, 618, 164, 22, 0.59) };
+  RAILD.m.material.opacity = 0; RAILD.m.visible = false; gradeSprite(RAILD.m.material, 'street');
+  FEAT.push((dt) => {
+    const want = Math.max(0, Math.min(1, 1 - NIGHT.home)), M = RAILD.m.material;
+    M.opacity = RAILD.init && !NIGHT.snap ? M.opacity + (want - M.opacity) * Math.min(1, dt / 30) : want;
+    RAILD.init = true; RAILD.m.visible = M.opacity > 0.004;
+  });
+  // ==== end of RAILD ====
   // ==== feature: Naruto's two windows on his end wall, lived in (NWIN) — its own block ====
   // (tools/naruto_parapet.py: their light and their figures painted by the image model in context, pixelated: the room's
   // window lit warm, its curtain half drawn on the lit room, win_naru_side.webp; a person's soft shadow on it,
