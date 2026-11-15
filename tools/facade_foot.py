@@ -332,7 +332,7 @@ def draw_pipes(img):
 
 
 GL = ['gl_lamp', 'gl_oden', 'gl_win_z4_shop', 'gl_win_z7_shop', 'gl_dojo', 'gl_win_z9_lantern', 'gl_z4_emblem',
-      'gl_win_z1_warm', 'gl_win_z7_kiosk']           # the ground lights the shade takes (not the machines', not Ichiraku's)
+      'gl_win_z1_warm']                              # the ground lights the shade takes (not the machines', not Ichiraku's)
 
 
 def gl_boxes():

@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=135", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=22", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=6", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=5fc1ab9e", "x": 231, "y": 408, "w": 106, "h": 142}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=135", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_vending": {"src": "assets/z7_vending.webp?v=22", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=6", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=5fc1ab9e", "x": 231, "y": 408, "w": 106, "h": 142}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -275,8 +275,8 @@
   const comps = [];
   // what each light is (else by its name: 'win…' a window, 'lamp', else a neon): zone 7's dagashi-ya open ('shop', steady,
   // its tubes wavering a moment now and then; B's shop window by the pole the same, win_b_shop, tools/bshop_window.py, on its
-  // hours 'bshop'), the tabako window ('tube', steady), the drinks machines ('vend', always on;
-  // the right one's tube fails a moment, rarely), the windows of homes ('home', on and off a long while: Kirua's room behind
+  // hours 'bshop'), the drinks machines ('vend', always on;
+  // the middle one's tube fails a moment, rarely), the windows of homes ('home', on and off a long while: Kirua's room behind
   // the bay, its monitor alive (BAY, below); the one over the dojo, tools/dojo_window.py; Naruto's two on his end wall have their own block, NWIN), zone 9's paper lantern ('lantern', breathing),
   // the roji's emergency exit sign by the Center (z5_alley, tools/roji_alley.py: a 'tube' on its hours 'exit', lit all day and
   // all night, steady, never a flicker; in the power cut on its battery, dimmer, in the layer)
@@ -289,7 +289,7 @@
   // a light's stutter on the clock, not a coin flipped each frame: true with probability p in each slot of `step` seconds (a hash
   // of its seed and the slot), so it reads the same at 60 and 144 Hz (lumieres-02)
   function stutOn(t, seed, step, p) { const x = Math.sin(seed * 12.9898 + Math.floor(t / step) * 78.233) * 43758.5453; return x - Math.floor(x) < p; }
-  const COMP_KIND = { win_z1_warm: 'naru', win_dojo: 'home', win_z7_shop: 'shop', win_b_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', z7_adscreen: 'ad', z7_bigscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube' };
+  const COMP_KIND = { win_z1_warm: 'naru', win_dojo: 'home', win_z7_shop: 'shop', win_b_shop: 'shop', z7_vending: 'vend', z7_adscreen: 'ad', z7_bigscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name.startsWith('z5_') || name === 'win_z4_shop' || name === 'win_b_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
     const kind = COMP_KIND[name] || (name.startsWith('win') ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
@@ -304,7 +304,7 @@
     if (kind === 'window' && !shop) p.userData.next = 40 + Math.random() * 500;   // (a room's light: minutes, not seconds)
     comps.push(p);
   }
-  // the right-hand drinks machine's display out (build_zzzanim_z7.py), laid over its comp while its tube stutters
+  // the middle drinks machine's display out (tools/soda_corner.py), laid over its comp while its tube stutters
   const vendOff = plane('assets/z7_vendoff.webp?v=15', 307, 579, 20, 143, 1.105, { opacity: 0 }); vendOff.visible = false;
   // the ad screens of the drinks corner (tools/soda_corner.py writes ADS): the side panel's frames side by side in its comp,
   // played at their fps (without one: a picture every 6 s, its two frames alternating); the giant screen's clips, each its
@@ -4696,7 +4696,7 @@
     void kr;                                     // (the curtains' count: rainAmount(), in stepRain: 650 -> 120 over these 8 s, with the lull's share)
     // the street wakes: the finale over and the morning in (20 s into the dawn), the power comes back as the fuses' wave brings
     // it (from the arcade down the street; at once under reduced motion); then over three minutes the places' clock runs on to
-    // nine (CLOCK.wake: the sky keeps its morning): the tobacco kiosk, the balcony, the dagashi-ya, the far signs, the arcade,
+    // nine (CLOCK.wake: the sky keeps its morning): the balcony, the dagashi-ya, the far signs, the arcade,
     // Ichiraku, the lantern, the oden, the dojo open one after another; Mathis back at his desk
     if (!FIN.woke && FINS.t < 0 && t >= 20) {
       FIN.woke = true; FIN.wakeT = 0;
@@ -4917,9 +4917,9 @@
 
   // ---- drips from the eaves (v2, patch_drips2.py): water runs off them. At their low points, corners, the eave's lowest
   // end and each trough of corrugated sheet or tile channel (read off the painted relief: the Center's red awning, its two
-  // front corners; the oden's eave, its far end; zone 9's pent roof, its channels in the tiles' rhythm; the kiosk
-  // lean-to's sheet, its troughs and near corner; the downpipe's shoe at the foot of Kirua's gutter, pouring on that sheet,
-  // and the wet streak down its corrugations from it), a thin trickle: a broken string of 1 px drops, near-continuous, in
+  // front corners; the oden's eave, its far end; zone 9's pent roof, its channels in the tiles' rhythm; the drinks corner's
+  // canopy, its round tile ends (DRIPS 'kiosk', tools/soda_corner.py; 'shoe', the downpipe's shoe that poured on the old
+  // kiosk's lean-to, has no drop left: its index kept)), a thin trickle: a broken string of 1 px drops, near-continuous, in
   // irregular pulses, spaced by their fall; elsewhere along an edge, little bursts (a bead runs down to the lip, hangs,
   // swells, lets go, 1-3 more follow: the far corner of Kirua's gutter onto the low roof, the lip of the slab over Naruto's window onto
   // the top rail of the balcony under it, zone 9's pent roof but where the Expedition's banner hangs over it). A trickle's landing: a 1-2 px crown flickering, and rings as the rain's (its lilac,
@@ -8628,7 +8628,6 @@
     { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=6', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
     { src: 'ramen', url: 'assets/gl_ramen.webp?v=7', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
     { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=8', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
-    { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=3', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
     { src: 'dojo', url: 'assets/gl_dojo.webp?v=3', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
     { src: 'ramen_wet', url: 'assets/gl_ramen_wet.webp?v=1', box: [820, 716, 536, 100], place: 'ramen', x: 1195, seed: 7 },   // Ichiraku before its step: its panes' light on the wet paving and their sheen in it, its stutter (tools/ichiraku_front.py)
   ], m: [] };
@@ -9812,21 +9811,21 @@
   // bedtime), as do the far city's windows (some of its dark ones lit toward 22 h), most of its signs after 1 h, fewer cars; the
   // vending machines and the street lamp stay on. At 0:55-1:25 the last train crosses the valley, once. The finale's dawn
   // (CLOCK.push): most lights out, the rain thinning. Hours as the visitor's local ones (past midnight as 24+) ----
-  const NHOURS = { center: [0, 24], dagashi: [8.5, 21.5], tabako: [8, 22], emblem: [0, 24], lantern9: [8.5, 24.5], ramen: [8.5, 26], exit: [0, 24], bshop: [8.5, 24],   // (the Center, the roji's exit sign: never shut)
+  const NHOURS = { center: [0, 24], dagashi: [8.5, 21.5], emblem: [0, 24], lantern9: [8.5, 24.5], ramen: [8.5, 26], exit: [0, 24], bshop: [8.5, 24],   // (the Center, the roji's exit sign: never shut)
     dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25], screen: [8.5, 25] };   // (screen: the drinks corner's giant screen)
-  const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', win_z7_kiosk: 'tabako', z4_emblem: 'emblem', win_z9_lantern: 'lantern9', z5_alley: 'exit', win_b_shop: 'bshop' };
+  const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', z4_emblem: 'emblem', win_z9_lantern: 'lantern9', z5_alley: 'exit', win_b_shop: 'bshop' };
   const NHOME = [[0, 1], [10, 1], [11, 0.9], [12, 0.75], [13, 0.52], [14, 0.32], [15, 0.2], [16, 0.13], [17, 0.15], [18, 0.3], [19, 0.55], [20.5, 1], [24, 1]];   // [hours since noon, the share of homes that may be lit]
   const NCARS = [[0, 1], [10, 1], [12, 0.6], [14, 0.3], [16, 0.25], [18, 0.6], [20.5, 1], [24, 1]];                                             // the far road's cars
   const NIGHT = { home: 1, busy: 0, farX: 0, cars: 1, signs: 1, rain: 1, snap: false, init: false };
   // the finale's morning: the places open one after another as the street wakes (their opening hour a little later each)
-  const WAKE_JIT = { tabako: 0, balcony: 0.06, dagashi: 0.1, farSigns: 0.14, arcade: 0.18, bshop: 0.22, ramen: 0.26, lantern9: 0.3, oden: 0.34, dojo: 0.4 };
+  const WAKE_JIT = { balcony: 0.06, dagashi: 0.1, farSigns: 0.14, arcade: 0.18, bshop: 0.22, ramen: 0.26, lantern9: 0.3, oden: 0.34, dojo: 0.4 };
   const nOpen0 = (k) => NHOURS[k][0] + (CLOCK.wake > 0 ? WAKE_JIT[k] || 0 : 0);
   const nOpenAt = (h, k) => { const a = nOpen0(k), b = NHOURS[k][1]; return (h >= a && h < b) || (h + 24 >= a && h + 24 < b); };
   const nightOpen = (k) => nOpenAt(CLOCK.h + CLOCK.wake, k);
   // ---- openK(name): how open a place is at the visitor's hour (CLOCK.h), 0 (shut) .. 1 (open), eased: a 6-minute smoothstep at
   // its opening and at its closing time (NHOURS), so a driven hour (setTimeOverride, the finale's dawn) shuts the places one by one,
   // and the live clock over those minutes. The hour only: the power cut (pw) and the red night are not in it. Names: 'dojo', 'oden',
-  // 'arcade', 'ramen', 'center' (the Pokémon Center never shuts, as in the games: always 1), 'dagashi', 'tabako', 'emblem',
+  // 'arcade', 'ramen', 'center' (the Pokémon Center never shuts, as in the games: always 1), 'dagashi', 'emblem',
   // 'lantern9', 'study', 'balcony'; an unknown name: 1. Read by the street's lights, the ground's lights,
   // Ichiraku's closing and Gengar's visit ----
   const OPEN_EASE = 0.1;                         // hours (6 min)
@@ -10186,7 +10185,7 @@
       } else if (u.kind === 'shop') {  // the dagashi-ya, open: steady; its tubes waver a moment now and then, barely
         u.next -= dt; if (u.next < 0) { u.burst = 0.18 + Math.random() * 0.22; u.next = 25 + Math.random() * 50; }
         if (u.burst > 0) { u.burst -= dt; c.material.opacity = stutOn(t, u.seed, 0.11, 0.5) ? 0.9 : 1; } else c.material.opacity = 1;
-      } else if (u.kind === 'tube') c.material.opacity = 1;     // the tabako window: a steady tube
+      } else if (u.kind === 'tube') c.material.opacity = 1;     // the roji's exit sign: a steady tube
       else if (u.kind === 'ad') {      // an ad screen: on (the giant screen at its hours, NHOURS.screen: dark late at night)
         c.material.opacity = u.name === 'z7_bigscreen' ? openK('screen') : 1;
         const a = ADS[u.name];

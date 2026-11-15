@@ -46,7 +46,8 @@ edge to the bench, laid out in 3D first, then painted from that layout by the im
    kept, the bench and its lamp kept, the sidewalk kept under the things' feet) - the off take in the layers (the
    power cut: the same).
 4. The lights, from the lit take less the off one: the machines' comp z7_vending (z7_vendoff: the middle one's front
-   off, its stutter; the light pool vend_pool moved under them), the booth's window win_z7_kiosk (B: none), the ad's comp
+   off, its stutter; the light pool vend_pool moved under them), the booth's window win_z7_kiosk (A, C; B: none, nor its
+   comp nor its light on the ground), the ad's comp
    z7_adscreen (the six frames of the three ads, tools/src/soda_ads_model.webp, in its glass; its light on the wall
    from the take), A's window win_z7_low; B's giant screen z7_bigscreen (its clips in its glass in perspective, a sheet a
    clip, their light on the boards and the canopy round it; B's side panel the perks' retro ads; street.js's ADS gets
@@ -1168,8 +1169,6 @@ def comps(v, lit, off, m, box):
         bt = L['booth']; r = bbox([P(X, Y, bt[4]) for X in (bt[0], bt[1]) for Y in (0.6, 2.3)])   # (its sign too)
         r = (max(r[0], x0), r[1], r[2], r[3])
         out['win_z7_kiosk'] = (comp_from(lit, off, m, r, box), r)
-    else:
-        out['win_z7_kiosk'] = (np.zeros((2, 2, 4)), (x0, 600, x0 + 2, 602))
     if 'window' in L:
         w = L['window']; r = bbox([P(w[0], Y, Z) for Y in (w[1] - 0.15, w[2] + 0.1) for Z in (w[3] - 0.2, w[4] + 0.2)])
         out['win_z7_low'] = (comp_from(lit, off, m, r, box, warm=True), r)
@@ -1465,7 +1464,11 @@ def draw(city, unlit, box=BOX):
     for name, sh in cps.get('z7_bigscreen_clips', []):          # (the giant screen: a sheet a clip, and the static)
         save(sh, os.path.join(ROOT, 'assets', 'z7_bigscreen_%s.webp' % name))
     rz = sys.modules.get('__main__')
-    if hasattr(rz, 'COMP_OUT'): rz.COMP_OUT['soda'] = ['win_z7_kiosk', cps['win_z7_kiosk'][0], None]
+    if hasattr(rz, 'COMP_OUT'):                # (the booth's window: A's and C's; B has none, so the kiosk zone's comp goes too)
+        if 'win_z7_kiosk' in cps: rz.COMP_OUT['soda'] = ['win_z7_kiosk', cps['win_z7_kiosk'][0], None]
+        else: rz.COMP_OUT.pop('kiosk', None)
+    f_ = os.path.join(ROOT, 'assets', 'win_z7_kiosk.webp')
+    if 'win_z7_kiosk' not in cps and os.path.exists(f_): os.remove(f_)
     street_js(v, cps)
     wet_ground(v)
     return m
