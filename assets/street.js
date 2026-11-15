@@ -4063,8 +4063,9 @@
     return k < f.length ? f[k] : 1;
   }
   function pwList() {                          // every light that can go out, the x the wave meets it at, the off state it shows ('vis': hidden)
-    const L = [], add = (get, x, off) => { try { const o = get(); if (o && o.material) L.push({ o, x, off: off || 0, p: 1 }); } catch (e) {} };
-    for (const c of comps) add(() => c, c.position.x);
+    const L = [], add = (get, x, off, at) => { try { const o = get(); let a = o; try { a = (at && at()) || o; } catch (e) {} if (o && o.material) L.push({ o, x, off: off || 0, p: 1, at: a }); } catch (e) {} };
+    for (const c of comps) { const naru = c.userData.kind === 'naru'; add(() => c, naru ? 1228 : c.position.x, 0, naru ? () => wlMesh : null); }   // (Naruto's
+    // room's tall window by the pole: one room with his balcony, its power and its place in the blackout the balcony's; at: where it is)
     for (const E of DRIPS) add(() => E.pw, E.px);   // the eaves' drips: their eave's power (a stand-in each)
     add(() => lcCone, 882); add(() => lcPool, 882); add(() => lcRain, 882); add(() => wlMesh, 1228); add(() => neonMesh, 1196); add(() => rlMesh, 1190);
     add(() => nwRoom.mesh, 1329); add(() => nwBath.mesh, 1406);   // (Naruto's two windows on his end wall: NWIN)
@@ -4411,7 +4412,7 @@
       const rnd = (a, b) => a + Math.random() * (b - a), zat = PW_ZONES.map(() => rnd(0.1 * dur, dur)), byX = {}, at = [], sd = [];
       const zoneAt = (x, y) => PW_ZONES.findIndex((z) => x >= z[0] && x <= z[2] && y >= z[1] && y <= z[3]);
       PW.list.forEach((e, i) => {
-        const k = e.x >= 0 ? zoneAt(e.o.position.x, -e.o.position.y) : -1;
+        const k = e.x >= 0 ? zoneAt(e.at.position.x, -e.at.position.y) : -1;
         if (k >= 0) { at.push(zat[k]); sd.push(k); return; }
         if (!(e.x in byX)) byX[e.x] = [rnd(0, dur), i];
         at.push(byX[e.x][0]); sd.push(byX[e.x][1]);
