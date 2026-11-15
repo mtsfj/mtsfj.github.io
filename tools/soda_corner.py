@@ -462,18 +462,25 @@ WALL_SHADE = (0.62, 0.8)                       # (the wall in the canopy's shade
 # columns left of FACE_UP[1], where the tree's leaves come down, taken to and fro from there) carried down along their
 # lines over the whole face to the canopy and behind the tree's leaves, one tone, no fall-off (upper_boards()); in the
 # street's low-sun mask as those boards are (street_sun.webp, sun_mask(): FACE_UP[2]), so every hour grades them alike;
-# over the dagashi-ya too, from its left post, under the tree's lowest leaves down to its sign (FACE_SHOP), as the same
-# face; the tree's leaves in front kept (darker than FACE_LEAF, and as he drew them just past the zone's edge,
-# FACE_TREE); his columns brought to the tone of his unshaded ones (FACE_TONE), so the face is one tone; the dark line he
-# drew down the dagashi-ya's edge under the tree gone (FACE_EDGE: one building, the boards run on across it), the tree's
-# shade on his boards over the shop softened (FACE_SHADE: the owner, "s'il y a de l'ombre ok, mais là pas de raison
+# over the dagashi-ya too (the owner, of what was left there: "c'est surtout sombre, pas propre"): all the face that
+# shows from its left post (FACE_POST) down to its sign's top (FACE_SIGN) and up behind the tree, his boards and his
+# dusk-lit pink between the leaves alike, with his dark joints, his edge line and his dirt on them (face_left_sel(),
+# FACE_BOARDS); only the tree's leaves in front kept as he drew them, clumps whole (in the zone: darker than FACE_LEAF,
+# and as he drew them just past its edge, FACE_TREE); his columns brought to the tone of his unshaded ones (FACE_TONE),
+# so the face is one tone; the tree's shade on his boards over the shop softened (FACE_SHADE: the owner, "s'il y a de l'ombre ok, mais là pas de raison
 # autant"); only real light on it: the canopy's shade, the screen box's foot, the sill's shadow, and the screen's own
 # light (its comp)
 FACE_X = (227, 326)                            # (its columns: from the zone's edge to his downpipe)
 FACE_SILL = (312, 376, 212, 314)               # (the sill's lit edge at a column, its row; its two ends)
-FACE_LEFT = (138, 300, 227, 496)               # (the face left of the zone, behind the tree: zone 'sodaface', its boards
-                                               #  seen between the leaves, his dusk-lit pink, FACE_PINK: R over B, luminance)
+FACE_LEFT = (138, 300, 227, 496)               # (the face left of the zone, behind the tree: zone 'sodaface'; what of it
+                                               #  shows, face_left_sel(): his dusk-lit pink, FACE_PINK: R over B, luminance)
 FACE_PINK = (8, 25)
+FACE_BOARDS = (16, 3, 2, 30, 6, 5)             # (his boards between the leaves: lighter than [0], in areas of [3] px or
+                                               #  more once specks under [1] px across are opened away, grown back [2] px;
+                                               #  the dark between two of them over [5] rows or fewer (his joints), holes in
+                                               #  them under [4] px (his dirt): the face too; the rest his leaves)
+FACE_POST = (145, 466)                         # (the dagashi-ya's left post, its face and its side: left of x, from row on)
+FACE_SIGN = ((138, 484), (160, 489), (182, 494), (226, 500))   # (his sign's top over the shop: the face stops on it)
 FACE_SILL_SH = (0.55, 0.8)
 FACE_Y0, FACE_P, FACE_TOP = 3.06, 0.197, 0.03
 FACE_SRC = (186, 225)
@@ -481,16 +488,9 @@ FACE_TONE = (206, 225, 4.0, (0.8, 1.6))        # (his unshaded columns, whose to
                                                #  tones smoothed over so many; the gain's bounds)
 FACE_SHADE = (0.3, 3.0, 3.9, 10)               # (the tree's shade on his boards over the shop: so much of it kept, between
                                                #  these heights (m), fading in from the zone's edge over so many px)
-FACE_EDGE = (224, 438, 495, 422)               # (his dark edge line under the tree: from this column to the zone, rows;
-                                               #  higher up among the leaves, its last column where a board is beside it)
 FACE_TREE = (231, 400, 434)                    # (the tree's leaves past the zone's edge, as he drew them: left of x, rows)
 FACE_FADE = 1
 FACE_UP = (4, 240, 255)
-FACE_SHOP = (472, ((138, 484), (160, 489), (182, 494), (226, 500)), 400, 9.0, 20.0, 3)   # (the face over the dagashi-ya:
-                                               #  under the tree's lowest leaves (row [0]) down to his sign's top (that line),
-                                               #  all of it but what is dark [3 levels] [5] rows running (his post, a leaf);
-                                               #  over it from row [2], what shows between the leaves (bluer than [4]: his
-                                               #  boards, not a leaf's light)
 FACE_LEAF = 16
 SCREEN_INSET = 0.07                            # its frame's width (m)
 SCREEN_GLOW = (2, 1.0, 0.5)                    # its light round it: so many pixels out, falling off over so many; what
@@ -1474,63 +1474,63 @@ def save(arr, path, mode='RGBA'):
 def sun_mask(city, v):
     """assets/street_sun.webp (R: how much of a pixel's colour is the low sun's, its night the sky's cool light; written by
     tools/kirua_bay_window.py over the house first): the face as his boards under the bay are in it (FACE_UP[2]): over
-    the zone its pixels (FACE_M), left of it its boards behind the tree and over the dagashi-ya (face_left_sel).
-    The same bytes each run."""
+    the zone its pixels (FACE_M), left of it its boards behind the tree and over the dagashi-ya (face_left_sel; that box
+    first as it was before, tools/src/edits/sodaface_before_sun.webp). The same bytes each run."""
     pth = os.path.join(ROOT, 'assets', 'street_sun.webp')
     sun = np.asarray(Image.open(pth).convert('RGB')).copy()
     if FACE_M.get(v) is not None:
         bx0, by0, bx1, by1 = BOX
         sun[by0:by1, bx0:bx1][FACE_M[v]] = FACE_UP[2]
     x0, y0, x1, y1 = FACE_LEFT
-    sel, shop, _ = face_left_sel(city)
-    sun[y0:y1, x0:x1][sel | shop] = FACE_UP[2]
+    sun[y0:y1, x0:x1] = np.asarray(Image.open(os.path.join(EDITS, 'sodaface_before_sun.webp')).convert('RGB'))
+    face, _ = face_left_sel(city)
+    sun[y0:y1, x0:x1][face] = FACE_UP[2]
     Image.fromarray(sun, 'RGB').save(pth, 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
 def face_left_sel(city, box=FACE_LEFT):
-    """What of the face left of the zone (FACE_LEFT) is boards: seen between the tree's leaves, his dusk-lit pink under the
-    bay's sill line (FACE_PINK); over the dagashi-ya, under the tree's lowest leaves down to his sign's top all but his
-    post (FACE_SHOP), and over them what shows between the leaves; and his dark line down its edge among the
-    leaves where a board is beside it (FACE_EDGE). Returns them, and how far under the sill's line each pixel is."""
+    """What of the face left of the zone (FACE_LEFT) shows, in the painter's pixels (city): under the bay's sill line,
+    over his sign's top (FACE_SIGN), right of the dagashi-ya's post (FACE_POST), all of it but the tree's leaves in
+    front: his boards between the leaves (FACE_BOARDS: what is lighter, in areas too big to be a leaf's light, grown
+    back to their edges; his dusk-lit pink, FACE_PINK, however small), the dark between two of them a few rows high or
+    a pixel wide (his joints), his edge line down the last column, and the small holes in them (his dirt) with them.
+    Returns it, and how far under the sill's line each pixel is."""
+    from scipy import ndimage as ndi
     x0, y0, x1, y1 = box
     X, Y = np.meshgrid(np.arange(x0, x1) + 0.5, np.arange(y0, y1) + 0.5)
     c = city[y0:y1, x0:x1, :3]; lum = c @ [0.299, 0.587, 0.114]
     d_ = Y - (VY - (VY - FACE_SILL[1]) * (VX - X) / (VX - FACE_SILL[0]) + 2)
-    sel = (c[..., 0] > c[..., 2] + FACE_PINK[0]) & (lum > FACE_PINK[1]) & (d_ >= 0)
-    t_low, sign_line, r_up, lo, bl, run = FACE_SHOP
-    sg = np.interp(np.arange(x0, x1) + 0.5, [q[0] for q in sign_line], [q[1] for q in sign_line])
-    dark = lum < lo
-    tall = np.zeros(dark.shape, bool)                                      # (dark RUN rows running: his post, a leaf)
-    for k in range(run):
-        r = dark.copy()
-        for q in range(run):
-            sh = q - k
-            r &= np.roll(dark, -sh, 0) if sh else dark
-        tall |= r
-    low = (Y >= t_low) & (Y < sg[None, :]) & ~tall
-    gaps = (Y >= r_up) & (Y < t_low) & ~dark & ((c[..., 2] - c[..., 0]) >= bl)
-    shop = low | gaps
-    shop &= d_ >= 0
-    edge = (X >= FACE_EDGE[0]) & (Y >= FACE_EDGE[3]) & (Y < FACE_EDGE[1])
-    nb = np.zeros(edge.shape, bool); nb[:, 1:] = lum[:, :-1] >= FACE_LEAF * 0.55
-    edge &= (X >= x1 - 1) & nb
-    return sel, shop | edge, d_
+    lo, k, grow, big, hole, joint = FACE_BOARDS
+    light = lum >= lo
+    lab, n = ndi.label(ndi.binary_opening(light, np.ones((k, k))))
+    sz = ndi.sum(np.ones(lum.shape), lab, np.arange(1, n + 1))
+    bd = np.isin(lab, 1 + np.nonzero(sz >= big)[0])
+    for _ in range(grow): bd |= ndi.binary_dilation(bd) & light
+    bd |= (c[..., 0] > c[..., 2] + FACE_PINK[0]) & (lum > FACE_PINK[1])
+    bd |= ndi.binary_closing(bd, np.ones((joint, 1))) | ndi.binary_closing(bd, np.ones((1, 3)))
+    bd[:, -1] |= bd[:, -2]                     # (his dark edge line down the box's last column: the zone's boards beside it)
+    lab, n = ndi.label(~bd)
+    sz = ndi.sum(np.ones(lum.shape), lab, np.arange(1, n + 1))
+    bd |= np.isin(lab, 1 + np.nonzero(sz < hole)[0])
+    sg = np.interp(np.arange(x0, x1) + 0.5, [q[0] for q in FACE_SIGN], [q[1] for q in FACE_SIGN])
+    post = (X < FACE_POST[0]) & (Y >= FACE_POST[1])
+    return bd & (d_ >= 0) & (Y < sg[None, :]) & ~post, d_
 
 
 def face_left(city, unlit, box):
-    """Zone 'sodaface' (FACE_LEFT): the house's face left of the zone, behind the tree and over the dagashi-ya: its boards
-    there (face_left_sel) his upper ones (upper_boards), under the bay's sill its shadow; the leaves and the sign as they
-    are. Returns what changed."""
+    """Zone 'sodaface' (FACE_LEFT): the house's face left of the zone, behind the tree and over the dagashi-ya: all of it
+    that shows (face_left_sel) his upper boards (upper_boards), under the bay's sill its shadow; the leaves, the post and
+    the sign as they are. Returns what changed."""
     x0, y0, x1, y1 = box
     X = np.meshgrid(np.arange(x0, x1) + 0.5, np.arange(y0, y1) + 0.5)[0]
-    sel, shop, d_ = face_left_sel(city, box)
-    b_ = upper_boards(city, box, sel | shop)
-    sill = (X >= FACE_SILL[2]) & sel
+    face, d_ = face_left_sel(city, box)
+    b_ = upper_boards(city, box, face)
+    sill = (X >= FACE_SILL[2]) & face
     b_ = b_ * np.where(sill & (d_ < 1), FACE_SILL_SH[0], np.where(sill & (d_ < 2), FACE_SILL_SH[1], 1.0))[..., None]
     for a in (city, unlit):
         t_ = a[y0:y1, x0:x1, :3]
-        t_[sel | shop] = b_[sel | shop]
-    return sel | shop
+        t_[face] = b_[face]
+    return face
 
 
 def draw(city, unlit, box=BOX):
