@@ -7400,7 +7400,7 @@
   // (steps); the next little kick; the bursts' clock
   const kilPh = () => ({ k: 0, kv: 0, a: 0, av: 0, k2: 0, kv2: 0, a2: 0, av2: 0, e: 0, ev: 0, kick: 0, f: 0, next: 3 + Math.random() * 8, t: Math.random() * 60, acc: 0 });   // (k2, a2: the far leg's)
   KIL.ph = kilPh();
-  const KSRC = { body: 'assets/killua_body.webp?v=5', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=1' };
+  const KSRC = { body: 'assets/killua_body.webp?v=5', legs: 'assets/killua_legs.webp?v=1', head: 'assets/killua_head.webp?v=2' };
   const kilMesh = new THREE.Group(); scene.add(kilMesh);        // his layers, hidden together while he is a bolt
   const kilPart = {};
   for (const [n, z] of [['body', 0.018], ['legs', 0.019], ['head', 0.02]]) {
