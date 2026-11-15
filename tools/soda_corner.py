@@ -667,12 +667,14 @@ def screen_paint(v, box, ss=3):
     return rgb, c_, (glass, u, w_), g_
 
 
-def screen_frame(uvg, box, pic, ss=3):
+def screen_frame(uvg, box, pic, ss=3, pal=None):
     """One picture (480 x 160) as the giant screen shows it, over box: laid in the glass in its perspective (sampled at the
-    glass's sub-pixels), a few flat colours, a fine LED row every other row, a little dimmed; and its mean light."""
+    glass's sub-pixels), a few flat colours (its cut's palette, pal, when it has one), a fine LED row every other row, a
+    little dimmed; and its mean light."""
     glass, u, w_ = uvg
     h, wd = box[3] - box[1], box[2] - box[0]
-    im = pic.convert('RGB').resize((480, 160), Image.LANCZOS).quantize(colors=24, method=0, dither=0).convert('RGB')
+    im = pic.convert('RGB').resize((480, 160), Image.LANCZOS)
+    im = (im.quantize(palette=pal, dither=Image.Dither.NONE) if pal is not None else im.quantize(colors=24, method=0, dither=0)).convert('RGB')
     A = np.asarray(im).astype(float); H_, W_ = A.shape[:2]
     smp = A[(np.clip(w_, 0, 0.9999) * H_).astype(int), (np.clip(u, 0, 0.9999) * W_).astype(int)]
     row = np.where((np.floor(np.clip(w_, 0, 1) * 54) % 2) == 1, 0.86, 1.0)[..., None]
@@ -683,24 +685,31 @@ def screen_frame(uvg, box, pic, ss=3):
 
 # ---------------------------------------------------------------- the two screens' loops (the owner: "pub rétro pour les
 # 3 atouts, mode zombie de BO2, réf rétro"; "5-6 animations refs qui défilent aléatoirement") ----
-# The giant screen plays short clips in a random order (never the same twice running), a few frames of static between:
-# each clip four keyframes drawn by the image API as a fan homage to the street's heroes (tools/src/screen_<name>.webp, a
-# sheet of four 3:1 panels; the prompts in tools/src/soda_prompts.txt), brought to life here (a slow push in, a flash at
-# each cut, the bright parts flickering; rain in Totoro's; the ramune commercial taken out of it, the owner: "supprime la
-# pub"; its sheet and its bubbles kept for another). To change what it shows: put a new sheet of four 3:1
-# panels in tools/src/ and list it in SCREEN_CLIPS (name, file, effect), run the chain again; street.js gets the clips'
-# sheets and their versions from here (ADS). The side panel: three retro perk commercials in turn (tools/src/
-# screen_perks.webp: a sheet of three rows of four stills, one row a perk; their emblems the site's own icons slammed in,
-# their names, a VHS look).
-SCREEN_CLIPS = [('naruto', 'screen_naruto.webp', None),
-                ('luffy', 'screen_luffy.webp', None), ('killua', 'screen_killua.webp', None),
-                ('pika', 'screen_pika.webp', None), ('totoro', 'screen_totoro.webp', 'rain')]
-CLIP_FPS, CLIP_LOOPS, CLIP_PER_KEY = 6, 2, 4      # (frames a second, plays before the next, frames per keyframe)
+# The giant screen plays short anime cuts in a random order (never the same twice running), a few frames of static
+# between (the owner, then: "plus de framerate, plus fluide et propre, proche des vrais animes en termes de fidélité
+# d'environnement ... remplace Totoro par Levi de SNK"): each cut eight (or twelve) consecutive keyframes drawn by the
+# image API in the anime's own look, the character on model in their world (tools/src/screen2_<name>.webp, a sheet of 3:1
+# panels, SCREEN_CLIPS: its grid; a sheet of 2:1 panels its sides carried out to 3:1, 'pad'; the prompts in
+# tools/src/soda_prompts.txt), played smooth here: each keyframe held CLIP_HOLD frames, an in-between to the next, the
+# whole cut pushing in slowly (CLIP_PUSH), one palette for the whole cut so nothing flickers, at CLIP_FPS. To change what
+# it shows: put a new sheet in tools/src/, list it in SCREEN_CLIPS, run the chain again; street.js gets the clips' sheets
+# and their versions from here (ADS). The side panel: the three perks' ads (the owner: "plus proche du jeu et de la série
+# Black Ops ... rien d'inventer comme la canette"): a 1950s-60s TV commercial each for Jugger-Nog, Speed Cola and Double
+# Tap Root Beer as the Zombies mode has them (their machines and lettering, their glass bottles with the emblem's
+# sticker, the emblems the site's own icons given as references), eight frames a perk (tools/src/screen2_perk_<p>.webp,
+# PERK_SHEETS: their panels' columns and rows in the sheet), each held PERK_HOLD frames with a slight push in, a VHS look
+# over all.
+SCREEN_CLIPS = [('naruto', 'screen2_naruto.webp', (4, 2), None), ('luffy', 'screen2_luffy.webp', (4, 3), 'pad'),
+                ('killua', 'screen2_killua.webp', (4, 2), None), ('pika', 'screen2_pika.webp', (4, 2), None),
+                ('levi', 'screen2_levi.webp', (4, 2), None)]
+CLIP_FPS, CLIP_LOOPS, CLIP_HOLD, CLIP_PUSH = 10, 2, 2, 0.05   # (frames a second, plays before the next, frames a keyframe
+                                                            #  is held, the push in over the cut)
+CLIP_COLORS = 40                               # (the cut's palette)
 STATIC_N, STATIC_FPS = 3, 12
-PERK_SHEET = 'screen_perks.webp'
-PERK_ADS = [('jugg', 'JUGGER-|NOG', (200, 40, 40)), ('speed', 'SPEED|COLA', (60, 170, 70)), ('tap', 'DOUBLE|TAP', (220, 130, 40))]
-PERK_FPS = 8
-FONT = '/usr/share/fonts/opentype/unifont/unifont_jp.otf'
+PERK_SHEETS = [('jugg', 'screen2_perk_jugg.webp', ((40, 455), (492, 909), (946, 1364), (1401, 1818)), ((33, 1131), (1169, 2269))),
+               ('speed', 'screen2_perk_speed.webp', ((40, 441), (500, 900), (959, 1360), (1418, 1819)), ((44, 1026), (1184, 2170))),
+               ('tap', 'screen2_perk_tap.webp', ((37, 464), (489, 916), (939, 1366), (1391, 1818)), ((28, 1136), (1167, 2254)))]
+PERK_HOLD, PERK_FPS = 2, 8
 
 
 def sheet_panels(path, rows, cols=1, dark=40):
@@ -722,34 +731,71 @@ def sheet_panels(path, rows, cols=1, dark=40):
     return out
 
 
-def clip_pictures(name, file, fx):
-    """A clip's pictures (480 x 160): its four keyframes, each held CLIP_PER_KEY frames with a slow push in, a flash on
-    the cut, the bright parts flickering; its effect (bubbles rising, rain)."""
-    keys = [k.resize((480, 160), Image.LANCZOS) for k in sheet_panels(os.path.join(SRC, file), 4)]
-    R = np.random.RandomState(sum(map(ord, name)))
+def grid_panels(path, rows, cols, dark=30):
+    """The panels of a sheet laid out rows x cols, top to bottom, left to right: its gaps the runs of rows (columns) whose
+    brightest pixels stay dark, the one nearest each even division taken (a dark picture's own dark runs left alone)."""
+    im = Image.open(path).convert('RGB'); a = np.asarray(im).astype(float).mean(2)
+
+    def cuts(prof, n, L):
+        runs_, st = [], None
+        for i, o in enumerate(prof < dark):
+            if o and st is None: st = i
+            if not o and st is not None: runs_.append((st, i)); st = None
+        if st is not None: runs_.append((st, L))
+        edges = [(0, 0)]
+        for k in range(1, n):
+            e = k * L / n
+            near_ = [r for r in runs_ if abs((r[0] + r[1]) / 2 - e) < L / (4 * n)]
+            edges.append(min(near_, key=lambda r: abs((r[0] + r[1]) / 2 - e)) if near_ else (int(e), int(e)))
+        edges.append((L, L))
+        lo = next((r[1] for r in runs_ if r[0] == 0), 0); hi = next((r[0] for r in runs_ if r[1] == L), L)
+        spans = [(edges[k][1], edges[k + 1][0]) for k in range(n)]
+        spans[0] = (max(spans[0][0], lo), spans[0][1]); spans[-1] = (spans[-1][0], min(spans[-1][1], hi))
+        return [(a0 + 2, b0 - 2) for a0, b0 in spans]
     out = []
-    for i, k in enumerate(keys):
-        A = np.asarray(k).astype(float)
-        bright = (A @ [0.299, 0.587, 0.114] > 170)[..., None]
-        for j in range(CLIP_PER_KEY):
-            z = 1.0 + 0.012 * j; w_, h_ = int(480 / z), int(160 / z)
-            im = k.crop(((480 - w_) // 2, (160 - h_) // 2, (480 - w_) // 2 + w_, (160 - h_) // 2 + h_)).resize((480, 160), Image.LANCZOS)
-            a = np.asarray(im).astype(float)
-            a = np.where(bright, a * (1.0 + 0.08 * ((j + i) % 2)), a)
-            if j == 0: a = a * 0.75 + 255 * 0.25                      # (the cut's flash)
-            t = (i * CLIP_PER_KEY + j) / (len(keys) * CLIP_PER_KEY)
-            im = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)); d = ImageDraw.Draw(im)
-            if fx == 'bubbles':
-                for b in range(9):
-                    bx = 330 + 110 * ((b * 0.37) % 1.0); rad = 4 + 5 * ((b * 0.61) % 1.0); ph = (b * 0.29) % 1.0
-                    by = 160 - ((t * 2 + ph) % 1.0) * 160
-                    d.ellipse((bx - rad, by - rad, bx + rad, by + rad), outline=(240, 252, 255), width=2)
-            if fx == 'rain':
-                for b in range(40):
-                    bx = (b * 53.7) % 480; by = ((b * 37.3) + t * 160 * 6) % 160
-                    d.line((bx, by, bx - 3, by + 10), fill=(150, 180, 220), width=1)
-            out.append(im)
+    for r0, r1 in cuts(np.percentile(a, 98, axis=1), rows, a.shape[0]):
+        for c0, c1 in cuts(np.percentile(a, 98, axis=0), cols, a.shape[1]):
+            out.append(im.crop((c0, r0, c1, r1)))
     return out
+
+
+def clip_keys(file, grid, fit):
+    """A sheet's keyframes, 480 x 160 each, in order: its panels (grid: rows, columns); 'pad': a 2:1 panel set in the 3:1
+    frame, its sides carried out from its own edge columns, softened."""
+    from scipy.ndimage import gaussian_filter
+    keys = []
+    for k in grid_panels(os.path.join(SRC, file), *grid):
+        if fit == 'pad':
+            w0 = int(round(k.width * 160 / k.height)); core = np.asarray(k.resize((w0, 160), Image.LANCZOS)).astype(float)
+            pw = (480 - w0) // 2; out = np.zeros((160, 480, 3))
+            out[:, pw:pw + w0] = core
+            for side, sl, src in ((0, slice(0, pw), core[:, :1]), (1, slice(pw + w0, 480), core[:, -1:])):
+                n_ = sl.stop - sl.start
+                band = np.repeat(gaussian_filter(src, (2, 0, 0)), n_, 1)
+                mir = core[:, :n_][:, ::-1] if side == 0 else core[:, -n_:][:, ::-1]
+                t_ = np.linspace(0, 1, n_)[None, :, None]; t_ = t_[:, ::-1] if side == 0 else t_
+                out[:, sl] = mir * (1 - t_) * 0.6 + band * (1 - (1 - t_) * 0.6)
+            keys.append(Image.fromarray(np.clip(out, 0, 255).astype(np.uint8)))
+        else:
+            keys.append(k.resize((480, 160), Image.LANCZOS))
+    return keys
+
+
+def clip_pictures(name, file, grid, fit):
+    """A cut's pictures (480 x 160): its keyframes in order, each held CLIP_HOLD frames, an in-between (the two mixed)
+    before the next, the whole cut pushing in slowly (CLIP_PUSH); and its palette (CLIP_COLORS, from its keyframes)."""
+    keys = clip_keys(file, grid, fit)
+    seq = []
+    for i, k in enumerate(keys):
+        seq += [k] * CLIP_HOLD
+        if i + 1 < len(keys): seq.append(Image.blend(k, keys[i + 1], 0.5))
+    out = []
+    for j, im in enumerate(seq):
+        z = 1.0 + CLIP_PUSH * j / max(len(seq) - 1, 1); w_, h_ = 480 / z, 160 / z
+        out.append(im.resize((480, 160), Image.LANCZOS, box=((480 - w_) / 2, (160 - h_) / 2, (480 + w_) / 2, (160 + h_) / 2)))
+    mos = Image.new('RGB', (480, 160 * len(keys)))
+    for i, k in enumerate(keys): mos.paste(k, (0, 160 * i))
+    return out, mos.quantize(colors=CLIP_COLORS, method=0, dither=0)
 
 
 def static_pictures():
@@ -764,33 +810,18 @@ def static_pictures():
 
 
 def perk_pictures(w, h):
-    """The side panel's retro perk commercials (w x h, its glass): each perk its four stills (a push in), its emblem (the
-    site's icon) slammed in with a flash, its name; a VHS look over all (scan lines, the colours a pixel apart, a tracking
-    band rolling down)."""
-    stills = sheet_panels(os.path.join(SRC, PERK_SHEET), 3, 4)
+    """The side panel's perk commercials (w x h, its glass): each perk's eight frames (PERK_SHEETS), each held PERK_HOLD
+    frames pushing in a little; a VHS look over all (scan lines, the colours a pixel apart, a tracking band rolling down)."""
     W2, H2 = w * 4, h * 4
-    f = ImageFont.truetype(FONT, int(W2 * 0.26))
     out = []
-    for p, (icon, words, col) in enumerate(PERK_ADS):
-        ic = Image.open(os.path.join(ROOT, 'assets', '%s_perk.webp' % icon)).convert('RGBA').crop((0, 0, 32, 32))
-        seq = []
-        for s_ in range(3):
-            st = stills[p * 4 + s_].resize((W2, H2), Image.LANCZOS)
-            for j in range(2):
-                z = 1 + 0.03 * j; ww_, hh_ = int(W2 / z), int(H2 / z)
-                seq.append(st.crop(((W2 - ww_) // 2, (H2 - hh_) // 2, (W2 - ww_) // 2 + ww_, (H2 - hh_) // 2 + hh_)).resize((W2, H2), Image.LANCZOS))
-        last = stills[p * 4 + 3].resize((W2, H2), Image.LANCZOS)
-        for j, sc in enumerate((1.9, 1.0, 1.0)):
-            im = last.copy()
-            s = int(W2 * 0.8 * sc); icb = ic.resize((s, s), Image.NEAREST)
-            im.paste(icb, ((W2 - s) // 2, int(H2 * 0.18) - (s - int(W2 * 0.8)) // 2), icb)
-            if j == 0: im = Image.fromarray(np.clip(np.asarray(im).astype(float) * 0.6 + 100, 0, 255).astype(np.uint8))
-            d = ImageDraw.Draw(im)
-            for li, line in enumerate(words.split('|')):
-                tw = d.textlength(line, font=f)
-                d.text(((W2 - tw) / 2, H2 * (0.66 + 0.15 * li)), line, font=f, fill=(255, 255, 255), stroke_width=max(2, W2 // 40), stroke_fill=col)
-            seq.append(im)
-        out += seq
+    for icon, file, cols, rows in PERK_SHEETS:
+        sh = Image.open(os.path.join(SRC, file)).convert('RGB')
+        for r0, r1 in rows:
+            for c0, c1 in cols:
+                st = sh.crop((c0, r0, c1, r1)).resize((W2, H2), Image.LANCZOS)
+                for j in range(PERK_HOLD):
+                    z = 1 + 0.025 * j; ww_, hh_ = W2 / z, H2 / z
+                    out.append(st.resize((W2, H2), Image.LANCZOS, box=((W2 - ww_) / 2, (H2 - hh_) / 2, (W2 + ww_) / 2, (H2 + hh_) / 2)))
     R = np.random.RandomState(5); res = []
     for k, im in enumerate(out):
         a = np.asarray(im.resize((w, h), Image.BOX)).astype(float)
@@ -1215,10 +1246,10 @@ def comps(v, lit, off, m, box):
         r = (max(int(xs_.min()) + x0 - 1, x0), max(int(ys_.min()) + y0 - 1, y0), min(int(xs_.max()) + x0 + 2, x1), min(int(ys_.max()) + y0 + 2, y1))
         gg = gcov[r[1] - y0:r[3] - y0, r[0] - x0:r[2] - x0]
 
-        def sheet(pics):                       # (a clip's frames side by side, each with its own light round it)
+        def sheet(pics, pal=None):             # (a clip's frames side by side, each with its own light round it)
             fr = []
             for pic in pics:
-                rgb, mean = screen_frame(uvg, box, pic)
+                rgb, mean = screen_frame(uvg, box, pic, pal=pal)
                 lf = off * (1 - gcov[..., None]) + rgb * gcov[..., None]
                 lf[near] = np.clip(lf[near] * (1 + (np.asarray(mean, float) / 255.0)[None, :] * A * np.exp(-(d[near] - 1) / G)[:, None]), 0, 255)
                 c = comp_from(lf, off, m | (gcov > 0), r, box, thr=1.0)
@@ -1226,7 +1257,7 @@ def comps(v, lit, off, m, box):
                 c[..., 3] = np.where(gg > 0, np.maximum(c[..., 3], 255 * gg), c[..., 3])
                 fr.append(c)
             return np.concatenate(fr, 1)
-        clips = [(name, sheet(clip_pictures(name, f_, fx))) for name, f_, fx in SCREEN_CLIPS]
+        clips = [(name, sheet(*clip_pictures(name, f_, grid, fit))) for name, f_, grid, fit in SCREEN_CLIPS]
         clips.append(('static', sheet(static_pictures())))
         out['z7_bigscreen'] = (clips[0][1], r); out['z7_bigscreen_clips'] = clips
     if not L['ad']: return out
