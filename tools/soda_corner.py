@@ -457,20 +457,33 @@ WALL_SHADE = (0.62, 0.8)                       # (the wall in the canopy's shade
 # between his two, each along his columns from its own place: their joints staggered);
 # left of the zone, behind the tree, its boards seen between the leaves the same (FACE_LEFT, a zone of its own);
 # beside the bay, past its sill's ends (FACE_SILL[2:]), his dusk light on the boards over it falling off into them over
-# FACE_FADE rows; the tree's leaves in front kept (darker than FACE_LEAF); only real light on it: the canopy's shade,
-# the screen box's foot, the sill's shadow, and the screen's own light (its comp)
+# FACE_FADE rows; the tree's leaves in front kept (darker than FACE_LEAF, and as he drew them just past the zone's edge,
+# FACE_TREE); his columns brought to the tone of his unshaded ones (FACE_TONE), so the face is one tone; the dark line he
+# drew down the dagashi-ya's edge under the tree gone (FACE_EDGE: one building, the boards run on across it), the tree's
+# shade on his boards over the shop softened (FACE_SHADE: the owner, "s'il y a de l'ombre ok, mais là pas de raison
+# autant"); only real light on it: the canopy's shade, the screen box's foot, the sill's shadow, and the screen's own
+# light (its comp)
 FACE_X = (227, 326)                            # (its columns: from the zone's edge to his downpipe)
 FACE_SILL = (312, 376, 212, 314)               # (the sill's lit edge at a column, its row; its two ends)
-FACE_LEFT = (184, 300, 227, 420)               # (the face left of the zone, behind the tree: zone 'sodaface', its boards
+FACE_LEFT = (184, 300, 227, 496)               # (the face left of the zone, behind the tree: zone 'sodaface', its boards
                                                #  seen between the leaves, his dusk-lit pink, FACE_PINK: R over B, luminance)
 FACE_PINK = (8, 25)
 FACE_SILL_SH = (0.55, 0.8)
 FACE_Y0, FACE_P, FACE_TOP = 3.06, 0.197, 0.03
-FACE_SRC = (186, 226)
+FACE_SRC = (186, 225)
+FACE_TONE = (206, 225, 4.0, (0.8, 1.6))        # (his unshaded columns, whose tone the carried boards take; the columns'
+                                               #  tones smoothed over so many; the gain's bounds)
+FACE_SHADE = (0.3, 3.0, 3.9, 10)               # (the tree's shade on his boards over the shop: so much of it kept, between
+                                               #  these heights (m), fading in from the zone's edge over so many px)
+FACE_EDGE = (224, 438, 495, 422)               # (his dark edge line under the tree: from this column to the zone, rows;
+                                               #  higher up among the leaves, its last column where a board is beside it)
+FACE_TREE = (231, 400, 434)                    # (the tree's leaves past the zone's edge, as he drew them: left of x, rows)
 FACE_FADE = 10
 FACE_LEAF = 16
 SCREEN_INSET = 0.07                            # its frame's width (m)
-SCREEN_GLOW = (14, 4.5, 0.42)                  # its light round it: so many pixels out, falling off over so many, at most
+SCREEN_GLOW = (12, 4.0, 1.2)                   # its light round it: so many pixels out, falling off over so many; what
+                                               #  it adds, times the surface's own colour and its light's (0..1): soft on
+                                               #  the dark boards (the owner: "dégradé sombre→clair à moins marquer")
 WOOD = dict(fascia=(64, 46, 50), fascia_lit=(104, 82, 84), soffit=(30, 24, 32), rafter=(48, 37, 45),
             rafter_lit=(66, 52, 60), end=(50, 37, 43), end_lit=(92, 72, 76), tile=(64, 68, 90), tile_rim=(126, 126, 150),
             bracket=(54, 39, 43))
@@ -518,8 +531,28 @@ def face_boards(city, box, sel):
     lo, hi = row(FACE_Y0 + ph), row(FACE_Y0 + FACE_P + ph)
     c_lo, c_hi = city[lo, xsrc, :3], city[hi, xsrc, :3]
     ok = (np.mod(k, 2) == 1) & (ph < FACE_P - FACE_TOP) & ((c_hi @ [0.299, 0.587, 0.114]) >= FACE_LEAF * 0.45)
-    out[ys, xs] = np.where(ok[:, None], c_hi, c_lo)
+    out[ys, xs] = np.where(ok[:, None], c_hi, c_lo) * face_gain(city)[xsrc - FACE_SRC[0], None]
     return out
+
+
+def face_tone(city):
+    """His band's tone column by column (FACE_SRC: their mean luminance over his two planks, his leaves left out,
+    smoothed over FACE_TONE[2] columns) and the tone of his unshaded columns (FACE_TONE)."""
+    from scipy.ndimage import gaussian_filter1d
+    xs = np.arange(FACE_SRC[0], FACE_SRC[1] + 1)
+    Zs = F * -XH / (VX - (xs + 0.5))
+    Ys = np.arange(FACE_Y0, FACE_Y0 + 2 * FACE_P - FACE_TOP, 0.004)
+    rows = np.clip(np.floor(VY - F * (Ys[:, None] - EYE) / Zs[None, :]).astype(int), 0, city.shape[0] - 1)
+    L = city[rows, xs[None, :], :3] @ [0.299, 0.587, 0.114]
+    m = np.array([L[:, j][L[:, j] >= FACE_LEAF * 0.45].mean() for j in range(len(xs))])
+    m = gaussian_filter1d(m, FACE_TONE[2], mode='nearest')
+    return m, m[FACE_TONE[0] - FACE_SRC[0]:FACE_TONE[1] - FACE_SRC[0] + 1].mean()
+
+
+def face_gain(city):
+    """The gain that brings each of his columns to the tone of his unshaded ones (bounded: FACE_TONE[3])."""
+    m, t = face_tone(city)
+    return np.clip(t / m, *FACE_TONE[3])
 
 
 def canopy_paint(v, box, ss=3):
@@ -621,12 +654,13 @@ def screen_frame(uvg, box, pic, ss=3):
 # The giant screen plays short clips in a random order (never the same twice running), a few frames of static between:
 # each clip four keyframes drawn by the image API as a fan homage to the street's heroes (tools/src/screen_<name>.webp, a
 # sheet of four 3:1 panels; the prompts in tools/src/soda_prompts.txt), brought to life here (a slow push in, a flash at
-# each cut, the bright parts flickering; bubbles in the ramune one). To change what it shows: put a new sheet of four 3:1
+# each cut, the bright parts flickering; rain in Totoro's; the ramune commercial taken out of it, the owner: "supprime la
+# pub"; its sheet and its bubbles kept for another). To change what it shows: put a new sheet of four 3:1
 # panels in tools/src/ and list it in SCREEN_CLIPS (name, file, effect), run the chain again; street.js gets the clips'
 # sheets and their versions from here (ADS). The side panel: three retro perk commercials in turn (tools/src/
 # screen_perks.webp: a sheet of three rows of four stills, one row a perk; their emblems the site's own icons slammed in,
 # their names, a VHS look).
-SCREEN_CLIPS = [('ramune', 'screen_ramune.webp', 'bubbles'), ('naruto', 'screen_naruto.webp', None),
+SCREEN_CLIPS = [('naruto', 'screen_naruto.webp', None),
                 ('luffy', 'screen_luffy.webp', None), ('killua', 'screen_killua.webp', None),
                 ('pika', 'screen_pika.webp', None), ('totoro', 'screen_totoro.webp', 'rain')]
 CLIP_FPS, CLIP_LOOPS, CLIP_PER_KEY = 6, 2, 4      # (frames a second, plays before the next, frames per keyframe)
@@ -750,6 +784,10 @@ EDIT_CROP = (195, 360, 420, 760)
 EDIT_FIT = {'B': {"lit": {"s": 6.8814, "sy": 6.88, "ox": -6.0, "oy": 0.0, "o": [195, 360], "M": [[1.0577, 0.0, 0.0, -2.868], [0.0, 1.0577, 0.0, -0.973], [0.0, 0.0, 1.0577, -5.544]]}, "off": {"s": 6.8608, "sy": 6.88, "ox": -4.5, "oy": 0.0, "o": [195, 360], "M": [[1.0577, 0.0, 0.0, -2.868], [0.0, 1.0577, 0.0, -0.973], [0.0, 0.0, 1.0577, -5.544]]}}}
 FEET = 6                                       # (the ground at the machines' feet taken from the edits: so many rows)
 MACH_TONE = (14.0, 0.80, 0.15)                 # (the machines: their darks lifted so much, a gain, a share of grey)
+# their lower halves (the audit: "la moitié basse délavée, un voile laiteux"): under MACH_LOW[0] m on their fronts, their
+# contrast round their own median times MACH_LOW[1], their darks down MACH_LOW[2] levels (not under MACH_LOW[3]), their
+# colour back from the grey share by MACH_LOW[4]; fading in over the MACH_LOW[5] m above
+MACH_LOW = (0.98, 1.45, 8.0, 8.0, 1.15, 0.12)
 # the machines' headers (the owner: "j'aurais viré les logos des machines, ça rend mal, et la pub fait ce qu'il faut
 # maintenant", then "sans logo, aplat de couleur moche"): what real Japanese machines have on top, a backlit printed
 # drinks banner, each in its machine's colour family: Speed Cola's green with cold cans and つめた〜い, Double Tap's
@@ -800,6 +838,13 @@ WET_SHELTER = 6.0
 WET_OLD = (0.45, 6.0, 356)
 WET_SPLASH = (20.0, 0.07, 0.03)
 WET_PUDDLE = (0.11, 0.07, 112.0, 1.5)
+# the lamp's puddle under the bench (the audit: "un rectangle rouge à bords nets ... s'arrête net à x ~398"): over
+# WET_BENCH (x0, y0, x1, y1), its still water and wetness softened (blurred so much, px) inside a soft ellipse fading out
+# before the oden's edge (its centre, its half-axes, px); a puddle on the sidewalk before the side panel (the audit: "aucun
+# reflet rouge dans le trottoir mouillé dessous"): its still water takes the panel's light (WET_PANEL: two ellipses,
+# centre and half-axes in px, its R, the softness)
+WET_BENCH = (340, 680, 410, 700, 1.1, (370.0, 688.0), (25.0, 7.5))
+WET_PANEL = (((252.0, 760.0), (22.0, 6.0)), ((274.0, 768.0), (15.0, 4.5)), 104.0, 0.4)
 
 
 def compose(v, city, off, lit, m, what, box):
@@ -817,7 +862,8 @@ def compose(v, city, off, lit, m, what, box):
     ysill = VY - (VY - ye_) * (VX - X) / (VX - xe_)
     lum = city[y0:y1, x0:x1, :3] @ [0.299, 0.587, 0.114]
     up = (X >= FACE_X[0]) & (X < FACE_X[1]) & (Y >= ysill + 2) & (Y < yfl - WALL_SRC) & (lum >= FACE_LEAF)
-    face = wall | up
+    tree = (X < FACE_TREE[0]) & (Y >= FACE_TREE[1]) & (Y < FACE_TREE[2]) & (lum < FACE_LEAF)   # (his leaves past the edge)
+    face = (wall | up) & ~tree
     b_ = np.zeros(m.shape + (3,))
     b_[face] = face_boards(city, box, face)[face]
     b_[pipe] = painter_boards(city, box, pipe)[pipe]                     # (his downpipe down the corner)
@@ -865,6 +911,19 @@ def apply_edit(v, off, lit, m, what, box):
     for a in (off, lit):                       # black, their lights less hot; their grain as it is)
         c = a[mt]; g_ = (c @ [0.299, 0.587, 0.114])[:, None]
         a[mt] = MACH_TONE[0] + (c * (1 - MACH_TONE[2]) + g_ * MACH_TONE[2]) * MACH_TONE[1]
+    if v == 'B':                               # the lower halves: their contrast back
+        w_, f_, z_, dx_, dy_, X_, Y_ = cast(v, box)
+        with np.errstate(invalid='ignore'):
+            Yh = EYE + dy_ * z_
+        for i in range(len(layout(v)['mach'])):
+            lo = (w_ == 'mach%d' % i) & (f_ == 1) & (Yh < MACH_LOW[0] + MACH_LOW[5]) & m
+            wt = np.clip((MACH_LOW[0] + MACH_LOW[5] - Yh) / MACH_LOW[5], 0, 1)[lo][:, None]
+            for a in (off, lit):
+                c = a[lo]; g_ = (c @ [0.299, 0.587, 0.114])[:, None]; med = np.median(g_)
+                c2 = g_ + (c - g_) * MACH_LOW[4]
+                c2 = med + (c2 - med) * MACH_LOW[1] - MACH_LOW[2]
+                c2 = np.maximum(c2, np.minimum(c, MACH_LOW[3]))
+                a[lo] = np.clip(c * (1 - wt) + c2 * wt, 0, 255)
     if v == 'B':                               # the headers: a lit panel each, no emblem
         part = part | heads(v, off, lit, m, box)
     return m | feet, part
@@ -1129,7 +1188,7 @@ def comps(v, lit, off, m, box):
             for pic in pics:
                 rgb, mean = screen_frame(uvg, box, pic)
                 lf = off * (1 - gcov[..., None]) + rgb * gcov[..., None]
-                lf[near] = np.clip(lf[near] + mean * A * np.exp(-(d[near] - 1) / G)[:, None], 0, 255)
+                lf[near] = np.clip(lf[near] * (1 + (np.asarray(mean, float) / 255.0)[None, :] * A * np.exp(-(d[near] - 1) / G)[:, None]), 0, 255)
                 c = comp_from(lf, off, m | (gcov > 0), r, box, thr=1.0)
                 c[..., :3] = np.where(gg[..., None] > 0, lf[r[1] - y0:r[3] - y0, r[0] - x0:r[2] - x0], c[..., :3])
                 c[..., 3] = np.where(gg > 0, np.maximum(c[..., 3], 255 * gg), c[..., 3])
@@ -1318,6 +1377,22 @@ def wet_ground(v):
         e = ((Zg - Z) / (WET_PUDDLE[0] * size)) ** 2 + ((Xg - xo) / (WET_PUDDLE[1] * size)) ** 2
         k = np.clip((1 - e) / 0.35, 0, 1) * ground
         B = np.maximum(B, 255 * k); R = np.maximum(R, WET_PUDDLE[2] * k)
+    # the bench's puddle soft, fading out before the oden's edge
+    bx0, by0, bx1, by1, bs, (bcx, bcy), (bax, bay) = WET_BENCH
+    from scipy.ndimage import gaussian_filter as gf
+    sl = (slice(by0 - r0, by1 - r0), slice(bx0 - x0, bx1 - x0))
+    el = np.clip(1.6 * (1 - ((Xc[sl] - bcx) / bax) ** 2 - ((Yc[sl] - bcy) / bay) ** 2), 0, 1)
+    pb = (B[sl] > 0)
+    Bs, Rs = gf(B[sl], bs), gf(R[sl], bs)
+    base = np.where(pb, np.median(R[sl][~pb]) if (~pb).any() else 20.0, R[sl])
+    B[sl] = Bs * el
+    R[sl] = np.where(pb | (Bs > 1), base + (Rs - base) * el, R[sl])
+    # a puddle before the side panel, its still water taking the panel's light
+    k = np.zeros(R.shape)
+    for (cx, cy), (ax, ay) in WET_PANEL[:2]:
+        k = np.maximum(k, np.clip((1 - ((Xc - cx) / ax) ** 2 - ((Yc - cy) / ay) ** 2) / WET_PANEL[3], 0, 1))
+    k = k * ground
+    B = np.maximum(B, 255 * k); R = np.maximum(R, WET_PANEL[2] * k)
     wet[r0 - 600:r1 - 600, x0:x1] = np.dstack([np.clip(np.round(c), 0, 255) for c in (R, G, B)]).astype(np.uint8)
     q = np.clip(ym - 560, 0, 255.996); hi = np.floor(q); lo = np.clip(np.round((q - hi) * 256), 0, 255)
     mir[0, x0:x1, 0] = hi.astype(np.uint8); mir[0, x0:x1, 1] = lo.astype(np.uint8)
@@ -1336,7 +1411,9 @@ def save(arr, path, mode='RGBA'):
 def face_left(city, unlit, box):
     """Zone 'sodaface' (FACE_LEFT): the house's face left of the zone, behind the tree; its boards seen between the
     leaves (his dusk-lit pink, FACE_PINK) below the bay's sill line the dagashi-ya's (face_boards), under the sill its
-    shadow, left of it his dusk light falling off into them (FACE_FADE); the leaves as they are. Returns what changed."""
+    shadow, left of it his dusk light falling off into them (FACE_FADE); his dark line down the dagashi-ya's edge under
+    the tree carried over (FACE_EDGE); the tree's shade on his boards over the shop softened (FACE_SHADE); the leaves as
+    they are. Returns what changed."""
     x0, y0, x1, y1 = box
     X, Y = np.meshgrid(np.arange(x0, x1) + 0.5, np.arange(y0, y1) + 0.5)
     c = city[y0:y1, x0:x1, :3]
@@ -1346,10 +1423,26 @@ def face_left(city, unlit, box):
     sill = X >= FACE_SILL[2]
     b_ = b_ * np.where(sill & (d_ < 1), FACE_SILL_SH[0], np.where(sill & (d_ < 2), FACE_SILL_SH[1], 1.0))[..., None]
     wf = np.where(sill, 0.0, np.clip(1 - d_ / FACE_FADE, 0, 1))[..., None]
+    # his dark line down the dagashi-ya's edge under the tree: the boards run on across it
+    edge = (X >= FACE_EDGE[0]) & (Y >= FACE_EDGE[1]) & (Y < FACE_EDGE[2])
+    lum0 = c @ [0.299, 0.587, 0.114]
+    nb = np.zeros(edge.shape, bool); nb[:, 1:] = lum0[:, :-1] >= FACE_LEAF * 0.55     # (its left neighbour a board)
+    edge |= (X >= x1 - 1) & (Y >= FACE_EDGE[3]) & (Y < FACE_EDGE[1]) & nb               # (higher up, among the leaves)
+    be = face_boards(city, box, edge)
+    # the tree's shade on his boards over the shop softened (his leaves left as they are)
+    Zw = F * -XH / (VX - X); Yw = EYE + (VY - Y) * Zw / F
+    lum = c @ [0.299, 0.587, 0.114]
+    shade = (Yw >= FACE_SHADE[1]) & (Yw < FACE_SHADE[2]) & (lum >= FACE_LEAF * 0.55) & ~sel & ~edge
+    m, t = face_tone(city)
+    j = np.clip(np.floor(X).astype(int) - FACE_SRC[0], 0, len(m) - 1)
+    g = np.clip(t / m[j], 1.0, FACE_TONE[3][1]) ** (1 - FACE_SHADE[0])
+    g = 1 + (g - 1) * np.clip((X - x0) / FACE_SHADE[3], 0, 1)
     for a in (city, unlit):
-        t = a[y0:y1, x0:x1, :3]
-        t[sel] = (t * wf + b_ * (1 - wf))[sel]
-    return sel
+        t_ = a[y0:y1, x0:x1, :3]
+        t_[sel] = (t_ * wf + b_ * (1 - wf))[sel]
+        t_[edge] = be[edge]
+        t_[shade] = np.clip(t_ * g[..., None], 0, 255)[shade]
+    return sel | edge | shade
 
 
 def draw(city, unlit, box=BOX):

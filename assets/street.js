@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=132", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=21", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=5", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_ramune.webp?v=2e08fcdf", "x": 229, "y": 406, "w": 110, "h": 146}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=133", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=22", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=6", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=5fc1ab9e", "x": 231, "y": 408, "w": 106, "h": 142}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=132') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=133') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -305,17 +305,23 @@
     comps.push(p);
   }
   // the right-hand drinks machine's display out (build_zzzanim_z7.py), laid over its comp while its tube stutters
-  const vendOff = plane('assets/z7_vendoff.webp?v=14', 307, 579, 20, 143, 1.105, { opacity: 0 }); vendOff.visible = false;
+  const vendOff = plane('assets/z7_vendoff.webp?v=15', 307, 579, 20, 143, 1.105, { opacity: 0 }); vendOff.visible = false;
   // the ad screens of the drinks corner (tools/soda_corner.py writes ADS): the side panel's frames side by side in its comp,
   // played at their fps (without one: a picture every 6 s, its two frames alternating); the giant screen's clips, each its
   // own sheet, fetched when it is next, each played `loops` times, in a random order never the same twice running, a few
-  // frames of static between; under reduced motion the first frame. ADF: the frame each shows; ADC: the clips' state
-  const ADS = {"z7_adscreen":{"n":27,"fps":8},"z7_bigscreen":{"fps":6,"loops":2,"clips":[["assets/z7_bigscreen_ramune.webp?v=2e08fcdf",16],["assets/z7_bigscreen_naruto.webp?v=231f6046",16],["assets/z7_bigscreen_luffy.webp?v=e7e2952d",16],["assets/z7_bigscreen_killua.webp?v=7d474f63",16],["assets/z7_bigscreen_pika.webp?v=e8ed5a40",16],["assets/z7_bigscreen_totoro.webp?v=88a63a06",16]],"trans":["assets/z7_bigscreen_static.webp?v=367b4554",3,12]}};
+  // frames of static between, the first one drawn at random as the page opens (its sheet swapped in before the first
+  // frame: the screen dark until it is in); under reduced motion that one's first frame. Its hours (NHOURS.screen):
+  // dark late at night, as the street's other signs. ADF: the frame each shows; ADC: the clips' state
+  const ADS = {"z7_adscreen":{"n":27,"fps":8},"z7_bigscreen":{"fps":6,"loops":2,"clips":[["assets/z7_bigscreen_naruto.webp?v=5fc1ab9e",16],["assets/z7_bigscreen_luffy.webp?v=af91c3ea",16],["assets/z7_bigscreen_killua.webp?v=159a51fe",16],["assets/z7_bigscreen_pika.webp?v=c98563c7",16],["assets/z7_bigscreen_totoro.webp?v=10365323",16]],"trans":["assets/z7_bigscreen_static.webp?v=64db8f89",3,12]}};
   const ADF = {}, ADC = {};
   for (const c of comps) {
     const a = ADS[c.userData.name]; if (!a) continue;
     c.material.map.repeat.set(1 / (a.clips ? a.clips[0][1] : a.n), 1); c.material.map.offset.set(0, 0); ADF[c.userData.name] = -1;
-    if (a.clips) ADC[c.userData.name] = { tex: { 0: c.material.map }, cur: 0, t0: -1, next: 0, trans: null, tt: -1 };
+    if (a.clips) {
+      const k0 = Math.floor(Math.random() * a.clips.length), tex = { 0: c.material.map };
+      if (k0) { tex[k0] = crisp(a.clips[k0][0]); tex[k0].repeat.set(1 / a.clips[k0][1], 1); c.material.map = tex[k0]; }
+      ADC[c.userData.name] = { tex, cur: k0, t0: -1, next: k0, trans: null, tt: -1 };
+    }
   }
   function adPick(a, C) {
     let k = C.cur; if (a.clips.length > 1) while (k === C.cur) k = Math.floor(Math.random() * a.clips.length);
@@ -4164,7 +4170,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=113', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=114', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -8568,7 +8574,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=32') }, tMirror: { value: tex('assets/wet_mirror.webp?v=24') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=33') }, tMirror: { value: tex('assets/wet_mirror.webp?v=24') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -9804,7 +9810,7 @@
   // vending machines and the street lamp stay on. At 0:55-1:25 the last train crosses the valley, once. The finale's dawn
   // (CLOCK.push): most lights out, the rain thinning. Hours as the visitor's local ones (past midnight as 24+) ----
   const NHOURS = { center: [0, 24], dagashi: [8.5, 21.5], tabako: [8, 22], emblem: [0, 24], lantern9: [8.5, 24.5], ramen: [8.5, 26], exit: [0, 24], bshop: [8.5, 24],   // (the Center, the roji's exit sign: never shut)
-    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25] };
+    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25], screen: [8.5, 25] };   // (screen: the drinks corner's giant screen)
   const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', win_z7_kiosk: 'tabako', z4_emblem: 'emblem', win_z9_lantern: 'lantern9', z5_alley: 'exit', win_b_shop: 'bshop' };
   const NHOME = [[0, 1], [10, 1], [11, 0.9], [12, 0.75], [13, 0.52], [14, 0.32], [15, 0.2], [16, 0.13], [17, 0.15], [18, 0.3], [19, 0.55], [20.5, 1], [24, 1]];   // [hours since noon, the share of homes that may be lit]
   const NCARS = [[0, 1], [10, 1], [12, 0.6], [14, 0.3], [16, 0.25], [18, 0.6], [20.5, 1], [24, 1]];                                             // the far road's cars
@@ -10178,8 +10184,8 @@
         u.next -= dt; if (u.next < 0) { u.burst = 0.18 + Math.random() * 0.22; u.next = 25 + Math.random() * 50; }
         if (u.burst > 0) { u.burst -= dt; c.material.opacity = stutOn(t, u.seed, 0.11, 0.5) ? 0.9 : 1; } else c.material.opacity = 1;
       } else if (u.kind === 'tube') c.material.opacity = 1;     // the tabako window: a steady tube
-      else if (u.kind === 'ad') {      // an ad screen: always on
-        c.material.opacity = 1;
+      else if (u.kind === 'ad') {      // an ad screen: on (the giant screen at its hours, NHOURS.screen: dark late at night)
+        c.material.opacity = u.name === 'z7_bigscreen' ? openK('screen') : 1;
         const a = ADS[u.name];
         if (a && !a.clips) {             // its frames at their fps (or a picture every 6 s, its two frames every 0.45 s)
           const f = reduced ? 0 : a.fps ? Math.floor(t * a.fps) % a.n : 2 * (Math.floor(t / 6) % (a.n / 2)) + (Math.floor(t / 0.45) % 2);

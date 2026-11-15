@@ -39,7 +39,7 @@ Image 1 is a crop of a pixel-art painting of a Japanese street at night (each 8x
 
 == The two screens' loops (google/gemini-nano-banana-2.1, 2K): the giant screen's clips, the side panel's perk ads ==
 
-== screen_ramune.webp (3:4) ==
+== (retired from the giant screen: "supprime la pub") screen_ramune.webp (3:4) ==
 One image, 3:4 portrait, made of four wide horizontal panels stacked from top to bottom, separated by thin black gaps, each panel a 3:1 frame of the same short LED billboard animation for ramune soda, pale turquoise and summer-blue background in flat bands. Flat bold shapes and colours, high contrast, clean cel shading, designed to read when shrunk to about 90 x 30 pixels per panel: no fine detail, no small text, no outlines thinner than the shapes. Panel 1: a big glass ramune bottle on the right half, closed, its glass marble sitting in the neck, a thumb pressing the opener on its top. Panel 2: the same, the marble pushed down and falling into the bottle, a ring of bubbles round it. Panel 3: a fizzy burst of white bubbles and spray from the bottle's neck, the katakana シュワッ in very big bold white letters on the left half. Panel 4: the bottle with bubbles rising inside it, the katakana ラムネ in very big bold white letters on the left half. The same bottle, at the same place and size, and the same background in all four panels. No other text.
 
 == screen_naruto.webp (3:4) ==
