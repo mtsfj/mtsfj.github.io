@@ -8,12 +8,14 @@
     (un module aussi : la zone 'vitrine' de tools/redraw_zones.py, la dernière, appelle draw() : la vitrine dans les calques)
 
 La caméra de la rue est une perspective à un point : focale F = 1400 px, point de fuite VP (700, 615), l'œil à EYE = 1,5 m
-du trottoir. La façade du ramen est à droite de la rue et court vers VP ; sa vitrine en est : une seule glace claire dans un cadre
-mince (VITRE : ses colonnes de verre, d'un montant à l'autre ; ni montant ni traverse entre ; le propriétaire : « refais la
-baie vitrée d'Ichiraku pour qu'elle ne cache rien » ; au commit BEFORE, quatre vitres et une traverse, PEINTES). Le seuil des portes
+du trottoir. La façade du ramen est à droite de la rue et court vers VP ; sa devanture en est (tools/ichiraku_front.py : le
+propriétaire, « Faut refaire Ichiraku, la devanture, proprement ») : un panneau vitré fixe étroit à gauche et la porte
+coulissante, une glace claire chacun dans son cadre de bois, au-dessus de leurs soubassements (VITRE : les colonnes de la baie ;
+le verre, glass_columns ; au commit BEFORE, quatre vitres et une traverse, PEINTES). Le seuil des portes
 (SEUIL : la première rangée du trottoir sous elles, mesurée colonne par colonne) est sur des rayons vers VP à 1,5 m sous
-l'œil : la façade est à X_F = 5,53 m à droite de l'œil, la vitrine de Z = 14,8 à 16,8 m le long de la rue ; le bas du
-verre (BAS_RAYON) à 0,69 m du trottoir, l'ourlet du noren à 1,74 m, le haut du cadre (sa tringle, TRINGLE) à 2,64 m.
+l'œil : la façade est à X_F = 5,53 m à droite de l'œil, la baie de Z = 14,8 à 16,8 m le long de la rue ; le bas du verre
+sur la traverse des soubassements, à 1,01 m (il cache les tabourets et le bas des gens), l'ourlet du noren à 1,74 m, le haut
+du verre sous la traverse haute des portes, à 2,60 m.
 
 La boutique, une boîte derrière la façade (D_ROOM de fond, le plafond à CEIL). Par une porte de côté, un rayon file le long de
 la rue (un tiers de mètre vers le fond pour un mètre le long de la rue) : ce qu'il rencontre au bout est le mur du bout de la
@@ -36,13 +38,12 @@ rouge, quatre pieds, l'anneau. Au-dessus du comptoir, pendue à 1,6 m, une lante
 pas (la maquette l'a quand même) ; le plafond, par le haut de la vitrine derrière le noren (ses fentes, la boutique fermée) :
 son bois, éclairé par les lampes du fond, plus sombre vers la façade (CEIL_C, CEIL_K).
 
-Le rendu. Chaque pixel du verre (de sous la tringle à la rangée au-dessus de la lisière claire du bas) est pris sur SS x SS
-rayons de l'œil, puis ramené au pixel entier selon ses bords
+Le rendu. Chaque pixel du verre (ses deux vitres) est pris sur SS x SS rayons de l'œil, puis ramené au pixel entier selon ses
+bords
 (reduce : les surfaces nettes, les éclats gardés). La lumière : le haut à l'ombre du noren (HAUT), la vapeur au-dessus de la
 marmite plus claire (STEAM). Le grain du peintre (GRAIN : fixe, plein sur l'uni, léger sur le chargé), puis chaque pixel
 ramené à la palette de la boutique (40 couleurs tirées de son verre allumé d'avant, ses quatre vitres, du noren et des
-lanternes allumés), un grain ne sautant jamais plus d'une marche. Les arêtes claires des montants du cadre contre le verre
-(ARETES) gardent leurs pixels, à la lumière de la nouvelle pièce. Le reflet de la rue sur la glace (REFLET, REFLET_C : deux
+lanternes allumés), un grain ne sautant jamais plus d'une marche. Le reflet de la rue sur la glace (REFLET, REFLET_C : deux
 traînées en biais, sous les têtes, à peine) : fondu dans le verre coupé et fermé ; allumée, assets/street.js le pose sur
 les gens (IRF.refl, de tools/ichiraku_figures.py).
 
@@ -77,18 +78,17 @@ SHOP_OFF, GLASS = (1112, 448), (1150, 520)   # (edits/shop_off_before.webp, rame
 F, VX, VY, EYE = 1400.0, 700.0, 615.0, 1.5
 SEUIL = ((1160, 744), (1170, 744), (1180, 746), (1190, 747), (1200, 749), (1210, 751), (1220, 753))
 X_F = EYE / float(np.mean([(y - VY) / (x - VX) for x, y in SEUIL]))
-VITRE = (1160, 1223)                 # la vitrine : une seule glace, ses colonnes de verre d'un montant du cadre à l'autre (le
-                                     # propriétaire : « refais la baie vitrée d'Ichiraku pour qu'elle ne cache rien »)
-ARETES = ((1159, 1160), (1224, 1223))   # (l'arête claire d'un montant du cadre, la colonne de verre contre elle)
-TRINGLE = 0.2065                     # le haut du cadre, la tringle du noren : y = VP_y - TRINGLE |x - VP_x| (le verre dessous)
-BAS_RAYON = 0.1467                   # la lisière claire du bas des vitres : y = VP_y + c |x - VP_x| (le verre s'arrête au-dessus)
+VITRE = (1160, 1223)                 # les colonnes de la baie, d'un montant du cadre à l'autre : son verre, celui des deux vitres
+                                     # de la devanture (tools/ichiraku_front.py, glass_columns), leurs montants entre
+ARETES = ()                          # (les arêtes des montants : dessinées par la devanture)
+BAS_RAYON = 0.1467                   # (la lisière claire du bas des vitres du peintre : y = VP_y + c |x - VP_x|)
 PEINTES = (((1160, 1170), (1173, 1185), (1192, 1205), (1209, 1223)), (631, 636))   # (les quatre vitres du peintre au commit
                                      # BEFORE, leurs colonnes et leur traverse : où prendre les tons de son verre allumé, coupé)
 REFLET = ((-1.0, 1244.0, 6.0, 0.07, 612, 694), (-1.0, 1257.0, 1.5, 0.05, 628, 694))   # le reflet de la rue sur la glace :
                                      # deux traînées en biais, sous les têtes (x + y - VP_y = leur milieu ; leur demi-largeur, leur
                                      # part, leurs rangées : fondues sur 12 à chaque bout)
 REFLET_C = (176.0, 186.0, 232.0)     # (sa couleur : la nuit bleue de la rue)
-NOREN = ('ichiraku_noren.webp', 1155, 500, 79, 104)   # (le noren au repos : son ourlet, colonne par colonne)
+NOREN = ('ichiraku_noren.webp', 1150, 500, 79, 104)   # (le noren au repos, pendu dehors devant la porte : son ourlet, colonne par colonne)
 
 # ---- la boutique
 CTR_H, CTR_D, CTR_ROW = 1.0, 0.5, 641   # le comptoir des clients : son dessus (m), sa profondeur, la rangée de son arête
@@ -189,25 +189,32 @@ def shape_ok(kind, s, t):
     return np.abs(s) <= 1.0
 
 
-def glass_top(x):                    # (la première rangée de verre de la colonne x : sous la tringle)
-    return int(np.ceil(VY - TRINGLE * (x - VX))) + 1
-
-
-def glass_bot(x):                    # (la dernière : au-dessus de la lisière claire du bas)
+def glass_bot(x):                    # (la dernière rangée des vitres du peintre : au-dessus de leur lisière claire du bas)
     return int(np.round(VY + BAS_RAYON * (x - VX) - 0.5)) - 1
+
+
+def glass_columns():
+    """les vitres de la devanture (tools/ichiraku_front.py : le panneau fixe et la porte, leur verre entre leurs montants et
+    leurs traverses, de sous la traverse haute à la traverse du soubassement) : {colonne : (première rangée, dernière)}"""
+    import ichiraku_front as FR
+    b = FR.BOX; m = FR.glass_mask(b); out = {}
+    for j in range(m.shape[1]):
+        ys = np.nonzero(m[:, j])[0]
+        if len(ys): out[b[0] + j] = (b[1] + int(ys.min()), b[1] + int(ys.max()))
+    return out
 
 
 def hems():
     """la dernière rangée de l'ourlet du noren (son image au repos), colonne par colonne de la vitrine"""
     nr = I.load(NOREN[0], 'RGBA')[:NOREN[4], :NOREN[3], 3]
-    return {x: NOREN[2] + int(np.max(np.where(nr[:, x - NOREN[1]] > 0)[0])) for x in range(VITRE[0], VITRE[1] + 1)}
+    return {x: NOREN[2] + int(np.max(np.where(nr[:, x - NOREN[1]] > 0)[0])) for x in range(NOREN[1], NOREN[1] + NOREN[3])
+            if (nr[:, x - NOREN[1]] > 0).any()}
 
 
 def glass_pixels():
-    """le verre : la vitrine d'une seule glace, chaque colonne de sous la tringle du noren (le haut du cadre) à la rangée
-    au-dessus de la lisière claire du bas (deux rayons vers VP) ; sous l'ourlet du noren, ce qu'on en voit"""
+    """le verre : les vitres de la devanture (glass_columns), colonne par colonne ; sous l'ourlet du noren, ce qu'on en voit"""
     hem = hems()
-    pix = [(x, y) for x in range(VITRE[0], VITRE[1] + 1) for y in range(glass_top(x), glass_bot(x) + 1)]
+    pix = [(x, y) for x, (a, b) in sorted(glass_columns().items()) for y in range(a, b + 1)]
     return np.array(pix), hem
 
 
@@ -459,6 +466,17 @@ def main():
         if VITRE[0] <= x <= VITRE[1]: top = GLASS[1]                         # colonne, son verre posé ensuite)
         else: top = NOREN[2] + int(np.max(np.where(nr0[:, c] > 0)[0])) + 1 if 0 <= c < NOREN[3] and nr0[:, c].max() else 590
         gl[top - GLASS[1]:zy1 - GLASS[1], x - GLASS[0], 3] = 0
+    import ichiraku_front as FR                                              # (la devanture fermée : ses faces sans la lumière
+    fx, fy, fc = FR.shut_pixels(Lc[0])                                       # de la boutique, sur la porte et la marche ; le
+    b = FR.BOX                                                               # reste de sa boîte rendu à la rue ; l'image
+    if so.shape[0] < b[3] - SHOP_OFF[1]:                                     # descend jusqu'au trottoir)
+        so = np.concatenate([so, np.zeros((b[3] - SHOP_OFF[1] - so.shape[0],) + so.shape[1:], so.dtype)], 0)
+    m = FR.glass_mask(b)
+    for name, c in FR.faces(): m |= FR.raster(c, None, b)
+    yy, xx = np.nonzero(m); yy, xx = yy + b[1] - SHOP_OFF[1], xx + b[0] - SHOP_OFF[0]
+    ok = (yy >= 0) & (yy < so.shape[0]) & (xx >= 0) & (xx < so.shape[1]); so[yy[ok], xx[ok]] = 0
+    yy, xx = fy - SHOP_OFF[1], fx - SHOP_OFF[0]; ok = (yy >= 0) & (yy < so.shape[0]) & (xx >= 0) & (xx < so.shape[1])
+    so[yy[ok], xx[ok], :3] = np.clip(np.round(fc[ok]), 0, 255); so[yy[ok], xx[ok], 3] = 255
     dark = np.array((14.0, 9.0, 22.0)) * (1 - rf) + np.array(REFLET_C) * rf
     for i, (x, y) in enumerate(pix):
         so[y - SHOP_OFF[1], x - SHOP_OFF[0]] = tuple(np.round(dark[i]).astype(int)) + (255,)

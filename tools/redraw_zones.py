@@ -434,11 +434,16 @@ ZONES = {
     # on the sidewalk only its pink (the shop window's light beside it kept), its power cut's mauve the building's
     # plaster; drawn by tools/hall_light_b.py, last: over bfloor, pole, poletex and polefoot (it overlaps them)
     'hallB': dict(box=(975, 520, 1023, 762), tool='hall_light_b'),
-    # Ichiraku's shop window (the owner: "refais la baie vitrée d'Ichiraku pour qu'elle ne cache rien"): one clear pane in its
-    # slim frame, no mullion, no transom, the room of tools/ichiraku_interior.py through it, the street's faint reflection on
-    # it in the power cut; drawn by that tool's draw(), last: over ramen, door, base, pole, ichifoot, board and entree, whose
-    # painter's pixels keep the four old panes (they register and match on them as before). Its before crops: the layers in
-    # its box as the first pass leaves them without it
+    # Ichiraku's front redone (the owner: "Faut refaire Ichiraku, la devanture, proprement"): under the sign, its lamps and its
+    # lattice transom, the head beam and the casing, a narrow fixed glazed panel and the sliding door in their wooden frames,
+    # their slatted kickboards, the sill, the granite step on the sidewalk and its contact shade; modelled in the street's
+    # camera and drawn face by face by tools/ichiraku_front.py from its painted drafts (lit, shut); before vitrine, which lays
+    # the room in its two panes. Its before crops: the layers in its box as the first pass leaves them without it
+    'front': dict(box=(1118, 484, 1240, 768), tool='ichiraku_front'),
+    # Ichiraku's shop window: the room of tools/ichiraku_interior.py in the front's two panes (tools/ichiraku_front.py), the
+    # street's faint reflection on them in the power cut; drawn by that tool's draw(), after ramen, door, base, pole,
+    # ichifoot, board, entree and front, whose painter's pixels keep the four old panes (they register and match on them as
+    # before). Its before crops: the layers in its box as the first pass leaves them without it
     'vitrine': dict(box=(1159, 500, 1225, 700), tool='ichiraku_interior'),
     # the owner's study window (zone 5, the house at the street's end): his room redrawn, a bedroom-study painted for it
     # (tools/owner_study.py, R28: its shelves, whiteboard, monitor, chair, lamp, poster, bed), its dark state behind the glass

@@ -621,9 +621,9 @@ class Atlas:
 
 
 def glass_rows(hem):
-    """chaque colonne de la vitrine (une seule glace) : la rangée sous la tringle du noren (un rayon vers VP), la dernière
-    au-dessus de la lisière du bas ; la dernière de l'ourlet du noren (sous lui, son ombre)"""
-    return [[x, R.glass_top(x), R.glass_bot(x), int(hem[x])] for x in range(R.VITRE[0], R.VITRE[1] + 1)]
+    """chaque colonne de verre de la devanture (ses deux vitres, tools/ichiraku_front.py) : sa première rangée, sa dernière (sur
+    la traverse du soubassement, qui cache le bas des gens) ; la dernière de l'ourlet du noren (sous lui, son ombre)"""
+    return [[x, a, b, int(hem[x])] for x, (a, b) in sorted(R.glass_columns().items())]
 
 
 DEBUG, QUAL = [], []                         # (ce que chaque case a mesuré, la part de ses pixels seuls : pour les aperçus)

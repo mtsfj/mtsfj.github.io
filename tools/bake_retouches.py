@@ -38,8 +38,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 WINDOWS = [('winB', 944, 205), ('winC', 1074, 112)]
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer] += [(f'{n}_{_tag}.webp', x, y) for n, x, y in WINDOWS]
-# Ichiraku's shop window, one clear pane (tools/ichiraku_interior.py, by tools/redraw_zones.py's zone vitrine), last
+# Ichiraku's front (tools/ichiraku_front.py, by tools/redraw_zones.py's zone front) and its shop window, the room in its two
+# panes (tools/ichiraku_interior.py, the zone vitrine), last
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'front_{_tag}.webp', 1118, 484))
     LAYERS[_layer].append((f'vitrine_{_tag}.webp', 1159, 500))
 # the owner's study window, his room redrawn (tools/owner_study.py, by tools/redraw_zones.py's zone study): its dark room
 # behind the glass; last (over oden's patch, whose box reaches its left part)

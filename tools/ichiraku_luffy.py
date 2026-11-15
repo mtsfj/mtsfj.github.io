@@ -80,8 +80,8 @@ ANCHOR = 'hips'                               # (ce qui pose chaque image en x :
 CHROMA = 0.8                                  # (ses couleurs vives dans la lumière de la boutique : leur saturation gardée à tant)
 BOWL = ((226, 208, 178), (204, 184, 156), (150, 128, 108), (112, 92, 78), (96, 52, 34))   # (des bols de ramen blancs, à la lumière chaude :
                                              #  le bord, le flanc, son dessous à l'ombre, le pied, le dedans ; « pas de bouillie »)
-STACK = (1165.5, 641)                         # la pile : la colonne de son milieu (à sa gauche, à la place du tabouret du coin, vide : toute
-                                              #  derrière la première vitre, rien devant elle), la rangée du comptoir sous elle
+STACK = (1168.0, 641)                         # la pile : la colonne de son milieu (à sa gauche, à la place du tabouret du coin, vide : toute
+                                              #  derrière le panneau vitré fixe de la devanture, rien devant elle), la rangée du comptoir sous elle
 STEP = 3                                      # (un bol emboîté de plus : son bord tant de rangées plus haut : son bord, son flanc, son
                                               #  dessous plus étroit, d'un bol à l'autre)
 FAMILIES = 20
