@@ -315,13 +315,16 @@ ZONES = {
     # wind data (roof_sway.webp) and the low sun's glint on the lip (street_sun.webp)
     'narufloor': dict(box=(1120, 0, 1381, 390), tool='naruto_floor'),
     # the drinks corner on the left sidewalk, rebuilt whole (the owner: "faut refaire toute cette zone"; "la dernière
-    # soda prend la place de là où il y a la caisse"): Kirua's house's ground floor under the painter's boards down to
-    # the sidewalk, laid out in 3D by tools/soda_corner.py (the machines side by side against the house, no two volumes
+    # soda prend la place de là où il y a la caisse"): Kirua's house's ground floor from under his bay's sill down to
+    # the sidewalk (its face the dagashi-ya's boards: "tout ça c'est le même bâtiment"), laid out in 3D by tools/soda_corner.py (the machines side by side against the house, no two volumes
     # meeting, a small tiled canopy over them on the dagashi-ya's lintel line), painted from that layout by the image API
     # (tools/src/soda_<V>_{lit,off}.webp) and brought into the street's pixels; its comps (z7_vending and z7_vendoff for
     # tools/bake_retouches.py, z7_adscreen, win_z7_kiosk handed on in COMP_OUT after the kiosk zone's) and street.js's
     # PERKS, BZ.soda and DRIPS 'kiosk' from the layout; after the kiosk zones, whose boxes it overlaps
-    'soda': dict(box=(227, 395, 390, 745), tool='soda_corner'),
+    'soda': dict(box=(227, 320, 390, 745), tool='soda_corner'),
+    # the house's face left of it, behind the tree (the owner: "tout ça c'est le même bâtiment"): its boards seen between
+    # the leaves below Kirua's bay the dagashi-ya's, as soda_corner lays them over the rest of the face (its face_left)
+    'sodaface': dict(box=(184, 300, 227, 420), tool='soda_corner'),
     # the narrow building between the Pokemon Center and the apartment building (zone5's A, x 908..940) taken away: a roji
     # in its place (the owner, 2026-11-14: "trop comprimé : soit le refaire entièrement, soit le supprimer et créer une
     # rue"), drawn in the street's camera by tools/roji_alley.py: the alley's far wall (the Center's side, face on, its

@@ -29,7 +29,8 @@ edge to the bench, laid out in 3D first, then painted from that layout by the im
    them); the house's boards round it the painter's own; then a grain pass over the machines, the panel, the canopy
    and the ground at their feet (EDIT: generated from the corner as composed here, laid on those parts only), the
    machines brought into the painting's range (MACH_TONE), their headers backlit drinks banners (heads(), HEADS);
-   the house's boards round the screen his pattern in the tone of the front on its left (painter_boards, WALL_REF).
+   the house's whole front from under Kirua's bay down to the canopy, round and behind the screen, the dagashi-ya's
+   own boards carried along their lines (face_boards(), FACE_*: one building, one plane, one material and tone, R29).
 2. The takes (tools/src/soda_<V>_lit.webp, soda_<V>_off.webp; R28): the street around the corner at 22 h and the
    layout's blocked-in render over it (tools/src/soda_<V>_guide.webp, --guide) given to the image API with the parts
    to paint (the prompts: tools/src/soda_prompts.txt); the lit take first, the off ones an edit of the lit corners
@@ -72,7 +73,7 @@ SRC = os.path.join(ROOT, 'tools', 'src')
 EDITS = os.path.join(SRC, 'edits')
 RET = os.path.join(SRC, 'retouches')
 VARIANT = 'B'                                  # (the layout and the takes this branch lays: A, B or C)
-BOX = (227, 395, 390, 745)
+BOX = (227, 320, 390, 745)
 F, VX, VY, EYE = 1400.0, 700.0, 615.0, 1.5
 XH = -6.33                                     # the house's front (the dagashi-ya's line)
 ZC = F * -XH / (VX - 326.0)                    # its corner (the downpipe at x 326-330)
@@ -447,8 +448,27 @@ PIPE = (326, 331)                              # his downpipe's columns, at the 
 BOARD_CLEAR = 240                              # (left of this, his boards over the flashing hide behind the leaves)
 WALL_SRC = 16                                  # (the old lean-to's shade over its flashing: so many pixels high)
 WALL_SHADE = (0.62, 0.8)                       # (the wall in the canopy's shade, under the screen box's foot)
-WALL_REF = (200, 420, 226, 520)                # (the house's front left of the zone: its boards' tone)
-WALL_FADE = 14                                 # (his dusk light falling off from the bay over so many pixels)
+# the house's front (the owner: "tout ça c'est le même bâtiment, donc censé être identique"): one face from the dagashi-ya
+# to the downpipe, from under Kirua's bay (its sill's lit edge on the ray through FACE_SILL, the sill two rows, its
+# shadow under it FACE_SILL_SH, rows) down to the canopy, behind the screen. Its boards the painter's over the dagashi-ya
+# (his wide planks, one every FACE_P m, the clean band from his lap line at FACE_Y0 m up two planks, over the columns
+# FACE_SRC, under the tree's leaves and over the sign; the upper plank's top FACE_TOP m, where the leaves come down, and
+# a leaf in it taken from the lower one), carried along their own lines at their own height (the planks alternating
+# between his two, each along his columns from its own place: their joints staggered);
+# left of the zone, behind the tree, its boards seen between the leaves the same (FACE_LEFT, a zone of its own);
+# beside the bay, past its sill's ends (FACE_SILL[2:]), his dusk light on the boards over it falling off into them over
+# FACE_FADE rows; the tree's leaves in front kept (darker than FACE_LEAF); only real light on it: the canopy's shade,
+# the screen box's foot, the sill's shadow, and the screen's own light (its comp)
+FACE_X = (227, 326)                            # (its columns: from the zone's edge to his downpipe)
+FACE_SILL = (312, 376, 212, 314)               # (the sill's lit edge at a column, its row; its two ends)
+FACE_LEFT = (184, 300, 227, 420)               # (the face left of the zone, behind the tree: zone 'sodaface', its boards
+                                               #  seen between the leaves, his dusk-lit pink, FACE_PINK: R over B, luminance)
+FACE_PINK = (8, 25)
+FACE_SILL_SH = (0.55, 0.8)
+FACE_Y0, FACE_P, FACE_TOP = 3.06, 0.197, 0.03
+FACE_SRC = (186, 226)
+FACE_FADE = 10
+FACE_LEAF = 16
 SCREEN_INSET = 0.07                            # its frame's width (m)
 SCREEN_GLOW = (14, 4.5, 0.42)                  # its light round it: so many pixels out, falling off over so many, at most
 WOOD = dict(fascia=(64, 46, 50), fascia_lit=(104, 82, 84), soffit=(30, 24, 32), rafter=(48, 37, 45),
@@ -474,6 +494,31 @@ def painter_boards(city, box, sel):
     k = np.floor((Y - top) / p) + 1
     yi = np.clip(np.floor(Y - k * p).astype(int), 0, city.shape[0] - 1)
     out[ys, xs] = city[yi, np.clip(np.floor(Xs).astype(int), 0, city.shape[1] - 1), :3]
+    return out
+
+
+def face_boards(city, box, sel):
+    """The dagashi-ya's boards where sel (over box; city the whole layer as the zones before it leave it): each pixel on
+    the house's plane (X = XH) at its height Y, the same height in his clean band (FACE_Y0 + its place in its plank),
+    the planks alternating between his two (the upper one's top, where his leaves come down, the lower one's), each
+    plank along his columns (FACE_SRC, to and fro) from its own place, so that his joints fall staggered as on a wall
+    of boards."""
+    x0, y0 = box[:2]
+    out = np.zeros(sel.shape + (3,))
+    ys, xs = np.nonzero(sel)
+    x = xs + x0 + 0.5; y = ys + y0 + 0.5
+    Z = F * -XH / (VX - x); Y = EYE + (VY - y) * Z / F
+    w = FACE_SRC[1] - FACE_SRC[0] + 1
+    k = np.floor((Y - FACE_Y0) / FACE_P); ph = (Y - FACE_Y0) - k * FACE_P
+    off = np.floor((np.sin(k * 12.9898 + 4.1414) * 43758.5453 % 1.0) * 2 * w).astype(int)
+    q = np.mod(np.floor(x - FACE_X[0]).astype(int) + off, 2 * w)
+    xsrc = np.where(q < w, FACE_SRC[1] - q, FACE_SRC[0] + (q - w))       # (his columns to and fro: no seam)
+    Zs = F * -XH / (VX - (xsrc + 0.5))
+    row = lambda Ys: np.clip(np.floor(VY - F * (Ys - EYE) / Zs).astype(int), 0, city.shape[0] - 1)
+    lo, hi = row(FACE_Y0 + ph), row(FACE_Y0 + FACE_P + ph)
+    c_lo, c_hi = city[lo, xsrc, :3], city[hi, xsrc, :3]
+    ok = (np.mod(k, 2) == 1) & (ph < FACE_P - FACE_TOP) & ((c_hi @ [0.299, 0.587, 0.114]) >= FACE_LEAF * 0.45)
+    out[ys, xs] = np.where(ok[:, None], c_hi, c_lo)
     return out
 
 
@@ -767,15 +812,20 @@ def compose(v, city, off, lit, m, what, box):
     band = (X < PIPE[1]) & (Y >= yfl - WALL_SRC) & (Y < yfl)             # (the old lean-to's shade over its flashing)
     wall = (m & (what == 'wall')) | band
     pipe = (m | band) & (X >= PIPE[0]) & (X < PIPE[1]) & (Y > yfl - WALL_SRC) & ((what == '') | (what == 'wall'))
-    b_ = painter_boards(city, box, wall | pipe)
-    # (the owner: "contraste trop fort avec la façade de gauche": his boards' pattern in the tone of the house's front on
-    # its left, WALL_REF, each channel's mean and spread carried over; near the top his own dusk light falling off from
-    # the bay, WALL_FADE pixels: one tone over the plane, only real light on it, R29)
-    ref = city[WALL_REF[1]:WALL_REF[3], WALL_REF[0]:WALL_REF[2], :3].reshape(-1, 3)
-    src = b_[wall | pipe]
-    tb = (b_ - src.mean(0)) * (ref.std(0) / np.maximum(src.std(0), 1)) + ref.mean(0)
-    wt = np.clip((yfl - WALL_SRC + WALL_FADE - Y) / WALL_FADE, 0, 1)[..., None]
-    b_ = tb * (1 - wt) + b_ * wt
+    # the face over the old lean-to's shade, up to the bay's sill (the leaves in front of it kept)
+    xe_, ye_ = FACE_SILL[:2]
+    ysill = VY - (VY - ye_) * (VX - X) / (VX - xe_)
+    lum = city[y0:y1, x0:x1, :3] @ [0.299, 0.587, 0.114]
+    up = (X >= FACE_X[0]) & (X < FACE_X[1]) & (Y >= ysill + 2) & (Y < yfl - WALL_SRC) & (lum >= FACE_LEAF)
+    face = wall | up
+    b_ = np.zeros(m.shape + (3,))
+    b_[face] = face_boards(city, box, face)[face]
+    b_[pipe] = painter_boards(city, box, pipe)[pipe]                     # (his downpipe down the corner)
+    d_ = Y - (ysill + 2)                                                  # (the sill's shadow under it)
+    b_ = b_ * np.where(up & (X < FACE_SILL[3] + 1) & (d_ < 1), FACE_SILL_SH[0], np.where(up & (X < FACE_SILL[3] + 1) & (d_ < 2), FACE_SILL_SH[1], 1.0))[..., None]
+    beside = up & (X >= FACE_SILL[3] + 1)                                  # (beside the bay: his dusk light falling off)
+    wf = np.clip(1 - d_ / FACE_FADE, 0, 1)[..., None]
+    b_ = np.where(beside[..., None], city[y0:y1, x0:x1, :3] * wf + b_ * (1 - wf), b_)
     # only real light on it: the canopy's shade under it, the screen box's contact shade under its foot
     L = layout(v); C = L['canopy']; sb = L['bigscreen']
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -783,14 +833,14 @@ def compose(v, city, off, lit, m, what, box):
     under = (Yw < C['y_wall']) & (Zw >= C['z0']) & (Zw <= C['z1'])
     foot = (Yw < sb[2]) & (Yw > sb[2] - 0.05) & (Zw >= sb[4]) & (Zw <= sb[5])
     b_ = b_ * np.where(under, WALL_SHADE[0], np.where(foot, WALL_SHADE[1], 1.0))[..., None]
-    for a in (off, lit): a[wall | pipe] = b_[wall | pipe]
+    for a in (off, lit): a[face | pipe] = b_[face | pipe]
     crgb, ccov = canopy_paint(v, box)
     cv = (ccov > 0) & m
     for a in (off, lit): a[cv] = a[cv] * (1 - ccov[cv][:, None]) + crgb[cv] * ccov[cv][:, None]
     srgb, scov, uvg, gcov = screen_paint(v, box)
     sv = (scov > 0) & m
     for a in (off, lit): a[sv] = a[sv] * (1 - scov[sv][:, None]) + srgb[sv] * scov[sv][:, None]
-    return (wall | pipe) & ~cv & ~sv, (uvg, gcov, scov)
+    return (face | pipe) & ~cv & ~sv, (uvg, gcov, scov)
 
 
 def apply_edit(v, off, lit, m, what, box):
@@ -908,7 +958,7 @@ def build(v, city, unlit, box=BOX):
     keep = np.zeros(m.shape, bool); SCR[v] = None
     if 'bigscreen' in layout(v):               # (B: its house's boards the painter's, its canopy and its screen drawn)
         keep, SCR[v] = compose(v, city, off, lit, m, what, box)
-        m = m | keep                           # (the band of shade over the old flashing, now boards)
+        m = m | keep                           # (the band of shade over the old flashing and the face up to the bay)
     if v in EDIT:                              # (its parts already in the painter's grain: kept out of the flat colours)
         m0 = m; m, ep = apply_edit(v, off, lit, m, what, box); keep = keep | ep
     if QUANT:
@@ -1283,10 +1333,30 @@ def save(arr, path, mode='RGBA'):
     Image.fromarray(np.clip(np.round(arr), 0, 255).astype(np.uint8), mode).save(path, 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
+def face_left(city, unlit, box):
+    """Zone 'sodaface' (FACE_LEFT): the house's face left of the zone, behind the tree; its boards seen between the
+    leaves (his dusk-lit pink, FACE_PINK) below the bay's sill line the dagashi-ya's (face_boards), under the sill its
+    shadow, left of it his dusk light falling off into them (FACE_FADE); the leaves as they are. Returns what changed."""
+    x0, y0, x1, y1 = box
+    X, Y = np.meshgrid(np.arange(x0, x1) + 0.5, np.arange(y0, y1) + 0.5)
+    c = city[y0:y1, x0:x1, :3]
+    d_ = Y - (VY - (VY - FACE_SILL[1]) * (VX - X) / (VX - FACE_SILL[0]) + 2)
+    sel = (c[..., 0] > c[..., 2] + FACE_PINK[0]) & ((c @ [0.299, 0.587, 0.114]) > FACE_PINK[1]) & (d_ >= 0)
+    b_ = face_boards(city, box, sel)
+    sill = X >= FACE_SILL[2]
+    b_ = b_ * np.where(sill & (d_ < 1), FACE_SILL_SH[0], np.where(sill & (d_ < 2), FACE_SILL_SH[1], 1.0))[..., None]
+    wf = np.where(sill, 0.0, np.clip(1 - d_ / FACE_FADE, 0, 1))[..., None]
+    for a in (city, unlit):
+        t = a[y0:y1, x0:x1, :3]
+        t[sel] = (t * wf + b_ * (1 - wf))[sel]
+    return sel
+
+
 def draw(city, unlit, box=BOX):
     """The zone (tools/redraw_zones.py, 'soda'): the layers changed in place; the comps written (the machines' where
     tools/bake_retouches.py copies them from; the ad's and A's window's in assets; the booth's window handed to
-    redraw_zones, COMP_OUT); street.js; returns what changed in box."""
+    redraw_zones, COMP_OUT); street.js; returns what changed in box. Zone 'sodaface' (FACE_LEFT): face_left()."""
+    if tuple(box) == FACE_LEFT: return face_left(city, unlit, box)
     v = VARIANT
     x0, y0, x1, y1 = box
     new, unew, lit, off, m, what = build(v, city, unlit, box)
