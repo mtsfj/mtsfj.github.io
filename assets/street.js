@@ -11795,6 +11795,162 @@
   }
   FEAT.push(stepIrg);
   // ==== end of IRG ====
+  //
+  //
+  //
+  // ==== feature: the roji's emergency exit at night (RJX) — its own block ====
+  // The exit's green sign stays steady (its comp, z5_alley: a tube, never a flicker); round it, on the warmer nights (two
+  // sessions in three, 20 h-4:30), a few moths flutter in its light, one pixel each, lit green-white close to the panel, dimmer
+  // further out, now and then bumping into it; the rain keeps them down to one, a lull brings them out (three or four), a strong
+  // gust sends them off; behind B's corner they are hidden with the sign's other half. Now and then (every few minutes, less by
+  // day) the steel door opens (its leaf swinging out on its hinge behind B's corner, the layer's own door squeezed as it turns, the
+  // Center's back corridor lit behind it, its light on the step and the floor) and someone of the Center's night staff steps out
+  // (tools/roji_smoker.py: RJS, his cells, his feet, where his cigarette's tip is), lets the door shut, lights a cigarette (his
+  // lighter's flame flickering in his cupped hands), smokes half a minute or so (the ember glowing brighter at each drag, a thin
+  // breath of smoke after it), flicks the butt (it falls, glows a moment on the floor) and goes back in. A silhouette against the
+  // plaster (the alley's night, the sign's green on his top edges, the door's warm light on his right while it is open). Never
+  // starting in the power cut, nor in the finale; the corridor's light and the moths' with the power (the sign on its battery
+  // then); his flame and his ember their own light. Three small canvases over the exit (the corridor's light, own light; the leaf
+  // and him, graded as the street; the glows, the moths and the smoke, added), 20 pictures a second while anything moves there
+  // and it is on screen; nothing under reduced motion ----
+  const RJS = {"cells":{"step":[0,0,30,72,15,72],"light":[31,0,24,72,11,72],"rest":[56,0,28,74,13,74],"drag":[85,0,27,74,15,74]},"warm":75,"x":920,"y":670,"ember":{"light":[7,-58],"rest":[-13,-30],"drag":[4,-61]}};   // (tools/roji_smoker.py: his cells [sx, sy, w, h, ax, ay] (the night's; the door's warm edge lower), his feet, his cigarette's tip from his feet)
+  const RJX = { x: 900, y: 556, w: 41, h: 120, dead: false, ok: false, img: null, door: null, L: null, th: 0, want: 0, seq: [], st: null, stt: 0,
+    next: 90 + Math.random() * 200, puff: [], butt: null, flame: 0, moths: [], warm: Math.random() < 0.67, acc: 0, live: false, near: false,
+    sign: [936, 573.5], dx: [929, 941, 583, 661] };   // (the doorway inside its frame: x0, x1, y0, y1)
+  const RJ_ZF = 23.08, RJ_XH = 6.124, RJ_W = 0.66, RJ_MAX = 1.3;   // (the far wall's depth, the hinge, the leaf's width (m), its widest angle (rad))
+  function rjxInit() {
+    const B = RJX, im = city.material.map && city.material.map.image; if (!im || !im.complete || !im.naturalWidth) return;
+    try {
+      const c = document.createElement('canvas'); c.width = 14; c.height = 81; const g = c.getContext('2d', { willReadFrequently: true });
+      g.drawImage(im, -927, -581); B.door = g.getImageData(0, 0, 14, 81).data;   // (the closed door as the layer has it: x 927-940, y 581-661)
+      const mk = (z, kind, add) => {
+        const cv = document.createElement('canvas'); cv.width = B.w; cv.height = B.h;
+        const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(B.w, B.h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: add ? THREE.AdditiveBlending : THREE.NormalBlending }));
+        m.position.set(B.x + B.w / 2, -(B.y + B.h / 2), z); m.visible = false; scene.add(m); gradeSprite(m.material, kind);
+        return { cv, g: cv.getContext('2d'), t, m };
+      };
+      B.L = [mk(0.6005, 'self', false), mk(0.601, 'street', false), mk(0.6015, 'self', true)];
+      B.ok = true;
+    } catch (e) { B.dead = true; }
+  }
+  const rjEdge = (th) => { const a = th * RJ_MAX, X = RJ_XH - RJ_W * Math.cos(a), Z = RJ_ZF - RJ_W * Math.sin(a); return [700 + 960 * X / Z, X, Z, a]; };   // the leaf's free edge on screen
+  function rjxPlay(back) {                            // his visit's beats: [what, seconds, his frame, his feet x, y]
+    const r = (a, b) => a + Math.random() * (b - a), S = [];
+    if (!back) {
+      S.push(['open', 0.5], ['man', 0.55, 'step', 936, 662], ['man', 0.4, 'step', 928, 666], ['shut', 0.1, 'light', RJS.x, RJS.y], ['light', r(2, 3), 'light', RJS.x, RJS.y]);
+      for (let k = 0, n = 3 + ((Math.random() * 4) | 0); k < n; k++) S.push(['rest', r(3.5, 8), 'rest', RJS.x, RJS.y], ['drag', r(1, 1.6), 'drag', RJS.x, RJS.y], ['puff', 0.05, 'rest', RJS.x, RJS.y]);
+      S.push(['rest', r(2, 5), 'rest', RJS.x, RJS.y], ['flick', 0.05, 'rest', RJS.x, RJS.y], ['man', 0.6, 'rest', RJS.x, RJS.y], ['man', 0.4, 'step', 928, 666],
+        ['open', 0.45, 'step', 928, 666], ['man', 0.5, 'step', 936, 662], ['gone', 0.5], ['shut', 0.1]);
+    }
+    RJX.seq = S; RJX.st = null; RJX.stt = 0;
+  }
+  function stepRjx(dt) {
+    const B = RJX; if (reduced || B.dead) return;
+    if (!B.ok) { rjxInit(); if (!B.ok) return; }
+    const h = (((CLOCK.h + CLOCK.wake) % 24) + 24) % 24, night = h >= 20 || h < 4.5, pw = PW.on ? roofPow(936, 600) : 1;
+    // his visits
+    if (!B.seq.length && !B.st) {
+      B.next -= dt * (h >= 7 && h < 17 ? 0.5 : 1);
+      if (B.next < 0) {
+        if (!PW.on && FINS.t < 0 && RJS.cells.rest && (!B.img || B.img.complete)) {
+          if (!B.img) { B.img = new Image(); B.img.onerror = () => { B.dead = true; }; B.img.src = 'assets/roji_smoker.webp?v=1'; B.next = 3; }
+          else if (B.img.naturalWidth) { rjxPlay(false); B.next = 180 + Math.random() * 300; }
+        } else B.next = 20 + Math.random() * 30;
+      }
+    }
+    if ((B.stt -= dt) <= 0 && B.seq.length) {
+      const s = B.seq.shift(); B.st = s; B.stt = s[1];
+      if (s[0] === 'open') B.want = 1; else if (s[0] === 'shut') B.want = 0;
+      if (s[0] === 'puff') B.puff.push({ t: 0, x: s[3] + RJS.ember.drag[0] - 1, y: s[4] + RJS.ember.drag[1] + 1 });
+      if (s[0] === 'flick') { const e = RJS.ember.rest; B.butt = { t: 0, x: s[3] + e[0], y: s[4] + e[1], y0: s[4] + e[1], v: 0 }; }
+    } else if (B.stt <= 0 && !B.seq.length) B.st = null;
+    const man = B.st && B.st[2] ? B.st : null;
+    B.th = Math.max(0, Math.min(1, B.th + (B.want ? dt / 0.45 : -dt / 0.6)));
+    B.flame = man && man[0] === 'light' ? 1 : 0;
+    for (const P of B.puff) P.t += dt; B.puff = B.puff.filter((P) => P.t < 2.2);
+    if (B.butt) { const U = B.butt; U.t += dt; if (U.y < RJS.y - 1) { U.v += 300 * dt; U.y = Math.min(RJS.y - 1, U.y + U.v * dt); U.x -= 8 * dt; } if (U.t > 5) B.butt = null; }
+    // the moths: on the warmer nights; one in the rain, more in a lull, none in a strong gust
+    const want = !B.warm || !night ? 0 : gust.k > 0.7 ? 0 : Math.round(1 + 2.6 * (1 - LULL.k));
+    while (B.moths.filter((M) => !M.off).length < want) B.moths.push({ a: 0, off: false, ph: Math.random() * 6.28, w: (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 5), r: 3 + Math.random() * 5, e: 0.45 + Math.random() * 0.2, jx: 0, jy: 0, hit: 0 });
+    { let n = B.moths.filter((M) => !M.off).length; for (const M of B.moths) if (!M.off && n > want) { M.off = true; n--; } }
+    for (const M of B.moths) {
+      M.a = Math.max(0, Math.min(1, M.a + (M.off ? -dt / 0.8 : dt / 1.2)));
+      M.ph += M.w * dt; if ((M.hit -= dt) < 0 && Math.random() < dt * 0.7) M.hit = 0.25;   // (a bump into the panel)
+      if (Math.random() < dt * 0.8) M.w = (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 5);
+      M.r += ((M.hit > 0 ? 1.2 : 3 + 3 * Math.sin(M.ph * 0.31)) - M.r) * Math.min(1, dt * 6);
+    }
+    B.moths = B.moths.filter((M) => !(M.off && M.a <= 0));
+    const busy = !!B.st || B.th > 0 || B.puff.length || !!B.butt || B.moths.length;
+    const seen = !(camera.right < B.x || camera.left > B.x + B.w || -camera.top > B.y + B.h || -camera.bottom < B.y);
+    for (const L of B.L) L.m.visible = busy && seen;
+    if (!busy || !seen) { B.live = false; return; }
+    if (B.live && (B.acc += dt) < 1 / 20) return; B.acc = 0; B.live = true;
+    const [g0, g1, g2] = B.L.map((L) => L.g), X = (x) => x - B.x, Y = (y) => y - B.y, [dx0, dx1, dy0, dy1] = B.dx;
+    const near = B.th > 0 || !!man, redo = near || B.near;              // (the door and him: only while there, and once more to clear them)
+    for (const g of redo ? [g0, g1, g2] : [g2]) { g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, B.w, B.h); }
+    const light = B.th > 0 ? Math.min(1, B.th * 3) * pw : 0;              // (the corridor's light: as the gap opens, with the power)
+    if (B.th > 0) {                                                       // the doorway, the leaf on its hinge
+      const [xe, Xe, Ze, a] = rjEdge(B.th), xeR = Math.max(dx0, Math.min(dx1, Math.round(xe)));
+      for (let y = dy0; y <= dy1; y++) {                                  // the corridor's light: a ceiling tube's, falling off to the floor
+        const v = (y - dy0) / (dy1 - dy0), k = (0.74 - 0.42 * v) * (0.82 + 0.18 * light);
+        g0.fillStyle = 'rgb(' + Math.round(236 * k) + ',' + Math.round(230 * k) + ',' + Math.round(212 * k) + ')'; g0.fillRect(X(dx0), Y(y), xeR - dx0, 1);
+      }
+      g0.fillStyle = 'rgba(0,0,0,0.35)'; g0.fillRect(X(dx0), Y(dy0), 1, dy1 - dy0 + 1);   // (its jamb's shade)
+      g0.fillRect(X(dx0), Y(dy1 - 2), xeR - dx0, 3);                                 // (the corridor's floor)
+      B.L[0].m.material.opacity = Math.max(0.12, light);
+      const im = g1.getImageData(0, 0, B.w, B.h), d = im.data, c = Math.cos(a), s = Math.sin(a);
+      for (let x = xeR; x < 941; x++) {                                   // the leaf: each column, the closed door's at that point of it
+        const kx = (x + 0.5 - 700) / 960, p = Math.max(0, Math.min(RJ_W, (kx * Ze - Xe) / (c - kx * s)));
+        const xc = Math.max(0, Math.min(13, Math.round(700 + 960 * (RJ_XH - RJ_W + p) / RJ_ZF) - 927));
+        for (let y = 0; y < 81; y++) { const o = ((Y(581 + y)) * B.w + X(x)) * 4, q = (y * 14 + xc) * 4; d[o] = B.door[q] * 0.8; d[o + 1] = B.door[q + 1] * 0.8; d[o + 2] = B.door[q + 2] * 0.8; d[o + 3] = 255; }
+      }
+      g1.putImageData(im, 0, 0);
+      for (let y = 662; y < 675; y++) {                                   // its light out on the step and the floor
+        const u = (y - 662) / 13, x0 = Math.round(dx0 - 1 - 4 * u), al = 0.2 * (1 - u) * light;
+        if (al > 0.005) { g2.fillStyle = 'rgba(236,226,200,' + al.toFixed(3) + ')'; g2.fillRect(X(x0), Y(y), xeR - x0 + 2, 1); }
+      }
+    } else B.L[0].m.material.opacity = 1;
+    if (man && B.img && B.img.naturalWidth) {                             // him (and his edge in the door's light)
+      const C = RJS.cells[man[2]];
+      if (C) {
+        const [sx, sy, w, hh, ax, ay] = C, x = X(man[3]) - ax, y = Y(man[4]) - ay;
+        g1.fillStyle = 'rgba(6,8,16,0.4)'; g1.fillRect(X(man[3]) - 7, Y(man[4]) - 1, 15, 1); g1.fillStyle = 'rgba(6,8,16,0.22)'; g1.fillRect(X(man[3]) - 9, Y(man[4]) - 1, 2, 1); g1.fillRect(X(man[3]) + 8, Y(man[4]) - 1, 2, 1);   // (his contact shade on the floor)
+        g1.imageSmoothingEnabled = false; g1.drawImage(B.img, sx, sy, w, hh, x, y, w, hh);
+        if (light > 0.02) { g2.globalAlpha = 0.32 * light; g2.drawImage(B.img, sx, sy + RJS.warm, w, hh, x, y, w, hh); g2.globalAlpha = 1; }
+        const e = RJS.ember[man[2]];
+        if (e && man[2] === 'light') {                                    // the lighter's flame, flickering, and its glow on his hands and face
+          const f = 0.75 + 0.25 * Math.sin(t * 31) * Math.sin(t * 17.3), ex = X(man[3]) + e[0], ey = Y(man[4]) + e[1];
+          const gr = g2.createRadialGradient(ex + 0.5, ey, 0, ex + 0.5, ey, 5); gr.addColorStop(0, 'rgba(255,170,80,' + (0.45 * f).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,150,60,0)');
+          g2.fillStyle = gr; g2.fillRect(ex - 5, ey - 5, 11, 11);
+          g2.fillStyle = 'rgba(255,232,160,' + (0.95 * f).toFixed(3) + ')'; g2.fillRect(ex, ey - 1, 1, 2);
+        } else if (e) {                                                   // the ember: brighter at a drag
+          const ex = X(man[3]) + e[0], ey = Y(man[4]) + e[1], k = man[0] === 'drag' ? 0.95 : 0.5 + 0.08 * Math.sin(t * 2.3);
+          g2.fillStyle = 'rgba(255,120,50,' + k.toFixed(3) + ')'; g2.fillRect(ex, ey, 1, 1);
+          if (man[0] === 'drag') { g2.fillStyle = 'rgba(255,110,40,0.22)'; g2.fillRect(ex - 1, ey, 3, 1); g2.fillRect(ex, ey - 1, 1, 3); }
+        }
+      }
+    }
+    for (const P of B.puff) {                                             // his breath of smoke: a few pixels rising, drifting with the wind
+      const k = P.t / 2.2, a = 0.16 * Math.sin(Math.PI * Math.min(1, k * 1.4)) * (1 - k);
+      for (let i = 0; i < 4; i++) {
+        const yy = P.y - 1 - P.t * 7 - i * 2, xx = P.x - P.t * (4 + 14 * Math.max(0, gust.k)) + Math.sin(P.t * 3 + i) * 1.2;
+        g2.fillStyle = 'rgba(150,160,170,' + (a * (1 - i / 5)).toFixed(3) + ')'; g2.fillRect(Math.round(X(xx)), Math.round(Y(yy)), 1, 1);
+      }
+    }
+    if (B.butt) { const U = B.butt, a = U.t < 0.5 ? 0.8 : 0.6 * Math.max(0, 1 - (U.t - 0.5) / 4.5); g2.fillStyle = 'rgba(255,110,40,' + a.toFixed(3) + ')'; g2.fillRect(Math.round(X(U.x)), Math.round(Y(U.y)), 1, 1); }
+    const mk = 0.35 + 0.65 * pw, [cx, cy] = B.sign;                        // the moths in the sign's light (dimmer on its battery)
+    for (const M of B.moths) {
+      if (Math.random() < 0.5) { M.jx = Math.round(Math.random() * 2 - 1); M.jy = Math.round(Math.random() * 2 - 1); }
+      const x = Math.round(cx + M.r * Math.cos(M.ph) + M.jx), y = Math.round(cy + M.r * M.e * Math.sin(M.ph) + M.jy);
+      if (x >= 941 || x < B.x) continue;
+      const near = Math.hypot(x - cx, (y - cy) / 0.6) < 4.5, a = M.a * mk * (near ? 0.85 : 0.5);
+      g2.fillStyle = near ? 'rgba(200,255,220,' + a.toFixed(3) + ')' : 'rgba(130,200,160,' + a.toFixed(3) + ')'; g2.fillRect(X(x), Y(y), 1, 1);
+    }
+    if (redo) { B.L[0].t.needsUpdate = B.L[1].t.needsUpdate = true; } B.L[2].t.needsUpdate = true; B.near = near;
+  }
+  FEAT.push(stepRjx);
+  // ==== end of RJX ====
 
   { const a = view.cx - view.w / 2 - 64, b = view.cx + view.w / 2 + 64; for (const [x0, x1, load] of OFFVIEW) if (x1 < a || x0 > b) LATE.q.push(load); else load(); }
   setupEnd();
