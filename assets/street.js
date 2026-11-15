@@ -4940,7 +4940,7 @@
             b = 0.9 * (1.0 - smoothstep(0.55 * aD.z, aD.z, y / fall)); m = 2.0; p1 = step(220.0, aA.w * f); }
           else if (f >= tl && f < tl + 0.09) { p = vec2(aA.x + aB.w * tl, aA.z); b = 0.8 * (1.0 - (f - tl) / 0.09) * min(1.0, 0.5 + 0.5 * aD.z); m = 3.0; p1 = aD.y; }   // its crown
         } else if (age >= 0.0 && age < 1.1) {    // a ring: 1.1 s, growing, fading; seen as the water sees it: its height over its width is (row - 615) / F (0.09 at row 700, 0.18 at 790), a line when under half a pixel
-          float k = age / 1.1; p1 = 0.4375 * (4.0 + 14.0 * k) * aD.w; p2 = p1 * clamp((aA.y - 615.0) / 959.5, 0.0, 1.0); b = aC.z * (1.0 - k); m = 4.0; S = 2.0 * floor(p1 + 0.5) + 3.0;
+          float k = age / 1.1; p1 = 0.4375 * (4.0 + 14.0 * k) * aD.w; p2 = p1 * clamp((aA.y - 615.0) / 959.5, 0.0, 1.0); b = aC.z * (1.0 - k) * (1.0 - 0.55 * k); m = 4.0;   // (it fades softer toward its end: the ring's last third barely there) S = 2.0 * floor(p1 + 0.5) + 3.0;
         }
         vec4 we = vec4(equal(vec4(floor(aC.w + 0.5)), vec4(0.0, 1.0, 2.0, 3.0))), we2 = vec4(equal(vec4(floor(aC.w + 0.5)), vec4(4.0, 5.0, 6.0, 7.0)));   // (its eave)
         bool rainP = aC.w > 7.5;                 // the rain's own (index 8): the street's power at its x, as the rain's streaks (a 4 % floor: the water still moves in the dark)
@@ -4971,9 +4971,9 @@
         else if (m < 1.5) a = c0 ? 1.0 : (o.x == 0.0 && o.y == 1.0 ? 0.45 * vS.z : 0.0);
         else if (m < 2.5) a = c0 ? 1.0 : (o.x == 0.0 && o.y == -1.0 ? 0.4 * vS.z : 0.0);
         else if (m < 3.5) a = o.y == -1.0 ? (o.x == -1.0 ? mod(vS.z, 2.0) : (o.x == 1.0 ? step(2.0, vS.z) : 0.0)) : (c0 ? 0.35 : 0.0);
-        else if (vS.w < 0.5) a = (o.y == 0.0 && abs(o.x) <= max(vS.z, 0.5)) ? 1.0 : 0.0;   // (seen edge-on: a line, the ring's two edges in one)
+        else if (vS.w < 0.5) a = o.y == 0.0 ? (abs(o.x) <= max(vS.z, 0.5) - 1.0 ? 1.0 : (abs(o.x) <= max(vS.z, 0.5) ? 0.5 : 0.0)) : 0.0;   // (seen edge-on: a line, the ring's two edges in one; its ends half lit: round, not cut)
         else { float rx = max(vS.z, 0.5), ry = vS.w, e = o.x * o.x / (rx * rx) + o.y * o.y / (ry * ry) - 1.0;
-          a = abs(e) / max(length(vec2(o.x / (rx * rx), o.y / (ry * ry)) * 2.0), 0.001) < 0.5 ? 1.0 : 0.0; }
+          a = clamp(1.3 - 1.9 * abs(e) / max(length(vec2(o.x / (rx * rx), o.y / (ry * ry)) * 2.0), 0.001), 0.0, 1.0); }   // (each px by its distance to the ellipse: its corners dimmer, rounded; it read as a hollow rectangle)
         if (a <= 0.0) discard;
         gl_FragColor = vec4(nrSprite(vCol * a, vec2(0.0), 1.0), 1.0);   // its own light: red at its luminance in the red night
       }`;
