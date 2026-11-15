@@ -8,7 +8,7 @@
                                                          elle x6 ; les captures attendues et leurs boîtes : SHOTS)
     python3 tools/figures_audit.py --out dossier --only obaa,oden_d
 
-La caméra. Deux modèles du sol sont dans le code : A (F = 1400 px, l'œil à 1,5 m du trottoir, 1,65 m de la chaussée ; ZR, les
+La caméra. Deux modèles du sol sont dans le code : A (F = 1400 px, l'œil à 1,5 m du trottoir, 1,65 m de la chaussée ; les
 maquettes de l'oden, du dagashi-ya, d'Ichiraku, de l'arcade) et B (CF = 959,5 px, CEYE = 1,41 m de la chaussée, 1,26 m du
 trottoir ; l'équipe, la horde, le drone). Tous deux ont l'horizon à 615 ; pour une figure debout, sa hauteur à l'écran ne dépend
 que de la hauteur de l'œil : h = H (y_pied - 615) / œil (la focale s'annule). La peinture tranche (CUES, mesurés ici
@@ -175,9 +175,6 @@ def neck_guess(alpha, thr=128):
 
 # ---- les figures. place : (nom, k = px de la scène par px de l'image, sB = px par mètre de B à cette place, rangée du pied ou None)
 DGO, OMF, IRF, WKS = J('DGO'), J('OMF'), J('IRF'), J('WKS')
-ZR = dict(zs=jsnum(r'const ZR = \{[^}]*zs: ([\d.]+)'), w0=jsnum(r'const ZR = \{[^}]*w0: (-?[\d.]+)'), ppm=jsnum(r'const ZR = \{[^}]*ppm: ([\d.]+)'))
-ZRC = {k: [int(v) for v in re.search(k + r': \[([\d, ]+)\]', re.search(r'const ZRC = \{[^;]*\};', JS).group(0)).group(1).split(',')]
-       for k in ('walkT', 'idle')}
 NG = dict(vx=810.0, uzn=jsnum(r'uzn: ([\d.]+)'), kzn=jsnum(r'kzn: ([\d.]+)'), zn=jsnum(r'zn: ([\d.]+), ppm'), ppm=jsnum(r'const NG = \{[^}]*ppm: ([\d.]+)'))
 NCL = [int(v) for v in re.search(r'look: \[([\d, ]+)\]', re.search(r'const NC = \{[^;]*\};', JS).group(0)).group(1).split(',')]
 nU = lambda s: NG['vx'] + (NG['uzn'] - NG['vx']) * NG['zn'] / (NG['zn'] - s)
@@ -201,7 +198,6 @@ def crew_cell(who, move, i=0):
 Z_T = float(IRF['Tz'] if 'Tz' in IRF else IRF['T']['z'])
 Z_S = float(IRF['Sz'])                           # (les tabourets d'Ichiraku ; le client en costume n'y est plus)
 Z_OA = float(OMF['A']['z'])
-k_red = lambda w: (1400 / (ZR['zs'] - w)) / ZR['ppm']
 GGK = jsnum(r'box: \[[\d, ]+\], k: ([\d.]+)') or 0.5      # (Gengar : px de la scène par px de sa planche)
 CHARS = [
     dict(id='oden_d', nom="maître de l'oden, à la porte", outil='tools/oden_master.py (oden_door.webp : tools/oden_interior.py)',
@@ -212,9 +208,6 @@ CHARS = [
     dict(id='obaa', nom='obaa-chan du dagashi-ya', outil='tools/dagashi_obaachan.py', asset='dagashi_obaachan.webp', js='DGO, OBA, stepOba',
          modele='A', H=1.45, tete=6.5, ref=DGO['cells']['b0'], head=14,
          places=[('derrière le comptoir, Z %.2f m (A)' % DGO['z'], 1.0, DGO['ppm'] * FIX_A, None)]),
-    dict(id='red', nom='Red au balcon (zone 1)', outil='tools/red_sheet.py', asset='red_sil.webp', js='ZR, ZRC, ZRB, z1Red', modele='A',
-         H=1.65, tete=6.5, ref=[0, ZRC['idle'][0], ZRC['idle'][1], ZRC['idle'][2]], head=27,
-         places=[('à l\'arrêt (w 0)', k_red(0), 1400 / ZR['zs'] * FIX_A, None), ('entrée (w %.2f)' % ZR['w0'], k_red(ZR['w0']), 1400 / (ZR['zs'] - ZR['w0']) * FIX_A, None)]),
     dict(id='naruto_win', nom='Naruto à la fenêtre du balcon', outil='tools/naruto_sil.py (sa source : build_zzzchar_naruto.py, hors du dépôt)',
          asset='naruto_sil.webp', js='NG, NC, NAR, nDraw', modele='fenêtre peinte = 2,1 m', H=1.78, tete=7.0, ref=[NCL[1], NCL[0], NCL[1], NCL[2]], head=19,
          places=[('devant la vitre (s -1,5)', nK(nU(-1.5)) / NG['ppm'], nK(nU(-1.5)), None), ('entrée (s -6,2)', nK(nU(-6.2)) / NG['ppm'], nK(nU(-6.2)), None)]),
@@ -359,7 +352,6 @@ SHOTS = {
     'obaa': ('p2_up.png', (140, 575, 225, 680), (225, 585, 300, 680)),
     'obaa_assise': ('p2_base.png', (172, 605, 228, 660), None),
     'obaa_etagere': ('p2_reach.png', (140, 565, 200, 680), None),
-    'red': ('p1_a.png', (955, 260, 1012, 366), None),
     'naruto_win': ('p1_a.png', (1180, 120, 1275, 300), None),
     'killua': ('p1_a.png', (282, 128, 362, 232), (230, 150, 290, 232)),
     'ichiraku': ('p1_a.png', (1148, 560, 1236, 720), None),

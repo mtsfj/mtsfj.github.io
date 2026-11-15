@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """The windows of the two buildings round the right pole given their depth: the plaster block behind the pole (zone5's
-B: its balcony door, Red's, and the window under it) and the narrow planked building between the pole and Ichiraku
+B: its balcony door and the window under it) and the narrow planked building between the pole and Ichiraku
 (zone5's C: its tall lit window and its top storey's window). The owner, circling them in the whole street: "refaire les
 fenêtres de ce bâtiment-là : dessinées, 0 volume, moche"; then (R28) what is detailed generated, then pixelated.
 
     (a module: tools/redraw_zones.py's zones winB and winC call b_windows() and c_window() (the method 'hand') on the
      street as the zones before them leave it; each gives back its window's lit comp, win_z1_top or win_z1_warm (written
-     last by redraw_zones.py); B's writes the glass street.js draws Red in at the balcony door, z1_top_glaze.webp)
+     last by redraw_zones.py))
     python3 tools/window_depth.py --preview OUT    the street as it was before these windows (git BEFORE), both zones
                                                    drawn (nothing written in assets/): crops off, lit, in the power cut
     python3 tools/window_depth.py --ask NAME       a draft from the image model (tools/redraw_zones.py's call(): about
@@ -58,7 +58,6 @@ from scipy.ndimage import gaussian_filter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
-ASSETS = os.path.join(ROOT, 'assets')
 EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
 H, W = 816, 1456
 VPX, VPY, F = 700.0, 615.0, 959.5
@@ -66,7 +65,7 @@ XS = 5.0                                       # the facades' distance from the 
 SS = 4                                         # rays a pixel each way
 
 # the openings on the wall's face: their columns (continuous: the far edge's left side, the near edge's) and rays
-B_TOP = dict(xl=964.0, xr=1004.0, vt=1.283, vb=0.942, sashes=2, draft='wdBC')   # Red's balcony door (zone5: R(964, 1003, 0.942, 1.283))
+B_TOP = dict(xl=964.0, xr=1004.0, vt=1.283, vb=0.942, sashes=2, draft='wdBC')   # B's balcony door (zone5: R(964, 1003, 0.942, 1.283))
 B_LOW = dict(xl=964.0, xr=1004.0, vt=0.803, vb=0.467, sashes=2, dark=True, draft='wdBC')   # the window under it (R(964, 1003, 0.467, 0.801))
 C_WIN = dict(xl=1081.0, xr=1109.0, vt=0.797, vb=0.4995, sashes=1, draft='wdBC')  # C's tall window (zone5: R(1081, 1108, 0.494, 0.797))
 C_TOP = dict(xl=1080.0, xr=1109.0, vt=1.199, vb=0.962, sashes=2, dark=True, draft='wdCU')   # C's top storey's (R(1080, 1108, 0.962, 1.199))
@@ -81,7 +80,7 @@ C_SIGN = [(1109.5, 413), (1112, 405), (1116, 400), (1123, 396), (1123, 463), (11
 
 B_BOX = (944, 205, 1021, 526)                  # the zone winB (redraw_zones.py)
 C_BOX = (1074, 112, 1112, 440)                 # the zone winC (not below 440: the hall's entrance)
-B_COMP = (963, 222, 43, 141)                   # win_z1_top's box (street.js ASSETS, and the glass Red is drawn in)
+B_COMP = (963, 222, 43, 141)                   # win_z1_top's box (street.js ASSETS)
 C_COMP = (1081, 288, 30, 138)                  # win_z1_warm's (Naruto's room: street.js lights it with his balcony window)
 
 # the painter's tones (the street with its lights off), sampled round these windows: his hoods' undersides, lit edges
@@ -461,7 +460,7 @@ def draw(which, box, O, U):
                 r = (NW[j] + 1) / (NW[k] + 1)                        # from its fitted state there (the room off, out)
                 c = snap(np.clip((dm + 1) * r - 1, 0, 255), pal[j])
                 a[reg] = (wp + sh_[..., None] * c)[reg]
-        if which == 'B' and Ds['wdBC'] is not None:                  # (Red's glass: where the draft shows the room)
+        if which == 'B' and Ds['wdBC'] is not None:                  # (B's glass: where the draft shows the room)
             pane = {k_: m_ & glass_seen(Ds['wdBC'], names, k_) for k_, m_ in pane.items()}
     yy, xx = np.mgrid[0:h, 0:w]                                      # (nothing changes on the box's edge: the model's
     edge = np.clip(np.minimum(np.minimum(yy, h - 1 - yy), np.minimum(xx, w - 1 - xx)) / 4.0, 0, 1)[..., None]   # shadows fade
@@ -548,15 +547,6 @@ def glass_seen(D, names, key):
     return (L > 0.45 * np.percentile(L, 99.5))[..., None] & np.ones(names.shape, bool)
 
 
-def write_mask(path, cov, comp_box, box):
-    """A glass street.js draws in (white, its alpha the share of the pixel that is glass)."""
-    cx, cy, cw, ch = comp_box; x0, y0 = box[0], box[1]
-    a = np.zeros((ch, cw, 4), np.uint8); a[..., :3] = 255
-    sub = cov[cy - y0:cy - y0 + ch, cx - x0:cx - x0 + cw]
-    a[..., 3] = np.round(255 * np.clip(sub, 0, 1)).astype(np.uint8)
-    Image.fromarray(a, 'RGBA').save(path, 'WEBP', lossless=True, quality=100, method=6, exact=True)
-
-
 def comp_of(off, lit, comp_box, box):
     """The lit window as street.js lays it over the street: the lit picture where it differs from the off one."""
     cx, cy, cw, ch = comp_box; x0, y0 = box[0], box[1]
@@ -637,13 +627,11 @@ def ceiling(box, cov, off, lit, cut):
     return off, lit, cut
 
 
-def hand(which, box, O, U, new, unew, m, out=ASSETS):
+def hand(which, box, O, U, new, unew, m):
     (off, lit, cut), covg, keep = draw(which, box, O, U)
     lit = warm(which, off, lit)
     if which == 'B':
         new[m] = np.clip(off, 0, 255)[m]; unew[m] = np.clip(cut, 0, 255)[m]
-        cov = sum(c for k, c in covg.items() if k.startswith('glassT'))
-        write_mask(os.path.join(out, 'z1_top_glaze.webp'), cov, B_COMP, box)
         return comp_of(np.clip(off, 0, 255), lit, B_COMP, box)
     cov = sum(c for k, c in covg.items() if k.startswith('glassC'))
     off, lit, cut = ceiling(box, cov, off, lit, cut)
@@ -673,7 +661,7 @@ def preview(out):
         x0, y0, x1, y1 = box
         O, U = city[y0:y1, x0:x1, :3].copy(), unlit[y0:y1, x0:x1, :3].copy()
         new, unew = O.copy(), U.copy(); m = np.ones(O.shape[:2], bool)
-        c = hand(which, box, O, U, new, unew, m, out=out)
+        c = hand(which, box, O, U, new, unew, m)
         Image.fromarray(np.clip(np.round(c), 0, 255).astype(np.uint8), 'RGBA').save(os.path.join(out, comp + '.webp'), 'WEBP', lossless=True)
         # the old lit state for comparison
         oc = oldc[comp]

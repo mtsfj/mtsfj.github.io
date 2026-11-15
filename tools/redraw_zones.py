@@ -406,14 +406,14 @@ ZONES = {
     # on it by street.js (ASGN) with the arcade's hours and power; the last zone (it overlaps arceave's and naruroof's boxes)
     'arcsign': dict(box=(1320, 356, 1456, 446), tool='arcade_sign'),
     # the windows round the right pole (the owner, circling them: "refaire les fenêtres de ce bâtiment-là : dessinées,
-    # 0 volume, moche"; R28): B's balcony door (Red's) and the window under it, C's tall lit window and its top storey's
+    # 0 volume, moche"; R28): B's balcony door and the window under it, C's tall lit window and its top storey's
     # window, drawn by tools/window_depth.py ('hand'): the geometry a small model in the street's camera (each opening set
     # back in the wall, the far jamb, the head's soffit, the frame and sashes, the glass; B's balconies, a slab and a
     # steel railing in perspective, their shadow on the wall; C's sills), what is in it the image model's drafts
     # (tools/src/edits/wdBC_model.webp, wdCU_model.webp) laid in by the model's outline, given the painter's tint and
     # snapped to his palette there, each state (lit, off, the power cut) by the model's change of light; the lit comps
     # win_z1_top and win_z1_warm written last (COMP_OUT, after bwall's `comps`; their light warm, C's glass Naruto's
-    # ceiling), the glass street.js draws Red in (z1_top_glaze.webp) by the tool. Last: after bwall, topB, topC, polelamp, poletex and ramen,
+    # ceiling). Last: after bwall, topB, topC, polelamp, poletex and ramen,
     # whose boxes they overlap (the lamp's arm and the sign as they leave them)
     'winB': dict(box=(944, 205, 1021, 526), nodraft=True, parts=[
         dict(poly=[(944, 205), (1021, 205), (1021, 526), (944, 526)], method='hand', fn='window_depth.b_windows', comp='win_z1_top')]),

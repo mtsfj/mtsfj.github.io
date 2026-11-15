@@ -201,7 +201,7 @@
     return t;
   }
   // ---- late sprites (direction-08): what cannot appear in the first 15 s after the first rendered frame is fetched after it,
-  // so the first paint waits for none of it: the TranZit and its riders, Naruto's and Red's sheets, the showcase card, Ho-Oh,
+  // so the first paint waits for none of it: the TranZit and its riders, Naruto's sheet, the showcase card, Ho-Oh,
   // Gengar. crispLate() gives a texture whose image comes with lateStart() (1.2 s after the eager batch has loaded; fallbacks at
   // 9 s and 20 s); each group's readiness gates its event, so nothing is drawn before its sheet is in (no black quad) ----
   const LATE = { q: [], started: false, pending: 0, need: {}, ready: {} };
@@ -4067,7 +4067,6 @@
     for (const c of comps) add(() => c, c.position.x);
     for (const E of DRIPS) add(() => E.pw, E.px);   // the eaves' drips: their eave's power (a stand-in each)
     add(() => lcCone, 882); add(() => lcPool, 882); add(() => lcRain, 882); add(() => wlMesh, 1228); add(() => neonMesh, 1196); add(() => rlMesh, 1190);
-    add(() => z1Door.mesh, 984);
     add(() => nwRoom.mesh, 1329); add(() => nwBath.mesh, 1406);   // (Naruto's two windows on his end wall: NWIN)
     add(() => RLT.mesh, 1207);                                   // (the lights on his roof terrace: RLT)
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
@@ -4809,7 +4808,7 @@
   // clocks parked, every frame of it (a clock its event sets again once over is parked again, the latest kept), and are
   // given back spread out at its end. The directed ones are parked too: harmless (a parked clock is never pulled in).
   // Its end is a street event's end to the director: the next start 8 s on at the soonest, a pull-in 25 s on
-  const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock's owner, back after (s), the clock ('next')]
+  const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46]];   // [its clock's owner, back after (s), the clock ('next')]
   function finHold(on) {
     try {
       if (typeof STAGE !== 'undefined' && STAGE && typeof STAGE.hold === 'function') {
@@ -7115,14 +7114,13 @@
     lanOff.material.opacity = 1 - lit; lanOff.visible = lit < 0.996;
   }
   // what lives behind the glass: a small canvas over a box of the shop, drawn at 2x and masked to its glass; the
-  // painting's grain is cut out of what is drawn (one fixed pattern, a scene pixel per grain, as for the ramen shadows).
-  // crisp: a figure's silhouette (Red), drawn at 1x on the scene's grid and shown pixel for pixel (no smoothing anywhere)
+  // painting's grain is cut out of what is drawn (one fixed pattern, a scene pixel per grain, as for the ramen shadows)
   const odenGr = document.createElement('canvas'); odenGr.width = 64; odenGr.height = 80;
   (function () { const g = odenGr.getContext('2d'), im = g.createImageData(64, 80), d = im.data;
     for (let i = 0; i < d.length; i += 4) d[i + 3] = Math.random() < 0.5 ? 12 + Math.random() * 38 : 0; g.putImageData(im, 0, 0); })();
-  function odenGlass(box, maskSrc, crisp) {
-    const K = crisp ? 1 : 2, c = document.createElement('canvas'); c.width = box[2] * K; c.height = box[3] * K;
-    const tex = new THREE.CanvasTexture(c); tex.magFilter = tex.minFilter = crisp ? THREE.NearestFilter : THREE.LinearFilter; tex.generateMipmaps = false;
+  function odenGlass(box, maskSrc) {
+    const K = 2, c = document.createElement('canvas'); c.width = box[2] * K; c.height = box[3] * K;
+    const tex = new THREE.CanvasTexture(c); tex.magFilter = tex.minFilter = THREE.LinearFilter; tex.generateMipmaps = false;
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(box[2], box[3]), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
     mesh.position.set(box[0] + box[2] / 2, -(box[1] + box[3] / 2), 0.04); scene.add(mesh);
     const mask = new Image(); mask.src = maskSrc;
@@ -7131,7 +7129,7 @@
   const odenSeen = (box) => box[0] + box[2] > camera.left && box[0] < camera.right;   // on screen (x); the y range always is
   function odenFinish(G) {                     // the grain cut out, then only the glass kept
     const g = G.g, [, , w, h] = G.box; g.imageSmoothingEnabled = false;
-    g.globalCompositeOperation = 'destination-out'; g.globalAlpha = G.gk || 1; g.drawImage(odenGr, 0, 0, w, h, 0, 0, w * G.K, h * G.K); g.globalAlpha = 1;
+    g.globalCompositeOperation = 'destination-out'; g.drawImage(odenGr, 0, 0, w, h, 0, 0, w * G.K, h * G.K);
     if (G.mask.complete && G.mask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(G.mask, 0, 0, w * G.K, h * G.K); }
     g.globalCompositeOperation = 'source-over'; G.tex.needsUpdate = true;
   }
@@ -7256,130 +7254,9 @@
     }
   }
   function stepOden(dt, t) { stepOdenBox(dt); stepLantern(dt); stepOdenSteam(dt, t); stepOdenDoor(dt, t); }
-  // ---- zone 1's lit windows live (right side, behind the street lamp). The narrow building's tall window (win_z1_warm) is
-  // Naruto's room: only its ceiling shows from the street, lit with his balcony (the lights' loop, kind 'naru'). Rarely Red, Pokémon's
-  // trainer, Pikachu on his shoulder, comes to stand at the glass of the balcony door above the shop (win_z1_top; only while he is
-  // home: from 9:30 to 0:30 he is on the Pokémon Center's roof, CR_H), dark
-  // against the lit room and its curtains, the rail in front. A shadow only, the ramen shop's way, over the window's lit comp (z 1.12) and only while its light is on;
-  // the same glass helpers as the oden shop's ----
-  const Z1 = { warm: comps.find((c) => c.userData.name === 'win_z1_warm'), top: comps.find((c) => c.userData.name === 'win_z1_top') };
-  const z1Glass = (box, mask, crisp) => { const G = odenGlass(box, mask, crisp); G.mesh.position.z = 1.12; G.mesh.visible = false;
-    G.sh = document.createElement('canvas'); G.sh.width = box[2]; G.sh.height = box[3]; G.shg = G.sh.getContext('2d'); return G; };
-  const z1Door = z1Glass([963, 222, 43, 141], 'assets/z1_top_glaze.webp?v=3', true); z1Door.gk = 0.5;   // (Red: half the grain, crisp)
-  // Red, Pokémon's trainer, Pikachu on his shoulder (the balcony door's visitor): one sheet of silhouettes (red_sil.webp,
-  // cut by tools/red_sheet.py from the owner's sprite sheet, tools/src/red_sheet.webp: the cap and its visor, the vest's
-  // popped collar, the backpack, Pikachu's ears and tail; his head, Pikachu and his legs brought to the street's proportions,
-  // 6.5 heads tall), every frame at one scale (ZR.ppm px a metre, ZR.h tall: 1.65 m, in this model's metres) on one
-  // ground line, the floor point under his root at (ZRC[row][4], [5]) in its cell. He walks along the street, his
-  // path 0.37 m behind the glass (X 6.72 m across the street, the room's floor 6.03 m over our eyes), seen side on: in,
-  // to the right (walkT), out, to the left (walkA, its mirror). w metres toward us from his stop, his scale is
-  // s = 1400 / (ZS - w) px per metre and his path's floor point (700 + 6.72 s, 615 - 6.03 s); along it, at the scale of
-  // each place, the floor point moves zrU(w1) - zrU(w0) px of the sheet: a step is ZR.D of them (the walk rows' four
-  // frames, the planted foot moving back by a quarter of it at each), and a walk frame i is drawn where the root was at
-  // phase i/n, so a planted foot stays put. The stop: the last half step, his head turned to us first, then all of him;
-  // the Poké Ball tossed and caught twice; the turn to his left; the first step out. Drawn on the scene's grid: his cell by
-  // majority at his height there (majCell), at whole px, one dark colour, its edge in two ordered steps (ZR_EDGE), the
-  // glass's grain cut out of it, nothing smoothed
-  const ZR = { f: 1400, kf: 6.03, x: 6.72, zs: 32.83, ppm: 88, h: 1.9643, w0: -6.79, D: 52.35, v: 87.2, xa0: -0.352, xr0: -0.5074 };   // (D: px of the sheet a step; v: px of the sheet a second)
-  const ZRC = { walkT: [0, 111, 196, 4, 61, 193], walkA: [196, 111, 196, 4, 50, 193], settle: [392, 77, 197, 2, 38, 195], idle: [589, 86, 201, 4, 38, 198], toss: [790, 98, 203, 8, 56, 200], turn: [993, 77, 197, 3, 39, 195] };   // the sheet's rows: top, cell w, h, frames, the floor point under his root in the cell
-  const ZRB = [[1,0.3,13.0,69.6],[2,0.15,12.6,69.6],[3,0.0474,15.7,58.6],[3,0.0474,15.5,51.3],[3,0.0474,15.3,45.9],[4,0.0474,15.0,42.5],[4,0.0474,14.8,41.0],[4,0.0474,14.5,41.5],[5,0.0474,14.3,43.9],[5,0.0474,14.1,48.3],[5,0.0474,13.8,54.6],[6,0.25,13.7,64.3],[7,0.3,14.9,71.1]];   // one toss: [its toss cell, s, the Poké Ball's centre in the cell (px)], every 0.05 s while it flies (a parabola, g = 9.81)
-  const zrU = (w) => -ZR.x * ZR.ppm * Math.log(ZR.zs - w), zrW = (u) => ZR.zs - Math.exp(-u / (ZR.x * ZR.ppm));   // w <-> his floor point along his path (px of the sheet)
-  const zrToss = (k) => ZRB.map(([i, dt, x, y]) => ['toss', i, dt * k, 0, [x, y]]);   // a toss at k times its pace (the ball in each step)
-  const zrSheet = new Image(); lateImg(zrSheet, 'assets/red_sil.webp?v=5');   // (late; his visit already waits for the sheet)
-  z1Door.sh.width = z1Door.box[2] * z1Door.K; z1Door.sh.height = z1Door.box[3] * z1Door.K;   // (his shadow drawn at the glass's 1x)
-  const ZR_EDGE = [168, 64];                      // (his edge pixels, the ring outside them: alphas, the frosted glass's softness)
-  let zrMaj = null;
-  function zrAt(f, ox, oy) {                      // his frame f = { row, i, w }: his floor point at whole px in a box at (ox, oy), his scale
-    const s = ZR.f / (ZR.zs - f.w);               // (k: as majCell takes it, his height a whole number of px)
-    return { X: Math.round(700 + ZR.x * s - ox), Y: Math.round(615 - ZR.kf * s - oy), s, k: Math.round(s * ZR.h) / (ZR.ppm * ZR.h) };
-  }
-  function z1Red(g, ox, oy, f) {                  // his frame into the door's canvas (its box at ox, oy)
-    const c = ZRC[f.row], P = zrAt(f, ox, oy), S = zrMaj || (zrMaj = majSheet(zrSheet));
-    const M = majCell(S, f.i * c[1], c[0], c[1], c[2], c[4], c[5], P.s / ZR.ppm, ZR.ppm * ZR.h, ZR_EDGE);
-    g.imageSmoothingEnabled = false; g.drawImage(M.c, P.X + M.x, P.Y + M.y);
-    g.globalCompositeOperation = 'source-in'; g.fillRect(0, 0, g.canvas.width, g.canvas.height); g.globalCompositeOperation = 'source-over';
-  }
-  function z1Ball(G, f) {                         // the Poké Ball: 2 x 2 px, dark, its top lit by the room, masked by the glazing like him
-    if (!f || !f.b) return;
-    const c = ZRC[f.row], P = zrAt(f, G.box[0], G.box[1]), [bx, by] = f.b, K = G.K, g = G.g, [, , w, h] = G.box;
-    const x = P.X + Math.round((bx - c[4]) * P.k) - 1, y = P.Y + Math.round((by - c[5]) * P.k) - 1;
-    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 0.85;
-    g.fillStyle = '#200c12'; g.fillRect(x * K, y * K, 2 * K, 2 * K); g.fillStyle = '#5a2e38'; g.fillRect(x * K, y * K, K, K);
-    g.globalAlpha = 1;
-    if (G.mask.complete && G.mask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(G.mask, 0, 0, w * K, h * K); g.globalCompositeOperation = 'source-over'; }
-    G.tex.needsUpdate = true;
-  }
-  function z1RPlan(night) {                       // his visit: in, the stop, the tosses between two pauses (at night: he just stands there, up late), the turn, out
-    const F = { w: ZR.w0, q: [], a: null, fig: null };
-    const idle = (t) => { const q = []; for (let i = 0; t > 0; t -= 0.8, i = (i + 1) % 4) q.push(['idle', i, 0.8]); return q; };   // breathing
-    const hand = (dt) => [['toss', 0, dt]];       // (his hand at his vest: the ball taken out, put back)
-    F.q.push({ k: 'go', to: -ZR.xa0, dir: 1, row: 'walkT', ph0: -ZR.xa0 });                 // there his next step would land
-    F.q.push({ k: 'frames', seq: [['settle', 0, 0.16], ['settle', 1, 0.14], ['turn', 0, 0.16]], init() { F.w += ZR.xa0; } });   // the last half step, he turns to us
-    F.q.push({ k: 'frames', seq: (night ? idle(16 + Math.random() * 8) : idle(1.5 + Math.random() * 2).concat(hand(0.3), zrToss(1), zrToss(1), hand(0.3), idle(0.8 + Math.random() * 2.4)))
-      .concat([['turn', 0, 0.16], ['turn', 1, 0.16], ['turn', 2, 0.22], ['walkA', 0, 0.14, ZR.xr0]]), after: () => { F.w += ZR.xr0; } });   // the turn, the first step
-    F.q.push({ k: 'go', to: ZR.w0, dir: -1, row: 'walkA', init() { this.ph0 = F.w; } });
-    return F;
-  }
-  function z1RStep(F, dt) {                       // moves him along, picks his frame; false when he is gone
-    if (!F.a) { if (!F.q.length) return false; F.a = F.q.shift(); F.a.t = 0; if (F.a.init) F.a.init(); }
-    const A = F.a; A.t += dt;
-    if (A.k === 'go') {                           // the walk's phase follows his floor point along his path (0 at A.ph0)
-      const n = ZRC[A.row][3], u = zrU(F.w), rem = (zrU(A.to) - u) * A.dir, du = Math.min(rem, ZR.v * dt), u1 = u + du * A.dir;
-      F.w = zrW(u1);
-      const ph = ((((u1 - zrU(A.ph0)) * A.dir) / ZR.D) % 1 + 1) % 1, i = Math.floor(ph * n) % n;
-      F.fig = { row: A.row, i, w: zrW(u1 - A.dir * ZR.D * (ph - i / n)) };   // drawn where frame i's feet are planted
-      if (rem - du <= 1e-6) F.a = null;
-    } else {                                      // frames where he stands ([row, frame, s, w from here, the ball])
-      let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
-      if (j >= A.seq.length) { if (A.after) A.after(); F.a = null; return z1RStep(F, 0); }
-      const q = A.seq[j]; F.fig = { row: q[0], i: q[1], w: F.w + (q[3] || 0), b: q[4] || null };
-    }
-    return true;
-  }
-  function z1Draw(G, light, alpha, blur, draw) {   // into its glass: one dark colour, blurred (blur 0: as drawn, crisp), grain cut out
-    const [, , w, h] = G.box, g = G.shg, q = G.sh.width / w; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, G.sh.width, G.sh.height);
-    g.setTransform(q, 0, 0, q, 0, 0); g.fillStyle = '#200c12'; draw(g);   // (in the box's px, whatever the canvas's size)
-    const gg = G.g; gg.clearRect(0, 0, G.c.width, G.c.height); gg.imageSmoothingEnabled = blur > 0; gg.filter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
-    gg.globalAlpha = alpha; gg.drawImage(G.sh, 0, 0, w * G.K, h * G.K); gg.filter = 'none'; gg.globalAlpha = 1;
-    odenFinish(G); G.mesh.material.opacity = light;
-  }
-  const Z1F = { who: null, next: 20 + Math.random() * 40, acc: 0 };
-  const z1Busy = (n) => !!(n === 'win_z1_top' && Z1F.who);   // someone at that window now
-  // the night: Red's window is dark from 1 h to 4 h (the comp's hours: the rule). A few times an hour he is up late on his Game Boy:
-  // its screen's glow lights the glass (a cool light at 0.62, over the comp's own level, never under it) and he comes to stand there,
-  // breathing, 16-24 s; then the glow goes. Never during the finale, the red night or the power cut. Debug: ?heroes brings it 4 s in
-  const RNV = { on: false, k: 0, t: 0, next: /[?&]heroes\b/.test(location.search) ? 4 : 60 + Math.random() * 120 };
-  function stepZ1(dt, t) {
-    if (Z1.top) {                                // (the glow serves the reduced-motion still too: only the visit's own start waits for motion)
-      const u = Z1.top.userData, m = Z1.top.material;
-      if (!reduced && !RNV.on && !u.on && m.opacity < 0.05 && !Z1F.who && heroNight() && !crIn() && (RNV.next -= dt) < 0) { RNV.on = true; RNV.k = 0; RNV.t = 0; Z1F.next = 2 + Math.random() * 3; }
-      if (RNV.on) {
-        RNV.t += dt; RNV.k += (((RNV.t < 30 || Z1F.who) && heroNight() ? 1 : 0) - RNV.k) * Math.min(1, dt * 3);
-        m.opacity = Math.max(m.opacity, 0.62 * RNV.k); m.color.setRGB(1 - 0.22 * RNV.k, 1 - 0.1 * RNV.k, 1);
-        if (RNV.t > 30 && !Z1F.who && RNV.k < 0.01) { RNV.on = false; RNV.next = 120 + Math.random() * 120; m.color.setRGB(1, 1, 1); }
-      }
-    }
-    // the balcony door: Red walks along the inside of the window toward us, side on (two steps in sight), stops at the
-    // parted curtain and turns to us, tosses his Poké Ball and catches it, twice, Pikachu on his shoulder; he turns to his
-    // left and walks back: z1RPlan, z1RStep
-    if (Z1.top) {
-      let F = Z1F.who; const light = Z1.top.material.opacity;
-      if (!F) {
-        Z1F.next -= dt;
-        if (Z1F.next < 0 && !crIn() && (light > 0.95 && Z1.top.userData.next > 22 || RNV.on && light > 0.5)) {   // (at home: not at the Pokémon Center)
-          if (!STAGE.spot('red', 60, { area: [[963, 222, 1006, 363]] })) Z1F.next = 1.5 + Math.random();   // (his place, STAGE: the balcony door's glass; taken, a moment later)
-          else { F = Z1F.who = z1RPlan(RNV.on); z1Door.mesh.visible = true; Z1F.acc = 1; }
-        }
-      }
-      if (F) {
-        if (!z1RStep(F, dt) || light < 0.02) { Z1F.who = null; Z1F.next = 30 + Math.random() * 45; z1Door.mesh.visible = false; STAGE.done('red'); }
-        else if ((Z1F.acc += dt) >= 1 / 20 && odenSeen(z1Door.box) && zrSheet.complete && zrSheet.naturalWidth) {
-          Z1F.acc = 0;
-          z1Draw(z1Door, light, 0.78, 0, (g) => z1Red(g, z1Door.box[0], z1Door.box[1], F.fig)); z1Ball(z1Door, F.fig);
-        } else z1Door.mesh.material.opacity = light;
-      }
-    }
-  }
+  // (zone 1's two lit windows by the right pole live in the lights' loop alone: the narrow building's tall window (win_z1_warm)
+  // is Naruto's room, only its ceiling seen from the street, lit with his balcony (kind 'naru'); the balcony door above B's shop
+  // (win_z1_top) a room's light. Red, who stood at that door, lives on the Pokémon Center's roof now: CRD, below)
 
   // ---- a nod to Hunter x Hunter: Killua sits on the front roof's edge near its far end, his legs over the street, looking
   // at the tower and the Fuji. Baked by build_zzzchar_killua.py from the owner's own image, lit by the sunset
@@ -7686,11 +7563,11 @@
     gsMesh.visible = true;
   }
   // ---- the four heroes (the secret 'killua': its id and its line in the list kept). Kirua on his roof, Naruto behind
-  // the balcony's lit glass, Red at the balcony door above the shop (or on the Pokémon Center's roof), Luffy at Ichiraku's counter: each clicked (or
+  // the balcony's lit glass, Red on the Pokémon Center's roof (CRD), Luffy at Ichiraku's counter: each clicked (or
   // tapped) once while he is there, in any order. Each answers at once, a second at most, in the scene's own light: the
   // same small star (pixel steps, its light added) and the same soft chime for all four, and a touch of his own: Kirua's
-  // lightning crackles on him; a shadow clone pops beside Naruto in a puff (his hand seal too if he faces the glass: a
-  // silhouette still); Red tosses his Poké Ball if he stands at the glass; Luffy stretches his arm out, rubber, his bowl
+  // lightning crackles on him; a shadow clone pops beside Naruto in a puff (his hand seal too if he faces the glass);
+  // Red throws his Poké Ball up, Pikachu's cheeks spark (his own click: crClick); Luffy stretches his arm out, rubber, his bowl
   // held out, and waves. The four: the secret (foundSecret; its place on the trophies' map: where the last one was); until
   // then the list's line keeps a ✧ a hero. Clicked again: a faint star only. Kept in this browser ('mtsfj-four'). No
   // cursor, no hint. Reduced motion: no animation, a still star a second ----
@@ -7722,20 +7599,14 @@
     const c = NC[f.row], u = nU(f.s), k = nK(u) / NG.ppm;
     return heroClip(u - c[4] * k, nV(u) - (f.lift || 0) * nK(u) - c[5] * k, c[1] * k, c[2] * k, [WL.x, WL.y, WL.w, WL.h]);
   }
-  function heroRed() {                           // Red's figure at the balcony door while he is there, its light on, else null
-    const F = Z1F.who; if (!F || !F.fig || !Z1.top || Z1.top.material.opacity < 0.5 || !z1Door.mesh.visible) return null;
-    const f = F.fig, c = ZRC[f.row], s = ZR.f / (ZR.zs - f.w), k = s / ZR.ppm;
-    return heroClip(700 + ZR.x * s - c[4] * k, 615 - ZR.kf * s - c[5] * k, c[1] * k, c[2] * k, z1Door.box);
-  }
   function overNaruto(ev) { const b = heroNar(); return !!b && heroIn(heroPt(ev), b, 2); }
-  function overRedHero(ev) { const b = heroRed(); return !!b && heroIn(heroPt(ev), b, 2); }
   function overLuffy(ev) { return !LF.dead && LF.a > 0.5 && !!ILF.cells && ILFI.naturalWidth > 0 && SHOP.k > 0.5 && heroIn(heroPt(ev), lfBox(), 2); }   // (at Ichiraku's counter, the shop open)
   function heroAt(k) {                           // where his star shows: by his head
     if (k === 'kirua') return [331 + KOFF[0], 134 + KOFF[1]];
     if (k === 'luffy') { const oy = ILF.cells[LF.c][5]; return [ILF.x + 9, Math.max(ILF.y - oy + ILF.head[LF.c] + 5, 600)]; }
-    if (k === 'red' && CRH.on) return crHead();   // (Red at the Pokémon Center)
-    const b = k === 'naruto' ? heroNar() : heroRed();
-    return b ? [b[0] + b[2] * 0.72, b[1] + 5] : k === 'naruto' ? [1236, 136] : [988, 262];
+    if (k === 'red') return crHead();            // (Red on the Pokémon Center's roof: by his cap)
+    const b = heroNar();
+    return b ? [b[0] + b[2] * 0.72, b[1] + 5] : [1236, 136];
   }
   function heroStar(x, y, faint) {
     const S = HERO.stars.find((q) => q.t < 0) || HERO.stars[0];
@@ -7743,13 +7614,6 @@
     Object.assign(S, { t: 0, faint, still: reduced && !faint });
     S.m.position.set(Math.round(x) + 0.5, -(Math.round(y) + 0.5), 1.95); S.m.material.opacity = faint ? 0.4 : 0.9;
     S.m.material.map.offset.x = (S.still ? 3 : 0) / HSTAR.n; S.m.visible = true;
-  }
-  function heroToss() {                          // Red standing at the glass: a quick toss of his Poké Ball (his own frames, twice their pace)
-    const F = Z1F.who, A = F && F.a; if (!A || A.k !== 'frames' || !F.fig || F.fig.row !== 'idle') return;
-    let t = A.t, j = 0; while (j < A.seq.length && t > A.seq[j][2]) { t -= A.seq[j][2]; j++; }
-    if (j >= A.seq.length) return;
-    A.seq[j] = [A.seq[j][0], A.seq[j][1], t];   // (this breath ends now)
-    A.seq.splice(j + 1, 0, ['toss', 0, 0.15], ...zrToss(0.5), ['toss', 0, 0.15]);
   }
   function fourHit(k) {                          // he is clicked (or tapped) while he is there
     const again = FOUR.k.includes(k), [x, y] = heroAt(k);
@@ -7762,22 +7626,18 @@
       else if (k === 'naruto') {               // (the clone's puff by his head, a body's width off, on the side that has room)
         const f = NAR.fig; if (f) { const away = nU(f.s - 1.1) >= WL.x + 12; NAR.puffs.push({ s: f.s + (away ? -1.1 : 1.1), t: 0, h: 1.3 }); if (f.row === 'look' || f.row === 'seal') NAR.rx = 0.55; }
       }
-      else if (k === 'red') heroToss();
-      else lfPlay(LF_WAVE);
+      else if (k === 'luffy') lfPlay(LF_WAVE);  // (Red: his own answer, crClick, with the click)
     }
     paintSecrets(false);
     if (all) { XI_AT.killua = FOUR.at; foundSecret('killua'); }
   }
-  if (reduced) {                                 // reduced motion (no animation): now and then Naruto stands at the lit glass and Red at his lit
-    const HS = { on: false, k: 0 };               // door, cut in and out with one frame, no motion, clickable; 25-40 s, every 60-120 s
+  if (reduced) {                                 // reduced motion (no animation): now and then Naruto stands at the lit glass, cut in and
+    const HS = { on: false, k: 0 };               // out with one frame, no motion, clickable; 25-40 s, every 60-120 s (Red: still on his roof)
     const narStill = (on) => { const N = NAR, W2 = WIN2;
       if (on) { N.s = -1.5; N.a = null; N.q = [nFrames([['look', 1, 1e9]])]; N.figs = []; N.puffs = []; W2.state = 'on'; W2.t = 10; W2.next = 1e9; W2.I = [1, 1, 1, 1]; }
       else { N.a = null; N.q = []; N.fig = null; N.figs = []; W2.state = 'off'; W2.t = 0; W2.next = 1e9; W2.I = [0, 0, 0, 0]; }
       W2.acc = 1; W2.shown = true; };
-    const redStill = (on) => {
-      if (on) { Z1F.who = { w: 0, q: [], a: { k: 'frames', seq: [['idle', 0, 1e9]], t: 0 }, fig: null }; z1Door.mesh.visible = true; Z1F.acc = 1; RNV.on = true; RNV.k = 1; RNV.t = 0; }
-      else { Z1F.who = null; z1Door.mesh.visible = false; RNV.on = false; RNV.k = 0; if (Z1.top) Z1.top.material.color.setRGB(1, 1, 1); } };
-    const show = (on) => { HS.on = on; try { narStill(on); redStill(on && !crIn()); frame(); } catch (e) {} };   // (Red: at home, else at the Center)
+    const show = (on) => { HS.on = on; try { narStill(on); frame(); } catch (e) {} };
     const tick = () => {
       if (document.hidden || FIN.t >= 0) { setTimeout(tick, 20000); return; }
       show(true); setTimeout(() => { show(false); setTimeout(tick, 60000 + Math.random() * 60000); }, 25000 + Math.random() * 15000); };
@@ -8728,7 +8588,7 @@
     }
     hanaDraw();
   }
-  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overRedHero(ev)) { fourHit('red'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCRed(ev)) { crClick(); CRH.on = true; fourHit('red'); CRH.on = false; return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
+  hero.addEventListener('click', (ev) => { if (PAN.block) { PAN.block = false; return; } for (const c of CLICKS) if (c(ev)) return; if (overFlyer(ev)) { catchFlyer(); return; } if (tzClick(ev)) return; if (overSwitch(ev)) { swOpen(); ev.stopPropagation(); return; } if (overKillua(ev)) { fourHit('kirua'); return; } if (overNaruto(ev)) { fourHit('naruto'); return; } if (overLuffy(ev)) { fourHit('luffy'); return; } if (overCRed(ev)) { crClick(); fourHit('red'); return; } if (overCat(ev)) { catBlink(); return; } if (overTree(ev)) { cbOpen('battle'); return; } if (overBBus(ev)) { gldDrop(); return; } const si = starAt(ev); if (si >= 0) { touchStar(si); return; } const am = arcAt(ev); if (am >= 0) { arcPlay(am); return; } if (overFuse(ev)) { openFuse(); return; } if (overMars(ev)) { openScope(ev); return; } if (overPC(ev)) { openPC(); return; } if (overPkpc(ev)) { pkOpen(); return; } if (overDoor(ev)) { cbOpen('heal'); return; } if (overWin(ev)) showSlab(ev, !slabTip.classList.contains('on')); else if (slabTip.classList.contains('on')) showSlab(ev, false); });
 
   // ---- the sky by the hour (package 1: ciel-01..12, meteo-13). skyHours, from stepNight each frame: the far planes' night
   // and dawn (NRU's uNT, uDW, uDP, uSun: the layers' shaders paint them from their own lightness), the street's far pixels'
@@ -9367,9 +9227,8 @@
   // what passes right of the nearer building's corner (CRD.clip) is behind it. Two layers: the night alone (the sky's and the
   // street's, always; his shadow on the coping under him and, soft, on the wall under his legs), and the Pokéball sign's red
   // and white light from his left and below, laid over it at the sign's level and its zone's power (the night light's dimmer
-  // from 1 h, a blackout; the red night takes both). He is here from 9:30 to 0:30 (CR_H), at home the rest of the night (the
-  // four heroes' Red at his balcony door, Z1F, and his Game Boy at night, RNV: only then; a visit still under way, he comes
-  // after it). Quiet: he breathes, swings his legs now and then, tosses his Poké Ball and catches it, sets his cap right, turns to
+  // from 1 h, a blackout; the red night takes both). He is here from 9:30 to 0:30 (CR_H), gone home (out of sight) the rest
+  // of the night. Quiet: he breathes, swings his legs now and then, tosses his Poké Ball and catches it, sets his cap right, turns to
   // Pikachu (who looks back), rarely waves; Pikachu on his rest twitches his ears, turns his head to him or to the street, and
   // now and then zaps a Team Rocket grunt sneaking out into the alley below (RJX: CR.ev, his alert, zapping, smug frames); from 23 h
   // he dozes, Pikachu asleep against his neck, waking a moment now and then (he rubs his eye); he comes and goes softly.
@@ -9393,7 +9252,6 @@
   const CRL = { night: crLayer(1.12, 'street'), lit: crLayer(1.1201, 'self'), fx: crLayer(1.1202, 'self') };   // (over the Center's comps and the sign's glow)
   const CREMB = comps.find((c) => c.userData.name === 'z4_emblem') || null;   // (the Pokéball sign: its level, the night light's dimmer in it)
   const crR = (a, b) => a + Math.random() * (b - a);
-  const CRH = { on: false };                     // (his click, the four heroes': his star by his cap, not at the balcony door)
   const CR_H = [9.5, 0.5, 23];                   // (here from, until (past midnight), dozing from)
   const crHour = () => (((CLOCK.h + CLOCK.wake) % 24) + 24) % 24;
   function crIn() { const h = crHour(); return h >= CR_H[0] || h < CR_H[1]; }   // (Red on the Center's roof: not at home)
@@ -9411,7 +9269,7 @@
   function overCRed(ev) { return !CR.dead && CR.a > 0.5 && !!CRD.cells && CRI.naturalWidth > 0 && heroIn(heroPt(ev), crBox(), 1); }
   function stepCRed(dt) {
     if (CR.dead || !CRD.cells) return;
-    const away = !crIn() || !!Z1F.who, hk = crHour(), live = CR.hk0 >= 0 && Math.abs(hk - CR.hk0) < 0.05 && !reduced; CR.hk0 = hk;
+    const away = !crIn(), hk = crHour(), live = CR.hk0 >= 0 && Math.abs(hk - CR.hk0) < 0.05 && !reduced; CR.hk0 = hk;
     CR.a = away ? (live ? Math.max(0, CR.a - dt / 0.8) : 0) : (live ? Math.min(1, CR.a + dt / 1.2) : 1);   // (in and out: softly when seen)
     const night = crNight();
     if (reduced) CR.f = CR.d = night ? 'doze' : 'idle';
@@ -10068,7 +9926,7 @@
     openTry(() => { gust.target = 0; gust.hold = 0; gust.next = 1e9; });                              // no gust
     openTry(() => { KIL.ph.next = 1e9; });                                                           // no kick before its beat
     openTry(() => STAGE.hold('opening', ['bbus', 'oden']));                                 // the set closed: only the opening's own beats start (STAGE, package 8)
-    [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => Z1F, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
+    [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
   }
   function openSettled() {      // no opening (reduced motion, or a visitor who has seen it): the evening is under way
     openTry(() => { if (nightOpen('ramen')) Object.assign(SHOP, { open: true, k: 1, t: 10, neon: 1 }); });   // (each at the hour's state)
@@ -10107,7 +9965,6 @@
     openTry(() => { gust.next = R(12, 25); });
     openTry(() => { FEV.next = R(4, 4); });
     openTry(() => { OIN.next = R(45, 75); });
-    openTry(() => { Z1F.next = R(80, 120); });
     openTry(() => { NAR.next = R(14, 16); });                             // the balcony is lit: Naruto passes within the minute
     openTry(() => { SHOP.next = R(80, 60); });
     openTry(() => { WIN2.next = R(120, 480); });
@@ -10234,10 +10091,9 @@
         const col = c.material.color, kc = Math.min(1, dt * 10);
         col.setRGB(col.r + ((u.cool ? 0.8 : 1) - col.r) * kc, col.g + ((u.cool ? 0.9 : 0.97) - col.g) * kc, 1);
       } else { // windows: someone turns the light off, then on again a while later: minutes, as a room is lived in (on 4-15 min, off
-        // 1-6 min), never while their figure crosses it (zone 1: out just after they leave); the Center's shop: open through its
+        // 1-6 min); the Center's shop: open through its
         // hours, all its lights at once (catching with a stutter), no closing in between
         u.next -= dt;
-        if (u.next < 0 && u.on && !u.shop && z1Busy(u.name)) u.next = 0.8 + Math.random() * 1.5;
         if (u.next < 0) {
           const was = u.on;
           u.on = u.shop ? nightLit(u) : !u.on && nightLit(u);
@@ -10250,7 +10106,6 @@
       }
       if (u.kind === 'neon' || u.kind === 'shop' || u.kind === 'tube' || u.kind === 'lantern') c.material.opacity *= nightGate(u, dt);   // their hours
     }
-    stepZ1(dt, t);                                   // the people behind zone 1's lit windows (their light just set)
     stepHeal(dt);                                    // the Center's healing machine (its night mode)
     stepHours();                                     // the places shut by the hour: the dojo, the oden, the arcade
     if (WET.on && WET.hide.indexOf(vendPool) < 0) WET.hide.push(vendPool);   // (the machines' pool: out of the water's picture, as the lamp's)
@@ -11999,7 +11854,7 @@
     } catch (e) { B.dead = true; }
   }
   const rjEdge = (th) => { const a = th * RJ_MAX, X = RJ_XH - RJ_W * Math.cos(a), Z = RJ_ZF - RJ_W * Math.sin(a); return [700 + 960 * X / Z, X, Z, a]; };   // the leaf's free edge on screen
-  const rjRedOk = () => !reduced && !CR.dead && CR.a > 0.95 && crIn() && !crNight() && !Z1F.who && CRI.naturalWidth > 0;   // (Red there, awake)
+  const rjRedOk = () => !reduced && !CR.dead && CR.a > 0.95 && crIn() && !crNight() && CRI.naturalWidth > 0;   // (Red there, awake)
   function rjxPlay() {                                // his visit's beats: [what, seconds, his frame, his feet x, y, the door: [where, how fast]]
     const r = (a, b) => a + Math.random() * (b - a), X = RJS.x, Y = RJS.y;
     RJX.seq = [['door', r(0.6, 1), null, 0, 0, [0.55, 3]], ['man', r(0.5, 0.8), 'look_l', 935, 662], ['man', r(0.4, 0.7), 'look_r', 935, 662],
