@@ -1,0 +1,17 @@
+This image is a sprite sheet in two parts, in a soft painted pixel-art style (smooth painterly shading, chunky pixels, no black outlines, natural proportions). Fill it in and give back the whole sheet at the same layout.
+
+TOP PART (the 3 x 2 grid above the thick grey line): six identical frames of a seated character, Red, the trainer from the original Pokemon games (red and white cap, red vest, black T-shirt, jeans), seated on a ledge we do not see (his hands resting on it, his legs hanging), Pikachu sitting on his left shoulder. Keep every cell exactly as it is (the same character, size and position in its cell, the same pose of the body, legs, feet and of the hands on the ledge, the same colours), and change ONLY this in each cell:
+1. top left: nothing, identical.
+2. top middle: Pikachu's ears twitch: his ear on our right flicked back and bent down, the other still up; his zigzag tail flicked a little higher. Red unchanged.
+3. top right: Pikachu turns his head to look at Red's face (toward our left, in profile, ears up). Red unchanged.
+4. bottom left: Pikachu turns his head the other way, looking out to our right, ears perked up. Red unchanged.
+5. bottom middle: Red raises his right hand (the one on our left) to the brim of his cap and adjusts it, pinching the brim between thumb and fingers, his elbow out, his head a little lower under it; his other hand stays on the ledge, his legs unchanged; Pikachu unchanged.
+6. bottom right: Red turns his head toward our right to look at Pikachu, a small smile; Pikachu looks back at him. Body, hands and legs unchanged.
+
+BOTTOM PART (the four empty cells under the thick grey line): the same painted pixel-art style, a new character: an ordinary tired man in his thirties, a night-shift worker, slim, about 7.5 heads tall, short black hair, a dark navy work jacket open over a light grey shirt, dark trousers, black shoes. One full-body figure per cell, every figure the same height (filling about four fifths of the cell's height), all feet on the same baseline:
+1. walking toward our right, seen from the side and three-quarter, one foot forward (stepping out of a door).
+2. standing three-quarter facing our left, head bowed, both hands cupped in front of his mouth lighting a cigarette with a lighter (a tiny flame between his hands).
+3. standing three-quarter facing our left, relaxed, his left hand in his jacket pocket, his right arm down holding a lit cigarette at his side.
+4. standing the same way, his right hand raised holding the cigarette at his lips (a drag), his left hand in his pocket.
+
+Plain pure white background everywhere, keep the grid lines, no text, no labels, no ground line, no cast shadows, no other objects.

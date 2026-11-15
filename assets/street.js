@@ -9350,17 +9350,19 @@
   // and white light from his left and below, laid over it at the sign's level and its zone's power (the night light's dimmer
   // from 1 h, a blackout; the red night takes both). He is here from 9:30 to 0:30 (CR_H), at home the rest of the night (the
   // four heroes' Red at his balcony door, Z1F, and his Game Boy at night, RNV: only then; a visit still under way, he comes
-  // after it). Quiet: he breathes, swings his legs now and then, tosses his Poké Ball and catches it, rarely waves; from 23 h
+  // after it). Quiet: he breathes, swings his legs now and then, tosses his Poké Ball and catches it, sets his cap right, turns to
+  // Pikachu (who looks back), rarely waves; Pikachu on his rest twitches his ears, turns his head to him or to the street; from 23 h
   // he dozes, Pikachu asleep against his neck, waking a moment now and then (he rubs his eye); he comes and goes softly.
   // Clicked (his own): he throws his Poké Ball up, it pops open in a flash over him, he pumps his fist and Pikachu's cheeks
   // spark (dozing: he wakes, Pikachu sparks); a click also counts him as the four heroes' Red (the same Red: fourHit('red'),
   // its star by his cap). Reduced motion: still (seated, or asleep from 23 h) ----
-  const CRD = {"cells":{"idle":[0,0,41,59,18,37],"idle_b":[42,0,41,60,18,38],"swing":[84,0,41,59,18,37],"swing2":[126,0,41,59,18,37],"ball":[168,0,40,59,17,37],"toss":[209,0,43,60,20,38],"cheer":[0,61,44,62,18,39],"doze":[45,61,37,58,16,36],"wake":[83,61,42,60,17,38]},"lit":124,"x":921,"y":441,"clip":941,"pts":{"idle":{"head":[0,-37],"pika":[11,-30]},"idle_b":{"head":[0,-38],"pika":[11,-31]},"swing":{"head":[0,-37],"pika":[11,-30]},"swing2":{"head":[0,-37],"pika":[11,-30]},"ball":{"head":[-1,-37],"pika":[9,-30]},"toss":{"head":[-1,-38],"hand":[-16,-26],"pika":[12,-31]},"cheer":{"head":[-1,-37],"pika":[10,-32]},"doze":{"head":[-1,-36],"pika":[8,-29]},"wake":{"head":[-1,-37],"pika":[10,-32]}}};   // (tools/center_red.py: his cells [sx, sy, w, h, ox, oy] (the night's layer; the sign's lit lower), his seat, the clip, his points)
-  const CR = { a: 0, f: 'idle', seq: [], ft: 0, toss: 30 + Math.random() * 20, wave: 140 + Math.random() * 120, kick: 12 + Math.random() * 10,
-    wake: 25 + Math.random() * 20, ball: null, pop: null, spark: 0, hk0: -1, dead: false, drawn: '', acc: 1 };
+  const CRD = {"cells":{"idle":[0,0,41,59,18,37],"idle_b":[42,0,41,60,18,38],"swing":[84,0,41,59,18,37],"swing2":[126,0,41,59,18,37],"ball":[168,0,40,59,17,37],"toss":[209,0,43,60,20,38],"cheer":[0,61,44,62,18,39],"doze":[45,61,37,58,16,36],"wake":[83,61,42,60,17,38],"pk_ear":[126,61,41,58,18,37],"pk_ear_b":[168,61,41,59,18,38],"pk_look":[210,61,41,58,18,37],"pk_look_b":[0,124,41,59,18,38],"pk_out":[42,124,41,58,18,37],"pk_out_b":[84,124,41,59,18,38],"cap":[126,124,38,58,15,37],"look":[165,124,41,58,18,37]},"lit":184,"x":921,"y":441,"clip":941,"pts":{"idle":{"head":[0,-37],"pika":[11,-30]},"idle_b":{"head":[0,-38],"pika":[11,-31]},"swing":{"head":[0,-37],"pika":[11,-30]},"swing2":{"head":[0,-37],"pika":[11,-30]},"ball":{"head":[-1,-37],"pika":[9,-30]},"toss":{"head":[-1,-38],"hand":[-16,-26],"pika":[12,-31]},"cheer":{"head":[-1,-37],"pika":[10,-32]},"doze":{"head":[-1,-36],"pika":[8,-29]},"wake":{"head":[-1,-37],"pika":[10,-32]},"pk_ear":{"head":[0,-37],"pika":[12,-30]},"pk_ear_b":{"head":[0,-38],"pika":[12,-31]},"pk_look":{"head":[0,-37],"pika":[11,-29]},"pk_look_b":{"head":[0,-38],"pika":[11,-30]},"pk_out":{"head":[0,-37],"pika":[10,-30]},"pk_out_b":{"head":[0,-38],"pika":[10,-31]},"cap":{"head":[-1,-37],"pika":[11,-30]},"look":{"head":[-1,-37],"pika":[10,-30]}}};   // (tools/center_red.py: his cells [sx, sy, w, h, ox, oy] (the night's layer; the sign's lit lower), his seat, the clip, his points)
+  const CR = { a: 0, f: 'idle', d: 'idle', seq: [], ft: 0, toss: 30 + Math.random() * 20, wave: 140 + Math.random() * 120, kick: 12 + Math.random() * 10,
+    wake: 25 + Math.random() * 20, cap: 50 + Math.random() * 60, look: 30 + Math.random() * 40, ball: null, pop: null, spark: 0, hk0: -1, dead: false, drawn: '', acc: 1,
+    pk: { f: null, ft: 0, seq: [], t: 2 + Math.random() * 4, lt: 10 + Math.random() * 15 } };   // (d: the frame shown, Pikachu's own life laid on his rest)
   const CRB = { x: 893, y: 386, w: 48, h: 84 };   // (his canvases, their right edge the nearer building's corner: his cells, the ball and its flash, the sparks)
   const CRI = new Image(); CRI.onerror = () => { CR.dead = true; };
-  offView(CRB.x, CRB.x + CRB.w, () => { CRI.src = 'assets/center_red.webp?v=3'; });
+  offView(CRB.x, CRB.x + CRB.w, () => { CRI.src = 'assets/center_red.webp?v=4'; });
   const crLayer = (z, kind) => {
     const c = document.createElement('canvas'); c.width = CRB.w; c.height = CRB.h;
     const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
@@ -9383,16 +9385,16 @@
     crPlay([['ball', 0.3], ['toss', 0.05, 'throw'], ['toss', 0.5], ['cheer', 0.1, 'spark'], ['cheer', 1.3], ['idle', 0.4]]);
   }
   function crBox() {                             // (where he shows: his cell, cut at the nearer building's corner)
-    const [, , w, h, ox, oy] = CRD.cells[CR.f], x = CRD.x - ox; return [x, CRD.y - oy, Math.min(w, CRD.clip - x), h];
+    const [, , w, h, ox, oy] = CRD.cells[CR.d], x = CRD.x - ox; return [x, CRD.y - oy, Math.min(w, CRD.clip - x), h];
   }
-  function crHead() { const p = CRD.pts[CR.f].head; return [CRD.x + p[0] + 3, CRD.y + p[1] + 3]; }
+  function crHead() { const p = CRD.pts[CR.d].head; return [CRD.x + p[0] + 3, CRD.y + p[1] + 3]; }
   function overCRed(ev) { return !CR.dead && CR.a > 0.5 && !!CRD.cells && CRI.naturalWidth > 0 && heroIn(heroPt(ev), crBox(), 1); }
   function stepCRed(dt) {
     if (CR.dead || !CRD.cells) return;
     const away = !crIn() || !!Z1F.who, hk = crHour(), live = CR.hk0 >= 0 && Math.abs(hk - CR.hk0) < 0.05 && !reduced; CR.hk0 = hk;
     CR.a = away ? (live ? Math.max(0, CR.a - dt / 0.8) : 0) : (live ? Math.min(1, CR.a + dt / 1.2) : 1);   // (in and out: softly when seen)
     const night = crNight();
-    if (reduced) CR.f = night ? 'doze' : 'idle';
+    if (reduced) CR.f = CR.d = night ? 'doze' : 'idle';
     else {
       if (night !== (CR.f === 'doze' || CR.f === 'wake')) { CR.seq = []; CR.ft = 0; CR.ball = null; }
       if ((CR.ft -= dt) <= 0) {
@@ -9401,6 +9403,8 @@
           else if ((CR.toss -= 3.2) < 0) { CR.toss = crR(25, 55); CR.seq = [['ball', 0.5], ['toss', 0.05, 'up'], ['toss', 0.66], ['ball', 0.45]].concat(Math.random() < 0.35 ? [['toss', 0.05, 'up'], ['toss', 0.66], ['ball', 0.5]] : []); }
           else if ((CR.wave -= 3.2) < 0) { CR.wave = crR(150, 300); CR.seq = [['toss', 1.6]]; }   // (his hand up: he waves at the street)
           else if ((CR.kick -= 3.2) < 0) { CR.kick = crR(12, 30); CR.seq = [['swing', 0.3], ['idle', 0.3], ['swing2', 0.3], ['idle', 0.3], ['swing', 0.3], ['idle', 0.3], ['swing2', 0.3], ['idle', 0.6]]; }
+          else if ((CR.cap -= 3.2) < 0) { CR.cap = crR(70, 150); CR.seq = [['cap', crR(0.7, 1.1)], ['idle', 0.4]]; }   // (he sets his cap right)
+          else if ((CR.look -= 3.2) < 0) { CR.look = crR(45, 100); CR.seq = [['look', crR(1.6, 3)], ['idle', 0.5]]; }   // (he turns to Pikachu, who looks back)
           else CR.seq = [['idle', 1.6], ['idle_b', 1.6]];
         }
         const [f, d, cue] = CR.seq.shift(); CR.f = f; CR.ft = d;
@@ -9408,6 +9412,20 @@
         if (cue === 'spark') CR.spark = 1.2;
       }
     }
+    // Pikachu's own life on his rest (the frames idle and idle_b, his breath kept): his ears twitch now and then (one flick, or two),
+    // and now and then he turns his head, to Red or to the street, a moment; nothing while Red does anything else, or asleep
+    const P = CR.pk, rest = CR.f === 'idle' || CR.f === 'idle_b';
+    if (reduced || !rest) { P.f = null; P.seq = []; P.ft = 0; }
+    else if ((P.ft -= dt) <= 0) {
+      if (!P.seq.length) {
+        P.f = null;
+        if ((P.lt -= 0.25) < 0) { P.lt = crR(14, 34); P.seq = [[Math.random() < 0.55 ? 'pk_look' : 'pk_out', crR(1.3, 3.2)]]; }
+        else if ((P.t -= 0.25) < 0) { P.t = crR(3, 9); P.seq = Math.random() < 0.4 ? [['pk_ear', crR(0.12, 0.18)], [null, 0.12], ['pk_ear', crR(0.12, 0.2)]] : [['pk_ear', crR(0.12, 0.24)]]; }
+      }
+      if (P.seq.length) { const [f, d] = P.seq.shift(); P.f = f; P.ft = d; } else P.ft = 0.25;
+    }
+    CR.d = P.f && CRD.cells[P.f] ? P.f + (CR.f === 'idle_b' ? '_b' : '') : CR.f;
+    if (!CRD.cells[CR.d]) CR.d = CR.f;
     if (CR.ball) {                               // the Poké Ball: up and back into his hand (0.7 s), or thrown up high, and its pop
       const B = CR.ball; B.t += dt;
       if (B.k === 'up' && B.t > 0.7) CR.ball = null;
@@ -9422,8 +9440,8 @@
     if (!vis) return;
     CRL.night.m.material.opacity = CR.a; CRL.night.m.material.color.setScalar(0.62 + 0.38 * pz);
     CRL.lit.m.material.opacity = CR.a * Math.min(1, sg) * pz; CRL.fx.m.material.opacity = CR.a;
-    if (CR.drawn !== CR.f) {                     // his frame, into both layers (only when it changes)
-      CR.drawn = CR.f; const [sx, sy, w, h, ox, oy] = CRD.cells[CR.f], X = CRD.x - ox - CRB.x, Y = CRD.y - oy - CRB.y;
+    if (CR.drawn !== CR.d) {                     // his frame, into both layers (only when it changes)
+      CR.drawn = CR.d; const [sx, sy, w, h, ox, oy] = CRD.cells[CR.d], X = CRD.x - ox - CRB.x, Y = CRD.y - oy - CRB.y;
       for (const [L, dy] of [[CRL.night, 0], [CRL.lit, CRD.lit]]) {
         L.g.clearRect(0, 0, CRB.w, CRB.h); L.g.imageSmoothingEnabled = false; L.g.drawImage(CRI, sx, sy + dy, w, h, X, Y, w, h); L.t.needsUpdate = true;
       }
@@ -9444,7 +9462,7 @@
       g.fillRect(x, y - r, 1, 2 * r + 1); g.fillRect(x - r, y, 2 * r + 1, 1); if (r > 1) { g.fillRect(x - 1, y - 1, 1, 1); g.fillRect(x + 1, y + 1, 1, 1); g.fillRect(x + 1, y - 1, 1, 1); g.fillRect(x - 1, y + 1, 1, 1); }
     }
     if (CR.spark > 0) {                          // Pikachu's cheeks: a few yellow sparks, flickering
-      const p = (CRD.pts[CR.f] && CRD.pts[CR.f].pika) || CRD.pts.cheer.pika, x = X0 + p[0], y = Y0 + p[1];
+      const p = (CRD.pts[CR.d] && CRD.pts[CR.d].pika) || CRD.pts.cheer.pika, x = X0 + p[0], y = Y0 + p[1];
       g.fillStyle = '#ffe14a';
       for (let i = 0; i < 4; i++) if (Math.random() < 0.6) { const dx = (i % 2 ? 4 : -4) + ((Math.random() * 3) | 0) - 1, dy = (i < 2 ? -2 : 2) + ((Math.random() * 3) | 0) - 1; g.fillRect(Math.round(x + dx), Math.round(y + dy), 1, 1); g.fillRect(Math.round(x + dx + Math.sign(dx)), Math.round(y + dy - 1), 1, 1); }
     }

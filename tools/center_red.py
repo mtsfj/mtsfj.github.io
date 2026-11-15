@@ -58,6 +58,19 @@ LEDGE = (288, 710, 1128)                            # (le rebord dans la planche
 # les images de la planche : leur boîte (x0, y0, x1, y1), leur rangée
 FRAMES = {'idle': ((80, 28, 360, 436), 0), 'ball': ((476, 28, 750, 438), 0), 'toss': ((86, 440, 380, 858), 1),
           'cheer': ((462, 434, 755, 860), 1), 'doze': ((128, 870, 378, 1272), 2), 'wake': ((444, 856, 735, 1272), 2)}
+# sa petite vie (tools/src/center_red_sheet_b.webp : la moitié haute de la réponse du modèle d'image à tools/src/edits/
+# center_red_life_in.webp et _prompt.txt, center_red_life_model.webp : six fois l'image au repos, chacune redessinée avec un seul
+# changement) : la case de contrôle, inchangée (ctrl), puis Pikachu qui remue les oreilles (pk_ear), qui tourne la tête vers lui
+# (pk_look), vers la rue (pk_out), Red qui ajuste sa casquette (cap), qui tourne la tête vers Pikachu (look). Chacune réduite à
+# la même échelle que la planche (sa hauteur contre celle du repos), dans les familles de tons des images de la planche (leurs
+# octets inchangés) ; puis seul ce qui change est pris sur la case au repos (TRANSPLANT : là où elle diffère de la case de
+# contrôle, dans sa région : Pikachu, sa tête et son bras), la case de contrôle recalée sur le repos, la variante sur la
+# case de contrôle par ses jambes : le reste de lui reste au pixel près celui du repos
+SHEET_B = os.path.join(ICI, 'src', 'center_red_sheet_b.webp')
+FRAMES_B = {'ctrl': ((8, 6, 287, 404), 0), 'pk_ear': ((299, 6, 580, 404), 0), 'pk_look': ((592, 6, 876, 404), 0),
+            'pk_out': ((8, 415, 287, 816), 1), 'cap': ((299, 415, 580, 816), 1), 'look': ((592, 415, 876, 816), 1)}
+LEDGE_B = (260, 672)                          # (le rebord dans la réponse : la rangée de ses mains, mesurée sur la case de contrôle)
+TRANSPLANT = {'pk_ear': 'pika', 'pk_look': 'pika', 'pk_out': 'pika', 'cap': 'arm', 'look': 'head'}
 SWING = 4                                     # (ses jambes qui balancent : sous le rebord, à tant de rangées, ses tibias d'un pixel d'un côté, de l'autre)
 AMB = (0.46, 0.45, 0.60)                      # le ciel de nuit et la rue sur lui (froids)
 # « plus sombre, comme ce qui l'entoure » (le propriétaire) : autour de lui à 22 h (le chaperon, les bandes, le mur de côté,
@@ -84,18 +97,26 @@ def values(P, v):
     return FG.lab2rgb(lab_)
 
 
-def frames():
+def height(path, box):
+    """la hauteur d'une image de planche (du haut de sa casquette à ses semelles), en px de planche"""
+    sheet = {'red': np.asarray(Image.open(path).convert('RGB')).astype(float)}
+    _, a, _ = FG.cut(sheet, 'red', box, 'free', {}); ys = np.nonzero((a > 0.5).any(1))[0]
+    return ys[-1] + 1 - ys[0]
+
+
+def frames(path=SHEET, FR=FRAMES, LEDGES=LEDGE, s=None):
     """chaque image à l'échelle de sa place : ses couleurs, son plein, sa tête ; (ox, oy) : son assise (le milieu de son corps
     sur le rebord)"""
-    sheet = {'red': np.asarray(Image.open(SHEET).convert('RGB')).astype(float)}
-    Q1, a1, _ = FG.cut(sheet, 'red', FRAMES['idle'][0], 'free', {})   # (sa hauteur seulement)
-    top1 = FRAMES['idle'][0][1] + np.nonzero((a1 > 0.5).any(1))[0][0]
-    s = SEAT_H * PPM / (LEDGE[0] - top1)                                 # (px de la scène par px de planche : la même pour toutes)
+    sheet = {'red': np.asarray(Image.open(path).convert('RGB')).astype(float)}
+    if s is None:
+        Q1, a1, _ = FG.cut(sheet, 'red', FR['idle'][0], 'free', {})   # (sa hauteur seulement)
+        top1 = FR['idle'][0][1] + np.nonzero((a1 > 0.5).any(1))[0][0]
+        s = SEAT_H * PPM / (LEDGES[0] - top1)                             # (px de la scène par px de planche : la même pour toutes)
     out = {}
-    for n, (box, rw) in FRAMES.items():
+    for n, (box, rw) in FR.items():
         Q, a, _ = FG.cut(sheet, 'red', box, 'free', {})                  # (la planche, peinte, n'a pas de contour)
         m = a > 0.5; ys = np.nonzero(m.any(1))[0]; top, bot = ys[0], ys[-1] + 1
-        ledge = LEDGE[rw] - box[1]
+        ledge = LEDGES[rw] - box[1]
         band = m[max(top, ledge - 40):ledge]; cols = np.nonzero(band.sum(0) >= 0.5 * band.shape[0])[0]   # (son corps à hauteur du rebord)
         xn = (cols[0] + cols[-1] + 1) / 2 if len(cols) else m.shape[1] / 2
         hx = np.nonzero(m[top:top + 30].any(0))[0]
@@ -109,7 +130,7 @@ def frames():
     return out, s
 
 
-def layers(raw):
+def layers(raw, fit=None):
     """les deux calques de chaque image : la nuit (avec son ombre sur le chaperon et sur le mur), et avec l'enseigne ; chacun
     en ses familles, gardées dans la clarté de la peinture, pas de trait sombre au bord (du côté de la lumière), peu de pixels
     seuls, le grain"""
@@ -128,7 +149,7 @@ def layers(raw):
             cols[n] = FG.rim(cols[n], raw[n]['m'], (0.0, -1.0), RIM_SKY[0], RIM_SKY[1])
             if sign: cols[n] = FG.rim(cols[n], raw[n]['m'], (-1.0, 0.25), RIM_SIGN[0], RIM_SIGN[1], cos=0.6)
         cols = {n: FG.mute(cols[n], CHROMA) for n in raw}
-        allc = np.concatenate([cols[n][raw[n]['m']] for n in raw])
+        allc = np.concatenate([cols[n][raw[n]['m']] for n in (fit or raw)])   # (les familles : celles des images de la planche)
         fam = FG.palette(np.clip(allc, 0, 255), FAMILIES); Lf = R.lab(fam)[:, 0]; famB = values(fam, VALUES[li])
         tile = np.random.default_rng(31 if sign else 13).integers(-GRAIN, GRAIN + 1, (GRAIN_T, GRAIN_T))
         for n, c in raw.items():
@@ -190,6 +211,61 @@ def breathe(c):
     return o
 
 
+CANVAS = (110, 140, 45, 70)                   # (la toile commune des cases : sa taille, son assise)
+
+
+def place(c, key):
+    """un calque d'une case (ou son plein, ses couleurs) sur la toile commune, son assise en (PX, PY)"""
+    W, H, PX, PY = CANVAS; a = c[key]; ox, oy = int(c['ox']), int(c['oy'])
+    out = np.zeros((H, W) + a.shape[2:], a.dtype); out[PY - oy:PY - oy + a.shape[0], PX - ox:PX - ox + a.shape[1]] = a
+    return out
+
+
+def shift(a, dx, dy):
+    o = np.zeros_like(a); H, W = a.shape[:2]
+    o[max(0, dy):H + min(0, dy), max(0, dx):W + min(0, dx)] = a[max(0, -dy):H + min(0, -dy), max(0, -dx):W + min(0, -dx)]
+    return o
+
+
+def fit_shift(A, B, rows=None):
+    """le décalage (dx, dy) qui pose le plein B au mieux sur A (sur ces rangées)"""
+    best = None
+    for dy in range(-3, 4):
+        for dx in range(-3, 4):
+            d = A ^ shift(B, dx, dy); n = int((d if rows is None else d[rows]).sum()) * 100 + abs(dx) + abs(dy)
+            if best is None or n < best[0]: best = (n, dx, dy)
+    return best[1], best[2]
+
+
+def transplant(I, C, V, kind):
+    """la case au repos I, avec ce qui change de la case de contrôle C à la variante V, dans sa région (kind : 'pika' Pikachu,
+    'head' sa tête et Pikachu, 'arm' son bras droit, de l'épaule à la main, et sa tête, sans Pikachu) ; C recalée sur I par son
+    plein, V sur C par ses jambes (sous le rebord)"""
+    W, H, PX, PY = CANVAS; keys = ('m', 'night', 'lit', 'rgb')
+    P = {k: {n: place(c, k) for n, c in (('I', I), ('C', C), ('V', V))} for k in keys}
+    P['rgb'] = {n: (v if v.ndim == 3 else v) for n, v in P['rgb'].items()}
+    dx1, dy1 = fit_shift(P['m']['I'], P['m']['C'])
+    dx2, dy2 = fit_shift(P['m']['C'], P['m']['V'], slice(PY + 2, None))
+    Cs = {k: shift(P[k]['C'], dx1, dy1) for k in keys}; Vs = {k: shift(P[k]['V'], dx1 + dx2, dy1 + dy2) for k in keys}; Is = {k: P[k]['I'] for k in keys}
+    def yel(c): rgb, m = c['rgb'], c['m']; return m & (rgb[..., 0] > 120) & (rgb[..., 1] > 0.7 * rgb[..., 0]) & (rgb[..., 2] < 0.6 * rgb[..., 1])
+    pika = FG.grow(yel(Cs) | yel(Vs) | yel(Is), 3)
+    top = int(np.nonzero(Is['m'].any(1))[0][0]); neck = top + int(round(0.36 * (PY - top)))
+    rows = np.arange(H)[:, None]; cols = np.arange(W)[None, :]
+    head = (rows >= top - 3) & (rows < neck) & (cols < PX + 10)
+    if kind == 'pika': Rg = pika
+    elif kind == 'head': Rg = head | pika
+    else: Rg = (head | ((rows >= top - 3) & (rows <= PY + 1) & (cols < PX + 2))) & ~FG.grow(yel(Is), 1)
+    D = (Cs['m'] != Vs['m']) | (Cs['m'] & Vs['m'] & (np.abs(Cs['night'][..., :3] - Vs['night'][..., :3]).sum(-1) > 24))
+    M = FG.grow(D & Rg, 1) & Rg
+    out = {k: Is[k].copy() for k in keys}
+    for k in keys: out[k][M] = Vs[k][M]
+    vis = out['m'] | (out['night'][..., 3] > 0) | (out['lit'][..., 3] > 0)
+    ys, xs = np.nonzero(vis); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    c = {k: out[k][y0:y1, x0:x1] for k in keys}; c['ox'] = PX - x0; c['oy'] = PY - y0
+    print('  %s : contrôle (%+d, %+d), variante (%+d, %+d), %d px repris' % (kind, dx1, dy1, dx2, dy2, int(M.sum())))
+    return c
+
+
 def points(c, n):
     """ce que la rue y pose (en pixels de la scène, depuis son assise) : la main qui lance la balle (toss : la peau la plus
     haute à droite de sa tête), la tête de Pikachu (ses étincelles), le haut de sa tête (son étoile)"""
@@ -211,9 +287,15 @@ def points(c, n):
 
 def main():
     prev = sys.argv[sys.argv.index('--preview') + 1] if '--preview' in sys.argv else None
-    raw, s = frames(); col = layers(raw)
+    raw, s = frames()
+    sB = s * height(SHEET, FRAMES['idle'][0]) / height(SHEET_B, FRAMES_B['ctrl'][0])   # (la réponse à l'échelle de la planche)
+    rawB, _ = frames(SHEET_B, FRAMES_B, LEDGE_B, sB)
+    col = layers(dict(raw, **rawB), fit=list(raw))
     col['idle_b'] = breathe(col['idle']); col['swing'] = swing(col['idle'], 1); col['swing2'] = swing(col['idle'], -1)
-    order = ['idle', 'idle_b', 'swing', 'swing2', 'ball', 'toss', 'cheer', 'doze', 'wake']
+    for n, kind in TRANSPLANT.items(): col[n] = transplant(col['idle'], col['ctrl'], col[n], kind)
+    for n in ('pk_ear', 'pk_look', 'pk_out'): col[n + '_b'] = breathe(col[n])
+    order = ['idle', 'idle_b', 'swing', 'swing2', 'ball', 'toss', 'cheer', 'doze', 'wake',
+             'pk_ear', 'pk_ear_b', 'pk_look', 'pk_look_b', 'pk_out', 'pk_out_b', 'cap', 'look']
     U = FG.Atlas(256); boxes = {}
     for n in order:
         c = col[n]; box = U.add(np.round(c['night']).astype(np.uint8), np.round(c['lit']).astype(np.uint8))
