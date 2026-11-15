@@ -6823,15 +6823,18 @@
   function stepRamen(dt, t) {
     stepTeuchi(dt, t);
     if (RAM.dip <= 0 && Math.random() < dt * 0.08) RAM.dip = 0.09; RAM.dip = Math.max(0, RAM.dip - dt);
-    for (const w of RAM.wisps) { w.t += dt; if (w.t > 2.6) { w.t = 0; w.s = (Math.random() * IRF.wisps.length) | 0; } }
+    for (const w of RAM.wisps) { w.t += dt; if (w.t > 2.6) { w.t = 0; w.s = (Math.random() * IRF.wisps.length) | 0; w.ph = Math.random() * 6.28; } }
     RAM.acc += dt; if (RAM.acc < 1 / 20) return; RAM.acc = 0;
     const K = RL.K, X = (x) => (x - RL.x) * K, Y = (y) => (y - RL.y) * K, ok = !!IRFS;
-    const wisps = (g, pot) => {                  // the steam: from the stock pot (behind Teuchi), from the bowls (in front of him)
-      for (const w of RAM.wisps) {
-        const W = IRF.wisps[w.s]; if (!W || (w.s === IRF.wisps.length - 1) !== pot) continue;
-        const [wx, wy, rise, rr] = W, k = w.t / 2.6, r = (0.6 + 1.4 * k) * rr * K, gx = X(wx + Math.sin(t * 2 + w.s * 1.7) * 0.25 * rise * k), gy = Y(wy - rise * k);
-        const gr = g.createRadialGradient(gx, gy, 0, gx, gy, r); gr.addColorStop(0, 'rgba(255,240,225,' + 0.3 * Math.sin(Math.PI * k) + ')'); gr.addColorStop(1, 'rgba(255,240,225,0)');
-        g.fillStyle = gr; g.fillRect(gx - r, gy - r, 2 * r, 2 * r);
+    const wisps = (g, pot) => {                  // the steam: from the stock pot (behind Teuchi), from the bowls (in front of him): each
+      for (const w of RAM.wisps) {               // wisp a strand of whole pixels rising from its source, curling more as it climbs, longer and
+        const W = IRF.wisps[w.s]; if (!W || (w.s === IRF.wisps.length - 1) !== pot) continue;   // fainter toward its top, gone in 2.6 s
+        const [wx, wy, r0, rr] = W, rise = pot ? 1.35 * r0 : r0, k = w.t / 2.6, a = (pot ? 0.3 : 0.32) * Math.sin(Math.PI * k); if (a < 0.02) continue;
+        const yh = Math.round(wy - rise * k), n = 3 + Math.round(4 * k), ph = w.ph || 0;
+        for (let i = 0; i < n; i++) {             // (the pot's drawn to the right as it climbs: the kitchen's hood is that way)
+          const y = yh + i, up = Math.max(0, wy - y) / rise, x = Math.round(wx + (pot ? 0.4 * (wy - y) : 0) + Math.sin(ph + t * 1.3 + y * 0.42) * (0.3 + 0.32 * rr * up));
+          g.fillStyle = 'rgba(255,240,225,' + (a * (1 - i / (n + 1)) * (1 - 0.4 * up)).toFixed(3) + ')'; g.fillRect(X(x), Y(y), K, K);
+        }
       }
     };
     const masked = (g) => { if (rlMask.complete && rlMask.naturalWidth) { g.globalCompositeOperation = 'destination-in'; g.drawImage(rlMask, 0, 0, rlC.width, rlC.height); g.globalCompositeOperation = 'source-over'; } };
@@ -11720,6 +11723,78 @@
   }
   FEAT.push(stepAcu);
   // ==== end of ACU ====
+  //
+  //
+  //
+  // ==== feature: Ichiraku's clear pane (IRG) — its own block ====
+  // The shop window's one pane (tools/ichiraku_interior.py; IRF.G, its columns under the noren's hem) lives with the street's
+  // light, over the room and its people and over the shut shop's dark glass alike (under the noren and the lanterns, which hang
+  // in front of it): when the TranZit crosses the junction, its headlight's reflection crosses the pane the other way (mirrored:
+  // the bus going right, its glint going left, at the bus's height, a soft halo and a faint smear up and down the glass), brighter
+  // when its front is turned toward the pane's side; in the rain a few drops run down the outside of the glass, stop and go, each
+  // leaving a wet track that dries in a second or two, lit by the shop's warm light (the street's cooler one when it is shut), more
+  // of them in a gust that drives the rain onto it, none starting in a lull. Its own light ('self': red in the red night), the
+  // zone's power on the shop's share; 20 pictures a second while anything is on it and it is on screen; none under reduced motion.
+  // (The bowls' and the stock pot's steam is the room's own, RAM.wisps, with the shop's kitchen.) ----
+  const IRG = { x: 1160, y: 540, w: 64, h: 152, acc: 0, run: [], sp: 0, cv: null, g: null, tex: null, mesh: null, clip: null, on: false, rows: null };
+  (function () {
+    const G = IRF.G || []; if (!G.length) return;
+    const cv = document.createElement('canvas'); cv.width = IRG.w; cv.height = IRG.h; IRG.cv = cv; IRG.g = cv.getContext('2d');
+    IRG.clip = new Path2D(); IRG.rows = {};
+    for (const [x, , bot, hem] of G) { const y0 = Math.max(hem + 2, IRG.y), y1 = Math.min(bot - 1, IRG.y + IRG.h - 1); if (y1 > y0) { IRG.clip.rect(x - IRG.x, y0 - IRG.y, 1, y1 - y0 + 1); IRG.rows[x] = [y0, y1]; } }
+    IRG.tex = new THREE.CanvasTexture(cv); IRG.tex.magFilter = IRG.tex.minFilter = THREE.NearestFilter; IRG.tex.generateMipmaps = false;
+    IRG.mesh = new THREE.Mesh(new THREE.PlaneGeometry(IRG.w, IRG.h), new THREE.MeshBasicMaterial({ map: IRG.tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+    IRG.mesh.position.set(IRG.x + IRG.w / 2, -(IRG.y + IRG.h / 2), 0.495); IRG.mesh.visible = false; scene.add(IRG.mesh); gradeSprite(IRG.mesh.material, 'self');
+  })();
+  function irgSweep() {                               // the bus's headlight in the pane: [column, row, strength], or null
+    const S = busS; if (!S.active || S.hk <= 0.02) return null;
+    const L = S.dir < 0, hx = Math.round(S.x) + (L ? BUS.W - 1 - BUS.head[0] : BUS.head[0]), u = (hx - BUS.gap[0]) / (BUS.gap[1] - BUS.gap[0]);
+    if (u < -0.02 || u > 1.02) return null;
+    const hy = busGround(0) - BUS.ground + BUS.head[1];
+    return [IRG.x + IRG.w - 1 - u * (IRG.w - 1), Math.round(IRG.y + 66 + (hy - 600) * 0.4), S.hk * (L ? 0.75 : 0.5) * Math.min(1, (u + 0.02) * 12, (1.02 - u) * 12)];
+  }
+  function stepIrg(dt) {
+    const B = IRG; if (!B.mesh || reduced) return;
+    const pz = irPow(), lit = (0.35 + 0.65 * SHOP.k) * (0.3 + 0.7 * pz);
+    // the drops on the glass: born with the rain (its gusts drive it onto the pane; a lull starts none), at most five
+    const rain = NIGHT.rain * LULL.k * (0.45 + 0.9 * Math.max(0, gust.k));
+    if (B.run.length < 5 && Math.random() < dt * 0.35 * rain) {
+      const xs = Object.keys(B.rows), x = +xs[(Math.random() * xs.length) | 0], [y0, y1] = B.rows[x];
+      const y = y0 + 2 + Math.floor(Math.random() * Math.min(50, y1 - y0 - 8));
+      B.run.push({ x, y, fy: y, y1, hold: 0.3 + Math.random() * 1.2, v: 0, trail: [], done: false, t: 0 });
+    }
+    for (const R of B.run) {                          // stop and go: it gathers, slides a few pixels, stops again; its track dries
+      R.t += dt;
+      if (!R.done) {
+        if (R.hold > 0) R.hold -= dt;
+        else { R.fy += (R.v = 22 + 30 * Math.random()) * dt; if (Math.random() < dt * 2.2) R.hold = 0.25 + Math.random() * 0.9; }
+        while (R.y < Math.floor(R.fy) && R.y < R.y1) { R.trail.push([R.y, R.t]); R.y++; }
+        if (R.y >= R.y1) R.done = true;
+      }
+    }
+    B.run = B.run.filter((R) => !R.done || R.trail.some((p) => R.t - p[1] < 1.8));
+    const sw = irgSweep(), any = B.run.length > 0 || !!sw;
+    const seen = !(camera.right < B.x || camera.left > B.x + B.w || -camera.top > B.y + B.h || -camera.bottom < B.y);
+    B.mesh.visible = any && seen;
+    if (!B.mesh.visible) { B.on = false; return; }
+    B.acc += dt; if (B.on && B.acc < 1 / 20) return; B.acc = 0; B.on = true;
+    const g = B.g; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, B.w, B.h); g.save(); g.clip(B.clip);
+    const warm = SHOP.k > 0.5 ? '255,226,190' : '190,204,236';
+    for (const R of B.run) {
+      for (const [y, t0] of R.trail) { const a = 0.18 * lit * Math.max(0, 1 - (R.t - t0) / 1.8); if (a > 0.01) { g.fillStyle = 'rgba(' + warm + ',' + a.toFixed(3) + ')'; g.fillRect(R.x - B.x, y - B.y, 1, 1); } }
+      if (!R.done) { g.fillStyle = 'rgba(' + warm + ',' + (0.75 * lit).toFixed(3) + ')'; g.fillRect(R.x - B.x, R.y - B.y, 1, 1); }
+    }
+    if (sw) {                                         // the glint: a halo, a smear up and down the glass, its core
+      const [cx, cy, k] = sw, x = cx - B.x, y = cy - B.y, gr = g.createRadialGradient(x, y, 0, x, y, 9);
+      gr.addColorStop(0, 'rgba(255,236,206,' + (0.5 * k).toFixed(3) + ')'); gr.addColorStop(0.35, 'rgba(255,236,206,' + (0.2 * k).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,236,206,0)');
+      g.fillStyle = gr; g.fillRect(x - 9, y - 9, 18, 18);
+      for (let d = -22; d <= 30; d++) { const a = 0.3 * k * Math.pow(1 - Math.abs(d) / (d < 0 ? 23 : 31), 1.5); g.fillStyle = 'rgba(255,236,206,' + a.toFixed(3) + ')'; g.fillRect(Math.round(x), Math.round(y) + d, 1, 1); }
+      g.fillStyle = 'rgba(255,246,230,' + Math.min(1, 1.6 * k).toFixed(3) + ')'; g.fillRect(Math.round(x), Math.round(y), 2, 2);
+    }
+    g.restore(); B.tex.needsUpdate = true;
+  }
+  FEAT.push(stepIrg);
+  // ==== end of IRG ====
 
   { const a = view.cx - view.w / 2 - 64, b = view.cx + view.w / 2 + 64; for (const [x0, x1, load] of OFFVIEW) if (x1 < a || x0 > b) LATE.q.push(load); else load(); }
   setupEnd();
