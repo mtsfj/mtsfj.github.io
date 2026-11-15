@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=130", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=5", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=3", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=21", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=5", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_ramune.webp?v=2e08fcdf", "x": 229, "y": 406, "w": 110, "h": 146}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=131", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "win_z7_kiosk": {"src": "assets/win_z7_kiosk.webp?v=15", "x": 227, "y": 600, "w": 2, "h": 2}, "z7_vending": {"src": "assets/z7_vending.webp?v=21", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=5", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_ramune.webp?v=2e08fcdf", "x": 229, "y": 406, "w": 110, "h": 146}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=130') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=131') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -289,7 +289,7 @@
   // a light's stutter on the clock, not a coin flipped each frame: true with probability p in each slot of `step` seconds (a hash
   // of its seed and the slot), so it reads the same at 60 and 144 Hz (lumieres-02)
   function stutOn(t, seed, step, p) { const x = Math.sin(seed * 12.9898 + Math.floor(t / step) * 78.233) * 43758.5453; return x - Math.floor(x) < p; }
-  const COMP_KIND = { win_dojo: 'home', win_z7_shop: 'shop', win_b_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', z7_adscreen: 'ad', z7_bigscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube' };
+  const COMP_KIND = { win_z1_warm: 'naru', win_dojo: 'home', win_z7_shop: 'shop', win_b_shop: 'shop', win_z7_kiosk: 'tube', z7_vending: 'vend', z7_adscreen: 'ad', z7_bigscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name.startsWith('z5_') || name === 'win_z4_shop' || name === 'win_b_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
     const kind = COMP_KIND[name] || (name.startsWith('win') ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
@@ -4061,8 +4061,9 @@
     for (const c of comps) add(() => c, c.position.x);
     for (const E of DRIPS) add(() => E.pw, E.px);   // the eaves' drips: their eave's power (a stand-in each)
     add(() => lcCone, 882); add(() => lcPool, 882); add(() => lcRain, 882); add(() => wlMesh, 1228); add(() => neonMesh, 1196); add(() => rlMesh, 1190);
-    add(() => z1Cur.mesh, 1096); add(() => z1Door.mesh, 984);
+    add(() => z1Door.mesh, 984);
     add(() => nwRoom.mesh, 1329); add(() => nwBath.mesh, 1406);   // (Naruto's two windows on his end wall: NWIN)
+    add(() => RLT.mesh, 1207);                                   // (the lights on his roof terrace: RLT)
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
     add(() => ODOOR.mesh, 442); add(() => ODOOR.win, 474); add(() => lanMesh, 413);
     add(() => ASGN.tubes, 1400); add(() => ASGN.bulbs, 1400); add(() => ASGN.glowM, 1400);   // (the game centre's sign: the arcade's power)
@@ -4163,7 +4164,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=111', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=112', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -4802,7 +4803,7 @@
   // clocks parked, every frame of it (a clock its event sets again once over is parked again, the latest kept), and are
   // given back spread out at its end. The directed ones are parked too: harmless (a parked clock is never pulled in).
   // Its end is a street event's end to the director: the next start 8 s on at the soonest, a pull-in 25 s on
-  const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => Z1S, 12], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock's owner, back after (s), the clock ('next')]
+  const FIN_HOLD = [[() => FEV, 5], [() => shoot, 10], [() => CAT, 20, 'stay'], [() => OIN, 26], [() => flyS, 36], [() => BBUS, 46], [() => Z1F, 60]];   // [its clock's owner, back after (s), the clock ('next')]
   function finHold(on) {
     try {
       if (typeof STAGE !== 'undefined' && STAGE && typeof STAGE.hold === 'function') {
@@ -7249,28 +7250,16 @@
     }
   }
   function stepOden(dt, t) { stepOdenBox(dt); stepLantern(dt); stepOdenSteam(dt, t); stepOdenDoor(dt, t); }
-  // ---- zone 1's lit windows live (right side, behind the street lamp). Behind the curtained window of the narrow
-  // building (win_z1_warm) someone crosses the room now and then: his shadow slides over the lit curtain, in the
-  // facade's plane (squeezed across, its lines to the vanishing point), bigger than him and soft. Rarely Red, Pokémon's
+  // ---- zone 1's lit windows live (right side, behind the street lamp). The narrow building's tall window (win_z1_warm) is
+  // Naruto's room: only its ceiling shows from the street, lit with his balcony (the lights' loop, kind 'naru'). Rarely Red, Pokémon's
   // trainer, Pikachu on his shoulder, comes to stand at the glass of the balcony door above the shop (win_z1_top; only while he is
   // home: from 9:30 to 0:30 he is on the Pokémon Center's roof, CR_H), dark
-  // against the lit room and its curtains, the rail in front. Shadows only, the ramen shop's way, over the windows' lit comps (z 1.12) and only while their light is on;
+  // against the lit room and its curtains, the rail in front. A shadow only, the ramen shop's way, over the window's lit comp (z 1.12) and only while its light is on;
   // the same glass helpers as the oden shop's ----
   const Z1 = { warm: comps.find((c) => c.userData.name === 'win_z1_warm'), top: comps.find((c) => c.userData.name === 'win_z1_top') };
   const z1Glass = (box, mask, crisp) => { const G = odenGlass(box, mask, crisp); G.mesh.position.z = 1.12; G.mesh.visible = false;
     G.sh = document.createElement('canvas'); G.sh.width = box[2]; G.sh.height = box[3]; G.shg = G.sh.getContext('2d'); return G; };
-  const z1Cur = z1Glass([1081, 288, 30, 138], 'assets/z1_warm_mask.webp?v=2'), z1Door = z1Glass([963, 222, 43, 141], 'assets/z1_top_glaze.webp?v=3', true); z1Door.gk = 0.5;   // (Red: half the grain, crisp)
-  // a person in metres (the top of the head at 0, the body's axis at 0), at (cx, top) with s px per metre, squeezed
-  // across by fs and sheared along the facade's lines (slope sl); sw swings the arms
-  function z1Person(g, cx, top, s, fs, sl, sw, head) {
-    g.save(); g.translate(cx, top); g.transform(fs, fs * sl, 0, 1, 0, 0);
-    const m = (v) => v * s;
-    const el = (x, y, rx, ry) => { g.beginPath(); g.ellipse(m(x), m(y), m(rx), m(ry), 0, 0, Math.PI * 2); g.fill(); };
-    const rr = (x, y, w, h, r) => { g.beginPath(); g.roundRect(m(x), m(y), m(w), m(h), m(r)); g.fill(); };
-    el(head || 0, 0.115, 0.085, 0.115); rr(-0.05, 0.2, 0.1, 0.1, 0.03); rr(-0.2, 0.27, 0.4, 0.75, 0.09);   // head, neck, body
-    rr(-0.235 + 0.025 * sw, 0.31, 0.085, 0.58, 0.04); rr(0.15 - 0.025 * sw, 0.31, 0.085, 0.58, 0.04);     // arms
-    rr(-0.17, 1.0, 0.15, 0.75, 0.05); rr(0.02, 1.0, 0.15, 0.75, 0.05); g.restore();                     // legs
-  }
+  const z1Door = z1Glass([963, 222, 43, 141], 'assets/z1_top_glaze.webp?v=3', true); z1Door.gk = 0.5;   // (Red: half the grain, crisp)
   // Red, Pokémon's trainer, Pikachu on his shoulder (the balcony door's visitor): one sheet of silhouettes (red_sil.webp,
   // cut by tools/red_sheet.py from the owner's sprite sheet, tools/src/red_sheet.webp: the cap and its visor, the vest's
   // popped collar, the backpack, Pikachu's ears and tail; his head, Pikachu and his legs brought to the street's proportions,
@@ -7348,8 +7337,8 @@
     gg.globalAlpha = alpha; gg.drawImage(G.sh, 0, 0, w * G.K, h * G.K); gg.filter = 'none'; gg.globalAlpha = 1;
     odenFinish(G); G.mesh.material.opacity = light;
   }
-  const Z1S = { who: null, next: 20 + Math.random() * 40, acc: 0 }, Z1F = { who: null, next: 20 + Math.random() * 40, acc: 0 };
-  const z1Busy = (n) => !!((n === 'win_z1_warm' && Z1S.who) || (n === 'win_z1_top' && Z1F.who));   // someone crossing that window now
+  const Z1F = { who: null, next: 20 + Math.random() * 40, acc: 0 };
+  const z1Busy = (n) => !!(n === 'win_z1_top' && Z1F.who);   // someone at that window now
   // the night: Red's window is dark from 1 h to 4 h (the comp's hours: the rule). A few times an hour he is up late on his Game Boy:
   // its screen's glow lights the glass (a cool light at 0.62, over the comp's own level, never under it) and he comes to stand there,
   // breathing, 16-24 s; then the glow goes. Never during the finale, the red night or the power cut. Debug: ?heroes brings it 4 s in
@@ -7362,29 +7351,6 @@
         RNV.t += dt; RNV.k += (((RNV.t < 30 || Z1F.who) && heroNight() ? 1 : 0) - RNV.k) * Math.min(1, dt * 3);
         m.opacity = Math.max(m.opacity, 0.62 * RNV.k); m.color.setRGB(1 - 0.22 * RNV.k, 1 - 0.1 * RNV.k, 1);
         if (RNV.t > 30 && !Z1F.who && RNV.k < 0.01) { RNV.on = false; RNV.next = 120 + Math.random() * 120; m.color.setRGB(1, 1, 1); }
-      }
-    }
-    // the curtain: crosses the room (2-5 s in the window), sometimes stops a moment; only with the light on
-    if (Z1.warm) {
-      let W = Z1S.who; const light = Z1.warm.material.opacity;
-      if (!W) {
-        Z1S.next -= dt;
-        if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7 && !STAGE.spot('z1s', 20, { area: [[1081, 288, 1111, 426]] })) Z1S.next = 1.5 + Math.random();   // (his place, STAGE: the curtain; taken, a moment later)
-        else if (Z1S.next < 0 && light > 0.95 && Z1.warm.userData.next > 7) {
-          const dir = Math.random() < 0.5 ? 1 : -1;
-          W = Z1S.who = { x: dir > 0 ? 1062 : 1126, dir, v: 8 + Math.random() * 4, stop: Math.random() < 0.45 ? 1088 + Math.random() * 14 : null, wait: 0, ph: 0 };
-          z1Cur.mesh.visible = true; Z1S.acc = 1;
-        }
-      }
-      if (W) {
-        if (W.stop !== null && Math.abs(W.x - W.stop) < 0.5 && W.wait < 1.8) W.wait += dt;
-        else { W.x += W.dir * W.v * dt; W.ph += dt * 3.4; }
-        if (W.x < 1056 || W.x > 1132 || light < 0.02) { Z1S.who = null; Z1S.next = 35 + Math.random() * 55; z1Cur.mesh.visible = false; STAGE.done('z1s'); }
-        else if ((Z1S.acc += dt) >= 1 / 20 && odenSeen(z1Cur.box)) {
-          Z1S.acc = 0;
-          const x = W.x, s = 0.16 * (x - 700) * 1.12, top = 615 - 0.72 * (x - 700), sl = (top + 50 - 615) / (x - 700);   // his shadow: a little bigger than him
-          z1Draw(z1Cur, light, 0.6, 2.2, (g) => z1Person(g, x - z1Cur.box[0], top - z1Cur.box[1], s, 0.38, sl, W.wait > 0 ? 0 : Math.sin(W.ph * Math.PI), 0));
-        } else z1Cur.mesh.material.opacity = light;
       }
     }
     // the balcony door: Red walks along the inside of the window toward us, side on (two steps in sight), stops at the
@@ -8655,7 +8621,7 @@
     { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=2', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
     { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=2', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
     { src: 'ramen', url: 'assets/gl_ramen.webp?v=6', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
-    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=2', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
+    { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=4', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
     { src: 'win_z7_kiosk', url: 'assets/gl_win_z7_kiosk.webp?v=1', box: [116, 729, 347, 54], comp: 'win_z7_kiosk' },   // 0.6 % of the ground's light, +11 at most
     { src: 'dojo', url: 'assets/gl_dojo.webp?v=1', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
   ], m: [] };
@@ -10094,7 +10060,7 @@
     openTry(() => { gust.target = 0; gust.hold = 0; gust.next = 1e9; });                              // no gust
     openTry(() => { KIL.ph.next = 1e9; });                                                           // no kick before its beat
     openTry(() => STAGE.hold('opening', ['bbus', 'oden']));                                 // the set closed: only the opening's own beats start (STAGE, package 8)
-    [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => Z1S, () => Z1F, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
+    [() => busS, () => flyS, () => shoot, () => FEV, () => OIN, () => Z1F, () => BBUS].forEach((o) => openTry(() => { o().next = 1e9; }));   // nothing due
   }
   function openSettled() {      // no opening (reduced motion, or a visitor who has seen it): the evening is under way
     openTry(() => { if (nightOpen('ramen')) Object.assign(SHOP, { open: true, k: 1, t: 10, neon: 1 }); });   // (each at the hour's state)
@@ -10133,7 +10099,7 @@
     openTry(() => { gust.next = R(12, 25); });
     openTry(() => { FEV.next = R(4, 4); });
     openTry(() => { OIN.next = R(45, 75); });
-    openTry(() => { Z1S.next = R(20, 40); Z1F.next = R(80, 120); });
+    openTry(() => { Z1F.next = R(80, 120); });
     openTry(() => { NAR.next = R(14, 16); });                             // the balcony is lit: Naruto passes within the minute
     openTry(() => { SHOP.next = R(80, 60); });
     openTry(() => { WIN2.next = R(120, 480); });
@@ -10244,6 +10210,7 @@
         else if (u.on && !nightLit(u) && u.next > 3) u.next = nightDelay();     // bedtime: out soon, each at its own moment
         c.material.opacity += ((u.on ? 1 : 0) - c.material.opacity) * Math.min(1, dt * 3);
       } else if (u.kind === 'study') c.material.opacity = ws.L;   // the study light on the wall: the lamp's level, as in the window
+      else if (u.kind === 'naru') c.material.opacity = WIN2.I[0];   // the narrow building's tall window: Naruto's room (its ceiling, all the street sees of it), lit with his balcony (the pane nearest it)
       else if (u.kind === 'lantern') // the paper lantern breathes, slowly, as the far city's do
         c.material.opacity = 0.955 + 0.045 * Math.sin(t * u.w + u.seed) * (0.7 + 0.3 * Math.sin(t * 0.37 + u.seed * 2));
       else if (u.kind === 'tv') {  // a television in the dark room behind the blinds: its light jumps from shot to shot,
@@ -11309,7 +11276,8 @@
   // driven by 2-4 pushes over the gust (treeGust, scaled by its peak), each pixel looking up where it came from (whole pixels,
   // 1-2 px, it never tears). The maple's crown sways from its fork, more toward its top and its tiers' ends, each tier a little
   // late and its own way up or down, the leaves fluttering last; the wind from the right reaches its right side first. The
-  // clipped shrubs and the low hedge only shiver at their tops (the hedge still under the menu's text). What a leaf uncovers is
+  // clipped shrubs and the low hedge only shiver at their tops (the hedge still under the menu's text), the parasol's hem
+  // flutters a little (its top still under the text). What a leaf uncovers is
   // what is behind it (assets/roof_sway.webp, tools/roof_sway.py: building C's wall, the trunk, else the sky as it shows now);
   // a leaf never shows over the parapet in front. One overlay plane (z 0.013: over the street, its power cut's unlit quad),
   // 24 pictures a second while it moves, only what differs from the resting picture, each pixel graded as the plane it shows
@@ -11317,7 +11285,7 @@
   // dark street: the unlit layer's leaves). Never under reduced motion, nor when it is out of the frame ----
   const ROOF = { state: 0, tries: 0, x0: 0, y0: 0, W: 0, H: 0, t: -1, dur: 0, acc: 0, since: 99, seen: 0, tab: null, P: null, mesh: null,
     tex: null, g2: null, id: null, kd: null, ktex: null, A: null, rows: null, list: null, sky: null, sk: [0, 0, 0, 0], unlit: null, ok: false };
-  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=7');
+  const roofImg = new Image(); lateImg(roofImg, 'assets/roof_sway.webp?v=8');
   function roofRead(im, x, y, w, h, W, H) {            // an image's pixels (RGBA) in a box of its plane (W x H: the plane's size), once
     const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d', { willReadFrequently: true });
     g.imageSmoothingEnabled = false; g.drawImage(im, -x, -y, W || im.naturalWidth, H || im.naturalHeight); return g.getImageData(0, 0, w, h).data;
@@ -11531,6 +11499,29 @@
   }
   FEAT.push(stepNWin);
   // ==== end of NWIN ====
+  // ==== feature: the lights on Naruto's roof terrace (RLT) — its own block ====
+  // (tools/naruto_parapet.py: a paper lantern hanging from the parasol's edge, a string of small bulbs from its pole to a post
+  // at the roof's corner, their glow on the parasol's underside, painted lit in context, roof_lights.webp; in the layers off.)
+  // Lit on warm evenings: each evening drawn as the day ends (two in three), from about 19 h to 23-24 h (its own times each
+  // evening), never by day; switched on with a plug's short stutter, then breathing a little. The power cut and the red
+  // night take it as the other lights (pwList). Under reduced motion: on and off only ----
+  const RLT = { mesh: plane('assets/roof_lights.webp?v=1', 1172, 34, 70, 26, 1.1, { opacity: 0 }), drawn: false, warm: false, a: 19, b: 23.5, on: false,
+    stut: 0, seed: Math.random() * 100 };
+  RLT.mesh.visible = false;
+  function stepRLT(dt, t) {
+    const R = RLT, m = R.mesh.material;
+    if (nwEve(10, 16)) R.drawn = false;                // (the day: the next evening drawn anew)
+    else if (!R.drawn) { R.drawn = true; R.warm = Math.random() < 0.65; R.a = 18.8 + Math.random() * 0.9; R.b = 22.8 + Math.random() * 1.4; }
+    const want = R.warm && nwEve(R.a, R.b);
+    if (want && !R.on) { R.on = true; R.stut = reduced ? 0 : 0.35 + Math.random() * 0.2; }
+    else if (!want && R.on) { R.on = false; R.stut = 0; }
+    let k = R.on ? (reduced ? 1 : lightLife(t, R.seed, 0.06)) : 0;
+    if (R.stut > 0) { R.stut -= dt; k = stutOn(t, R.seed, 0.06, 0.55) ? 0.2 : 1; }
+    m.opacity += (k - m.opacity) * Math.min(1, dt * (R.stut > 0 ? 30 : 4));
+    R.mesh.visible = m.opacity > 0.003;
+  }
+  FEAT.push(stepRLT);
+  // ==== end of RLT ====
 
   // ---- the dagashi-ya's obaa-chan (tools/dagashi_obaachan.py, from the owner's two sheets), in the shop of tools/dagashi_interior.py
   // (a small 3D model seen by the street's eye): behind her counter, at her depth (Z 26.45 m: 53 px a metre of the model), at her

@@ -5,7 +5,7 @@ the arcade's a low one, its ground floor under its tiled lean-to, Naruto's near 
 
     (a module: tools/redraw_zones.py's zone 'naruroof' calls draw() on the street as the zones before it leave it, after
      'narufloor', whose roof edge and garden it redraws; it rewrites assets/roof_sway.webp (the garden's wind data, see
-     below), street_sun and the side window's comp)
+     below), street_sun, the end wall's windows' comps and the terrace's lights' comp, roof_lights.webp)
     python3 tools/naruto_parapet.py --before        once: the zone's before crops (tools/src/edits/naruroof_before_*.webp)
     python3 tools/naruto_parapet.py --preview OUT [SRC]   the zone drawn on the layers of SRC (default assets/), crops
                                                     before and after in OUT, the model's lines over x6 crops
@@ -79,6 +79,16 @@ floor under it, the window, the railing and the garden stay where they are).
   both layers, each plant's own leaves and clumps (PLANTS: the trees free up their crowns and out to their pads' ends,
   the pine stiffer; the shrubs, the pot and the azalea at their tops; the climber and the hedge calmer, the hedge still
   under the menu's text), where a leaf may show (over the coping).
+- The terrace lived in (the owner: "le jardin de son toit peut être amélioré (parasol, j'en sais rien)"), as the image
+  model painted it in its context crop at 22 h (R28: TERRACE_CROP x8, brightened, on the street as it is;
+  tools/src/edits/naruroof_terrace_draft.webp from naruroof_terrace_prompt.txt; lay_terrace): a small parasol right of the
+  red tree, behind the trellis, its fabric a faded sage, seen from below (its underside, its ribs); the slatted backs of two
+  folding chairs over the coping under it; a string of small bulbs from its pole to a post at the roof's corner; a paper
+  lantern from its edge. Laid over the sky only (the plants, the trellis and the parapet in front), the parasol a little
+  lower than painted (under the menu's text); in the layers off (the bulbs dark on their wire, the lantern's paper in the
+  night's glow, the underside lit from the street below); lit (the bulbs, the lantern, their glow on the underside)
+  assets/roof_lights.webp, street.js's RLT block: on warm evenings, its own hours. Its hem in the garden's wind data (the
+  canopy's last rows, freer at its edge; still under the text), what the new things hide theirs.
 - No downpipe (the owner, circling the one down the pillar by the balcony: "Vire cette gouttière"): no scupper, no rain
   head, no pipe, no bracket; the pillar's face one wall from the coping to the sign, in the painter's grain on the
   cleaned pillar's light (its rows' light smoothed down the wall, darker into C's corner), the coping unbroken to the
@@ -230,6 +240,29 @@ PLANTS = [(2, 'green', (1156, 92, 1188, 111), 0.8),     # the clipped shrubs (th
           (1, 'green', (1132, 90, 1162, 121), 0.7),     # the pine's pads (stiffer)
           (1, 'red', (1132, 48, 1199, 92), 1.0),        # the red-leafed tree's pads
           (3, 'any', (1212, 34, 1250, 62), 0.6)]        # the hedge at the corner
+
+# the terrace lived in (the owner: "le jardin de son toit peut être amélioré (parasol, j'en sais rien)"; R28, R30): the image
+# model's painting of it in its context crop at 22 h (TERRACE_CROP x8, brightened, on the street as it is; tools/src/edits/
+# naruroof_terrace_draft.webp from naruroof_terrace_prompt.txt; lay_terrace): a small parasol right of the red tree, behind
+# the trellis, its fabric a faded sage; the slatted backs of two folding chairs over the coping under it; a string of small
+# bulbs from its pole to a post at the roof's corner; a paper lantern hanging from its edge. Taken from the draft where it
+# differs from its sky, in its parts' boxes (T_*: the draft's columns and rows in the crop, at TERRACE_SHIFT: its whole-pixel
+# offset on the near side's wall), and laid over the sky only (behind the plants, the trellis, the parapet); the parasol and
+# the lantern T_DROP rows lower than painted (under the menu's text), the string sheared down to them from the post. Lit
+# (the bulbs, the lantern, their glow on the parasol's underside): LIGHTS_COMP, street.js's to show on warm evenings; in the
+# layers off (the bulbs dark on their wire, the lantern's paper in the night's glow, the underside lifted by the street's
+# light from below). The parasol's hem in the garden's wind data (its last rows, freer at the edge), still under the text
+TERRACE_DRAFT = 'naruroof_terrace_draft.webp'
+TERRACE_CROP = (1132, 0, 1260, 128)
+TERRACE_SHIFT = (-1, 2)                        # (the draft's offset, columns and rows: best on the near side's wall)
+T_CANOPY, T_POLE, T_LANTERN = (42, 26, 96, 44), (67, 42, 73, 66), (44, 40, 55, 49)
+T_STRING, T_STRING_ENDS = (70, 30, 112, 49), (71, 104)
+T_CHAIRS = [(59, 60, 65, 67), (74, 60, 84, 67)]
+T_DROP = 8
+T_STILL_ABOVE = 42                             # (the street's row: the hem moves only below it, under the menu's text)
+LIGHTS_COMP = 'roof_lights.webp'
+LIGHTS_BOX = (1172, 34, 70, 26)              # (its box: street.js RLT's)
+BULB_OFF = np.array((34.0, 28.0, 30.0))
 
 GRAIN = 0.05
 
@@ -766,6 +799,96 @@ def lay_garden(city, unlit, box, sway0):
     return out
 
 
+def lay_terrace(city, unlit, sw):
+    """the terrace's parasol, chairs, string lights and lantern from their draft (TERRACE_DRAFT, R28) laid over the sky
+    (the layers off); returns the lights' comp (LIGHTS_COMP: RGBA, its box x, y, w, h) and the new pixels (a mask over
+    TERRACE_CROP); sw, the garden's wind data over GARDEN_CROP, given the parasol's hem and what it now hides"""
+    src = os.path.join(EDITS, TERRACE_DRAFT)
+    if not os.path.exists(src): return None, None, None
+    x0, y0, x1, y1 = TERRACE_CROP; W, H = x1 - x0, y1 - y0
+    d = np.asarray(Image.open(src).convert('RGB').resize((W, H), Image.BOX)).astype(float) / 255.0
+    d = np.roll(np.roll((d ** 2.0) * 255.0, TERRACE_SHIFT[1], 0), TERRACE_SHIFT[0], 1)
+    C, U = city[y0:y1, x0:x1].copy(), unlit[y0:y1, x0:x1].copy()
+    sky = C[..., 3] < 128
+    sk = np.zeros((H, 3)); last = d[0, 0]
+    for y in range(H):                                                      # (each row's sky as the draft painted it)
+        if sky[y].sum() > 8: last = np.median(d[y][sky[y]], 0)
+        sk[y] = last
+    diff = np.abs(d - sk[:, None, :]).max(-1)
+    Ld = d @ LUMA
+    warm = d[..., 0] > d[..., 2] + 20
+
+    def inb(b):
+        m = np.zeros((H, W), bool); m[b[1]:b[3], b[0]:b[2]] = True; return m
+    canopy, pole, lantern, string = inb(T_CANOPY), inb(T_POLE), inb(T_LANTERN), inb(T_STRING)
+    off = np.zeros((H, W, 3)); om = np.zeros((H, W), bool); lit = np.zeros((H, W, 3)); lm = np.zeros((H, W), bool)
+    cm = np.zeros((H, W), bool)
+    for y, x in zip(*np.nonzero((diff > 12) & (canopy | pole | lantern))):   # the parasol and the lantern, lower
+        Y = y + T_DROP
+        if Y >= H: continue
+        if lantern[y, x] and warm[y, x]:                                    # (its paper off in the night's glow, its
+            lit[Y, x] = d[y, x]; lm[Y, x] = True                            # caps dim, its halo only lit)
+            if Ld[y, x] > 70: off[Y, x] = np.array((0.95, 0.9, 1.08)) * Ld[y, x] * 0.36; om[Y, x] = True
+            elif Ld[y, x] > 35: off[Y, x] = d[y, x] * 0.45; om[Y, x] = True
+        elif canopy[y, x] and y >= 35 and Ld[y, x] < 35:                   # (its underside: the street's light from
+            off[Y, x] = d[y, x] * 0.6 + np.array((14.0, 14.0, 20.0)); om[Y, x] = True   # below; the lights' glow)
+            lit[Y, x] = off[Y, x] + np.array((38.0, 24.0, 10.0)); lm[Y, x] = True; cm[Y, x] = True
+        else:
+            off[Y, x] = d[y, x]; om[Y, x] = True; cm[Y, x] = canopy[y, x]
+    a, b = T_STRING_ENDS
+    for y, x in zip(*np.nonzero((diff > 12) & string & ~(canopy & (np.arange(H)[:, None] < 44)))):   # the string, sheared
+        Y = y + int(round(T_DROP * np.clip((b - x) / (b - a), 0, 1)))
+        if Y >= H: continue
+        if warm[y, x]:
+            lit[Y, x] = d[y, x]; lm[Y, x] = True
+            if Ld[y, x] > 70: off[Y, x] = BULB_OFF; om[Y, x] = True
+        else:
+            off[Y, x] = d[y, x]; om[Y, x] = True
+    for bx in T_CHAIRS:                                                     # the chairs' backs: the draft's wood
+        m = inb(bx) & (d[..., 0] > d[..., 2] + 4) & (diff > 12)
+        off[m] = d[m]; om |= m
+    om &= sky; lm &= sky
+    lab, n = label(om, structure=np.ones((3, 3), bool))                     # (specks off)
+    sizes = np.bincount(lab.ravel())
+    om &= np.isin(lab, [i for i in range(1, n + 1) if sizes[i] >= 3])
+    # the layers: the things off
+    for lay, ref, k in ((city, C, 1.0), (unlit, U, GARDEN_UNLIT)):
+        s = ref.copy(); s[om, :3] = off[om] * k; s[om, 3] = 255
+        lay[y0:y1, x0:x1] = np.clip(np.round(s), 0, 255)
+    # the lights' comp: lit where it differs from off (the sky round a bulb, its glow, a halo pixel or two)
+    base = np.where(om[..., None], off, C[..., :3])
+    lm &= np.abs(np.round(lit) - np.round(base)).max(-1) > 0
+    cb = LIGHTS_BOX
+    sub = (slice(cb[1] - y0, cb[1] - y0 + cb[3]), slice(cb[0] - x0, cb[0] - x0 + cb[2]))
+    assert lm[sub].sum() == lm.sum(), 'the lights out of LIGHTS_BOX'
+    comp = np.zeros((cb[3], cb[2], 4), np.uint8)
+    comp[..., :3] = np.clip(np.round(np.where(lm[sub][..., None], lit[sub], 0)), 0, 255)
+    comp[..., 3] = np.where(lm[sub], 255, 0)
+    # the wind data: what the new things now hide is theirs; the parasol's hem a leaf, freer at its edge
+    gx0, gy0, gx1, gy1 = GARDEN_CROP; gh = sw.shape[0] // 3
+    for yy, xx in zip(*np.nonzero(om)):
+        X, Y = x0 + xx, y0 + yy
+        if not (gx0 <= X < gx1 and gy0 <= Y < gy1): continue
+        i, j = Y - gy0, X - gx0
+        if sw[2 * gh + i, j, 0] >= 16: continue                            # (a leaf there: as it was)
+        sw[i, j] = city[Y, X]; sw[gh + i, j] = unlit[Y, X]
+    hem = np.zeros((H, W)); can = om & cm
+    for xx in range(W):
+        rows = np.nonzero(can[:, xx])[0]
+        if not len(rows): continue
+        for k, f in enumerate((0.75, 0.5, 0.25)):
+            yy = rows.max() - k
+            if yy >= 0 and can[yy, xx] and y0 + yy >= T_STILL_ABOVE: hem[yy, xx] = f
+    for yy, xx in zip(*np.nonzero(hem > 0)):
+        X, Y = x0 + xx, y0 + yy
+        if not (gx0 <= X < gx1 and gy0 <= Y < gy1): continue
+        i, j = Y - gy0, X - gx0
+        sw[i, j] = C[yy, xx]; sw[gh + i, j] = U[yy, xx]                    # (what the hem covers: the sky)
+        sw[2 * gh + i, j, 0] = 16 * 2 + 15; sw[2 * gh + i, j, 1] = int(round(255 * hem[yy, xx]))
+        sw[2 * gh + i, j, 2] = 255; sw[2 * gh + i, j, 3] = 255
+    return comp, cb, om
+
+
 def lay_windows(city, unlit, box):
     """the two windows' light and figures from their drafts (WIN_DRAFT, WIN_FIG_DRAFT, R28), boxed down to the street's
     pixels (their x8 brightened input undone: at 22 h the layer's colours): the room's lit glass (the draft's warm pixels in
@@ -912,6 +1035,11 @@ def draw(city, unlit, box=BOX, write=True):
     wins = lay_windows(city, unlit, box)
     if wins: comp = None                                              # (the room's light: the windows' draft's now)
     for lay in (city, unlit): lay[y0:y1, x0:x1] = np.clip(np.round(lay[y0:y1, x0:x1]), 0, 255)
+    lights, _, tm = lay_terrace(city, unlit, sw_)                     # (last: on the street as it now is)
+    if lights is not None:
+        wins[LIGHTS_COMP] = lights
+        tx0, ty0, tx1, ty1 = TERRACE_CROP
+        done[ty0 - y0:ty1 - y0, tx0 - x0:tx1 - x0] |= tm
     changed = (city[y0:y1, x0:x1] != c0).any(-1) | (unlit[y0:y1, x0:x1] != u0).any(-1)
     # street_sun: as 'narufloor' wrote it in its box, this zone's before crop beyond it; 0 on what is redrawn
     sun = np.asarray(Image.open(os.path.join(ASSETS, 'street_sun.webp')).convert('RGB')).astype(float)

@@ -6,8 +6,7 @@ fenêtres de ce bâtiment-là : dessinées, 0 volume, moche"; then (R28) what is
 
     (a module: tools/redraw_zones.py's zones winB and winC call b_windows() and c_window() (the method 'hand') on the
      street as the zones before them leave it; each gives back its window's lit comp, win_z1_top or win_z1_warm (written
-     last by redraw_zones.py), and writes the glass street.js draws that window's visitor in: z1_top_glaze.webp (Red at
-     the balcony door), z1_warm_mask.webp (the shadow crossing the curtain))
+     last by redraw_zones.py); B's writes the glass street.js draws Red in at the balcony door, z1_top_glaze.webp)
     python3 tools/window_depth.py --preview OUT    the street as it was before these windows (git BEFORE), both zones
                                                    drawn (nothing written in assets/): crops off, lit, in the power cut
     python3 tools/window_depth.py --ask NAME       a draft from the image model (tools/redraw_zones.py's call(): about
@@ -42,7 +41,9 @@ column) and snapped to his palette there (a median cut of his pixels round the w
 light by state is the model's: the draft is the lit window; off (layer_city_off) and in the power cut (street_unlit) it
 is the same picture times the model's own change there (the room dimmed as the painter dims his, channel by channel,
 under the night's reflection; then out: the reflection alone; the frames, slabs and railings unchanged). A room never
-lit (B's lower window, C's top one) is fitted on its off picture.
+lit (B's lower window, C's top one) is fitted on its off picture. Their light last given the warm white and orange of
+the street's other homes, never pink (WARM, warm()); C's room is Naruto's: from the street only its ceiling shows in its
+glass (CEIL, ceiling()), its light his balcony window's, lit with it (street.js: the comp's kind 'naru').
 The hoods over B's windows, the lamp's arm and bracket (tools/pole_lamp.py's: never drawn over), the pole, the ramen
 shop's side sign (laid back over C's sill) and C's roof (topC) stay as they are.
 Sources: tools/src/edits/win_z1_top_before.webp and win_z1_warm_before.webp (the painter's lit comps: his curtains, his
@@ -81,7 +82,7 @@ C_SIGN = [(1109.5, 413), (1112, 405), (1116, 400), (1123, 396), (1123, 463), (11
 B_BOX = (944, 205, 1021, 526)                  # the zone winB (redraw_zones.py)
 C_BOX = (1074, 112, 1112, 440)                 # the zone winC (not below 440: the hall's entrance)
 B_COMP = (963, 222, 43, 141)                   # win_z1_top's box (street.js ASSETS, and the glass Red is drawn in)
-C_COMP = (1081, 288, 30, 138)                  # win_z1_warm's (and the curtain the shadow crosses)
+C_COMP = (1081, 288, 30, 138)                  # win_z1_warm's (Naruto's room: street.js lights it with his balcony window)
 
 # the painter's tones (the street with its lights off), sampled round these windows: his hoods' undersides, lit edges
 # and faces, his reveals and frames
@@ -566,15 +567,87 @@ def comp_of(off, lit, comp_box, box):
     return c
 
 
+# their light: the warm white and orange of the street's other homes, never pink (the owner: "Et pas rose : reprends le
+# blanc chaud ou orange des autres"). A ramp over luminance [l, (r, g, b)]: B's from the homes' lit windows (win_naru_side,
+# win_z7_up: orange, its highlights warm white), C's from Naruto's balcony window lit (window_lit_ukki over the street: its
+# ceiling and walls 81..131, beige), C's room being his
+WARM = dict(B=[(0, (0, 0, 0)), (38, (58, 34, 18)), (72, (114, 62, 30)), (111, (166, 100, 50)), (150, (214, 148, 86)),
+               (198, (242, 196, 138)), (240, (255, 236, 205)), (255, (255, 246, 228))],
+            C=[(0, (0, 0, 0)), (19, (28, 15, 13)), (56, (84, 47, 25)), (81, (119, 69, 43)), (114, (141, 109, 71)),
+               (131, (147, 127, 113)), (174, (204, 172, 132)), (223, (242, 222, 192)), (255, (255, 245, 225))])
+LUM = np.array([0.299, 0.587, 0.114])
+
+
+def ramp(which, l):
+    """The warm colour of luminance l (its own luminance brought back to l)."""
+    ks = np.array([k for k, _ in WARM[which]], float); cs = np.array([c for _, c in WARM[which]], float)
+    c = np.stack([np.interp(l, ks, cs[:, i]) for i in range(3)], -1)
+    return np.clip(c * (l / np.maximum(c @ LUM, 1e-3))[..., None], 0, 255)
+
+
+def warm(which, off, lit):
+    """The lit window's own light (where it differs from the off picture) out of the painter's pink: each pixel the warm
+    ramp's colour at its luminance, by how pink it was (its red over its green; the night's blue in the glass, the
+    frames' navy kept)."""
+    d = np.abs(np.round(np.clip(lit, 0, 255)) - np.round(np.clip(off, 0, 255))).max(-1) > 0
+    l = np.clip(lit, 0, 255) @ LUM
+    k = np.clip(((lit[..., 0] - lit[..., 1]) / np.maximum(l, 8.0) - 0.08) * 4.0, 0, 1)[..., None]
+    out = lit.copy()
+    out[d] = (lit + (ramp(which, l) - lit) * k)[d]
+    return out
+
+
+# C's room is Naruto's (the owner: "La petite fenêtre de Naruto est censée être dans la même pièce que l'autre, donc même
+# couleur, et rien de visible sauf le plafond vu du bas"): from the street far below, only its ceiling. The ceiling CEIL['h']
+# m over the window's head; its light from the room's lamp toward his balcony window (CEIL['lamp']: X m deep past the
+# facade, Z m along the street from the window's middle: just this side of it), falling off past r0, never under `base`
+# (the room's own bounce); darker in the corner over the window; its luminance `lum` at the most (the top of the glass at
+# about his balcony window's brightest beige, 131), a grain of +-2
+CEIL = dict(h=0.25, lamp=(1.2, -0.3), r0=2.6, base=0.40, lum=150.0, corner=0.15)
+
+
+def ceiling(box, cov, off, lit, cut):
+    """C's glass (cov: its share of each pixel) showing the ceiling: lit, the ceiling in the room's light and a little
+    of the night's reflection; off, the reflection and the ceiling faint (the street's light up there); out, the
+    reflection alone."""
+    x0, y0, x1, y1 = box; h, w = y1 - y0, x1 - x0; n = SS * SS
+    o = (np.arange(SS) + 0.5) / SS
+    yy = np.arange(y0, y1)[:, None, None, None] + o[None, None, :, None]
+    xx = np.arange(x0, x1)[None, :, None, None] + o[None, None, None, :]
+    dx, dy = (xx - VPX) / F, np.maximum((VPY - yy) / F, 1e-3)     # (a ray's X and Y a metre along the street)
+    yc = C_WIN['vt'] * XS + CEIL['h']
+    zh = yc / dy; xh = dx * zh                                       # (its hit on the ceiling)
+    zc = XS * F / (0.5 * (C_WIN['xl'] + C_WIN['xr']) - VPX)
+    r = np.hypot(xh - XS - CEIL['lamp'][0], zh - zc - CEIL['lamp'][1])
+    e = CEIL['base'] + (1 - CEIL['base']) / (1 + (r / CEIL['r0']) ** 2)
+    e = e * (0.82 + 0.18 * np.clip((xh - XS) / CEIL['corner'], 0, 1))
+    e = e.reshape(h, w, n).mean(2)
+    rng = np.random.default_rng(7)
+    l = np.clip(CEIL['lum'] * e + rng.normal(0, 2.0, e.shape), 0, 255)
+    cl = ramp('C', l)
+    yp, xp = np.mgrid[y0:y1, x0:x1] + 0.5
+    v = (VPY - yp) / (xp - VPX)
+    wv = (v - C_WIN['vb']) / (C_WIN['vt'] - C_WIN['vb'])
+    uo = (xp - C_WIN['xl']) / (C_WIN['xr'] - C_WIN['xl'])
+    refl = reflection('C', wv, uo)
+    a = np.clip(cov, 0, 1)[..., None]
+    lit = lit * (1 - a) + (cl + refl * 0.12) * a
+    off = off * (1 - a) + (refl * 0.9 + cl * 0.06) * a
+    cut = cut * (1 - a) + (refl * 0.40 + cl * 0.02) * a
+    return off, lit, cut
+
+
 def hand(which, box, O, U, new, unew, m, out=ASSETS):
     (off, lit, cut), covg, keep = draw(which, box, O, U)
-    new[m] = np.clip(off, 0, 255)[m]; unew[m] = np.clip(cut, 0, 255)[m]
+    lit = warm(which, off, lit)
     if which == 'B':
+        new[m] = np.clip(off, 0, 255)[m]; unew[m] = np.clip(cut, 0, 255)[m]
         cov = sum(c for k, c in covg.items() if k.startswith('glassT'))
         write_mask(os.path.join(out, 'z1_top_glaze.webp'), cov, B_COMP, box)
         return comp_of(np.clip(off, 0, 255), lit, B_COMP, box)
     cov = sum(c for k, c in covg.items() if k.startswith('glassC'))
-    write_mask(os.path.join(out, 'z1_warm_mask.webp'), cov, C_COMP, box)
+    off, lit, cut = ceiling(box, cov, off, lit, cut)
+    new[m] = np.clip(off, 0, 255)[m]; unew[m] = np.clip(cut, 0, 255)[m]
     return comp_of(np.clip(off, 0, 255), lit, C_COMP, box)
 
 
