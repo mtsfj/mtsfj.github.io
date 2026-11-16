@@ -43,9 +43,12 @@ bords
 (reduce : les surfaces nettes, les éclats gardés). La lumière : le haut à l'ombre du noren (HAUT), la vapeur au-dessus de la
 marmite plus claire (STEAM). Le grain du peintre (GRAIN : fixe, plein sur l'uni, léger sur le chargé), puis chaque pixel
 ramené à la palette de la boutique (40 couleurs tirées de son verre allumé d'avant, ses quatre vitres, du noren et des
-lanternes allumés), un grain ne sautant jamais plus d'une marche. La glace elle-même (skin : « on dirait zéro vitre ») : la
-rue d'en face qui s'y reflète en miroir, floue, plus forte en haut et aux bords qu'au droit des gens ; son lustre (REFLET) ; un
-fil clair le long de ses bords ; quelques gouttes ; un peu de buée aux coins du bas. Fermée, un miroir sombre (shop_off) ; dans
+lanternes allumés), un grain ne sautant jamais plus d'une marche. La glace elle-même (skin : « on dirait zéro vitre », puis
+« reflet trop important et elle reflète pas le bon endroit ») : ce qu'elle reflète vraiment, la scène retournée sur le plan des
+vitres dans la caméra de la rue (mirror_source : de l'œil, des vitres presque rasantes renvoient le bout gauche de la rue, le
+coin de l'oden à 48-55 m et le trottoir devant, pas le dagashi-ya d'en face), faible, un peu plus en haut et aux bords qu'au
+droit des gens ; un lustre à peine (REFLET) ; un fil clair le long de ses bords ; quelques gouttes ; un peu de buée aux coins du
+bas. Fermée, un verre sombre où les lumières d'en face ne sont que des reflets doux (shop_off) ; dans
 la coupure, la rue coupée qu'elle reflète (street_unlit) ; allumée, assets/ramen_glass_skin.webp, que street.js ajoute sur la
 pièce et ses gens, plus fort de jour, la glace prenant un peu de ce qu'on voit au travers.
 
@@ -86,20 +89,25 @@ ARETES = ()                          # (les arêtes des montants : dessinées pa
 BAS_RAYON = 0.1467                   # (la lisière claire du bas des vitres du peintre : y = VP_y + c |x - VP_x|)
 PEINTES = (((1160, 1170), (1173, 1185), (1192, 1205), (1209, 1223)), (631, 636))   # (les quatre vitres du peintre au commit
                                      # BEFORE, leurs colonnes et leur traverse : où prendre les tons de son verre allumé, coupé)
-REFLET = ((-1.0, 1186.0, 6.0, 0.22, 515, 650), (-1.0, 1199.0, 2.0, 0.15, 520, 655))   # le lustre de la glace : deux bandes
+REFLET = ((-1.0, 1186.0, 6.0, 0.07, 515, 650), (-1.0, 1199.0, 2.0, 0.045, 520, 655))   # le lustre de la glace : deux bandes
                                      # en biais, le haut des vitres (x + y - VP_y = leur milieu ; leur demi-largeur, leur part, leurs
                                      # rangées : fondues sur 12 à chaque bout)
 REFLET_C = (176.0, 186.0, 232.0)     # (sa couleur : la nuit bleue de la rue)
-# la glace (le propriétaire : « on dirait zéro vitre, trop transparent ») : ce qu'elle ajoute de lumière à ce qu'on voit au
-# travers, pixel par pixel (skin) : la rue d'en face qui s'y reflète (miroir : la colonne x montre le trottoir d'en face, à la
-# même rangée, à la colonne VP_x + (x - VP_x) X_O / (2 X_D - X_O), pour les plans X_O de MIRROR ; flou de MIRROR_BLUR), plus
-# forte en haut et au bord des vitres, plus faible sur les gens (SKIN) ; le lustre (REFLET) ; un fil clair le long des bords de
-# chaque vitre ; quelques gouttes ; un peu de buée chaude aux coins du bas. Allumée : assets/ramen_glass_skin.webp, ajouté par
-# street.js (plus fort de jour) ; fermée et coupée : fondu dans le verre sombre, plus fort (un miroir sombre)
-MIRROR = (-4.4, -4.9, -5.6)
-MIRROR_BLUR = 2.0
-SKIN = dict(refl=0.5, top=0.55, edge=0.7, people=0.5, rim=(205.0, 215.0, 232.0, 0.46), drops=16, drop=0.7,
-            fog=(230.0, 214.0, 196.0, 0.36, 14, 10), shut=2.2, cut=1.3, dark=0.6)
+# la glace (le propriétaire : « on dirait zéro vitre, trop transparent », puis « reflet trop important et elle reflète pas le
+# bon endroit ») : ce qu'elle ajoute de lumière à ce qu'on voit au travers, pixel par pixel (skin). Son reflet : la scène
+# retournée sur le plan des vitres (X_D, mirror_source). Un miroir d'aplomb parallèle à l'axe de la caméra garde la profondeur
+# et la hauteur de ce qu'il renvoie : chaque pixel du verre montre ce que la rue a sur la même rangée, à la colonne
+# 2 VP_x + 2 F X_D / Z - x, Z la profondeur de ce que son rayon renvoyé rencontre d'abord : la façade d'en face (le plan de
+# l'oden, OPPOSITE : X = -6,79 m, mesuré par tools/oden_interior.py ; le rayon y arrive à Z = Z_vitre (2 X_D - X_O) / X_D,
+# 48 à 55 m) ou, sous l'horizon, le sol (Z = EYE F / (y - VP_y)). Ce qui est au-delà du coin de l'oden (48 m) est caché à
+# l'œil par l'oden lui-même : la rue en a, à ces colonnes, le fond sombre de la maison du bout (le même lointain). Faible : le
+# verre en renvoie REFL (à 70° d'incidence, de l'ordre de 0,17), un peu plus en haut et au bord des vitres, moins sur les gens ;
+# un lustre à peine (REFLET) ; un fil clair le long des bords ; quelques gouttes ; un peu de buée chaude aux coins du bas.
+# Allumée : assets/ramen_glass_skin.webp, ajouté par street.js (un peu plus de jour) ; fermée et coupée : sur le verre sombre
+OPPOSITE = -6.79                     # (le plan des façades d'en face au bout de la rue : l'oden, tools/oden_interior.py X_F)
+MIRROR_BLUR = 1.0
+SKIN = dict(refl=0.17, top=0.4, edge=0.8, people=0.4, rim=(205.0, 215.0, 232.0, 0.22), drops=10, drop=0.5,
+            fog=(230.0, 214.0, 196.0, 0.2, 12, 9), shut=1.0, cut=1.0, dark=0.55)
 RIM_SIDES = (1.0, 0.7, 0.35, 0.25)   # (le fil des bords : en haut, à gauche, à droite, en bas)
 PEOPLE = ((1176, 588, 1224, 661), (1163, 612, 1173, 642))   # (où se tiennent les gens et la pile : le reflet y est moindre)
 SKIN_OUT = 'ramen_glass_skin.webp'   # (au coin du masque, GLASS)
@@ -247,19 +255,30 @@ def reflet(xs, ys):
                for p, c, w, k, y0, y1 in REFLET)
 
 
+def mirror_source(xs, ys):
+    """where the street shows what each glass pixel (xs, ys) reflects: the scene turned over the panes' plane X_D in the street's
+    camera; (columns, rows) in the street, the same rows. Its reflected ray meets the opposite facades' plane (OPPOSITE) or,
+    below the horizon, the ground first"""
+    import ichiraku_front as FR
+    XD = X_F + FR.REVEAL
+    xc, yc = np.asarray(xs, float) + 0.5, np.asarray(ys, float) + 0.5
+    Zp = F * XD / (xc - VX)                                                  # (the pane's own depth)
+    Zf = Zp * (2 * XD - OPPOSITE) / XD                                       # (the opposite facade)
+    Zg = np.where(yc > VY + 1e-6, EYE * F / np.maximum(yc - VY, 1e-6), np.inf)   # (the ground)
+    Z = np.minimum(Zf, Zg); X = XD * (2 - Z / Zp)
+    return VX + F * X / Z - 0.5, np.asarray(ys, float)
+
+
 def skin(pix, layer, k_refl=1.0, k_fx=1.0):
     """la lumière que la glace ajoute à chaque pixel de verre (pix) : la rue d'en face reflétée (prise sur layer, ses couleurs
     du calque), le lustre, le fil clair des bords, les gouttes, la buée ; k_refl : le reflet plus ou moins fort (fermée, coupée) ;
     k_fx : le lustre, le fil et les gouttes (sur une vitre sombre, il en faut moins : SKIN['dark'])"""
     from scipy.ndimage import gaussian_filter, map_coordinates
     import ichiraku_front as FR
-    xs, ys = pix[:, 0].astype(float), pix[:, 1].astype(float); XD = X_F + FR.REVEAL
+    xs, ys = pix[:, 0].astype(float), pix[:, 1].astype(float)
     blur = np.stack([gaussian_filter(layer[..., c], MIRROR_BLUR) for c in range(3)], -1)
-    refl = np.zeros((len(pix), 3))
-    for XO in MIRROR:
-        xq = VX + (xs + 0.5 - VX) * XO / (2 * XD - XO) - 0.5
-        refl += np.stack([map_coordinates(blur[..., c], [ys, xq], order=1, mode='nearest') for c in range(3)], -1)
-    refl /= len(MIRROR)
+    xq, yq = mirror_source(xs, ys)
+    refl = np.stack([map_coordinates(blur[..., c], [yq, xq], order=1, mode='nearest') for c in range(3)], -1)
     cols = glass_columns(); hem = hems(); bot = np.array([cols[int(x)][1] for x in xs])
     top = np.array([max(cols[int(x)][0], hem.get(int(x), 0) + 1) for x in xs])    # (from under the noren: what is seen of it)
     t = np.clip((ys - top) / np.maximum(bot - top, 1), 0, 1)

@@ -4315,7 +4315,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=118', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=119', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7098,11 +7098,12 @@
   function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
   LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
-  const shopOff = addTex('assets/shop_off.webp?v=12', 1112, 420, 164, 348, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its shop window dark, the street's reflection on it (the lanterns and the noren carry their own)
-  const irSkin = addTex('assets/ramen_glass_skin.webp?v=2', 1150, 520, 80, 170, 0.48, true); irSkin.material.opacity = 0;   // the glass itself, lit:
-  // the street opposite mirrored in it, soft, stronger at its top and its edges, faint over the people; its sheen, the light along its
-  // edges, a few drops, warm mist in its bottom corners (tools/ichiraku_interior.py, skin: added light); stronger by day, when the street
-  // outshines the room; with the kitchen (shut, the closed shop's overlay carries its own dark mirror) and the zone's power
+  const shopOff = addTex('assets/shop_off.webp?v=13', 1112, 420, 164, 348, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its shop window dark, the street's reflection on it (the lanterns and the noren carry their own)
+  const irSkin = addTex('assets/ramen_glass_skin.webp?v=3', 1150, 520, 80, 170, 0.48, true); irSkin.material.opacity = 0;   // the glass itself, lit:
+  // what it really reflects, faint: the street turned over the panes' plane in the street's camera (the far left end, the oden's corner
+  // and the sidewalk before it), a little more at its top and its edges, less over the people; a hint of sheen, the light along its
+  // edges, a few drops, warm mist in its bottom corners (tools/ichiraku_interior.py, mirror_source, skin: added light); a little more
+  // by day; with the kitchen (shut, the closed shop's overlay carries its own dark glass) and the zone's power
   irSkin.material.map.magFilter = irSkin.material.map.minFilter = THREE.NearestFilter;
   const SHOP = { open: true, k: 1, t: 10, next: 1e9, neon: 1 };                 // (the opening's script and the street's sounds read it: open, k the kitchen, neon)
   const IR = { zone: PW_ZONES.findIndex((z) => z[4] === 1195), nOn: true, nT: 10, l: [{ on: true, t: 10 }, { on: true, t: 10 }], out: true, take: -1, wait: false, wt: 0, hk0: -1, graded: false };
@@ -7157,7 +7158,7 @@
     SHOP.neon = neonMesh.material.opacity * IRN.k;
     SHOP.k = Math.max(0, Math.min(1, SHOP.k + (kW ? dt / 0.8 : -dt / 0.5)));   // the kitchen, last
     shopOff.material.opacity = (1 - SHOP.k) * 0.88 * pz;                       // (its panes lit by the street: none with the zone's power out, the unlit street's own front then)
-    irSkin.material.opacity = SHOP.k * pz * (0.85 + 0.15 * SKYF.dw);
+    irSkin.material.opacity = SHOP.k * pz * (0.8 + 0.2 * SKYF.dw);
     rlMesh.material.opacity = SHOP.k;
     rlMesh.material.color.setRGB(0.1 + 0.9 * pz, 0.1 + 0.9 * pz, 0.15 + 0.85 * pz);   // (its people: in the dark with the zone's power out)
     IRL.forEach((L, i) => {                                                      // the lanterns: their light, their swing
