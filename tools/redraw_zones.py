@@ -486,9 +486,10 @@ ZONES = {
     # the dagashi-ya's sign over its window (the owner: "aplat moche", then of the options, "A, caisson laiteux"): an old lit
     # box on its dark fascia, painted as the street's signs are (the image model in its context, R28), in true perspective,
     # unlit in the layers (its milky face in the dusk's grey), its light a comp on the shop's hours (z7_dagsign: street.js
-    # 'sign', breathing) (tools/dagashi_sign.py); last: it overlaps dojo's, kiosktop's, dojofoot's, dagashi's and sodaface's
-    # boxes, and its before copies are theirs there
-    'dagsign': dict(box=(138, 476, 227, 541), tool='dagashi_sign'),
+    # 'sign', breathing), centred on the fascia, and the fascia's top a clean edge on its ray under a drip cap, the face's
+    # clapboards ending on it (tools/dagashi_sign.py); last: it overlaps dojo's, kiosktop's, dojofoot's, dagashi's and
+    # sodaface's boxes, and its before copies are theirs there
+    'dagsign': dict(box=(138, 470, 227, 541), tool='dagashi_sign'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

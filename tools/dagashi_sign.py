@@ -17,9 +17,17 @@ rain streak, だがし in red-brown. Its tones are taken from that drawing (its 
 MILK; its letters' colour), everything else is placed here on the street's pixels (the owner: "pas précis"; brought down
 from the drawing, its letters were soft blobs and its light a smear):
 
-- the box in true perspective on the house's front (XB, 4 cm proud of it): its face between two heights (FACE: its
-  columns, its bottom and top in m), its top and bottom on the house's rays, its ends plumb; each pixel in or out by its
-  centre, no partial pixel;
+- the fascia it hangs on, found in the street's camera (FASCIA: from the post to its right end, from the window's head
+  at 2.44 m to its top at 3.07 m, the painter's own edges, on their rays to VP); the box (SIZE: 2.41 x 0.32 m) centred on
+  it in depth and height (the owner, of the larger box: "un poil mieux centré"), its margins equal in metres (0.25 m at
+  each end), an even band of dark wood above and below; its face in true perspective, 4 cm proud of the front (XB), its
+  top and bottom on the rays, its ends plumb, each pixel in or out by its centre, no partial pixel;
+- the junction of the front's two materials over it (the owner: "faire une liaison propre entre les deux matériaux de la
+  façade"; junction()): the fascia's top one clean edge on its ray from the post to its right end, a drip cap along it (its
+  top catching the sky as the bay's sill does, its front in shade, a pixel each), the clapboards' ends sitting on it;
+  under it the painter's fascia back where the face's boards had run down over it in steps (where he had let them bite
+  into its top right, his fascia from a few rows lower); in both layers and in the low-sun mask (the cap's top lit as the
+  face, the fascia and the box not);
 - its face in four tone steps (the tubes behind it: brighter in the middle, darker to its ends and edges), a yellowed
   patch at its right end, the painting's grain in it (a pixel's tone a step off now and then, a level or two of noise:
   a fixed hash of its place, the same bytes each run), a 1-px rain streak under its top;
@@ -50,12 +58,16 @@ MODEL = 'openai/gpt-5.4-image-2'
 GAMMA = 2.0
 REG = (0, 300, 1.995, 1.0, -2.5)               # (the drawing on the street: street origin, its pixels a street pixel, shift)
 COLOR = ((1.09, -1.0), (0.92, 0.9), (1.02, 0.8))   # (from the 22 h render's colours to the base layer's: gain, offset)
-BOX = (138, 476, 227, 541)                     # the zone (redraw_zones.py 'dagsign'): the sign's place on the fascia
+BOX = (138, 470, 227, 541)                     # the zone (redraw_zones.py 'dagsign'): the fascia, its trim on top
 CBOX = (134, 470, 231, 544)                    # its light's box (street.js ASSETS.comps.z7_dagsign)
 VP, EYE = (700.0, 615.0), 1.5                  # (the street's camera: F 1400)
-XB = 6.29                                      # (the box's face: 4 cm proud of the house's front, m left of the eye)
-FACE = (150, 222, 2.565, 2.885)                # (its face: from column, to column, its bottom and top, m; the fascia's
-                                               #  whole height and length but its frame's)
+XB, XH = 6.29, 6.33                            # (the box's face, 4 cm proud of the house's front; the front; m left of the eye)
+FASCIA = (140, 227, 2.44, 3.07)                # (the shop's dark fascia on the house's front: from its left post to its
+                                               #  right end, columns; its bottom, the window's head, and its top, m: the
+                                               #  painter's own edges, on their rays)
+SIZE = (2.41, 0.32)                            # (the box's face: its length along the street and its height, m)
+TRIM_LIT, TRIM_DARK = (146.0, 70.0, 84.0), (44.0, 22.0, 30.0)   # (the drip cap on the fascia's top: its top catching the
+                                               #  sky as the bay's sill does, its front in shade; 1 px each)
 TONE_FACE = (153, 219, 2.5965, 2.8526)         # (the drawing's own lit face, where its tones are read)
 FRAME = 2                                      # (its frame round the face, px)
 TONE_Q, MILK = (30, 55, 78, 94), (0.3, (255.0, 236.0, 200.0))   # (the face's four tones: the drawing's lit face at these
@@ -83,9 +95,27 @@ def lum(a):
     return a @ [0.299, 0.587, 0.114]
 
 
-def row(h, x):
-    """The row a height h (m) on the box's face projects to at column x."""
-    return VP[1] - (h - EYE) * (VP[0] - x) / XB
+def depth(x, plane=XH):
+    """How far along the street (m) column x is on a plane so far left of the eye."""
+    return 1400.0 * plane / (VP[0] - x)
+
+
+def centred():
+    """The box's face (its columns, its bottom and top) centred on the fascia in the street's depth and height: its
+    margins equal in metres, not in pixels; under the trim's dark row (1 px), over the window's head."""
+    z0, z1 = depth(FASCIA[0]), depth(FASCIA[1]); zc = (z0 + z1) / 2
+    zl, zr = zc - SIZE[0] / 2, zc + SIZE[0] / 2
+    top = FASCIA[3] - XH / (VP[0] - (FASCIA[0] + FASCIA[1]) / 2)        # (under the trim's dark row: a pixel's height)
+    yc = (FASCIA[2] + top) / 2
+    return (VP[0] - 1400.0 * XB / zl, VP[0] - 1400.0 * XB / zr, yc - SIZE[1] / 2, yc + SIZE[1] / 2)
+
+
+FACE = centred()
+
+
+def row(h, x, plane=XB):
+    """The row a height h (m) on a plane (the box's face) projects to at column x."""
+    return VP[1] - (h - EYE) * (VP[0] - x) / plane
 
 
 def grid(box=CBOX):
@@ -231,9 +261,37 @@ def save(a, p):
         p, 'WEBP', lossless=True, quality=100, method=6, exact=True)
 
 
+OLD_EDGE = ((138, 484), (160, 489), (182, 494), (226, 500))   # (where the face's boards stopped: soda_corner.FACE_SIGN)
+
+
+def junction(city, unlit):
+    """The fascia's top on its ray (FASCIA's top, on the house's plane), from the post to its right end: a drip cap along
+    it, its top catching the sky (TRIM_LIT) over its front in shade (TRIM_DARK), a pixel each; under it the painter's
+    fascia back where the face's boards had run down over it (his pixels from the zone's before crops; where he had let
+    the boards bite into its top right, his fascia from a few rows lower); over it the face as the zones before leave it,
+    the clapboards' ends on the cap. Both layers. Returns over BOX: what it laid, the cap's lit row, what is dark wood."""
+    x0, y0, x1, y1 = BOX
+    X, Y = grid(BOX)
+    yl = row(FASCIA[3], X, XH)
+    cols = (X >= FASCIA[0]) & (X < FASCIA[1])
+    lit = cols & (Y >= yl - 1) & (Y < yl)
+    dark = cols & (Y >= yl) & (Y < yl + 1)
+    under = cols & (Y >= yl + 1) & (Y < np.interp(X, [q[0] for q in OLD_EDGE], [q[1] for q in OLD_EDGE]) + 2)
+    for a, tag in ((city, 'city'), (unlit, 'unlit')):
+        b = load(os.path.join(EDITS, 'dagsign_before_%s.webp' % tag))[..., :3]
+        low = np.roll(b, -6, 0)                                         # (his fascia six rows lower)
+        src = np.where((lum(b) > 25)[..., None], low, b)
+        t = a[y0:y1, x0:x1]
+        t[..., :3][under] = src[under]; t[..., :3][lit] = TRIM_LIT; t[..., :3][dark] = TRIM_DARK
+        t[..., 3][lit | dark | under] = 255
+    return lit | dark | under, lit, dark | under
+
+
 def draw(city, unlit, box=BOX):
-    """Zone 'dagsign': the box unlit in both layers (its pixels only); its light written to assets/z7_dagsign.webp, its
-    box in street.js. Returns what changed over box."""
+    """Zone 'dagsign': the fascia's trim (junction) and the box unlit in both layers; its light written to
+    assets/z7_dagsign.webp, its box in street.js; the low-sun marks there (the cap's top and the face lit as the face, the
+    fascia and the box not). Returns what changed over box."""
+    laid, lit_row, wood = junction(city, unlit)
     x0, y0, x1, y1 = CBOX
     unl, m, comp = build(city)
     for a in (city, unlit):
@@ -241,7 +299,12 @@ def draw(city, unlit, box=BOX):
     save(comp, os.path.join(ASSETS, COMP + '.webp'))
     street_js()
     full = np.zeros(city.shape[:2], bool); full[y0:y1, x0:x1] = m
-    return full[box[1]:box[3], box[0]:box[2]]
+    sp = os.path.join(ASSETS, 'street_sun.webp')
+    sun = np.asarray(Image.open(sp).convert('RGB')).copy()
+    t = sun[box[1]:box[3], box[0]:box[2]]
+    t[lit_row] = 255; t[wood | full[box[1]:box[3], box[0]:box[2]]] = 0
+    Image.fromarray(sun, 'RGB').save(sp, 'WEBP', lossless=True, quality=100, method=6, exact=True)
+    return full[box[1]:box[3], box[0]:box[2]] | laid
 
 
 def before():
@@ -264,13 +327,13 @@ def before():
 
 
 def preview(out):
-    """The box unlit and lit over the layers as they stand (its zone's before put back first; not written), x1 and x6."""
+    """The trim and the box, unlit and lit, over the layers as they stand (not written: the box as they have it may
+    show round the new one), x1 and x6."""
     os.makedirs(out, exist_ok=True)
-    city = load(os.path.join(ASSETS, 'layer_city_off.webp'))
-    x0, y0, x1, y1 = BOX
-    city[y0:y1, x0:x1] = load(os.path.join(EDITS, 'dagsign_before_city.webp'))
+    city = load(os.path.join(ASSETS, 'layer_city_off.webp')); unlit = load(os.path.join(ASSETS, 'street_unlit.webp'))
     a0, b0, a1, b1 = CBOX
     keep = city[b0:b1, a0:a1, :3].copy()
+    junction(city, unlit)
     unl, m, comp = build(city)
     al = comp[..., 3:] / 255; open_ = unl * (1 - al) + comp[..., :3] * al
     for tag, a in (('before', keep), ('shut', unl), ('open', open_)):
