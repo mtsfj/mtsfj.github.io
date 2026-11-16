@@ -11802,9 +11802,8 @@
   // ==== feature: Ichiraku's clear pane (IRG) — its own block ====
   // The shop window's one pane (tools/ichiraku_interior.py; IRF.G, its columns under the noren's hem) lives with the street's
   // light, over the room and its people and over the shut shop's dark glass alike (under the noren and the lanterns, which hang
-  // in front of it): when the TranZit crosses the junction, its headlight's reflection crosses the pane the other way (mirrored:
-  // the bus going right, its glint going left, at the bus's height, a soft halo and a faint smear up and down the glass), brighter
-  // when its front is turned toward the pane's side; in the rain a few drops run down the outside of the glass, stop and go, each
+  // in front of it): as the TranZit passes, its lamps' reflections cross the pane (GLZ, the street's glass all alike: their mirror
+  // images on its plane, a soft halo and a faint smear up and down the glass); in the rain a few drops run down the outside of the glass, stop and go, each
   // leaving a wet track that dries in a second or two, lit by the shop's warm light (the street's cooler one when it is shut), more
   // of them in a gust that drives the rain onto it, none starting in a lull. Its own light ('self': red in the red night), the
   // zone's power on the shop's share; 20 pictures a second while anything is on it and it is on screen; none under reduced motion.
@@ -11819,12 +11818,9 @@
     IRG.mesh = new THREE.Mesh(new THREE.PlaneGeometry(IRG.w, IRG.h), new THREE.MeshBasicMaterial({ map: IRG.tex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
     IRG.mesh.position.set(IRG.x + IRG.w / 2, -(IRG.y + IRG.h / 2), 0.495); IRG.mesh.visible = false; scene.add(IRG.mesh); gradeSprite(IRG.mesh.material, 'self');
   })();
-  function irgSweep() {                               // the bus's headlight in the pane: [column, row, strength], or null
-    const S = busS; if (!S.active || S.hk <= 0.02) return null;
-    const L = S.dir < 0, hx = Math.round(S.x) + (L ? BUS.W - 1 - BUS.head[0] : BUS.head[0]), u = (hx - BUS.gap[0]) / (BUS.gap[1] - BUS.gap[0]);
-    if (u < -0.02 || u > 1.02) return null;
-    const hy = busGround(0) - BUS.ground + BUS.head[1];
-    return [IRG.x + IRG.w - 1 - u * (IRG.w - 1), Math.round(IRG.y + 66 + (hy - 600) * 0.4), S.hk * (L ? 0.75 : 0.5) * Math.min(1, (u + 0.02) * 12, (1.02 - u) * 12)];
+  function irgSweep() {                               // the bus's lamps in the pane (GLZ: their mirror images on its plane): [[column, row, strength, red]]
+    const G = glzAt(GLZ_X.ichiraku, glzLamps());
+    return G.filter(([x, y]) => x > IRG.x - 10 && x < IRG.x + IRG.w + 10 && y > IRG.y - 10 && y < IRG.y + IRG.h + 10);
   }
   function stepIrg(dt) {
     const B = IRG; if (!B.mesh || reduced) return;
@@ -11846,7 +11842,7 @@
       }
     }
     B.run = B.run.filter((R) => !R.done || R.trail.some((p) => R.t - p[1] < 1.8));
-    const sw = irgSweep(), any = B.run.length > 0 || !!sw;
+    const sw = irgSweep(), any = B.run.length > 0 || sw.length > 0;
     const seen = !(camera.right < B.x || camera.left > B.x + B.w || -camera.top > B.y + B.h || -camera.bottom < B.y);
     B.mesh.visible = any && seen;
     if (!B.mesh.visible) { B.on = false; return; }
@@ -11857,17 +11853,94 @@
       for (const [y, t0] of R.trail) { const a = 0.18 * lit * Math.max(0, 1 - (R.t - t0) / 1.8); if (a > 0.01) { g.fillStyle = 'rgba(' + warm + ',' + a.toFixed(3) + ')'; g.fillRect(R.x - B.x, y - B.y, 1, 1); } }
       if (!R.done) { g.fillStyle = 'rgba(' + warm + ',' + (0.75 * lit).toFixed(3) + ')'; g.fillRect(R.x - B.x, R.y - B.y, 1, 1); }
     }
-    if (sw) {                                         // the glint: a halo, a smear up and down the glass, its core
-      const [cx, cy, k] = sw, x = cx - B.x, y = cy - B.y, gr = g.createRadialGradient(x, y, 0, x, y, 9);
-      gr.addColorStop(0, 'rgba(255,236,206,' + (0.5 * k).toFixed(3) + ')'); gr.addColorStop(0.35, 'rgba(255,236,206,' + (0.2 * k).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(255,236,206,0)');
-      g.fillStyle = gr; g.fillRect(x - 9, y - 9, 18, 18);
-      for (let d = -22; d <= 30; d++) { const a = 0.3 * k * Math.pow(1 - Math.abs(d) / (d < 0 ? 23 : 31), 1.5); g.fillStyle = 'rgba(255,236,206,' + a.toFixed(3) + ')'; g.fillRect(Math.round(x), Math.round(y) + d, 1, 1); }
-      g.fillStyle = 'rgba(255,246,230,' + Math.min(1, 1.6 * k).toFixed(3) + ')'; g.fillRect(Math.round(x), Math.round(y), 2, 2);
-    }
+    for (const [cx, cy, k, red] of sw) glzDraw(g, cx - B.x, cy - B.y, k, red);   // the bus's glints (GLZ)
     g.restore(); B.tex.needsUpdate = true;
   }
   FEAT.push(stepIrg);
   // ==== end of IRG ====
+  //
+  //
+  //
+  // ==== feature: the street's glass catches the TranZit's lights (GLZ) — its own block ====
+  // The owner, on the bus's headlight in Ichiraku's pane: "cool, mais faut le faire ailleurs, sinon pas cohérent". Every glazed
+  // front facing the street mirrors the bus's lamps as it passes, in the street's camera: each pane is a mirror in its facade's
+  // plane (X, m right of the eye's line; the left side negative), the bus's lane at Z = 959.5 x 1.41 / (its wheels' row - 615)
+  // (41 m), so a lamp at X_b shows in a pane on the plane X_p at the screen column of its mirror image, 700 + (2 X_p - X_b) F / Z,
+  // at its own row, when that point falls on the pane's glass (its mask), the lamp on the near side of the plane. As the bus crosses
+  // left to right the glints run over the right side's glass from near to far (Ichiraku while the bus is still behind the left
+  // corner, then B's shop window, then the Center's) and over the left side's from far to near (the oden's window, the
+  // drinks machines, the dagashi-ya), each pane lit when the geometry reaches it: what it never reaches (the arcade, the near
+  // shops on the right beyond Ichiraku) never lights. Each lamp strongest where its beam points: the headlight on the side its
+  // front faces (warm white), the tail light on the other (red, a little fainter), cos^0.7 of the angle between the lamp's axis and the way
+  // to the pane. One look for all: a soft halo, a faint smear up and down the glass, a small core (Ichiraku's, IRG, unchanged).
+  // The bus's own lights: on in the power cut; their own light ('self': red in the red night); drawn only while the bus is out,
+  // a pane only while a glint is on it and it is on screen, 20 pictures a second. (The wet road and sidewalks already mirror the
+  // bus and its lamps: the water's pass, stepBusLights' streaks.) No cars drive this street ----
+  const GLZ_F = 959.5, GLZ_Z = GLZ_F * 1.41 / (busGround(0) - 615);
+  const GLZ_X = { ichiraku: 5.2 };                    // (Ichiraku's pane: tools/ichiraku_interior.py's front, in this camera)
+  const GLZ = { acc: 0, panes: [                      // the street's glass: its plane, where its picture comes from (a comp's own pixels, a mask)
+    { n: 'center', X: 5.0, comp: 'win_z4_shop', z: 1.13, k: 1.5 }, { n: 'bshop', X: 5.0, comp: 'win_b_shop', z: 1.13, k: 1.2 },
+    { n: 'oden', X: -6.39, box: ODEN.window, src: 'assets/oden_window.webp?v=2', z: 0.0405, k: 1.5 },
+    { n: 'dagashi', X: -5.95, comp: 'win_z7_shop', z: 1.13, k: 1.3 }, { n: 'vending', X: -4.0, comp: 'z7_vending', z: 1.13, k: 1.1 }] };   // (k: over a lit room the glint needs more to show)
+  function glzLamps() {                               // the bus's two lamps now: their X (m), row, the way they point (+1 right), level, red
+    const S = busS; if (!S.active) return [];
+    const L = S.dir < 0, x0 = Math.round(S.x), y0 = busGround(x0) - BUS.ground, bob = S.bob > 0 ? 1 : 0, sx = (c) => (L ? BUS.W - 1 - c : c);
+    const hx = x0 + sx(BUS.head[0]) + (L ? 0 : 1), tx = x0 + sx(BUS.tail[0]);
+    return [{ X: (hx - 700) * GLZ_Z / GLZ_F, row: y0 + BUS.head[1] + bob, dir: L ? -1 : 1, k: S.hk, red: false },
+      { X: (tx - 700) * GLZ_Z / GLZ_F, row: y0 + BUS.tail[1] + bob, dir: L ? 1 : -1, k: S.hk, red: true }];
+  }
+  function glzAt(Xp, lamps) {                         // on the plane X = Xp: each lamp's mirror image [column, row, strength, red]
+    const out = [];
+    for (const l of lamps) {
+      const D = 2 * Xp - l.X; if (D * Xp <= 0 || Math.abs(D) <= Math.abs(Xp)) continue;   // (the lamp beyond the plane: no image)
+      const Zc = GLZ_Z * Xp / D, dx = Xp - l.X, c = l.dir * dx / Math.hypot(dx, Zc - GLZ_Z);
+      if (c <= 0.02) continue;
+      out.push([700 + D * GLZ_F / GLZ_Z, l.row, l.k * Math.pow(c, 0.7) * (l.red ? 0.8 : 0.9), l.red]);
+    }
+    return out;
+  }
+  function glzDraw(g, x, y, k, red) {                 // a glint: a halo, a smear up and down the glass, its core
+    const c = red ? '255,90,70' : '255,236,206', cc = red ? '255,150,130' : '255,246,230', gr = g.createRadialGradient(x, y, 0, x, y, 9);
+    gr.addColorStop(0, 'rgba(' + c + ',' + (0.5 * k).toFixed(3) + ')'); gr.addColorStop(0.35, 'rgba(' + c + ',' + (0.2 * k).toFixed(3) + ')'); gr.addColorStop(1, 'rgba(' + c + ',0)');
+    g.fillStyle = gr; g.fillRect(x - 9, y - 9, 18, 18);
+    for (let d = -22; d <= 30; d++) { const a = 0.3 * k * Math.pow(1 - Math.abs(d) / (d < 0 ? 23 : 31), 1.5); g.fillStyle = 'rgba(' + c + ',' + a.toFixed(3) + ')'; g.fillRect(Math.round(x), Math.round(y) + d, 1, 1); }
+    g.fillStyle = 'rgba(' + cc + ',' + Math.min(1, 1.6 * k).toFixed(3) + ')'; g.fillRect(Math.round(x), Math.round(y), 2, 2);
+  }
+  function glzInit(P) {                               // a pane's canvas and mesh, its glass's mask (once its picture is in)
+    let im, x, y, w, h;
+    if (P.comp) { const c = comps.find((q) => q.userData.name === P.comp), A = ASSETS.comps[P.comp]; if (!c || !A) { P.dead = true; return; } im = c.material.map && c.material.map.image; ({ x, y, w, h } = A); }
+    else { if (!P.img) { P.img = new Image(); P.img.onerror = () => { P.dead = true; }; P.img.src = P.src; } im = P.img; [x, y, w, h] = P.box; }
+    if (!im || !im.complete || !im.naturalWidth) return;
+    try {
+      const m = document.createElement('canvas'); m.width = w; m.height = h; const mg = m.getContext('2d', { willReadFrequently: true });
+      mg.drawImage(im, 0, 0, w, h); const d = mg.getImageData(0, 0, w, h); for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i] > 8 ? 255 : 0;
+      mg.putImageData(d, 0, 0);
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const t = new THREE.CanvasTexture(cv); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false;
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: t, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      mesh.position.set(x + w / 2, -(y + h / 2), P.z); mesh.visible = false; scene.add(mesh); gradeSprite(mesh.material, 'self');
+      Object.assign(P, { x, y, w, h, mask: m, cv, g: cv.getContext('2d'), t, mesh, ok: true });
+    } catch (e) { P.dead = true; }
+  }
+  function stepGlz(dt) {
+    if (reduced) return;
+    const lamps = glzLamps(), go = lamps.length > 0;
+    if (!go && !GLZ.was) return; GLZ.was = go;          // (no bus: nothing to do, once its glints are put away)
+    if (go && (GLZ.acc += dt) < 1 / 20) return; GLZ.acc = 0;
+    for (const P of GLZ.panes) {
+      if (P.dead) continue;
+      if (!P.ok) { if (go) glzInit(P); if (!P.ok) continue; }
+      const G = go ? glzAt(P.X, lamps).filter(([x, y]) => x > P.x - 10 && x < P.x + P.w + 10 && y > P.y - 32 && y < P.y + P.h + 24) : [];
+      const seen = !(camera.right < P.x || camera.left > P.x + P.w || -camera.top > P.y + P.h || -camera.bottom < P.y);
+      if (!G.length || !seen) { P.mesh.visible = false; continue; }
+      const g = P.g; g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, P.w, P.h);
+      for (const [x, y, k, red] of G) glzDraw(g, x - P.x, y - P.y, k * (P.k || 1), red);
+      g.globalCompositeOperation = 'destination-in'; g.drawImage(P.mask, 0, 0); g.globalCompositeOperation = 'source-over';
+      P.t.needsUpdate = true; P.mesh.visible = true;
+    }
+  }
+  FEAT.push(stepGlz);
+  // ==== end of GLZ ====
   //
   //
   //
