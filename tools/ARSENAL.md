@@ -105,3 +105,7 @@ The street's first pipeline, run outside any repository: build_lit.py, build_hoo
 - Worktrees of this repository's earlier sessions: /home/user/wt/*/ (their branches are in this repository's history: the alt_*.py family and relief.py come from /home/user/wt/clean).
 - The owner's references and sheets: tools/src/ (zone5 sheets and textures, room images, sprite sheets, tree photos, Luffy posters).
 - The owner's rules and verdicts: tools/src/edits/FEEDBACK.md (read first).
+- How the kept work was done, step by step, and the traps met: tools/PLAYBOOK.md (read second).
+- The working helpers: tools/dev/ (chain_twice.sh: the whole chain twice, SAME when settled; smoke.cjs: desktop and phone at
+  five hours, page errors and 404s; shot.cjs: the street held at an hour, optional layer folder; hook.cjs: a test hook to force a
+  state, nothing shipped; changed_regions.py: where a layer changed against a revision; to_mp4.sh: GIF previews as MP4).
