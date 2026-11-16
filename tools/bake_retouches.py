@@ -69,6 +69,11 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'arcwall_{_tag}.webp', 1262, 400))
 
+# the dagashi-ya's sign, its lit box unlit in the layers (tools/dagashi_sign.py, by tools/redraw_zones.py's zone dagsign);
+# its light the comp z7_dagsign
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'dagsign_{_tag}.webp', 138, 476))
+
 
 def main():
     for layer, patches in LAYERS.items():
