@@ -307,6 +307,62 @@
   }
   // the middle drinks machine's display out (tools/soda_corner.py), laid over its comp while its tube stutters
   const vendOff = plane('assets/z7_vendoff.webp?v=15', 307, 579, 20, 143, 1.105, { opacity: 0 }); vendOff.visible = false;
+  // ---- the far house's upstairs window (win_z9_window, a 'home' on its hours): now and then the soft shadow of someone in the
+  // room on its lit curtains, crossing, or stopping to stretch (tools/end_house_shadow.py: twelve frames drawn by the image
+  // model, a walk in profile, a stop, a turn, a morning stretch, at the scene's pixels, their density in the alpha; Z9S their
+  // cells, the anchor's column, the frame's top row in the window). Laid over the comp with a darkening blend (the curtain's
+  // light times one minus the density, the canvas's alpha kept: right in every grade, the red night's too), clipped by the
+  // comp's lit curtains (a mask after the frames: the railing in front, the frame and the mullion untouched); a few minutes
+  // apart, only while the window is lit and on screen, its sheet fetched the first time; never under reduced motion, never
+  // in the power cut ----
+  const Z9S = {"w":34,"h":44,"ax":17,"top":-9,"mask":408,"f":{"w0":0,"w1":1,"w2":2,"w3":3,"w4":4,"w5":5,"stand":6,"turn":7,"front":8,"rise":9,"up":10,"lean":11}};   // (tools/end_house_shadow.py)
+  const Z9 = { next: 60 + Math.random() * 150, ev: null, img: null, ok: false, mesh: null, g: null, tex: null, key: '' };
+  function z9Event() {                           // a visit: a list of steps, each a frame (or the walk) for a time or to a place
+    const d = Math.random() < 0.5 ? 1 : -1, edge = (s) => (s > 0 ? -14 : 71), V = 17;
+    if (Math.random() < 0.55) return { x: edge(d), dist: 0, i: 0, t: 0, steps: [{ walk: d, to: edge(-d), v: V }] };   // across the room
+    const at = (Math.random() < 0.5 ? 13 : 43) + Math.round(Math.random() * 4 - 2), out = Math.random() < 0.5 ? d : -d;   // (a pane's middle,
+    return { x: edge(d), dist: 0, i: 0, t: 0, steps: [{ walk: d, to: at, v: V }, { f: 'stand', m: d, dur: 0.5 }, { f: 'turn', m: d, dur: 0.22 },   // never the mullion)
+      { f: 'front', dur: 0.55 }, { f: 'rise', dur: 0.35 }, { f: 'up', dur: 1.3 + Math.random() * 0.6 }, { f: 'lean', m: Math.random() < 0.5 ? 1 : -1, dur: 0.9 + Math.random() * 0.5 },
+      { f: 'up', dur: 0.35 }, { f: 'rise', dur: 0.3 }, { f: 'front', dur: 0.45 }, { f: 'turn', m: out, dur: 0.22 }, { walk: out, to: edge(-out), v: V }] };
+  }
+  function z9Shadow(c, dt) {                     // called with the window's comp, each frame (its 'home' step)
+    if (reduced) return;
+    const u = c.userData, lit = u.on && c.material.opacity > 0.9 && !PW.on;
+    const seen = camera.right > c.position.x - 28 && camera.left < c.position.x + 28 && -camera.top < -c.position.y + 17 && -camera.bottom > -c.position.y - 17;
+    if (!Z9.ev) {
+      if ((Z9.next -= dt) > 0) return;
+      if (!lit || !seen) { Z9.next = 20 + Math.random() * 30; return; }        // (later: the room dark, or the window out of view)
+      if (!Z9.img) { Z9.img = new Image(); Z9.img.onload = () => { Z9.ok = true; }; Z9.img.src = 'assets/z9_shadow.webp?v=1'; }
+      if (!Z9.ok) { Z9.next = 2; return; }
+      if (!Z9.mesh) {
+        const cv = document.createElement('canvas'); cv.width = c.geometry.parameters.width; cv.height = c.geometry.parameters.height;
+        Z9.g = cv.getContext('2d'); Z9.tex = new THREE.CanvasTexture(cv); Z9.tex.magFilter = Z9.tex.minFilter = THREE.NearestFilter; Z9.tex.generateMipmaps = false;
+        Z9.mesh = new THREE.Mesh(new THREE.PlaneGeometry(cv.width, cv.height), new THREE.MeshBasicMaterial({ map: Z9.tex, transparent: true, depthWrite: false,
+          blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.OneMinusSrcAlphaFactor,
+          blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor }));   // (the canvas's alpha kept: it is transparent)
+        Z9.mesh.position.set(c.position.x, c.position.y, c.position.z + 0.004); scene.add(Z9.mesh);   // (just over the comp, under the bus)
+      }
+      Z9.ev = z9Event(); Z9.key = '';
+    }
+    const E = Z9.ev, s = E.steps[E.i];
+    if (!lit) { Z9.ev = null; Z9.mesh.visible = false; Z9.next = 30 + Math.random() * 60; return; }   // (the light out, the cut: gone with it)
+    let f, m;
+    if (s.walk) {                                // the walk: its frame by the way walked (a stride every 30 px), facing its way
+      const st = Math.min(Math.abs(s.to - E.x), s.v * dt); E.x += s.walk * st; E.dist += st;
+      f = 'w' + (Math.floor(E.dist / 5) % 6); m = s.walk;
+      if (Math.abs(s.to - E.x) < 0.01) { E.i++; E.t = 0; }
+    } else { f = s.f; m = s.m || 1; if ((E.t += dt) >= s.dur) { E.i++; E.t = 0; } }
+    if (E.i >= E.steps.length) { Z9.ev = null; Z9.mesh.visible = false; Z9.next = 150 + Math.random() * 270; return; }   // (a few minutes on)
+    Z9.mesh.visible = seen; Z9.mesh.material.opacity = c.material.opacity;
+    const X = Math.round(E.x), key = f + m + X;
+    if (!seen || key === Z9.key) return;
+    Z9.key = key; const g = Z9.g, W = g.canvas.width, H = g.canvas.height;
+    g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, W, H); g.save();
+    if (m < 0) { g.translate(2 * X + 1, 0); g.scale(-1, 1); }   // (facing left: the frame mirrored about its anchor's column)
+    g.drawImage(Z9.img, Z9S.f[f] * Z9S.w, 0, Z9S.w, Z9S.h, X - Z9S.ax, Z9S.top, Z9S.w, Z9S.h); g.restore();
+    g.globalCompositeOperation = 'destination-in'; g.drawImage(Z9.img, Z9S.mask, 0, W, H, 0, 0, W, H);   // (on the lit curtains only)
+    Z9.tex.needsUpdate = true;
+  }
   // the ad screens of the drinks corner (tools/soda_corner.py writes ADS): the side panel's frames side by side in its comp,
   // played at their fps (without one: a picture every 6 s, its two frames alternating); the giant screen's clips, each its
   // own sheet, fetched when it is next, each played `loops` times, in a random order never the same twice running, a few
@@ -10224,6 +10280,7 @@
         if (u.next < 0) { u.on = !u.on && nightLit(u); u.next = u.on ? (u.onT[0] + Math.random() * u.onT[1]) * (1 + 0.8 * NIGHT.busy) : (u.offT[0] + Math.random() * u.offT[1]) * (1 - 0.6 * NIGHT.busy); }
         else if (u.on && !nightLit(u) && u.next > 3) u.next = nightDelay();     // bedtime: out soon, each at its own moment
         c.material.opacity += ((u.on ? 1 : 0) - c.material.opacity) * Math.min(1, dt * 3);
+        if (u.name === 'win_z9_window') z9Shadow(c, dt);   // (now and then someone's shadow on its curtains)
       } else if (u.kind === 'study') c.material.opacity = ws.L;   // the study light on the wall: the lamp's level, as in the window
       else if (u.kind === 'naru') c.material.opacity = WIN2.I[0];   // the narrow building's tall window: Naruto's room (its ceiling, all the street sees of it), lit with his balcony (the pane nearest it)
       else if (u.kind === 'lantern') // the paper lantern breathes, slowly, as the far city's do

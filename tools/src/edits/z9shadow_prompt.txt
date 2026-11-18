@@ -1,0 +1,7 @@
+A sprite sheet for a pixel-art night street: the shadow of one person cast on a warmly backlit curtain, seen from the street outside. Follow the attached guide exactly: 2 rows of 6 cells, one frame per cell, keep the thin cell borders. In every cell the figure stands with its feet on the grey baseline and the top of its head on the small upper tick, all twelve frames at exactly the same scale, centred in the cell.
+
+The same person in every frame: a slim adult at home in a loose T-shirt and soft trousers, short tousled hair, barefoot. Each frame is one pure solid silhouette: a single flat charcoal tone (#2a2422) with no inner detail, no outline, no rim light, no gradient, no floor shadow, on the guide's flat pale background. No text, no numbers, nothing else in the cells.
+
+Row 1, left to right: one relaxed indoor walk cycle walking to the right, in strict side profile, the arms swinging a little: 1 contact (right heel down), 2 down, 3 passing, 4 up, 5 contact (left heel down), 6 passing.
+
+Row 2, left to right: 1 standing still in side profile facing right, arms down; 2 turning toward the viewer, three-quarter view; 3 standing facing the viewer, arms down; 4 facing the viewer, both arms rising, elbows bent, hands at shoulder height; 5 facing the viewer, a full morning stretch, both arms straight up above the head, fingers interlaced, palms up; 6 the same stretch leaning to the figure's left side, the arms still up, the hips pushed the other way.
