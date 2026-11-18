@@ -373,12 +373,16 @@ DESK_Y = 38                                      # the desk's top row (local): h
 
 
 # ---- the room's four states, one painting relit: lit (the lamp and the screen), the lamp alone (the screen asleep), the
-# screen alone, dark. The dark room: the layer's own dark (its glass's sheen, its low frequencies) with the room's shapes
-# faint in it; the screen's light: from the monitor (a soft falloff, wider than high, more toward the desk and him in front
+# screen alone, dark. The dark room: the painting lit by the night alone (night_room: the layer's own dark, its glass's sheen
+# and low frequencies, with the room's shapes in it); the screen's light: from the monitor (a soft falloff, wider than high, more toward the desk and him in front
 # of it), the room's own colours under it turned to the screen's light at their luminance; the lamp alone: the painting with
 # the screen asleep and its glow taken off; lit: the lamp alone and the screen's light added (street.js tints that part) ----
 ROOM_GAIN = 1.1                                  # (the room's light against the street's other lit windows)
-DARK_K = 0.3                                     # (how much of the room's shapes the dark room keeps)
+DARK_K = 0.3                                     # (how much of the room's shapes the screen's base keeps: its light's measure)
+NIGHT = dict(K=0.9, sig=7.0, top=0.4, chroma=0.15, A=(0.2, 1.7))   # the dark room, the painting lit by the night alone (night_room):
+                                                 # how much of its shapes it keeps, the lamp's falloff taken off below this
+                                                 # scale (px), the light from below on the ceiling's side (its top this much
+                                                 # brighter), the painting's own hue kept, its shapes' range
 SCR_FALL = (17.0, 11.0, 3.0)                     # (the screen's light: its spread across and up and down, px; its centre lowered by)
 SCR_K = 1.9                                      # (its strength)
 SCR_LIT = 0.55                                   # (its share in the room lit by the lamp too)
@@ -419,8 +423,30 @@ def room_states():
     lamp = np.maximum(full - 0.35 * (s_only - dark), 0.85 * full)     # (its own glow taken off, never a hole: 15 % at most)
     lamp[scr] = np.array(STANDBY) + 0.12 * (full[scr] - lum(full[scr])[..., None])
     lit = np.clip(lamp + SCR_LIT * (s_only - dark), 0, 255); lit[scr] = full[scr]   # (with the lamp on, its light counts for less)
+    night = night_room(lamp, low, frame, yy); night[frame] = before[frame]   # (the lamp off: the same room by the night's light)
+    s_only = s_only - dark + night; s_only[scr] = full[scr]; dark = night
     for a in (lamp, s_only, lit): a[frame] = before[frame]
     return dict(lit=lit, lamp=lamp, scr=s_only, dark=dark, scrmask=scr, frame=frame)
+
+
+def night_room(lamp, low, frame, yy):
+    """The room with the lamp off and the screen asleep, the night alone lighting it: what the window showed of it was the
+    pane's own dark with a third of the room's shapes, a flat block in the middle of the phone's view. The painting with its
+    screen asleep (the lamp state), its lamp's light taken off (its luminance over its own low pass, the glass only: the
+    shapes' albedo, crisp), lit by the pane's dark (the painter's low frequencies, its sheen), a little brighter toward the
+    top (the street's light comes from below, onto the ceiling's side and the walls' tops), in that dark's colour with a
+    little of the room's own hue: the books, the whiteboard, the dark monitor, the chair, the lamp's paper shade, the print
+    and the bed read, as the street's other dark rooms do"""
+    from scipy.ndimage import gaussian_filter
+    lum = lambda a: a @ np.array([0.299, 0.587, 0.114])
+    K, sig, top, chroma, (a0, a1) = NIGHT['K'], NIGHT['sig'], NIGHT['top'], NIGHT['chroma'], NIGHT['A']
+    gx0, gy0, gx1, gy1 = GLASS; m = ~frame; L = lum(lamp)
+    w = gaussian_filter(m.astype(float), sig); Lb = gaussian_filter(np.where(m, L, 0.0), sig) / np.maximum(w, 1e-3)
+    A = np.clip(L / np.maximum(Lb, 1.0), a0, a1)
+    base = low * (1.0 + top * np.clip(1.0 - (yy - gy0) / (gy1 - gy0), 0, 1) ** 1.5)[..., None]
+    hue = lambda a: a / np.maximum(lum(a)[..., None], 1.0)
+    out = (hue(base) * (1 - chroma) + hue(lamp) * chroma) * (lum(base) * (1.0 + K * (A - 1.0)))[..., None]
+    return np.clip(out, 0, 255)
 
 
 def mirrored(c):
