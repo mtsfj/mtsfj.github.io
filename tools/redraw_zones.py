@@ -490,6 +490,11 @@ ZONES = {
     # clapboards ending on it (tools/dagashi_sign.py); last: it overlaps dojo's, kiosktop's, dojofoot's, dagashi's and
     # sodaface's boxes, and its before copies are theirs there
     'dagsign': dict(box=(138, 470, 227, 541), tool='dagashi_sign'),
+    # the door of the grey building at the street's end, under the study (a survey at 14, 22 and 3 h, the red night, the
+    # phone): a red smear with an orange strip that read as no door; a red steel door at the back of its recess, its left
+    # reveal lit, its frame, its hinge edge, a lever at 1 m, its foot's shadow, each plane in the painter's own light
+    # (tools/grey_door.py); last: its foot overlaps footO's box (which leaves it as it was), its before copies are its there
+    'greydoor': dict(box=(566, 572, 598, 642), tool='grey_door'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

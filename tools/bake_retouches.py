@@ -74,6 +74,11 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'dagsign_{_tag}.webp', 138, 470))
 
+# the grey building's door at the street's end, under the study: a red steel door in its recess where a smear was
+# (tools/grey_door.py, by tools/redraw_zones.py's zone greydoor); after footO, whose box its foot shares
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'greydoor_{_tag}.webp', 566, 572))
+
 
 def main():
     for layer, patches in LAYERS.items():
