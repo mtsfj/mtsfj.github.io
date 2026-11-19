@@ -495,6 +495,12 @@ ZONES = {
     # reveal lit, its frame, its hinge edge, a lever at 1 m, its foot's shadow, each plane in the painter's own light
     # (tools/grey_door.py); last: its foot overlaps footO's box (which leaves it as it was), its before copies are its there
     'greydoor': dict(box=(566, 572, 598, 642), tool='grey_door'),
+    # the top storey's window of the narrow planked building right of the pole (window_depth's C_TOP; at 22 h a tall dark
+    # pane with nothing behind it), lived in: its light a comp (assets/win_c_top.webp, street.js a 'home' on its hours),
+    # the room the image model painted in the street, seen from the pavement far below (its ceiling, a curtain drawn back, a
+    # small framed picture, the top of a bookcase), laid in the painting's two panes, lit by its ceiling lamp and, late, by
+    # a small lamp alone (tools/ctop_room.py); the layers as they are (the dark pane as painted); last: over winC
+    'ctop': dict(box=(1075, 124, 1111, 254), tool='ctop_room'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
