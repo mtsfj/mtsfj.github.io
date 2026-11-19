@@ -687,7 +687,8 @@ def screen_frame(uvg, box, pic, ss=3, pal=None):
 # 3 atouts, mode zombie de BO2, réf rétro"; "5-6 animations refs qui défilent aléatoirement") ----
 # The giant screen plays short anime cuts in a random order (never the same twice running), a few frames of static
 # between (the owner, then: "plus de framerate, plus fluide et propre, proche des vrais animes en termes de fidélité
-# d'environnement ... remplace Totoro par Levi de SNK"): each cut eight (or twelve) consecutive keyframes drawn by the
+# d'environnement ... remplace Totoro par Levi de SNK"; a sixth since, Goku's Kamehameha in Dragon Ball Z's wasteland, its
+# sheet and prompt asked by ask_clip): each cut eight (or twelve) consecutive keyframes drawn by the
 # image API in the anime's own look, the character on model in their world (tools/src/screen2_<name>.webp, a sheet of 3:1
 # panels, SCREEN_CLIPS: its grid; a sheet of 2:1 panels its sides carried out to 3:1, 'pad'; the prompts in
 # tools/src/soda_prompts.txt), played smooth here: each keyframe held CLIP_HOLD frames, an in-between to the next, the
@@ -701,7 +702,7 @@ def screen_frame(uvg, box, pic, ss=3, pal=None):
 # over all.
 SCREEN_CLIPS = [('naruto', 'screen2_naruto.webp', (4, 2), None), ('luffy', 'screen2_luffy.webp', (4, 3), 'pad'),
                 ('killua', 'screen2_killua.webp', (4, 2), None), ('pika', 'screen2_pika.webp', (4, 2), None),
-                ('levi', 'screen2_levi.webp', (4, 2), None)]
+                ('levi', 'screen2_levi.webp', (4, 2), None), ('goku', 'screen2_goku.webp', (4, 2), None)]
 CLIP_FPS, CLIP_LOOPS, CLIP_HOLD, CLIP_PUSH = 10, 2, 2, 0.05   # (frames a second, plays before the next, frames a keyframe
                                                             #  is held, the push in over the cut)
 CLIP_COLORS = 40                               # (the cut's palette)
@@ -710,6 +711,27 @@ PERK_SHEETS = [('jugg', 'screen2_perk_jugg.webp', ((40, 455), (492, 909), (946, 
                ('speed', 'screen2_perk_speed.webp', ((40, 441), (500, 900), (959, 1360), (1418, 1819)), ((44, 1026), (1184, 2170))),
                ('tap', 'screen2_perk_tap.webp', ((37, 464), (489, 916), (939, 1366), (1391, 1818)), ((28, 1136), (1167, 2254)))]
 PERK_HOLD, PERK_FPS = 2, 8
+
+
+def ask_clip(name, redo=None):
+    """Asks the image API for a cut's sheet (python3 tools/soda_corner.py --ask-clip NAME [PANEL]): its prompt
+    tools/src/edits/screen2_NAME_prompt.txt; the answer saved as tools/src/screen2_NAME.webp (lossless), as SCREEN_CLIPS
+    reads it. With PANEL (1-8): that one keyframe redrawn in the sheet already there (its prompt
+    screen2_NAME_redo_prompt.txt, the sheet given as the image)."""
+    import base64, io, urllib.request
+    k = os.environ.get('OPENROUTER_API_KEY') or open(os.path.expanduser('~/.config/openrouter/key')).read().strip()
+    out = os.path.join(SRC, 'screen2_%s.webp' % name)
+    body = {'model': 'openai/gpt-5.4-image-2', 'aspect_ratio': '3:2', 'quality': 'high', 'n': 1, 'output_format': 'png',
+            'prompt': open(os.path.join(EDITS, 'screen2_%s%s_prompt.txt' % (name, '_redo' if redo else ''))).read().strip()}
+    if redo:
+        buf = io.BytesIO(); Image.open(out).convert('RGB').save(buf, 'PNG')
+        body['input_references'] = [{'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()}}]
+    req = urllib.request.Request('https://openrouter.ai/api/v1/images', data=json.dumps(body).encode(),
+                                 headers={'Authorization': 'Bearer ' + k, 'Content-Type': 'application/json'})
+    d = json.loads(urllib.request.urlopen(req, timeout=900).read())
+    im = Image.open(io.BytesIO(base64.b64decode(d['data'][0]['b64_json']))).convert('RGB')
+    im.save(out if not redo else out.replace('.webp', '_redo.webp'), 'WEBP', lossless=True, quality=100, method=6)
+    print(name, im.size, 'cost', d.get('usage', {}).get('cost'), '$')
 
 
 def sheet_panels(path, rows, cols=1, dark=40):
@@ -1607,5 +1629,7 @@ if __name__ == '__main__':
         i = sys.argv.index('--fit'); fit(sys.argv[i + 1], sys.argv[i + 2])
     elif '--preview' in sys.argv:
         i = sys.argv.index('--preview'); preview(sys.argv[i + 1], sys.argv[i + 2] if len(sys.argv) > i + 2 else None)
+    elif '--ask-clip' in sys.argv:
+        i = sys.argv.index('--ask-clip'); ask_clip(sys.argv[i + 1], sys.argv[i + 2] if len(sys.argv) > i + 2 else None)
     else:
         print(__doc__)

@@ -369,7 +369,7 @@
   // frames of static between, the first one drawn at random as the page opens (its sheet swapped in before the first
   // frame: the screen dark until it is in); under reduced motion that one's first frame. Its hours (NHOURS.screen):
   // dark late at night, as the street's other signs. ADF: the frame each shows; ADC: the clips' state
-  const ADS = {"z7_adscreen":{"n":48,"fps":8},"z7_bigscreen":{"fps":10,"loops":2,"clips":[["assets/z7_bigscreen_naruto.webp?v=89dc56a9",23],["assets/z7_bigscreen_luffy.webp?v=3f890522",35],["assets/z7_bigscreen_killua.webp?v=3808654b",23],["assets/z7_bigscreen_pika.webp?v=373f4b38",23],["assets/z7_bigscreen_levi.webp?v=c49d5652",23]],"trans":["assets/z7_bigscreen_static.webp?v=385e02c3",3,12]}};
+  const ADS = {"z7_adscreen":{"n":48,"fps":8},"z7_bigscreen":{"fps":10,"loops":2,"clips":[["assets/z7_bigscreen_naruto.webp?v=89dc56a9",23],["assets/z7_bigscreen_luffy.webp?v=3f890522",35],["assets/z7_bigscreen_killua.webp?v=3808654b",23],["assets/z7_bigscreen_pika.webp?v=373f4b38",23],["assets/z7_bigscreen_levi.webp?v=c49d5652",23],["assets/z7_bigscreen_goku.webp?v=ceb17cdd",23]],"trans":["assets/z7_bigscreen_static.webp?v=385e02c3",3,12]}};
   const ADF = {}, ADC = {};
   for (const c of comps) {
     const a = ADS[c.userData.name]; if (!a) continue;
