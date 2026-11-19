@@ -11298,6 +11298,115 @@
     else if (W.st === 'turn' || W.st === 'back') { e33Flare(1.6); W.hold = Math.min(W.hold, W.t + 0.5); }
     W.gom = true;
   });
+  // ---- the far crossing (tools/crossing_walker.py): now and then a passer-by crosses the street's end on the zebra crossing
+  // past 止まれ, in front of the railing and the city's lights: a salaryman on his way home, a belted beige trench coat, a
+  // black umbrella over his head, his briefcase (a sheet painted for him over a walk's pose guide, R28, at the scene's pixels).
+  // He comes along the cross street's near sidewalk from behind one near corner (the oden's block, x 504, or the Center's,
+  // 866-870: BUS.occ, the TranZit's rows, as everything at the junction), steps down the kerb, crosses on the stripes
+  // and up the other kerb, and goes behind the other corner: a straight line on the ground (XWS.path: X, D in metres, 24 m
+  // deep behind the oden's corner to 27.1 m behind the Center's, on the stripes all the way over), his soles on its row (the
+  // street's camera: 959.5 px, the eye 1.41 m; the sidewalks 0.15 m up, the kerb stepped over half a step), 70.9 px tall
+  // (1.72 m where he crosses the street's middle, XWS.dm; the street's figures' K x B). His walk: eight
+  // frames of two steps, each shown for its share of the cycle and the body moved on by its step at each change, the planted
+  // foot on its pixel (no sliding); facing left, mirrored. In front of what is behind him (the bus's lane is farther, its
+  // riders too; z by his depth, as the horde's: the water's sheet under him), behind the corners. His light: his colours as
+  // dark as the far end at 22 h, through the street's night multiply and the red night's grade (nrSprite, as the bus); on the
+  // edges that face them, as their sources are now (the atlas's second layer: their shares), the Center's shop light under its
+  // red awning on his right as he nears it (its level: its hours, its night mode, its stutter), the oden's warm orange on his
+  // left near its corner (its hours), the street lamp's from above (the umbrella's top); the lamp's lit air in front of him
+  // (lcCone, added back over him); red in the red night. His reflection in the wet road under him, faint (mirrored at his
+  // soles, darker, by the water's wetness, as the horde's), and a soft contact shade. Rare: every few minutes at most, more
+  // often in the busy evening (NIGHT.busy), never from 2 h to 5 h, never in the power cut (a cut on his way: he fades with the
+  // light), the finale or a closed set; a place of his own (STAGE.spot: nothing else at the junction meanwhile). Reduced
+  // motion: none. ?xwalk in the URL: one 3 s after the page opens ----
+  const XWS = {"cw":53,"ch":90,"ax":22,"ay":88,"n":8,"steps":[[0,0.06,2],[1,0.137,5],[2,0.153,7],[3,0.167,6],[4,0.06,1],[5,0.146,6],[6,0.211,8],[7,0.07,3]],"stride":38,"amb":[0.105,0.095,0.15],"path":[[-5.6,23.93],[8.0,28.01]],"kerb":2.8,"h":70.9,"dm":25.6};   // (tools/crossing_walker.py: his cells (cw x ch, n of them; ax, ay: his torso's column and his soles' row in them), the walk's steps [cell, s, px to the next], his line (X, D m), the kerbs (|X| m), his night colours' ambient, his height)
+  const XW = { on: false, k: 0, ft: 0, hx: 0, dir: 1, fade: 1, out: 0, next: /[?&]xwalk\b/.test(location.search) ? 3 : 70 + Math.random() * 110, m: null, r: null, sh: null, U: null };
+  const XW_AREA = [[494, 572, 878, 716]];                               // (his place, STAGE: the crossing, the corners, his reflection)
+  if (!reduced && XWS.cw) {
+    const tex = crispLate('assets/crossing_walker.webp?v=1', 'xwalk');
+    const U = Object.assign({}, NRU, { map: { value: tex }, tOcc: { value: busOccT }, tCone: { value: lcCone.material.map },
+      uConeK: { get value() { return lcCone.visible ? lcCone.material.opacity : 0; } },
+      tWetM: { value: WET.on ? WET.mesh.material.uniforms.tWet.value : null }, uCell: { value: new THREE.Vector2(0, 0) },
+      uC: { value: new THREE.Vector3() }, uO: { value: new THREE.Vector3() }, uL: { value: new THREE.Vector3() }, uFade: { value: 1 } });
+    const mk = (refl, z) => {
+      const u = Object.assign({}, U, { uRefl: { value: refl ? 1 : 0 }, uFoot: { value: 660 } });
+      const mat = new THREE.ShaderMaterial({ uniforms: u, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+        vertexShader: 'varying vec2 vUv; varying vec2 vP;\nvoid main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vP = vec2(w.x, -w.y); gl_Position = projectionMatrix * viewMatrix * w; }',
+        fragmentShader: NR_HEAD + `
+          uniform sampler2D map, tOcc, tCone, tWetM; uniform vec2 uCell; uniform vec3 uC, uO, uL; uniform float uConeK, uFade, uRefl, uFoot;
+          varying vec2 vUv; varying vec2 vP;
+          void main() {
+            vec2 p = floor(vP) + 0.5, s = uRefl > 0.5 ? vec2(p.x, 2.0 * uFoot - p.y) : p;   // (the reflection: the pixel it mirrors)
+            float ry = (s.y - ${BUS.occ.y0}.0) / ${BUS.occ.L.length}.0;
+            if (ry >= 0.0 && ry <= 1.0) { vec2 lr = texture2D(tOcc, vec2(ry, 0.5)).rg * 255.0 + vec2(400.0, 700.0); if (s.x < lr.x || s.x >= lr.y) discard; }   // (behind a near corner)
+            vec2 q = vec2(uCell.y > 0.5 ? 1.0 - vUv.x : vUv.x, vUv.y);       // (facing left: mirrored)
+            vec4 c = texture2D(map, vec2((uCell.x + q.x) / ${XWS.n}.0, 0.5 + 0.5 * q.y));
+            if (c.a < 0.5) discard;
+            vec3 sh = texture2D(map, vec2((uCell.x + q.x) / ${XWS.n}.0, 0.5 * q.y)).rgb;
+            if (uCell.y > 0.5) sh.rg = sh.gr;                              // (his right and left as seen)
+            vec3 b = nrSprite(c.rgb, p, 0.0);                               // (the street's night, the red night: as the bus)
+            vec3 o = pow(pow(b, vec3(2.2)) * (1.0 + sh.r * uC + sh.g * uO + sh.b * uL), vec3(1.0 / 2.2));
+            float a = uFade;
+            if (uRefl > 0.5) {                                              // (in the wet road: darker, by its wetness, from his soles)
+              vec3 wm = texture2D(tWetM, vec2(p.x / 1456.0, 1.0 - (p.y - 600.0) / 216.0)).rgb;
+              o *= 0.62; a *= 0.75 * clamp(wm.r * 3.0, 0.0, 1.0) * step(600.0, p.y) * (0.55 + 0.45 * wm.b) * smoothstep(0.0, 6.0, p.y - uFoot);
+            } else {                                                        // (the lamp's lit air in front of him)
+              vec2 cu = (p - vec2(${LC.x - AIR.hw}.0, ${LC.top}.0)) / vec2(${2 * AIR.hw}.0, ${LC.foot - LC.top}.0);
+              if (cu.x > 0.0 && cu.y > 0.0 && cu.x < 1.0 && cu.y < 1.0) { vec4 k = texture2D(tCone, vec2(cu.x, 1.0 - cu.y)); vec3 ca = k.rgb * k.a * uConeK; o += mix(ca, uNRhue * dot(ca, NRW) * 1.4, uNR); }
+            }
+            gl_FragColor = vec4(o, a);
+          }` });
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(XWS.cw, XWS.ch), mat); m.visible = false; m.position.z = z; m.frustumCulled = false; scene.add(m);
+      if (WET.on) WET.hide.push(m);                                     // (not in the water's own picture: his reflection is his own)
+      return m;
+    };
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: fogTex, color: 0x000000, transparent: true, depthWrite: false, opacity: 0 }));
+    sh.material.onBeforeCompile = busShade(); sh.material.customProgramCacheKey = () => 'xw-shade';   // (his contact shade: hidden behind the corners too)
+    sh.visible = false; sh.position.z = 1.152; scene.add(sh); if (WET.on) WET.hide.push(sh);
+    Object.assign(XW, { m: mk(false, 1.2 + (50 - XWS.dm) * 0.004), r: WET.on ? mk(true, 1.156) : null, sh, U });
+  }
+  function xwRow(hx) {                                                  // his soles' row at screen column hx (on his line: X, D; the kerb's step)
+    const [[X0, D0], [X1, D1]] = XWS.path, r = (hx - 700) / CF, u = (r * D0 - X0) / ((X1 - X0) - r * (D1 - D0));
+    const X = X0 + (X1 - X0) * u, D = D0 + (D1 - D0) * u, e = Math.max(0, Math.min(1, (Math.abs(X) - XWS.kerb + 0.12) / 0.3));
+    return CHZ + CF * (CEYE - 0.15 * e * e * (3 - 2 * e)) / D;
+  }
+  function xwStart() {
+    const W = XWS, dir = Math.random() < 0.5 ? 1 : -1;                 // (out from behind one corner: his cell whole behind it)
+    Object.assign(XW, { on: true, dir, k: 0, ft: 0, fade: 1, out: 0, hx: dir > 0 ? 503 - (W.cw - W.ax) : 871 + (W.cw - W.ax) });
+    for (const m of [XW.m, XW.r, XW.sh]) if (m) m.visible = true;
+  }
+  function xwOff() { XW.on = false; for (const m of [XW.m, XW.r, XW.sh]) if (m) m.visible = false; STAGE.done('xwalk'); }
+  function stepXW(dt) {
+    if (!XW.m) return;
+    const h = (((CLOCK.h + CLOCK.wake) % 24) + 24) % 24;
+    if (!XW.on) {
+      if (h >= 2 && h < 5) return;                                      // (the small hours: nobody)
+      XW.next -= dt * (0.45 + 0.8 * NIGHT.busy) * ((h >= 0.5 && h < 2) || (h >= 5 && h < 7) ? 0.5 : 1);
+      if (XW.next > 0) return;
+      if (!LATE.ready.xwalk || !visible || document.hidden || PW.on || FINS.t >= 0 || STAGE.holds.size || !STAGE.spot('xwalk', 18, { area: XW_AREA })) { XW.next = 5 + Math.random() * 6; return; }
+      xwStart(); XW.next = 150 + Math.random() * 150;
+    }
+    const W = XWS, S = W.steps;
+    if (PW.on || XW.out) { XW.out = 1; XW.fade -= dt / 0.6; if (XW.fade <= 0) { xwOff(); return; } }   // (the light gone, or giving way: he fades with it)
+    XW.ft += dt;
+    while (XW.ft >= S[XW.k][1]) { XW.ft -= S[XW.k][1]; XW.hx += XW.dir * S[XW.k][2]; XW.k = (XW.k + 1) % W.n; }   // (the next frame: the body on by its step)
+    if (XW.dir > 0 ? XW.hx - W.ax >= 871 : XW.hx + W.ax <= 503) { xwOff(); return; }   // (behind the other corner)
+    const mir = XW.dir < 0, left = mir ? XW.hx - (W.cw - W.ax) : XW.hx - W.ax, foot = Math.round(xwRow(XW.hx)), top = foot - W.ay;
+    for (const m of [XW.m, XW.r]) if (m) { m.material.uniforms.uCell.value.set(XW.k, mir ? 1 : 0); m.material.uniforms.uFoot.value = foot; }
+    XW.m.position.set(left + W.cw / 2, -(top + W.ch / 2), XW.m.position.z);
+    if (XW.r) { XW.r.scale.y = -1; XW.r.position.set(left + W.cw / 2, -(2 * foot - (top + W.ch / 2)), 1.156); }
+    XW.sh.scale.set(0.55 * SOL.k * CF / XWS.dm, 4, 1); XW.sh.position.set(XW.hx + XW.dir, -(foot + 0.5), 1.152); XW.sh.material.opacity = 0.42 * XW.fade;   // (his feet's spread)
+    // the lights on him now: the Center's (its shop's level under the red awning: nearer, more), the oden's (its hours), the lamp's;
+    // linear, over his night colours; red in the red night (the lights' hue, their luminance a little down)
+    const nr = NRU.uNR.value, x = XW.hx, shop = busShop ? busShop.material.opacity : 1, lamp = lampComp ? lampComp.material.opacity : 1;
+    const kC = Math.exp(-Math.max(0, 866 - x) / 55) * shop, kO = Math.exp(-Math.max(0, x - 504) / 45) * openK('oden'), kL = 0.7 * lamp;
+    const H = NRU.uNRhue.value, red = (v, r, g, b) => { const l = (0.2126 * r + 0.7152 * g + 0.0722 * b) * 1.6;
+      return v.set(r + (H.x * l - r) * nr, g + (H.y * l - g) * nr, b + (H.z * l - b) * nr).multiplyScalar(1 - 0.25 * nr); };
+    red(XW.U.uC.value, 7.0 * kC, 3.0 * kC, 1.9 * kC); red(XW.U.uO.value, 4.2 * kO, 1.4 * kO, 0.8 * kO); red(XW.U.uL.value, 0.9 * kL, 0.8 * kL, 0.65 * kL);
+    XW.U.uFade.value = XW.fade;
+  }
+  FEAT.push(stepXW);
+  STAGE.onYield('xwalk', () => { if (XW.on) XW.out = 1; });             // (a called event wants the junction: he fades)
   // the rain on the banner runs down the cloth and drips from its lowest points, its tip and a tatter (zone 9's trickles: its pent
   // roof's channels either side; none from the roof where the banner hangs over it): two trickles of their own, thinner, the
   // bead running down the cloth before it lets go
