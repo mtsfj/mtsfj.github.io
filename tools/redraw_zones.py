@@ -501,6 +501,12 @@ ZONES = {
     # small framed picture, the top of a bookcase), laid in the painting's two panes, lit by its ceiling lamp and, late, by
     # a small lamp alone (tools/ctop_room.py); the layers as they are (the dark pane as painted); last: over winC
     'ctop': dict(box=(1075, 124, 1111, 254), tool='ctop_room'),
+    # the middle storey's window of the narrow plastered building right of the cherry (window_depth's B_LOW, behind the
+    # small balcony; dark at every hour, two flat violet slabs), lived in: someone watches television there in the evening
+    # and late; its light a comp (assets/win_b_mid.webp, street.js a 'tv' on its hours), the room the image model painted in
+    # the street, seen from the pavement below (its ceiling, the top of its far wall and a shelf, a curtain drawn back), in
+    # the screen's cool light, laid in the painting's two panes (tools/bmid_tv.py); the layers as they are; last: over winB
+    'bmid': dict(box=(960, 366, 1008, 490), tool='bmid_tv'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

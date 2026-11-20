@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=142", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=142", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=5", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -280,7 +280,8 @@
   // the bay, its monitor alive (BAY, below); the one over the dojo, tools/dojo_window.py; the top storey right of the pole, win_c_top, its small lamp late (CTOP); Naruto's two on his end wall have their own block, NWIN), zone 9's paper lantern ('lantern', breathing),
   // the roji's emergency exit sign by the Center (z5_alley, tools/roji_alley.py: a 'tube' on its hours 'exit', lit all day and
   // all night, steady, never a flicker; in the power cut on its battery, dimmer, in the layer), the dagashi-ya's lit sign box
-  // over its window (z7_dagsign, tools/dagashi_sign.py: a 'sign' on the shop's hours, breathing; its box unlit in the layers)
+  // over its window (z7_dagsign, tools/dagashi_sign.py: a 'sign' on the shop's hours, breathing; its box unlit in the layers),
+  // B's middle storey behind its small balcony (win_b_mid, tools/bmid_tv.py: a 'tv' on its hours 'tvB', a television's light)
   // a light's own life: a slow, faint drift of its level (two slow waves at its own rates and phases, from its seed: no
   // two lights in step), between 1 - a and 1
   function lightLife(t, s, a) {
@@ -290,7 +291,7 @@
   // a light's stutter on the clock, not a coin flipped each frame: true with probability p in each slot of `step` seconds (a hash
   // of its seed and the slot), so it reads the same at 60 and 144 Hz (lumieres-02)
   function stutOn(t, seed, step, p) { const x = Math.sin(seed * 12.9898 + Math.floor(t / step) * 78.233) * 43758.5453; return x - Math.floor(x) < p; }
-  const COMP_KIND = { win_z1_warm: 'naru', win_dojo: 'home', win_z7_shop: 'shop', win_b_shop: 'shop', z7_vending: 'vend', z7_adscreen: 'ad', z7_bigscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube', z7_dagsign: 'sign', win_c_top: 'home' };
+  const COMP_KIND = { win_z1_warm: 'naru', win_dojo: 'home', win_z7_shop: 'shop', win_b_shop: 'shop', z7_vending: 'vend', z7_adscreen: 'ad', z7_bigscreen: 'ad', win_z7_up: 'home', win_z9_window: 'home', win_z9_lantern: 'lantern', z5_spill: 'study', z5_alley: 'tube', z7_dagsign: 'sign', win_c_top: 'home', win_b_mid: 'tv' };
   for (const [name, c] of Object.entries(ASSETS.comps)) {
     const p = plane(c.src, c.x, c.y, c.w, c.h, name.startsWith('win_z9') || name.startsWith('z5_') || name === 'win_z4_shop' || name === 'win_b_shop' ? 0.6 : 1.1);   // (zones 9's and 5's, and the Center's shop: behind the bus, its crew and the far horde (the shop's light on the far sidewalk; its window is beyond the corner, where they never are))
     const kind = COMP_KIND[name] || (name.startsWith('win') ? 'window' : name === 'lamp' ? 'lamp' : 'neon');
@@ -454,6 +455,11 @@
     if (f === CTOP.f || (CTOP.f >= 0 && f === 0 && c.material.opacity > 0.02)) return;
     CTOP.f = f; c.material.map.offset.x = f / 2;
   }
+  // ---- the middle storey's window of the narrow building right of the cherry, behind its small balcony (win_b_mid, a 'tv' on
+  // its hours, NSCHED: from about 20 h to past midnight, each night its own; tools/bmid_tv.py): one picture of its room as the
+  // street sees it from below (its ceiling, the far wall's top, a curtain drawn back), lit by a television out of sight; its
+  // level and its tint jump from shot to shot: the picture's own cool white, bluer, now and then warmer ----
+  const TV_TONE = [[1, 1, 1], [0.82, 0.92, 1], [1.22, 1.04, 0.8]];
   // the ad screens of the drinks corner (tools/soda_corner.py writes ADS): the side panel's frames side by side in its comp,
   // played at their fps (without one: a picture every 6 s, its two frames alternating); the giant screen's clips, each its
   // own sheet, fetched when it is next, each played `loops` times, in a random order never the same twice running, a few
@@ -9965,8 +9971,8 @@
   // vending machines and the street lamp stay on. At 0:55-1:25 the last train crosses the valley, once. The finale's dawn
   // (CLOCK.push): most lights out, the rain thinning. Hours as the visitor's local ones (past midnight as 24+) ----
   const NHOURS = { center: [0, 24], dagashi: [8.5, 21.5], emblem: [0, 24], lantern9: [8.5, 24.5], ramen: [8.5, 26], exit: [0, 24], bshop: [8.5, 24],   // (the Center, the roji's exit sign: never shut)
-    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25], screen: [8.5, 25] };   // (screen: the drinks corner's giant screen)
-  const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', z7_dagsign: 'dagashi', z4_emblem: 'emblem', win_z9_lantern: 'lantern9', z5_alley: 'exit', win_b_shop: 'bshop' };
+    dojo: [8.5, 22], study: [7.5, 27], farSigns: [8.5, 25], oden: [8.5, 25], arcade: [8.5, 25], balcony: [8.5, 25], screen: [8.5, 25], tvB: [19.75 + Math.random() * 0.75, 24.75 + Math.random()] };   // (screen: the drinks corner's giant screen; tvB: B's television, each night its own hours)
+  const NSCHED = { win_z4_shop: 'center', win_z7_shop: 'dagashi', z7_dagsign: 'dagashi', z4_emblem: 'emblem', win_z9_lantern: 'lantern9', z5_alley: 'exit', win_b_shop: 'bshop', win_b_mid: 'tvB' };
   const NHOME = [[0, 1], [10, 1], [11, 0.9], [12, 0.75], [13, 0.52], [14, 0.32], [15, 0.2], [16, 0.13], [17, 0.15], [18, 0.3], [19, 0.55], [20.5, 1], [24, 1]];   // [hours since noon, the share of homes that may be lit]
   const NCARS = [[0, 1], [10, 1], [12, 0.6], [14, 0.3], [16, 0.25], [18, 0.6], [20.5, 1], [24, 1]];                                             // the far road's cars
   const NIGHT = { home: 1, busy: 0, farX: 0, cars: 1, signs: 1, rain: 1, snap: false, init: false };
@@ -10377,18 +10383,23 @@
       else if (u.kind === 'naru') c.material.opacity = WIN2.I[0];   // the narrow building's tall window: Naruto's room (its ceiling, all the street sees of it), lit with his balcony (the pane nearest it)
       else if (u.kind === 'lantern') // the paper lantern breathes, slowly, as the far city's do
         c.material.opacity = 0.955 + 0.045 * Math.sin(t * u.w + u.seed) * (0.7 + 0.3 * Math.sin(t * 0.37 + u.seed * 2));
-      else if (u.kind === 'tv') {  // a television in the dark room behind the blinds: its light jumps from shot to shot,
-        // shimmers a little, cools and warms with the picture; now and then it is switched off a while
-        u.next -= dt;
-        if (u.next < 0) {
-          if (!u.on) { if (nightLit(u)) { u.on = true; u.next = 0.4; } else u.next = 10 + Math.random() * 30; }   // (not at bedtime)
-          else if (!nightLit(u) || Math.random() < 0.03) { u.on = false; u.next = 25 + Math.random() * 50; }
-          else { u.lvl = 0.5 + Math.random() * 0.5; u.cool = Math.random() < 0.35; u.next = 0.6 + Math.random() * 3.4; }
+      else if (u.kind === 'tv') {  // a television in a dark room (B's middle storey, win_b_mid, tools/bmid_tv.py: its ceiling and
+        // curtain in the screen's cool light, on its hours NSCHED): its light jumps from shot to shot, shimmers a little, cools
+        // and, now and then, warms with the picture; once in a long while it is switched off a moment. Under reduced motion
+        // steady, on through its hours
+        if (reduced) { u.on = nightLit(u); c.material.opacity = u.on ? 0.8 : 0; c.material.color.setRGB(1, 1, 1); }
+        else {
+          u.next -= dt;
+          if (u.next < 0) {
+            if (!u.on) { if (nightLit(u)) { u.on = true; u.next = 0.4; } else u.next = 10 + Math.random() * 30; }   // (not at bedtime)
+            else if (!nightLit(u) || Math.random() < 0.006) { u.on = false; u.next = 20 + Math.random() * 40; }
+            else { const r = Math.random(); u.lvl = Math.random() < 0.22 ? 0.32 + Math.random() * 0.16 : 0.62 + Math.random() * 0.38; u.tone = r < 0.3 ? 1 : r < 0.85 ? 0 : 2; u.next = 0.6 + Math.random() * 3.4; }   // (a dark scene now and then, else a bright one)
+          }
+          const tgt = u.on ? (u.lvl || 0.8) * (0.965 + 0.035 * Math.sin(t * 29 + u.seed) * Math.sin(t * 7.3)) : 0;
+          c.material.opacity += (tgt - c.material.opacity) * Math.min(1, dt * 14);
+          const col = c.material.color, kc = Math.min(1, dt * 10), T = TV_TONE[u.tone || 0];   // (the picture's own cool white, bluer, warmer)
+          col.setRGB(col.r + (T[0] - col.r) * kc, col.g + (T[1] - col.g) * kc, col.b + (T[2] - col.b) * kc);
         }
-        const tgt = u.on ? (u.lvl || 0.8) * (0.965 + 0.035 * Math.sin(t * 29 + u.seed) * Math.sin(t * 7.3)) : 0;
-        c.material.opacity += (tgt - c.material.opacity) * Math.min(1, dt * 14);
-        const col = c.material.color, kc = Math.min(1, dt * 10);
-        col.setRGB(col.r + ((u.cool ? 0.8 : 1) - col.r) * kc, col.g + ((u.cool ? 0.9 : 0.97) - col.g) * kc, 1);
       } else { // windows: someone turns the light off, then on again a while later: minutes, as a room is lived in (on 4-15 min, off
         // 1-6 min); the Center's shop: open through its
         // hours, all its lights at once (catching with a stutter), no closing in between
