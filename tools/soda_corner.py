@@ -688,8 +688,8 @@ def screen_frame(uvg, box, pic, ss=3, pal=None):
 # The giant screen plays short anime cuts in a random order (never the same twice running), a few frames of static
 # between (the owner, then: "plus de framerate, plus fluide et propre, proche des vrais animes en termes de fidélité
 # d'environnement ... remplace Totoro par Levi de SNK"; a sixth since, Goku's Kamehameha in Dragon Ball Z's wasteland, its
-# sheet and prompt asked by ask_clip): each cut eight (or twelve) consecutive keyframes drawn by the
-# image API in the anime's own look, the character on model in their world (tools/src/screen2_<name>.webp, a sheet of 3:1
+# sheet and prompt asked by ask_clip, laid over one landscape by CLIP_STEADY): each cut eight (or twelve) consecutive
+# keyframes drawn by the image API in the anime's own look, the character on model in their world (tools/src/screen2_<name>.webp, a sheet of 3:1
 # panels, SCREEN_CLIPS: its grid; a sheet of 2:1 panels its sides carried out to 3:1, 'pad'; the prompts in
 # tools/src/soda_prompts.txt), played smooth here: each keyframe held CLIP_HOLD frames, an in-between to the next, the
 # whole cut pushing in slowly (CLIP_PUSH), one palette for the whole cut so nothing flickers, at CLIP_FPS. To change what
@@ -717,20 +717,29 @@ def ask_clip(name, redo=None):
     """Asks the image API for a cut's sheet (python3 tools/soda_corner.py --ask-clip NAME [PANEL]): its prompt
     tools/src/edits/screen2_NAME_prompt.txt; the answer saved as tools/src/screen2_NAME.webp (lossless), as SCREEN_CLIPS
     reads it. With PANEL (1-8): that one keyframe redrawn in the sheet already there (its prompt
-    screen2_NAME_redo_prompt.txt, the sheet given as the image)."""
+    screen2_NAME_redo_prompt.txt, the sheet given as the image; the answer screen2_NAME_redo.webp, its panel taken by
+    CLIP_STEADY's 'redo'). With 'plate': the cut's first keyframe twice, one over the other, the lower one asked without
+    the character (its prompt screen2_NAME_plate_prompt.txt, the input kept as tools/src/edits/screen2_NAME_plate_in.webp,
+    the answer screen2_NAME_plate.webp): the landscape behind him, for the shared background (steady_keys)."""
     import base64, io, urllib.request
     k = os.environ.get('OPENROUTER_API_KEY') or open(os.path.expanduser('~/.config/openrouter/key')).read().strip()
     out = os.path.join(SRC, 'screen2_%s.webp' % name)
+    tag = '' if not redo else ('_plate' if redo == 'plate' else '_redo')
     body = {'model': 'openai/gpt-5.4-image-2', 'aspect_ratio': '3:2', 'quality': 'high', 'n': 1, 'output_format': 'png',
-            'prompt': open(os.path.join(EDITS, 'screen2_%s%s_prompt.txt' % (name, '_redo' if redo else ''))).read().strip()}
+            'prompt': open(os.path.join(EDITS, 'screen2_%s%s_prompt.txt' % (name, tag))).read().strip()}
     if redo:
-        buf = io.BytesIO(); Image.open(out).convert('RGB').save(buf, 'PNG')
+        src = Image.open(out).convert('RGB')
+        if redo == 'plate':                    # (its first panel at 3:1, twice)
+            p = grid_panels(out, *dict((n_, g_) for n_, _, g_, _ in SCREEN_CLIPS)[name])[0].resize((1536, 512), Image.LANCZOS)
+            src = Image.new('RGB', (1536, 1024)); src.paste(p, (0, 0)); src.paste(p, (0, 512))
+            src.save(os.path.join(EDITS, 'screen2_%s_plate_in.webp' % name), 'WEBP', lossless=True, quality=100, method=6)
+        buf = io.BytesIO(); src.save(buf, 'PNG')
         body['input_references'] = [{'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + base64.b64encode(buf.getvalue()).decode()}}]
     req = urllib.request.Request('https://openrouter.ai/api/v1/images', data=json.dumps(body).encode(),
                                  headers={'Authorization': 'Bearer ' + k, 'Content-Type': 'application/json'})
     d = json.loads(urllib.request.urlopen(req, timeout=900).read())
     im = Image.open(io.BytesIO(base64.b64decode(d['data'][0]['b64_json']))).convert('RGB')
-    im.save(out if not redo else out.replace('.webp', '_redo.webp'), 'WEBP', lossless=True, quality=100, method=6)
+    im.save(out.replace('.webp', tag + '.webp'), 'WEBP', lossless=True, quality=100, method=6)
     print(name, im.size, 'cost', d.get('usage', {}).get('cost'), '$')
 
 
@@ -803,10 +812,138 @@ def clip_keys(file, grid, fit):
     return keys
 
 
+# ---------------------------------------------------------------- a cut over one landscape (the owner, on Goku's: its
+# end cut to another shot, its wasteland shifting between keyframes): CLIP_STEADY lays a cut's figure and its light over
+# one background plate, so the landscape never moves and the figure stays planted. plate: the landscape alone, asked of
+# the image API from the cut's first keyframe (ask_clip NAME plate: its lower half); redo: keyframes taken from a sheet
+# redrawn by the API instead (ask_clip NAME PANEL); keys: for each keyframe (480 x 160, its own pixels): bg, its landscape
+# registered on the plate (a scale about the frame's centre and a move: the keyframe scaled by s, moved by d, matches the
+# plate; measured on the edges round the figure), or None where the API redrew the landscape (the beam's two keyframes:
+# the plate matched there by its tones only); fig, where the figure goes in the plate (the same kind of move: his legs
+# registered on the first keyframe's, then all of them set where the second keyframe has him, the middle of his places);
+# box, where the figure is (minus not); halo, how far round him his aura reaches (px: whole, then gone); glow: the light
+# he sheds on the sky and the ground round him carried too; beam, air, dust, steam, spark: where the beam, the wind's
+# streaks and the flying stones, the dust at his feet, the steam off his palms, the beam's last sparkles are.
+CLIP_STEADY = {'goku': dict(
+    plate='screen2_goku_plate.webp', redo=('screen2_goku_redo.webp', (8,)),
+    keys={1: dict(bg=(1.0, 0.0, 0.0), fig=(0.976, -26.32, 1.98), box=(55, 0, 245, 158), halo=(2, 5)),
+          2: dict(bg=(0.9925, 1.14, -0.66), fig=(1.0, 0.0, 0.0), box=(20, 0, 245, 158), halo=(28, 48)),
+          3: dict(bg=(0.9925, 1.65, -0.80), fig=(1.02, -18.27, -1.66), box=(30, 0, 252, 160), halo=(28, 48)),
+          4: dict(bg=(1.0075, 1.09, -0.96), fig=(0.995, -1.04, -0.17), box=(0, 0, 300, 160), halo=(28, 48), glow=1),
+          5: dict(bg=(1.045, -2.00, 1.92), fig=(1.015, -20.22, 5.0), box=(0, 0, 312, 160), halo=(28, 48), glow=1),
+          6: dict(bg=None, fig=(1.029, 30.97, 3.69), box=(15, 0, 178, 152), sky=72, beam=(160, 24, 480, 86), air=(0, 0, 140, 100)),
+          7: dict(bg=None, fig=(1.029, 23.76, 13.98), box=(15, 0, 170, 150), sky=66, beam=(140, 12, 480, 80), air=(0, 0, 165, 100),
+                  dust=(0, 92, 205, 160)),
+          8: dict(bg=(0.99, -3.94, 1.81), fig=(1.029, 22.73, -2.49), box=(10, 0, 182, 158), not_=(0, 0, 52, 108),
+                  halo=(2, 5), steam=(150, 30, 205, 82), spark=(190, 6, 480, 80))})}
+
+
+def steady_keys(name, keys):
+    """A cut's keyframes (480 x 160) as CLIP_STEADY lays them: each one's figure and light (its matte: where it leaves
+    the plate brought to its light, or, where its landscape was redrawn, the figure's colours, the beam's and the
+    streaks' light over the sky, the dust's over the ground) moved to his place, over the plate in that keyframe's light
+    (each channel's tones carried to the keyframe's own over the landscape round him)."""
+    from scipy.ndimage import (map_coordinates, binary_closing, binary_opening, binary_fill_holes, binary_erosion, label,
+                               median_filter, distance_transform_edt)
+    S_ = CLIP_STEADY[name]; H, W = 160, 480
+    YY, XX = np.mgrid[0:H, 0:W].astype(float)
+    A = lambda im: np.asarray(im.convert('RGB')).astype(float)
+    K = [A(k) for k in keys]
+    rf, nums = S_['redo']
+    for n_ in nums: K[n_ - 1] = A(clip_keys(rf, (4, 2), None)[n_ - 1])
+    pl = Image.open(os.path.join(SRC, S_['plate'])).convert('RGB')
+    C = A(pl.crop((0, pl.height // 2, pl.width, pl.height)).resize((W, H), Image.LANCZOS))
+
+    def warp(a, t, mode='nearest'):          # (a scaled by s about the centre, then moved by d)
+        s, dx, dy = t; xs = W / 2 + (XX - W / 2 - dx) / s; ys = H / 2 + (YY - H / 2 - dy) / s
+        return np.dstack([map_coordinates(a[..., c], [ys, xs], order=1, mode=mode) for c in range(a.shape[2])])
+    inv = lambda t: (1 / t[0], -t[1] / t[0], -t[2] / t[0])
+    sm = lambda x, a, b: (lambda t_: t_ * t_ * (3 - 2 * t_))(np.clip((x - a) / (b - a), 0, 1))
+    lum = lambda a: a @ np.array([0.299, 0.587, 0.114])
+
+    def box(*bs):
+        m = np.zeros((H, W), bool)
+        for b in bs:
+            if b: m[b[1]:b[3], b[0]:b[2]] = True
+        return m
+
+    def main(m):                             # (the biggest blob and what touches it, its holes filled)
+        lab, n = label(m)
+        if not n: return m
+        sz = np.bincount(lab.ravel()); sz[0] = 0
+        return binary_fill_holes(np.isin(lab, np.unique(lab[binary_dilation(lab == sz.argmax(), iterations=2) & (lab > 0)])))
+
+    def lmd(a, b):                           # (the nearest colour of b within a pixel, per pixel)
+        return np.min([np.sqrt(((a - np.roll(b, (dy, dx), (0, 1))) ** 2).sum(2)) for dy in (-1, 0, 1) for dx in (-1, 0, 1)], 0)
+
+    def tones(P, Kk, m):                     # (each channel's tones of P carried to Kk's, over m)
+        q = np.linspace(0, 100, 41)
+        return lambda X: np.dstack([np.interp(X[..., c], np.percentile(P[..., c][m], q), np.percentile(Kk[..., c][m], q)) for c in range(3)])
+    # the figure's colours (a histogram's odds): his pixels in the first keyframe and the redrawn last, the landscape's
+    # round him and in the beam's light
+    cfg = S_['keys']; B_ = 16
+    idx = lambda a: (lambda q: q[..., 0] * B_ * B_ + q[..., 1] * B_ + q[..., 2])(np.clip((a / 256 * B_).astype(int), 0, B_ - 1))
+    fg = np.zeros(B_ ** 3); bgh = np.zeros(B_ ** 3)
+    for k in (1, 8):
+        c = cfg[k]; Pk = warp(C, inv(c['bg'])); D = lmd(K[k - 1], Pk)
+        f = binary_erosion(binary_fill_holes(binary_closing((D > 60) & box(c['box']) & ~box(c.get('not_')), iterations=2)))
+        fg += np.bincount(idx(K[k - 1])[f], minlength=B_ ** 3); bgh += np.bincount(idx(K[k - 1])[(D < 25) | ~box(c['box'])], minlength=B_ ** 3)
+    for k, b in ((6, (240, 84, 480, 160)), (7, (240, 72, 480, 160)), (6, (60, 0, 90, 12)), (7, (240, 150, 480, 160))):
+        bgh += 3 * np.bincount(idx(K[k - 1])[box(b)], minlength=B_ ** 3)
+    fg = gaussian_filter(fg.reshape((B_,) * 3), 0.7).ravel() / fg.sum(); bgh = gaussian_filter(bgh.reshape((B_,) * 3), 0.7).ravel() / bgh.sum()
+    odds = fg / (fg + bgh + 1e-9)
+    # the plate's sky alone (its mesas and ground the sky of their row): what the beam's light is measured over
+    sky = (C[..., 2] > C[..., 0] + 60) & (C[..., 2] > 150); Sk = C.copy()
+    for y in range(H): Sk[y, ~sky[y]] = np.median(C[y][sky[y]], 0) if sky[y].sum() > 20 else Sk[y - 1, ~sky[y]].mean(0)
+    Sk = gaussian_filter(Sk, (2, 6, 0))
+    out = []
+    for k in range(1, len(K) + 1):
+        c = cfg[k]; Kk = K[k - 1]; reg = c['bg'] or (1.0, 0.0, 0.0)
+        Pk = warp(C, inv(reg)); Sky = warp(Sk, inv(reg))
+        parts = [c[n_] for n_ in ('beam', 'air', 'dust', 'steam', 'spark') if n_ in c]
+        far = ~binary_dilation(box(c['box'], *parts), iterations=3) & (XX > 4) & (XX < W - 5)
+        tn = tones(Pk, Kk, far); PG = tn(Pk); SG = tn(Sky)
+        od = odds[idx(Kk)] > (0.6 if c['bg'] else 0.45)
+        if not c['bg']:                      # (and, over his sky, whatever leaves it: his arms, his face in the beam's light)
+            od |= (np.sqrt(((Kk - SG) ** 2).sum(2)) > 45) & (YY < c['sky'])
+        core = main(binary_closing(od & box(c['box']) & ~box(c.get('not_')), iterations=1))
+        glow = np.zeros((H, W, 3))
+        if c['bg']:
+            D = lmd(Kk, PG)
+            core = main(core | (binary_closing(D > 45, iterations=2) & box(c['box']) & ~box(c.get('not_'))))
+            near = 1 - sm(distance_transform_edt(~core), *c['halo'])
+            a = np.maximum(sm(D, 28, 56) * box(c['box']) * near, sm(D, 28, 56) * box(c.get('steam')))
+            if c.get('glow'):                # (the light he sheds, round his aura)
+                glow = np.clip(gaussian_filter(Kk, (3, 3, 0)) - gaussian_filter(PG, (3, 3, 0)), 0, None) * \
+                    (1 - sm(distance_transform_edt(~core), c['halo'][0] + 20, c['halo'][1] + 50))[..., None]
+            if 'spark' in c:                 # (small bright points on the sky)
+                lk = lum(Kk); md = median_filter(lk, 9)
+                sp = (lk - md > 40) & (md < 150) & (Kk[..., 2] > 200) & box(c['spark']) & (warp(sky[..., None].astype(float), inv(reg))[..., 0] > 0.5)
+                lab, n = label(binary_dilation(sp)); sz = np.bincount(lab.ravel()); sz[0] = 0
+                a = np.maximum(a, np.clip(gaussian_filter(np.isin(lab, np.nonzero((sz > 0) & (sz < 30))[0]).astype(float), 0.6) * 1.6, 0, 1))
+        else:
+            ex = lum(Kk) - lum(SG); air = box(c['air']) & (YY < 118) & ~binary_dilation(core)
+            a = np.maximum(core.astype(float), sm(ex, 14, 70) * box(c['beam']))
+            a = np.maximum(a, sm(ex, 22, 70) * (binary_opening(ex > 22) & air))
+            lab, n = label((-ex > 50) & air & (YY < 95)); sz = np.bincount(lab.ravel()); sz[0] = 0
+            a = np.maximum(a, np.isin(lab, np.nonzero((sz > 2) & (sz < 40))[0]))      # (the stones flying)
+            if 'dust' in c:
+                ed = lum(Kk) - lum(PG)
+                a = np.maximum(a, sm(ed, 35, 80) * binary_dilation(binary_opening(ed > 35, iterations=2) & box(c['dust'])))
+        a = np.maximum(np.clip(gaussian_filter(np.clip(a, 0, 1), 0.5), 0, 1), binary_erosion(core))
+        a *= np.clip(np.minimum(np.minimum(XX, W - 1 - XX), H - 1 - YY) / 10.0, 0, 1)    # (his frame's edges let go)
+        lay = warp(np.dstack([Kk * a[..., None], a, glow * (1 - a[..., None])]), c['fig'], mode='constant')
+        aw = np.clip(lay[..., 3:4], 0, 1)
+        out.append(Image.fromarray(np.clip(tn(C) * (1 - aw) + lay[..., :3] + lay[..., 4:], 0, 255).astype(np.uint8)))
+    return out
+
+
 def clip_pictures(name, file, grid, fit):
-    """A cut's pictures (480 x 160): its keyframes in order, each held CLIP_HOLD frames, an in-between (the two mixed)
-    before the next, the whole cut pushing in slowly (CLIP_PUSH); and its palette (CLIP_COLORS, from its keyframes)."""
+    """A cut's pictures (480 x 160): its keyframes in order (over one landscape where CLIP_STEADY says), each held
+    CLIP_HOLD frames, an in-between (the two mixed) before the next, the whole cut pushing in slowly (CLIP_PUSH); and its
+    palette (CLIP_COLORS, from its keyframes)."""
     keys = clip_keys(file, grid, fit)
+    if name in CLIP_STEADY: keys = steady_keys(name, keys)
     seq = []
     for i, k in enumerate(keys):
         seq += [k] * CLIP_HOLD
