@@ -81,6 +81,9 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'cwall_{_tag}.webp', 868, 480))   # (the Pokemon Center's front wall: tools/center_wall.py)
+# the far zebra crossing, worn thermoplastic on the wet road (tools/zebra_crossing.py, by tools/redraw_zones.py's zone zebra)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'zebra_{_tag}.webp', 600, 658))
 
 
 def main():

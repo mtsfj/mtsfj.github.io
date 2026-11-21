@@ -513,6 +513,12 @@ ZONES = {
     # (win_z4_shop, as tools/facade_foot.py leaves it), the layers off (tools/center_wall.py); last: over pokeball, alley,
     # hallBwalk and footB, whose boxes it overlaps
     'cwall': dict(box=(868, 480, 908, 670), tool='center_wall'),
+    # the far zebra crossing past 止まれ's stop line (at 22 h five flat pink-white blocks, the brightest things on the road:
+    # stickers): five stripes of worn thermoplastic, 45 cm wide and 45 cm apart, on the ground plane in the street's camera,
+    # the asphalt showing through in the wheel paths, the paint the painter's in each layer and in the ground lights that
+    # fall on it, the puddles drained into the gaps and a wet sheen on the paint (tools/zebra_crossing.py); last: footO's
+    # box reaches it, unchanged there (its before copies are footO's there)
+    'zebra': dict(box=(600, 658, 800, 680), tool='zebra_crossing'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

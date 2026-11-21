@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=143", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=144", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=143') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=144') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4393,7 +4393,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=125', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=126', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -8698,7 +8698,7 @@
     const tex = (src) => { const tx = loader.load(src, () => { if (++WET.loaded === 2 && reduced) frame(); }); tx.magFilter = tx.minFilter = THREE.NearestFilter; tx.generateMipmaps = false; return tx; };
     WET.rt = new THREE.WebGLRenderTarget(16, 16, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, stencilBuffer: false });
     const mat = new THREE.ShaderMaterial({
-      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=34') }, tMirror: { value: tex('assets/wet_mirror.webp?v=26') },
+      uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=35') }, tMirror: { value: tex('assets/wet_mirror.webp?v=26') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
         tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
@@ -8744,12 +8744,12 @@
   // place (the old faint lamp_pool plane retired); in the red night it keeps half its light, as its glass ----
   const GL = { list: [
     { src: 'lamp', url: 'assets/gl_lamp.webp?v=11', box: [296, 720, 1060, 96], comp: 'lamp' },   // 33.0 % of the ground's light, +47 at most
-    { src: 'oden', url: 'assets/gl_oden.webp?v=9', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
+    { src: 'oden', url: 'assets/gl_oden.webp?v=10', box: [118, 644, 1050, 172], place: 'oden', x: 450 },   // 27.7 % of the ground's light, +140 at most
     { src: 'z7_vending', url: 'assets/gl_z7_vending.webp?v=3', box: [232, 700, 759, 89], comp: 'z7_vending' },   // 16.0 % of the ground's light, +65 at most
-    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=6', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
+    { src: 'win_z4_shop', url: 'assets/gl_win_z4_shop.webp?v=7', box: [374, 656, 527, 100], comp: 'win_z4_shop' },   // 8.3 % of the ground's light, +135 at most
     { src: 'win_z7_shop', url: 'assets/gl_win_z7_shop.webp?v=4', box: [129, 715, 510, 83], comp: 'win_z7_shop' },   // 7.2 % of the ground's light, +68 at most
-    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=6', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
-    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=6', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
+    { src: 'z4_emblem', url: 'assets/gl_z4_emblem.webp?v=7', box: [178, 657, 841, 118], comp: 'z4_emblem' },   // 2.5 % of the ground's light, +20 at most
+    { src: 'win_z9_lantern', url: 'assets/gl_win_z9_lantern.webp?v=7', box: [156, 636, 750, 143], comp: 'win_z9_lantern' },   // 1.3 % of the ground's light, +71 at most
     { src: 'ramen', url: 'assets/gl_ramen.webp?v=7', box: [370, 716, 986, 60], place: 'ramen', x: 1195 },   // 0.8 % of the ground's light, +16 at most
     { src: 'win_z1_warm', url: 'assets/gl_win_z1_warm.webp?v=8', box: [202, 698, 821, 75], comp: 'win_z1_warm' },   // 0.6 % of the ground's light, +5 at most
     { src: 'dojo', url: 'assets/gl_dojo.webp?v=3', box: [105, 744, 308, 66], place: 'dojo', x: 52 },   // 0.6 % of the ground's light, +14 at most
