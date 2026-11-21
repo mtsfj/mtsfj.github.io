@@ -507,6 +507,12 @@ ZONES = {
     # the street, seen from the pavement below (its ceiling, the top of its far wall and a shelf, a curtain drawn back), in
     # the screen's cool light, laid in the painting's two panes (tools/bmid_tv.py); the layers as they are; last: over winB
     'bmid': dict(box=(960, 366, 1008, 490), tool='bmid_tv'),
+    # the Pokemon Center's front wall (one flat lavender fill at every hour, no material, no light of its own): light
+    # cladding panels on the street's rays, the band's edge, the base's lit top, the wet starter course, from a draft of the
+    # image model in its context (tools/src/edits/cwall_*); its lamps' and door's light on it in the lit shop's comp
+    # (win_z4_shop, as tools/facade_foot.py leaves it), the layers off (tools/center_wall.py); last: over pokeball, alley,
+    # hallBwalk and footB, whose boxes it overlaps
+    'cwall': dict(box=(868, 480, 908, 670), tool='center_wall'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

@@ -79,6 +79,9 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'greydoor_{_tag}.webp', 566, 572))
 
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'cwall_{_tag}.webp', 868, 480))   # (the Pokemon Center's front wall: tools/center_wall.py)
+
 
 def main():
     for layer, patches in LAYERS.items():
