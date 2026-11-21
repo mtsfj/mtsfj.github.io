@@ -7273,6 +7273,45 @@
     IRNR.m.forEach((m) => { m.visible = vis; m.position.y = -(IRNR.box[1] + IRNR.box[3] / 2) - dy; });
     IRNR.m[1].material.opacity = SHOP.k * pz;                                    // lit from behind, by the kitchen
     IRNR.m[0].material.color.setRGB(0.25 + 0.75 * pz, 0.28 + 0.72 * pz, 0.45 + 0.55 * pz);   // (its lamps' and the street's light: gone with the zone's power, the cut's blue)
+    stepKasa(dt, hk, vis, pz);
+  }
+  // ---- Ichiraku's umbrella stand (kasa-tate): on its hours a glazed Shigaraki stand on the sidewalk just right of its step,
+  // against the plaster under the right lamp, holding the umbrellas of the customers inside, one each: Luffy's clear konbini
+  // one while he eats (the shop's hours), Naruto's navy one when he comes down from his flat (set in as he reaches the door, a
+  // moment before he is seen at the counter; taken a few seconds after he has left the stool, as Luffy's at the closing). Put
+  // out and taken in with the noren. tools/ramen_umbrellas.py drew it (the image model's pieces brought to the street's pixels
+  // at their true scale there, 101 px a metre, graded as the step and the plaster round it): a frame for each set of umbrellas,
+  // two rows (lit; the power cut's, the shop's warm light on its door side gone, the plaster's violet kept, laid over the lit
+  // one at 1 - the zone's power); a frame swapped only when the count changes. Now and then, more after an umbrella was set in
+  // wet, a bead of water runs down the glaze from the rim to the paving (the drips' own particle, lit by the street round it,
+  // its power the street's: red in the red night, none under reduced motion). Graded as the street (the hours, the red night) ----
+  const KST = {"box":[1218,677,53,93],"sheet":[212,186],"frames":["","L","N","LN"],"runs":{"L":[[1240,725,767],[1241,725,767],[1242,725,767]],"N":[[1245,725,767],[1246,725,767],[1247,725,767]]}};
+  const KS = { f: -1, on: { L: false, N: false }, t: { L: 0, N: 0 }, hk0: -1, next: 8 + Math.random() * 20, fresh: 0, graded: false, m: [] };
+  const KS_LEAD = 2.5;                                                         // (Naruto at the door: his umbrella in, s before he sits)
+  if (KST.box) {
+    const ksTex = irTex('assets/ramen_kasa.webp?v=1');
+    KS.m = [0, 1].map((r) => { const m = irMesh(ksTex, KST.box, 0.505 + 0.001 * r, false); m.visible = false; return m; });
+  }
+  function stepKasa(dt, hk, out, pz) {
+    if (!KS.m.length) return;
+    if (!KS.graded) { KS.graded = true; KS.m.forEach((m) => gradeSprite(m.material, 'street')); }
+    const live = KS.hk0 >= 0 && Math.abs(hk - KS.hk0) < 0.05 && !reduced; KS.hk0 = hk;   // (a driven hour, the first frame: at once)
+    const want = { L: !LF.dead && hk > 0.97, N: NRM.st === 'here' || (NRM.st === 'down' && NRM.wait < KS_LEAD) };
+    for (const k of ['L', 'N']) {                                              // in at once as they come; out a few seconds after they go
+      if (want[k] === KS.on[k]) { KS.t[k] = 0; continue; }
+      KS.t[k] += dt;
+      if (!live || want[k] || KS.t[k] > (k === 'L' ? 3.2 : 2.6)) { KS.on[k] = want[k]; KS.t[k] = 0; if (want[k] && live) KS.fresh = 2 + ((Math.random() * 2) | 0); }
+    }
+    const f = (KS.on.L ? 1 : 0) + (KS.on.N ? 2 : 0), [W, H] = KST.sheet, [, , w, h] = KST.box;
+    if (f !== KS.f) { KS.f = f; KS.m.forEach((m, r) => irUV(m, f * w, r * h, w, h, W, H)); if (KS.fresh) KS.next = 1.5 + Math.random() * 3; }
+    KS.m[0].visible = out; KS.m[1].visible = out && pz < 0.996; KS.m[1].material.opacity = 1 - pz;
+    if (!out || !f || reduced) return;
+    if ((KS.next -= dt) < 0) {                                                 // a bead down the glaze, under one of the umbrellas
+      const ks = ['L', 'N'].filter((k) => KS.on[k]), R = KST.runs[ks[(Math.random() * ks.length) | 0]], [x, y0, y1] = R[(Math.random() * R.length) | 0];
+      const ts = 1.4 + Math.random() * 1.4, tf = 0.25 + Math.random() * 0.5, t0 = DRIP2.t, land = y1 + 2;
+      dripPut(DRIP2.pools[0], [x + 0.5, y1 + 0.5, land, 380], [t0, ts, tf, 0], [0, y1 - y0, 1.3 + 0.3 * Math.random(), 8], [0, 1 + ((Math.random() * 3) | 0), 1.6, 0], t0 + ts + tf + 0.3);
+      KS.next = KS.fresh > 0 ? (KS.fresh--, 3 + Math.random() * 6) : (16 + Math.random() * 30) / ks.length;
+    }
   }
 
   // ---- the oden shop across the street (left, x 400-510): its roof light box stutters now and then, the red paper
