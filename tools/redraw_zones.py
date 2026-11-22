@@ -519,6 +519,12 @@ ZONES = {
     # fall on it, the puddles drained into the gaps and a wet sheen on the paint (tools/zebra_crossing.py); last: footO's
     # box reaches it, unchanged there (its before copies are footO's there)
     'zebra': dict(box=(600, 658, 800, 680), tool='zebra_crossing'),
+    # the narrow gap between the dojo and the dagashi-ya (at every hour a flat near-black slab, x 108-131, from under the
+    # tree's leaves to the dojo's step): what the street's camera sees in it, the dagashi-ya's house's end wall face on,
+    # its first 30 cm (the dojo's corner post hides the rest), Kirua's boards (the painter's own, from that wall
+    # upstairs) level, a mortar base course under them, lit only by the street's light through the gap's mouth
+    # (tools/dojo_gap.py); last: over dojo's and dojofoot's boxes, its before copies theirs
+    'dojogap': dict(box=(108, 436, 132, 746), tool='dojo_gap'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

@@ -84,6 +84,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # the far zebra crossing, worn thermoplastic on the wet road (tools/zebra_crossing.py, by tools/redraw_zones.py's zone zebra)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'zebra_{_tag}.webp', 600, 658))
+# the narrow gap between the dojo and the dagashi-ya, its end wall face on (tools/dojo_gap.py, by tools/redraw_zones.py's
+# zone dojogap)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'dojogap_{_tag}.webp', 108, 436))
 
 
 def main():
