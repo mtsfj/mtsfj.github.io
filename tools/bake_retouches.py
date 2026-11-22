@@ -88,6 +88,9 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # zone dojogap)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'dojogap_{_tag}.webp', 108, 436))
+# the grey building's garage shutter at the street's end (tools/grey_shutter.py, by tools/redraw_zones.py's zone gshutter)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'gshutter_{_tag}.webp', 505, 572))
 
 
 def main():

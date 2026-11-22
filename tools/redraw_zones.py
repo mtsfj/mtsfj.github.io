@@ -525,6 +525,13 @@ ZONES = {
     # upstairs) level, a mortar base course under them, lit only by the street's light through the gap's mouth
     # (tools/dojo_gap.py); last: over dojo's and dojofoot's boxes, its before copies theirs
     'dojogap': dict(box=(108, 436, 132, 746), tool='dojo_gap'),
+    # the grey building's garage at the street's end, left of its red door (one flat dark blue block with a faint grid at
+    # every hour): a closed steel roller shutter, its head cover and slot, its guide rails, its slats (7.3 cm: fine level
+    # ribs, a pixel and sub-pixel tone steps) on the sky's light, its bottom bar with its handle and lock on the wet
+    # threshold, a little grime and rust from a draft of the image model in its context (tools/src/edits/gshutter_*), both
+    # layers alike (no lamp reaches it: tools/grey_shutter.py); last: its box reaches oden's and footO's, unchanged there
+    # (its before copies are theirs there)
+    'gshutter': dict(box=(505, 572, 566, 642), tool='grey_shutter'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
