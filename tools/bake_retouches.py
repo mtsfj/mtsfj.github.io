@@ -91,6 +91,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # the grey building's garage shutter at the street's end (tools/grey_shutter.py, by tools/redraw_zones.py's zone gshutter)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'gshutter_{_tag}.webp', 505, 572))
+# Ichiraku's front wall, dark-stained boards either side of its entrance (tools/ichiraku_wall.py, by tools/redraw_zones.py's
+# zone ichiwall); its lamps' light on it the sprite ichiraku_wall_light.webp
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'ichiwall_{_tag}.webp', 1114, 392))
 
 
 def main():

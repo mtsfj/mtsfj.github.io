@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=146", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=147", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=5", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=146') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=147') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4393,7 +4393,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=128', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=129', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7176,7 +7176,7 @@
   function IRneon(k) { IRN.k = k == null ? 1 : Math.max(0, Math.min(1, +k || 0)); }
   LGT.pre.push(() => { IRN.op = neonMesh.material.opacity; neonMesh.material.opacity *= IRN.k; });
   LGT.done.push(() => { neonMesh.material.opacity = IRN.op; });
-  const shopOff = addTex('assets/shop_off.webp?v=13', 1112, 420, 164, 348, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its shop window dark, the street's reflection on it (the lanterns and the noren carry their own)
+  const shopOff = addTex('assets/shop_off.webp?v=14', 1112, 420, 164, 348, 0.49, false); shopOff.material.opacity = 0;   // the shop shut: its shop window dark, the street's reflection on it (the lanterns and the noren carry their own)
   const irSkin = addTex('assets/ramen_glass_skin.webp?v=3', 1150, 520, 80, 170, 0.48, true); irSkin.material.opacity = 0;   // the glass itself, lit:
   // what it really reflects, faint: the street turned over the panes' plane in the street's camera (the far left end, the oden's corner
   // and the sidewalk before it), a little more at its top and its edges, less over the people; a hint of sheen, the light along its
@@ -7199,6 +7199,12 @@
   // the lanterns, left (shorter: quicker) and right, each its rows in the atlas (base, lit, glow) and its own pendulum (W rad/s)
   const IRL = [{ row: 0, box: [1110, 491, 54, 80], W: 4.9 }, { row: 3, box: [1215, 460, 64, 100], W: 4.2 }].map((L) =>
     Object.assign(L, { a: 0, v: 0, eddy: 0, et: 0, f: -1, lv: 1, m: [0, 1, 2].map((r) => irMesh(irLanTex, L.box, 0.5 + 0.0002 * r, r === 2)) }));
+  // their light on the front's boards (tools/ichiraku_wall.py): a warm fan down the wall under each, its lamp's own (it catches,
+  // flickers and goes out with its glow: the shop's hours, one after the other at closing, the zone's power, red in the red night);
+  // added, one texel a scene pixel, under the lamps and the noren. Its cells in the atlas and their places in the street
+  const IRWL = { W: 93, H: 306, cells: [[0, 46, 252, 1114, 490], [46, 47, 306, 1220, 466]] };
+  const irWallTex = irTex('assets/ichiraku_wall_light.webp?v=1');
+  IRL.forEach((L, i) => { const [u, w, h, x, y] = IRWL.cells[i]; L.fan = irMesh(irWallTex, [x, y, w, h], 0.495, true); irUV(L.fan, u, 0, w, h, IRWL.W, IRWL.H); });
   // the noren: base | lit, at rest and three lifts; taken in (hidden) at closing, hung out in the morning
   const IRNR = { box: [1150, 500, 79, 104], AW: 316, AH: 208, f: -1, m: [0, 1].map((r) => irMesh(irNorTex, [1150, 500, 79, 104], 0.5 + 0.0002 * r, false)) };
   const irPow = () => PW.on && IR.zone >= 0 ? pwShade.material.uniforms.uPow.value[IR.zone] : 1;   // the zone's power
@@ -7225,7 +7231,7 @@
   }
   function stepShop(dt, t) {
     SHOP.t += dt;
-    if (!IR.graded) { IR.graded = true; for (const L of IRL) L.m.forEach((m, r) => gradeSprite(m.material, r ? 'self' : 'street')); gradeSprite(IRNR.m[0].material, 'street'); gradeSprite(IRNR.m[1].material, 'self'); gradeSprite(rlMesh.material, 'self'); gradeSprite(irSkin.material, 'street'); }
+    if (!IR.graded) { IR.graded = true; for (const L of IRL) { L.m.forEach((m, r) => gradeSprite(m.material, r ? 'self' : 'street')); gradeSprite(L.fan.material, 'self'); } gradeSprite(IRNR.m[0].material, 'street'); gradeSprite(IRNR.m[1].material, 'self'); gradeSprite(rlMesh.material, 'self'); gradeSprite(irSkin.material, 'street'); }
     const hk = openK('ramen'), pz = irPow();
     if (!SHOP.open && !OPEN.on && hk > 0.99 && SHOP.t > 2) { SHOP.open = true; SHOP.t = 0; }   // (shut by the opening's script at night: open again in its hours)
     const sc = SHOP.open, nW = sc && hk > 0.92, lW = [sc && hk > 0.78, sc && hk > 0.7], kW = sc && hk > 0.2, oW = hk > 0.5;   // the stage: each part at its own share of the hour's ease
@@ -7251,7 +7257,7 @@
       const fr = Math.round((L.a + 7.5) / 0.5);
       if (fr !== L.f) { L.f = fr; L.m.forEach((m, r) => irUV(m, fr * IRA.cw, (L.row + r) * IRA.ch, L.box[2], L.box[3], IRA.W, IRA.H)); }
       const lit = L.lv * pz; L.m[1].material.opacity = lit; L.m[2].material.opacity = lit * lightLife(t, 5.9 + 1.3 * i, 0.06);
-      L.m[1].visible = L.m[2].visible = lit > 0.004;
+      L.m[1].visible = L.m[2].visible = L.fan.visible = lit > 0.004; L.fan.material.opacity = L.m[2].material.opacity;   // (its fan on the boards: with its glow)
     });
     stepNaruRamen(dt, hk);
     const live = IR.hk0 >= 0 && Math.abs(hk - IR.hk0) < 0.05 && !reduced;      // (a driven hour, the first frame: its state at once)

@@ -532,6 +532,13 @@ ZONES = {
     # layers alike (no lamp reaches it: tools/grey_shutter.py); last: its box reaches oden's and footO's, unchanged there
     # (its before copies are theirs there)
     'gshutter': dict(box=(505, 572, 566, 642), tool='grey_shutter'),
+    # Ichiraku's front wall either side of its entrance (a near-flat dark plum fill, the doorway's glow painted on it, its
+    # lamps lighting only a halo round themselves): dark-stained vertical boards on the street's rays, the sign's ledge's
+    # shadow, a wet foot, the corner's arris, from a draft of the image model in its context (tools/src/edits/ichiwall_*);
+    # its two lamps' light on it a sprite of their own on the shop's hours (assets/ichiraku_wall_light.webp, street.js
+    # IRWL), the layers unlit (tools/ichiraku_wall.py); last: over ramen, door, base, pole, ichifoot, board, recess,
+    # entree, hall, front, arcwall and footR, whose boxes it overlaps
+    'ichiwall': dict(box=(1114, 392, 1268, 772), tool='ichiraku_wall'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
@@ -1059,6 +1066,9 @@ def shop_off(city, masks_by_zone):
     so = np.concatenate([np.zeros((g,) + so.shape[1:]), so], 0); ay -= g
     H, W = so.shape[:2]; box = (ax, ay, ax + W, ay + H)
     so[poly_mask(c['clear'], box)] = 0
+    if 'ichiwall' in ZONES:                        # (Ichiraku's boards either side of its door: the overlay's old wall there
+        import ichiraku_wall                       # cleared, the layer's boards show when shut: tools/ichiraku_wall.py)
+        so[ichiraku_wall.wall_mask(city.shape[:2])[ay:ay + H, ax:ax + W]] = 0
     zb = ZONES[c['lit_from']]['box']; m = masks_by_zone[c['lit_from']][c['lit_part']]
     full = np.zeros(city.shape[:2], bool); full[zb[1]:zb[3], zb[0]:zb[2]] = m
     sub = full[ay:ay + H, ax:ax + W]; px = city[ay:ay + H, ax:ax + W, :3]
