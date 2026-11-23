@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=149", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=6", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=150", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=6", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=149') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=150') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -4393,7 +4393,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=131', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=132', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -8596,6 +8596,7 @@
   const WET_FS = `
     uniform sampler2D tScene, tWet, tMirror;
     uniform sampler2D tStreet; uniform float uSkyLift;   // (the street layer; the flash's light in the sky the water mirrors)
+    uniform sampler2D tRail;                   // (the belvedere's railing, its rails and posts: rail_dark.webp's shape, at 604, 618)
     uniform vec4 uCam;                         // the frame of tScene in scene px: left, right, top, bottom (y down)
     uniform float uTime, uGain, uDim, uRain, uHot, uSpread;
     uniform float uRedK, uRedFront;            // the red night here: its level, and the eleventh's wave front (scene x)
@@ -8624,7 +8625,16 @@
       // edges waver in the water as the rest of the reflection does
       float sx = gP.x + gRip + (mod(k, 4.0) / 3.0 - 0.5) * gHw, yN = gYm - gD * e, yF = 615.0 - (gP.y - 615.0) * e + 2.0;
       float far = step(600.0, sx) * step(sx, 743.0) * step(yN, 618.0);
-      return vec4(tap(vec2(sx, mix(yN, yF, far))) * wk, wk);
+      // (the far end: tools/far_end.py) the cross street before the belvedere, in the street's camera: a ray that clears the
+      // far kerb's top (its foot at 43.5 m, the mirror line 646.1; its top 0.15 m up: row 642.8 in that mirror) meets the
+      // railing's plane, 9 m further (52.6 m: its low wall's foot on the plaza at row 638, the road's row under it 640.74),
+      // mirrored about that line: on a rail, a post (rail_dark.webp's shape) or the low wall under them it gives back that
+      // rail as it is drawn now (lit by the city, dimmed with it late, red in the red night); between the rails and over them
+      // the far city, mirrored about the horizon. Under the railing's mirror the near mirror is the kerb's face, as before
+      float fe = step(609.0, sx) * step(sx, 760.0) * step(646.0, gP.y) * step(gP.y, 679.5) * step(yN, 642.8);
+      float yR = 640.74 - (gP.y - 640.74) * e;
+      float rl = max(step(635.5, yR), step(621.5, yR) * texture2D(tRail, vec2(clamp((sx - 604.0) / 164.0, 0.0, 1.0), clamp((640.0 - yR) / 22.0, 0.0, 1.0))).a);
+      return vec4(tap(vec2(sx, mix(mix(yN, yF, far), mix(yF, yR, step(0.5, rl)), fe))) * wk, wk);
     }
     void main() {
       vec2 p = floor(vP) + 0.5;                // one value per scene pixel, like the painting
@@ -8668,9 +8678,11 @@
       uniforms: { tScene: { value: WET.rt.texture }, tWet: { value: tex('assets/wet.webp?v=35') }, tMirror: { value: tex('assets/wet_mirror.webp?v=26') },
         uCam: { value: new THREE.Vector4(0, IW, 0, IH) }, uTime: { value: 0 }, uGain: { value: 1 }, uDim: { value: 1 }, uRain: { value: 1 },
         uHot: { value: 1.5 }, uSpread: { value: 0.8 }, uRedK: { value: 0 }, uRedFront: { value: 1e5 },
-        tStreet: { value: city.material.map }, uSkyLift: { value: 0 } },
+        tStreet: { value: city.material.map }, uSkyLift: { value: 0 }, tRail: { value: null } },
       vertexShader: WET_VS, fragmentShader: WET_FS, transparent: true, depthWrite: false,
       blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneMinusSrcAlphaFactor });
+    const rail = loader.load('assets/rail_dark.webp?v=1', () => { if (reduced && WET.loaded >= 2) frame(); });   // (the far end's railing, for its mirror; until it is in, the far city alone)
+    rail.magFilter = rail.minFilter = THREE.NearestFilter; rail.generateMipmaps = false; mat.uniforms.tRail.value = rail;
     WET.mesh = new THREE.Mesh(new THREE.PlaneGeometry(IW, 216), mat);   // scene rows 600-816, over the lit layers, under the rings and the rain
     WET.mesh.position.set(IW / 2, -(600 + 108), 1.15); WET.mesh.visible = false;
     const probe = new THREE.Scene(); probe.add(WET.mesh); renderer.compile(probe, camera);   // compiled now: a broken shader is caught here

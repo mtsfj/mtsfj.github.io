@@ -103,6 +103,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # cside); the exit sign's glow on it its comp z5_alley
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'cside_{_tag}.webp', 908, 484))
+# the street's far end, the kerb's arris and face and the cross street's asphalt (tools/far_end.py, by tools/redraw_zones.py's
+# zone farend)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'farend_{_tag}.webp', 600, 642))
 
 
 def main():

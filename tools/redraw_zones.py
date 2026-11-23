@@ -554,6 +554,12 @@ ZONES = {
     # sign's glow on it in its comp z5_alley, and on its battery in the power cut's layer (tools/center_side.py); last: over
     # alley, bfloor, hallBwalk and footB, whose boxes it overlaps
     'cside': dict(box=(908, 484, 941, 691), tool='center_side'),
+    # the street's far end, between the far zebra crossing and the belvedere's railing (one dark, nearly flat strip: the
+    # kerb's edge one flat row, its face three flat rows, the cross street a flat dark fill): the kerb's arris and face in
+    # the painter's concrete (the near kerb's grain), the cross street's asphalt grain (his own, just nearer); what its wet
+    # road mirrors, built in the street's camera, is street.js's wet pass (tools/far_end.py); last: footO's box reaches it,
+    # unchanged there (its before copies are footO's there)
+    'farend': dict(box=(600, 642, 800, 658), tool='far_end'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
