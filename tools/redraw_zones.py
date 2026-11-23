@@ -546,6 +546,14 @@ ZONES = {
     # only where the clips cover the glass whole, so the screen on is as it was (tools/screen_off.py); last: inside
     # soda's box, its before copies soda's
     'screenoff': dict(box=(241, 418, 327, 540), tool='screen_off'),
+    # the roji's far wall, the Pokemon Center's side face on (one smooth lavender plaster under the bands, as light as the
+    # lit front, the same deep in the alley as at its corner): the front's cladding turning the corner (its courses level
+    # at the front's rows at the arris, a joint on the door's jamb, the dark base along the foot, the wet starter course),
+    # a step darker than the front, falling off back from the alley's mouth (its view factor) and lighter up (the draft's
+    # light on this side, tools/src/edits/cwall_wall_model.webp), thin rain streaks from the band's edge; the exit
+    # sign's glow on it in its comp z5_alley, and on its battery in the power cut's layer (tools/center_side.py); last: over
+    # alley, bfloor, hallBwalk and footB, whose boxes it overlaps
+    'cside': dict(box=(908, 484, 941, 691), tool='center_side'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes

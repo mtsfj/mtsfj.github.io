@@ -99,6 +99,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # screenoff; over soda's patch)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'screenoff_{_tag}.webp', 241, 418))
+# the roji's far wall, the Pokemon Center's side clad as its front (tools/center_side.py, by tools/redraw_zones.py's zone
+# cside); the exit sign's glow on it its comp z5_alley
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'cside_{_tag}.webp', 908, 484))
 
 
 def main():
