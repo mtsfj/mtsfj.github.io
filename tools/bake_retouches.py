@@ -95,6 +95,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # zone ichiwall); its lamps' light on it the sprite ichiraku_wall_light.webp
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'ichiwall_{_tag}.webp', 1114, 392))
+# the giant screen switched off, its dark LED face in its frame (tools/screen_off.py, by tools/redraw_zones.py's zone
+# screenoff; over soda's patch)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'screenoff_{_tag}.webp', 241, 418))
 
 
 def main():

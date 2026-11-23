@@ -539,6 +539,13 @@ ZONES = {
     # IRWL), the layers unlit (tools/ichiraku_wall.py); last: over ramen, door, base, pole, ichifoot, board, recess,
     # entree, hall, front, arcwall and footR, whose boxes it overlaps
     'ichiwall': dict(box=(1114, 392, 1268, 772), tool='ichiraku_wall'),
+    # the giant screen on Kirua's house switched off (late at night, in the power cut, as it fades: one flat near-black
+    # panel in its frame, nothing on it): an outdoor LED screen's dark face in its frame's perspective, six cabinets by
+    # two, their joints one crisp pixel, each module's black its own within a level, the LED rows' louvres a fine matte
+    # grain along the rows, lit only by the sky, a faint sheen of the far end of the street its matte face sends back;
+    # only where the clips cover the glass whole, so the screen on is as it was (tools/screen_off.py); last: inside
+    # soda's box, its before copies soda's
+    'screenoff': dict(box=(241, 418, 327, 540), tool='screen_off'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
