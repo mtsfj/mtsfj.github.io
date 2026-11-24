@@ -1,7 +1,7 @@
 /* mtsfj.github.io · the street (the home's hero): its scene, its systems and its events, in three.js. Loaded by index.html
    after three.min.js, at the end of the body (the page above it already parsed). */
 (async function () {                             // (async: its setup in parts, SETUP below)
-  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=152", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=6", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
+  const ASSETS = {"sky": "assets/layer_sky.webp", "city": "assets/layer_city_off.webp?v=151", "rest": "assets/lights_rest.webp?v=4", "comps": {"lamp": {"src": "assets/lamp.webp?v=4", "x": 843, "y": 134, "w": 78, "h": 54}, "win_z1_top": {"src": "assets/win_z1_top.webp?v=6", "x": 963, "y": 222, "w": 43, "h": 141}, "win_dojo": {"src": "assets/win_dojo.webp?v=1", "x": 51, "y": 65, "w": 34, "h": 35}, "win_z1_warm": {"src": "assets/win_z1_warm.webp?v=4", "x": 1081, "y": 288, "w": 30, "h": 138}, "win_c_top": {"src": "assets/win_c_top.webp?v=1", "x": 1075, "y": 124, "w": 36, "h": 130}, "win_b_mid": {"src": "assets/win_b_mid.webp?v=1", "x": 960, "y": 366, "w": 48, "h": 124}, "z4_emblem": {"src": "assets/z4_emblem.webp?v=4", "x": 849, "y": 450, "w": 50, "h": 49}, "win_z4_shop": {"src": "assets/win_z4_shop.webp?v=6", "x": 800, "y": 538, "w": 128, "h": 138}, "win_z7_shop": {"src": "assets/win_z7_shop.webp?v=10", "x": 142, "y": 537, "w": 85, "h": 201}, "z7_dagsign": {"src": "assets/z7_dagsign.webp?v=3", "x": 134, "y": 470, "w": 97, "h": 74}, "z7_vending": {"src": "assets/z7_vending.webp?v=23", "x": 285, "y": 543, "w": 65, "h": 188}, "win_z7_up": {"src": "assets/win_z7_up.webp?v=7", "x": 216, "y": 191, "w": 95, "h": 184}, "win_z9_window": {"src": "assets/win_z9_window.webp?v=2", "x": 804, "y": 497, "w": 57, "h": 35}, "win_z9_lantern": {"src": "assets/win_z9_lantern.webp?v=10", "x": 775, "y": 559, "w": 57, "h": 87}, "z5_spill": {"src": "assets/z5_spill.webp", "x": 505, "y": 491, "w": 95, "h": 76}, "z5_alley": {"src": "assets/z5_alley.webp?v=6", "x": 908, "y": 441, "w": 33, "h": 237}, "z7_adscreen": {"src": "assets/z7_adscreen.webp?v=7", "x": 227, "y": 579, "w": 60, "h": 138}, "z7_bigscreen": {"src": "assets/z7_bigscreen_naruto.webp?v=89dc56a9", "x": 241, "y": 418, "w": 86, "h": 122}, "win_b_shop": {"src": "assets/win_b_shop.webp?v=1", "x": 949, "y": 549, "w": 55, "h": 115}}};   // { sky, city, rest, comps: { name: {src, x, y, w, h} } }
   const IW = 1456, IH = 816;
   const canvas = document.getElementById('street');
   const hero = document.querySelector('.hero');
@@ -11,7 +11,7 @@
   // for them, its painting stands still in the hero; the page's text is the same for everyone. A whole three.js street in a
   // crawler's software GL costs far more than its render budget (Google's tools gave up on the home, not on the blog) ----
   if (/Googlebot|Google-InspectionTool|GoogleOther|Storebot-Google|AdsBot-Google|Google-Read-Aloud|bingbot|BingPreview|DuckDuckBot|YandexBot|Applebot|Baiduspider|facebookexternalhit|Twitterbot|LinkedInBot|Slackbot|Discordbot/i.test(navigator.userAgent)) {
-    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=152') 50% 70% / cover no-repeat"; return;
+    hero.style.background = "var(--night-deep) url('assets/layer_city_off.webp?v=151') 50% 70% / cover no-repeat"; return;
   }
   // ---- no zoom on the home (the owner's wish: the street is pixel art drawn for whole device pixels, and a pinch or a ctrl +
   // wheel would blur it): the viewport says so (index.html: maximum-scale=1, user-scalable=no); iOS Safari ignores that, so its
@@ -3937,7 +3937,7 @@
   // light spill (lumieres-03): the room's light where it can fall from the doorway: a band on the wet sidewalk in front of it (the door's
   // depth range: horizontal edges in this perspective, spreading as it goes), the AC unit's flank toward it; never the walls in the
   // door's own plane; stippled steps, nearest (build_zzzzlum_lights.py); outside the arcade's own box (its sill is its own)
-  const spill = plane('assets/arcade_spill.webp?v=9', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
+  const spill = plane('assets/arcade_spill.webp?v=8', 1100, 700, 260, 116, 2.3, { opacity: 0, blending: THREE.AdditiveBlending });
   const arcS = { t: 0, chase: 0, flick: 1, next: 5 + Math.random() * 10, hold: 0, cab: [] };
   for (let i = 0; i < 9; i++) arcS.cab.push({ c: i % 4, next: Math.random() * 3 });
   // the door sits on a wall receding to the street's vanishing point (~700, 615): in local px its top edge rises
@@ -4296,7 +4296,6 @@
     add(() => vendOff, 314); add(() => winMesh, 554); add(() => odenDn, 486, 1); add(() => odenUp, 486, 1); add(() => OWIN.mesh, 482);
     add(() => ODOOR.mesh, 442); add(() => ODOOR.win, 474); add(() => lanMesh, 413);
     add(() => ASGN.tubes, 1400); add(() => ASGN.bulbs, 1400); add(() => ASGN.glowM, 1400);   // (the game centre's sign: the arcade's power)
-    add(() => APL.m[0], 1400);                                   // (its light on the strip beside the arcade's door)
     try { for (const o of OBST) for (const m of o.m) add(() => m, -1); } catch (e) {}
     add(() => farQuad, -1, 'vis');
     scene.traverse((o) => {                    // the far skyline layer, a copy of the street's pixels there: with the far city
@@ -4394,7 +4393,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=135', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=134', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }
@@ -7206,22 +7205,6 @@
   const IRWL = { W: 93, H: 306, cells: [[0, 46, 252, 1114, 490], [46, 47, 306, 1220, 466]] };
   const irWallTex = irTex('assets/ichiraku_wall_light.webp?v=1');
   IRL.forEach((L, i) => { const [u, w, h, x, y] = IRWL.cells[i]; L.fan = irMesh(irWallTex, [x, y, w, h], 0.495, true); irUV(L.fan, u, 0, w, h, IRWL.W, IRWL.H); });
-  // the strip between Ichiraku and the arcade's door (tools/arcade_shade.py: Ichiraku's concrete end wall, the arcade's tiles):
-  // the light that really reaches it, each cell its source's own, so it lives, flickers and goes out with it: the GAME sign
-  // on the end wall's top, the tiles' cushioned edges and their glints, its glow run on past its box (with the sign's glow:
-  // the arcade's hours; in pwList, the arcade's power); Ichiraku's right lamp on the arris (with its fan); the room's light
-  // sent back by its lit sill and paving (with the arcade's spill: its hours, its flicker, its power). Added, one texel a
-  // scene pixel, red in the red night
-  const APL = { W: 183, H: 392, cells: [[0, 90, 392, 1262, 400], [90, 3, 296, 1265, 480], [93, 90, 372, 1262, 420]], graded: false };
-  const aplTex = irTex('assets/arcade_post_light.webp?v=1');
-  APL.m = APL.cells.map(([u, w, h, x, y]) => { const m = irMesh(aplTex, [x, y, w, h], 0.494, true); irUV(m, u, 0, w, h, APL.W, APL.H); m.visible = false; return m; });
-  LGT.pre.push(() => {                           // (after the hours' hook on the spill; before the fuses' scale the sign's cell)
-    if (!APL.graded) { APL.graded = true; for (const m of APL.m) gradeSprite(m.material, 'self'); }
-    const g = ASGN.glowM, f = IRL[1].fan, s = spill.material.opacity, m = APL.m;
-    m[0].material.opacity = g ? g.material.opacity : 0; m[0].visible = !!g && g.visible;
-    m[1].material.opacity = f.material.opacity; m[1].visible = f.visible;
-    m[2].material.opacity = Math.min(1, s); m[2].visible = s > 0.004;
-  });
   // the noren: base | lit, at rest and three lifts; taken in (hidden) at closing, hung out in the morning
   const IRNR = { box: [1150, 500, 79, 104], AW: 316, AH: 208, f: -1, m: [0, 1].map((r) => irMesh(irNorTex, [1150, 500, 79, 104], 0.5 + 0.0002 * r, false)) };
   const irPow = () => PW.on && IR.zone >= 0 ? pwShade.material.uniforms.uPow.value[IR.zone] : 1;   // the zone's power
