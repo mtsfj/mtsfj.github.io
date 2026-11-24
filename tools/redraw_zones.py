@@ -463,8 +463,11 @@ ZONES = {
     # bike's basket into the comp win_b_shop (street.js lights it on the shop's hours), the shut room in the layer (the
     # power cut's room, the street lamp's light on it as on the plaster round it); tools/bshop_window.py, last
     'bshop': dict(box=(948, 536, 1004, 664), tool='bshop_window'),
-    # the arcade's front wall in its eave's deep shade, beside Ichiraku and beside its door (an audit: two flat navy slabs,
-    # 37 x 380 px, that read as a hole): vertical boards on the street's rays (tools/arcade_shade.py), last
+    # the strip between Ichiraku and the arcade's door, under the arcade's eave (an audit: two flat navy slabs, 37 x 380 px,
+    # that read as a hole; then two near-black bands at every hour): Ichiraku's building's concrete end wall and the
+    # arcade's tiled panel beside its door, their materials from one sheet of the image model (tools/src/edits/arcwall_*),
+    # their light (the GAME sign's, Ichiraku's lamp's on the arris, the room's sent back by its sill) a sprite of its own,
+    # assets/arcade_post_light.webp (tools/arcade_shade.py), last
     'arcwall': dict(box=(1262, 400, 1360, 792), tool='arcade_shade'),
     # where each front meets the sidewalk (the owner: "faudra faire toutes les liaisons façade-trottoir proprement, car là
     # ça fait coupé net"): drawn by tools/facade_foot.py in the street's camera, once for the whole street, each zone its
