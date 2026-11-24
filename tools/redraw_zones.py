@@ -481,7 +481,11 @@ ZONES = {
     # 止まれ on the road as a real road marking (an audit: 止 sat on ま with no space, the two read as 集): the three characters
     # from the font, each long on the ground, a space between them, in the road's perspective; the paint the painter's in
     # each layer and in the ground lights that carry it (tools/tomare_marking.py), last: after the fronts' feet, whose
-    # tool writes those ground lights from their before copies (tools/facade_foot.py), so the new letters stay in them
+    # tool writes those ground lights from their before copies (tools/facade_foot.py), so the new letters stay in them;
+    # its paint old thermoplastic (a near-flat lavender fill before: a sticker), its texture the image model's (one
+    # top-down sheet, tools/src/edits/tomare_draft.webp: chipped off the wheels, worn through in the wheel paths), each
+    # pixel the mean of the ground it covers, so the far 止 finer than the near れ; a touch of raised edge, a little less
+    # of a mirror than the wet asphalt (wet.webp, from its before crop)
     'tomare': dict(box=(600, 682, 800, 790), tool='tomare_marking'),
     # the dagashi-ya's sign over its window (the owner: "aplat moche", then of the options, "A, caisson laiteux"): an old lit
     # box on its dark fascia, painted as the street's signs are (the image model in its context, R28), in true perspective,
