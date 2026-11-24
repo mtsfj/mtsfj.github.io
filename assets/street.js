@@ -3947,7 +3947,7 @@
   const thrAt = (lx) => 6 * hAt(lx);
   const arcImg = new Image();
   arcImg.onload = () => drawArcade();
-  offView(ARC.x, ARC.x + ARC.w, () => { arcImg.src = 'assets/arcade_interior.webp?v=14'; ARC_SILL.src = 'assets/arcade_sill.png?v=7'; });
+  offView(ARC.x, ARC.x + ARC.w, () => { arcImg.src = 'assets/arcade_interior.webp?v=15'; ARC_SILL.src = 'assets/arcade_sill.png?v=7'; });
   const ARC_SILL = new Image(); ARC_SILL.onload = () => drawArcade();   // (droite-01)
   // the room behind the door: a small model of it seen through the street's own camera (tools/arcade_room.py: the door
   // found in the street's space from its lines; behind it a box room turned 24 degrees toward the street (its long axis
@@ -4393,7 +4393,7 @@
   const NRH = farMat.uniforms.uNRh;            // the red's hue (max channel 1), shared with the far city's shader
   const NRC = { tex: { value: city.material.map }, col: { value: city.material.color }, mode: { value: 3 } };   // the street unlit, its night multiply
   function pwUnlit(then) {                     // the street with its power out (street_unlit.webp, build_zzzsec_unlit.py): loaded once
-    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=132', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
+    if (!PW.unlit) PW.unlit = crisp('assets/street_unlit.webp?v=133', () => { PW.ready = true; pwShade.material.uniforms.tUnlit.value = PW.unlit; (PW.onUnlit || []).forEach((f) => f()); PW.onUnlit = []; });
     if (then) { if (PW.ready) then(); else (PW.onUnlit = PW.onUnlit || []).push(then); }
   }
   function nrSetHue(rgb) { const m = Math.max(rgb[0], rgb[1], rgb[2], 1e-3); NRH.value.set(rgb[0] / m, rgb[1] / m, rgb[2] / m); }

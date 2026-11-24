@@ -31,6 +31,21 @@ nets d'un pixel, plus pâles là où ils se serrent. Le plafond : les dalles du 
 des réglettes (tube, boîtier, deux suspentes) pendues sous le plafond, en travers de la salle, parallèles au mur et au haut
 des bornes, comme dans le dessin (TUBE_TRAVERS).
 
+Le mur du bout, nu (tout ce que la porte en montre au-dessus des bornes, hors de ce qui y est posé : WALL_OBJ, l'enseigne
+murale, les affiches, le tube électrique et le coffret, gardés de l'image) : des plaques de plâtre peintes, comme les murs des
+salles de jeux japonaises (石膏ボード, peinture mate ; le bleu-violet sombre de l'image), une plaque サブロク de 910 mm du sol au
+plafond, ses joints verticaux (WALL_JOINT) ; sa matière, celle que le modèle d'image a peinte de face pour lui
+(tools/src/edits/arcback_prompt.txt, sa réponse arcback_draft.webp, un seul appel : python3 tools/arcade_room.py --ask) à son
+échelle (DRAFT_PPM), son éclairage ôté, sa seule luminance (un ton par plan : W0, celui de l'image à côté du coffret, WALL_W0),
+moyennée par chaque pixel de la porte ; ses joints nets d'un pixel, pâles comme dans la réponse. Sa lumière, calculée dans le
+modèle (wall_light_map) : le tube, à 1,2 m devant lui et 0,2 m sous le plafond, la plus forte à sa hauteur puis décroissante
+vers les bornes ; le flanc vitré de la machine à pinces sur le bas près du montant ; une lueur serrée autour du néon de
+l'enseigne murale ; ce que la salle renvoie (WALL_AMB) ; les ombres de ce qui y est posé (le coffret, à 10 cm du mur, en fait
+une sous lui). Les écrans et les frontons des bornes regardent la salle, les bornes sont adossées au mur : rien d'eux ne l'atteint.
+Rapportée à la lumière du point WALL_REF, où l'image a son ton W0. Fermée : le tube, l'enseigne et la vitrine éteints, le mur
+n'a plus que ce qui reste de lumière dans la salle (CLOSED, de sa lumière moyenne allumée, égal partout) et le pourtour vert de
+la sortie de secours.
+
 Le rendu. Chaque pixel de la porte est pris sur SS x SS rayons de l'œil (le tableau, la sous-face du linteau, le dessus du
 seuil, puis la salle) ; la lumière : le tube, les écrans, la vitrine à pinces, l'enseigne (des points, la distance au carré,
 l'angle), sur le sol (rapportée à celle que le dessin montre devant les bornes : le sol plus sombre vers nous), le plafond
@@ -48,6 +63,7 @@ reste repris au commit BEFORE (la nuit rouge y lit la lumière de la salle : les
 et, dans assets/street.js, ARC_PINS : où le modèle met ce que drawArcade anime (les écrans des bornes, l'enseigne, les
 frontons, la vitrine à pinces, l'afficheur du coffret : des quadrilatères ; le coffret, la sortie de secours : des boîtes), et
 les versions des deux images (une de plus seulement si elles ont changé). Il faut git, Pillow, numpy.
+    python3 tools/arcade_room.py --ask           (la matière du mur du bout redemandée au modèle d'image : un nouvel appel)
 """
 import io
 import json
@@ -61,6 +77,9 @@ from PIL import Image, ImageFilter
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 A = lambda p: os.path.join(ROOT, 'assets', p)
 SRC = os.path.join(ROOT, 'tools', 'src', 'arcade_wall.webp')
+EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
+WALL_DRAFT = os.path.join(EDITS, 'arcback_draft.webp')
+MODEL = 'openai/gpt-5.4-image-2'
 BEFORE = 'c79076a'
 LUM = np.array([0.299, 0.587, 0.114])
 
@@ -130,6 +149,29 @@ UNLIT = (0.1, (5.4, 3.6, 14.4))    # sans courant (street_unlit, sous la porte) 
 LIT = (((175, 1085, 357, 1260), 1.0), ((432, 1085, 606, 1260), 1.0),
        ((160, 962, 378, 1032), 0.5), ((418, 962, 640, 1032), 0.5),
        ((280, 1450, 302, 1495), 1.0), ((540, 1450, 562, 1495), 1.0))
+
+GRADE_MN = (47.09756757304888, 32.04330884257255, 85.88874855872511)   # (la moyenne de la salle allumée que grade() rapporte à
+                                     # celle de l'ancienne : mesurée une fois, le mur uni d'avant ; gardée telle, pour que le mur
+                                     # refait ne change rien aux bornes ni au reste)
+
+# ---- le mur du bout : sa matière et sa lumière
+WALL_OBJ = (('sign', 35, 348, 550, 487, 0.05), ('cat', 410, 549, 546, 841, 0.008), ('rocket', 231, 555, 392, 873, 0.008),
+            ('conduit', 600, 250, 625, 697, 0.03), ('coupling', 597, 555, 625, 572, 0.035), ('gland', 593, 671, 625, 697, 0.04),
+            ('fuse', 563, 697, 662, 878, 0.10))
+                                     # (ce qui est posé sur le mur, dans l'image : u0, v0, u1, v1, son épaisseur en m ; ses pixels
+                                     # gardés, le reste de l'image du mur refait ; l'affiche de la fusée aussi rependue, HUNG)
+WALL_W0 = (550, 500, 596, 690)       # (dans l'image : le mur nu entre l'affiche du chat et le tube électrique, son ton W0 ; à son
+WALL_REF = (573, 595)                #  milieu, la lumière qu'il y reçoit dans le modèle, E_REF : le mur est W0 x E / E_REF)
+WALL_JOINT, PANEL = 720, 0.91        # (les joints des plaques de plâtre peintes : l'un à cette colonne de l'image, puis tous les
+                                     #  910 mm, une plaque サブロク de bout en bout, sans joint horizontal)
+DRAFT_PPM, DRAFT_SIGMA = 630 / 0.91, 150    # (la réponse du modèle d'image : ses deux joints à 630 px l'un de l'autre, 692 px le
+DRAFT_JOINTS = ((195, 200), (824, 830))     #  mètre ; son éclairage ôté au-dessus de 150 px ; ses joints, effacés de la peinture)
+JOINT_K = 0.06                       # (un joint : le trait pâle de la réponse (31 % plus clair sur un de ses pixels, 1,4 mm),
+                                     #  comme les joints du sol, net d'un pixel de la porte, au cinquième de son contraste)
+WALL_AMB = 0.3                       # (la lumière que la salle renvoie sur le mur, du rose du tube, en plus du direct)
+PAINT_GAIN = 1.0                     # (la peinture de la réponse, ses écarts à 1 multipliés par tant)
+SIGN_I, EXIT_I = 0.01, 0.015         # (le néon de l'enseigne murale, son cadre, par m ; la sortie de secours, fermée, son pourtour)
+CLAW_SIDE = (118, 0.85)              # (le flanc vitré de la machine à pinces vers les bornes : sa colonne, sa profondeur)
 
 S_OUT, S_RISER, S_SOFFIT, S_SILL, S_REVEAL, S_CEIL, S_FLOOR, S_WALL = 0, 1, 2, 3, 4, 5, 6, 7
 S_TUBE, S_TUBEC, S_HOUSE, S_HOUSEC = 30, 31, 32, 33     # (le tube : son dessous et son flanc ; son embout ; le boîtier ; son bout)
@@ -334,6 +376,166 @@ def lights(img, state):
     return L
 
 
+def blur(a, sigma):
+    """un flou gaussien (trois flous en boîte, les bords en miroir) d'une image en niveaux"""
+    r = max(1, int(round((np.sqrt(4 * sigma ** 2 + 1) - 1) / 2)))
+    for ax in (0, 1):
+        for _ in range(3):
+            p = np.pad(a, [(r + 1, r), (0, 0)] if ax == 0 else [(0, 0), (r + 1, r)], mode='symmetric')
+            c = np.cumsum(p, ax)
+            a = ((c[2 * r + 1:] - c[:-2 * r - 1]) if ax == 0 else (c[:, 2 * r + 1:] - c[:, :-2 * r - 1])) / (2 * r + 1)
+    return a
+
+
+def wall_paint():
+    """la peinture du mur : la réponse du modèle d'image (tools/src/edits/arcback_draft.webp : le mur nu de face, peint, à
+    DRAFT_PPM px le mètre), sa luminance rapportée à son propre flou (DRAFT_SIGMA : son éclairage ôté, sa matière gardée : le
+    grain du rouleau, ses taches, ses traces de ruban, ses éraflures), ses deux joints effacés (wall_joints les remet à leur
+    place) : un rapport autour de 1, du même ton partout"""
+    a = np.asarray(Image.open(WALL_DRAFT).convert('RGB')).astype(float) @ LUM
+    for x0, x1 in DRAFT_JOINTS:
+        k = (np.arange(x0, x1) - (x0 - 1)) / (x1 - x0 + 1)
+        a[:, x0:x1] = a[:, x0 - 1:x0] * (1 - k[None]) + a[:, x1:x1 + 1] * k[None]
+    return 1 + PAINT_GAIN * (a / blur(a, DRAFT_SIGMA) - 1)
+
+
+def mirror(x, n):
+    x = np.mod(x, 2 * n)
+    return np.where(x >= n, 2 * n - 1 - x, x)
+
+
+def wall_detail(paint, t, Y):
+    """la peinture au point (t, Y) du mur : la réponse à son échelle (DRAFT_PPM), d'un seul tenant, en miroir à ses bords (le pli
+    du milieu derrière l'affiche de la fusée rependue)"""
+    h, w = paint.shape
+    x = (t - (T_L + 880 / K)) * DRAFT_PPM + w - 0.5
+    y = (Y_C - Y) * DRAFT_PPM
+    return paint[mirror(np.floor(y).astype(int), h), mirror(np.floor(x).astype(int), w)]
+
+
+def wall_objects(u, v):
+    """ce qui est posé sur le mur (WALL_OBJ) aux points (u, v) de l'image : leurs pixels sont ceux de l'image"""
+    m = np.zeros(np.shape(u), bool)
+    du = HUNG[0][1] - HUNG[0][0][0]
+    for name, u0, v0, u1, v1, _ in WALL_OBJ:
+        m |= (u >= u0) & (u < u1) & (v >= v0) & (v < v1)
+        if name == 'rocket': m |= (u >= u0 + du) & (u < u1 + du) & (v >= v0) & (v < v1)
+    return m
+
+
+def wall_boxes():
+    """ce qui est posé sur le mur, en boîtes de la salle (t0, t1, Y0, Y1, épaisseur) : leurs ombres"""
+    B, du = [], HUNG[0][1] - HUNG[0][0][0]
+    for name, u0, v0, u1, v1, d in WALL_OBJ:
+        for o in ((0, du) if name == 'rocket' else (0,)):
+            B.append((T_L + (u0 + o) / K, T_L + (u1 + o) / K, Y_FL + (FOOT - v1) / K, Y_FL + (FOOT - v0) / K, d))
+    return B
+
+
+def wall_lights(img, state):
+    """ce qui éclaire le mur du bout, en points (position dans la rue, normale d'émission ou None, couleur x puissance, portée en
+    m ou None). Allumée : le tube, ses deux réglettes à 1,2 m du mur et 0,2 m sous le plafond (une ligne de points nus : sa
+    lumière tombe sur le mur de face et d'en haut, la plus forte à sa hauteur, puis en descendant) ; le flanc vitré de la machine
+    à pinces, au-dessus de la première borne (CLAW_SIDE : la vitrine éclairée de l'intérieur, son rose sur le bas du mur près
+    du montant) ; le cadre de néon de l'enseigne murale, devant sa boîte (une lueur serrée autour d'elle). Les écrans et les
+    frontons des bornes regardent la salle et les bornes sont adossées au mur : rien de leur lumière ne monte sur lui. Fermée :
+    la sortie de secours (son pourtour vert), le reste éteint"""
+    L = []
+    if state == 'lit':
+        col = np.array([250, 120, 200]) / 255
+        for kind, c, a0, a1 in TUBES:
+            n = 24
+            for a in range(n):
+                q = a0 + (a + 0.5) / n * (a1 - a0)
+                X, Z = to_world(c, q) if kind == 'axe' else to_world(q, c)
+                L.append(((X, TUBE_Y, Z), None, col * 1.1 * (a1 - a0) / n, None))
+        u, d = CLAW_SIDE
+        t0, y0, y1 = T_L + u / K + 1e-3, Y_FL + CAB_M, Y_FL + (BOXES[0][4] - BOXES[0][3]) / K
+        ccol, ne, n = img[880:1380, 5:110].reshape(-1, 3).mean(0) / 255, (CT, 0.0, -ST), 6
+        for a in range(n):
+            for b in range(n):
+                X, Z = to_world(t0, S_END - d + (a + 0.5) / n * d)
+                L.append(((X, y0 + (b + 0.5) / n * (y1 - y0), Z), ne, ccol * d * (y1 - y0) / n / n, None))
+        name, u0, v0, u1, v1, dep = WALL_OBJ[0]
+        scol = img[352:357, 60:540].reshape(-1, 3).mean(0) / 255
+        L += ring(u0, v0, u1, v1, dep + 0.005, scol * SIGN_I, 0.02, 0.5)
+    else:
+        u0, v0, u1, v1 = EXIT
+        L += ring(u0, v0, u1, v1, 0.03, np.array(EXIT_C[1]) / 255 * EXIT_I, 0.01, 0.3)
+    return L
+
+
+def ring(u0, v0, u1, v1, dep, col, step, reach):
+    """des points de lumière le long du pourtour d'une boîte de l'image posée sur le mur, à tant devant lui (un néon, un liseré)"""
+    L, s = [], S_END - dep
+    ta, tb, ya, yb = T_L + u0 / K, T_L + u1 / K, Y_FL + (FOOT - v1) / K, Y_FL + (FOOT - v0) / K
+    for (p0, p1) in (((ta, ya), (tb, ya)), ((tb, ya), (tb, yb)), ((tb, yb), (ta, yb)), ((ta, yb), (ta, ya))):
+        ln = np.hypot(p1[0] - p0[0], p1[1] - p0[1]); n = max(1, int(np.ceil(ln / step)))
+        for a in range(n):
+            k = (a + 0.5) / n
+            X, Z = to_world(p0[0] + k * (p1[0] - p0[0]), s)
+            L.append(((X, p0[1] + k * (p1[1] - p0[1]), Z), None, col * ln / n, reach))
+    return L
+
+
+WALL_GRID = 0.005
+
+
+def wall_light_map(img, state):
+    """la lumière que le mur du bout reçoit, sur une grille de WALL_GRID m (t en travers, Y), ombres comprises : chaque point de
+    lumière caché par ce qui est posé sur le mur (WALL_OBJ, à son épaisseur) n'y compte pas (le coffret électrique, à 10 cm du
+    mur, fait sous lui une ombre de la largeur de sa porte, la plus franche contre lui) ; plus WALL_AMB, ce que la salle allumée
+    renvoie. Rapportée à celle du point WALL_REF (E_REF, allumée), elle donne le ton du mur : W0 x E / E_REF"""
+    ta, tb = T_L + 380 / K, T_L + 1260 / K
+    ya, yb = Y_FL + CAB_M - 0.05, Y_C
+    nt, ny = int(np.ceil((tb - ta) / WALL_GRID)) + 1, int(np.ceil((yb - ya) / WALL_GRID)) + 1
+    tt, yy = np.meshgrid(ta + np.arange(nt) * WALL_GRID, ya + np.arange(ny) * WALL_GRID)
+    X, Z = to_world(tt, S_END)
+    P = np.stack([X, yy, Z], -1).reshape(-1, 3)
+    tP, YP = tt.reshape(-1), yy.reshape(-1)
+    nW = -np.array([ST, 0.0, CT])
+    E = np.zeros(P.shape)
+    boxes = wall_boxes()
+    for (p, ne, c, reach) in wall_lights(img, state):
+        p = np.array(p, float)
+        tl, sl = to_room(p[0], p[2]); yl = p[1]; dz = S_END - sl
+        idx = np.arange(len(P)) if reach is None else np.nonzero((np.abs(tP - tl) < reach) & (np.abs(YP - yl) < reach))[0]
+        d = p - P[idx]
+        r2 = (d ** 2).sum(-1) + 1e-5; r = np.sqrt(r2)
+        w = np.maximum(0, d @ nW / r) / r2
+        if ne is not None: w = w * np.maximum(0, -(d @ np.array(ne)) / r)
+        for (b0, b1, c0, c1, db) in boxes:                                  # (le segment du mur à la lumière, sur l'épaisseur de
+            lm = 1.0 if dz <= db else db / dz                               #  la boîte : passe-t-il dedans ?)
+            near = (tP[idx] > b0 - 0.4) & (tP[idx] < b1 + 0.4) & (YP[idx] > c0 - 0.4) & (YP[idx] < c1 + 0.1)
+            if not near.any(): continue
+            j = np.nonzero(near)[0]
+            tq, yq = tP[idx][j], YP[idx][j]
+            lo, hi = np.zeros(len(j)), np.full(len(j), lm)
+            for q, a0, a1, e in ((tq, b0, b1, tl), (yq, c0, c1, yl)):
+                dd = e - q
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    k0, k1 = (a0 - q) / dd, (a1 - q) / dd
+                flat_ = np.abs(dd) < 1e-12
+                inside = (q >= a0) & (q <= a1)
+                lo = np.maximum(lo, np.where(flat_, np.where(inside, -np.inf, np.inf), np.minimum(k0, k1)))
+                hi = np.minimum(hi, np.where(flat_, np.where(inside, np.inf, -np.inf), np.maximum(k0, k1)))
+            w[j] = np.where(lo < hi, 0, w[j])
+        E[idx] += w[:, None] * c
+    if state == 'lit':
+        E += WALL_AMB * np.array([250, 120, 200]) / 255
+    return E.reshape(ny, nt, 3), (ta, ya)
+
+
+def wall_light_at(Emap, t, Y):
+    """la lumière du mur aux points (t, Y) : sa grille, bilinéaire"""
+    E, (ta, ya) = Emap
+    ny, nt = E.shape[:2]
+    x = np.clip((t - ta) / WALL_GRID, 0, nt - 1.001); y = np.clip((Y - ya) / WALL_GRID, 0, ny - 1.001)
+    x0, y0 = np.floor(x).astype(int), np.floor(y).astype(int); fx, fy = (x - x0)[:, None], (y - y0)[:, None]
+    return (E[y0, x0] * (1 - fx) * (1 - fy) + E[y0, x0 + 1] * fx * (1 - fy) + E[y0 + 1, x0] * (1 - fx) * fy
+            + E[y0 + 1, x0 + 1] * fx * fy)
+
+
 def irradiance(L, P, n, wrap=0.0):
     E = np.zeros(P.shape)
     for (p, ne, c) in L:
@@ -381,6 +583,43 @@ def floor_col(lib, t, s):
     return out * tone[..., None]
 
 
+_WALL = {}
+
+
+def wall_setup(img):
+    """une fois : la peinture (wall_paint), la lumière du mur allumée et fermée (wall_light_map), le ton du mur W0 (la médiane
+    de l'image sur WALL_W0) et E_REF (la lumière allumée en WALL_REF)"""
+    if not _WALL:
+        u0, v0, u1, v1 = WALL_W0
+        _WALL['W0'] = np.median(img[v0:v1, u0:u1].reshape(-1, 3), 0)
+        _WALL['paint'] = wall_paint()
+        _WALL['E'] = {s: wall_light_map(img, s) for s in ('lit', 'closed')}
+        _WALL['E_REF'] = wall_light_at(_WALL['E']['lit'], np.array([T_L + WALL_REF[0] / K]), np.array([Y_FL + (FOOT - WALL_REF[1]) / K]))[0]
+        E, (ta, ya) = _WALL['E']['lit']                                    # (sa lumière moyenne, allumée, sur ce qu'on en voit)
+        tt, yy = ta + np.arange(E.shape[1]) * WALL_GRID, ya + np.arange(E.shape[0]) * WALL_GRID
+        sel = ((tt >= T_L + 457 / K) & (tt <= T_L + 1222 / K))[None] & (yy >= Y_FL + CAB_M)[:, None]
+        _WALL['E_MEAN'] = E[sel].mean(0)
+    return _WALL
+
+
+def wall_joints(out, surf):
+    """les joints des plaques, nets d'un pixel : chacun une verticale du mur, donc une colonne de la porte ; le trait pâle de la
+    réponse (31 % plus clair sur un pixel de la réponse) rapporté à la part de la colonne qu'il couvre ; pas sur ce qui est posé"""
+    H, W = ARC[3], ARC[2]
+    for k in range(-3, 5):
+        uj = WALL_JOINT + k * PANEL * K
+        tj = T_L + uj / K
+        X, Z = to_world(tj, S_END)
+        x = VX + F * X / Z - ARC[0]
+        c = int(np.floor(x))
+        if not 0 <= c < W: continue
+        for r in range(H):
+            if surf[r, c] != S_WALL: continue
+            v = FOOT - ((VY - (ARC[1] + r + 0.5)) * Z / F - Y_FL) * K
+            if not wall_objects(np.array(uj), np.array(v)): out[r, c] *= 1 + JOINT_K
+    return out
+
+
 def shade_points(img, sid, P, Q, lib, Ls, state):
     """la couleur de chaque point touché (P dans la rue, Q dans la salle), sa surface éclairée par la salle"""
     LS_LIT = lights(img, 'lit')
@@ -397,7 +636,16 @@ def shade_points(img, sid, P, Q, lib, Ls, state):
         EM[m] = k
         return c if lit else c * (CLOSED + (1 - CLOSED) * k[:, None])
     m = sid == S_WALL
-    C[m] = flat(m, (t[m] - T_L) * K, FOOT - (Y[m] - Y_FL) * K)
+    if m.any():                                                            # (le mur nu : sa peinture, dans la lumière qu'il reçoit ;
+        u, v = (t[m] - T_L) * K, FOOT - (Y[m] - Y_FL) * K                  #  ce qui y est posé, l'image)
+        c = flat(m, u, v)
+        bg = ~wall_objects(u, v)
+        if bg.any():
+            W = wall_setup(img)
+            tb, yb = t[m][bg], Y[m][bg]
+            E = wall_light_at(W['E'][state], tb, yb) / W['E_REF']
+            c[bg] = W['W0'] * wall_detail(W['paint'], tb, yb)[:, None] * (E if lit else CLOSED * W['E_MEAN'] / W['E_REF'] + E)
+        C[m] = c
     for b, (name, u0, u1, vt, vb, d) in enumerate(BOXES):
         m = sid == 10 + 2 * b
         u = (t[m] - T_L) * K
@@ -586,12 +834,12 @@ def old_stats():
 
 def grade(res):
     """à la nuit de la rue : l'équilibre de ses canaux à mi-chemin (GRADE) de celui de l'ancienne salle (BEFORE, déjà dans la
-    lumière de la rue), mesuré sur ce qu'on voit de la salle allumée ; ce qui luit (écrans, enseigne, tube, vitrine) moins
-    (ACC_GRADE) ; un peu moins saturée (SAT), ses lumières gardées. Le montant (la façade) n'y est pas"""
+    lumière de la rue), mesuré une fois sur ce qu'on voyait de la salle allumée (GRADE_MN, avant que son mur du bout ne soit
+    refait : la même mise à la nuit pour tout) ; ce qui luit (écrans, enseigne, tube, vitrine) moins (ACC_GRADE) ; un peu moins
+    saturée (SAT), ses lumières gardées. Le montant (la façade) n'y est pas"""
     mo, so = old_stats()
     out, surf, a, em = res['lit']
-    vis = (surf >= S_CEIL) & (a > 0.99)
-    mn = out[vis].mean(0)
+    mn = np.array(GRADE_MN)
     for st, (o, sf, aa, e) in res.items():
         acc = np.clip(np.maximum(e, (o.max(-1) - 170) / 60), 0, 1)[..., None]
         k = GRADE * (1 - acc) + ACC_GRADE * acc
@@ -637,6 +885,7 @@ def build(img):
         sid, P, C, EM, RF = render(img, state)
         out, surf, a, em = reduce(C, sid, EM, RF)
         out = lines(out, surf)
+        out = wall_joints(out, surf)
         out = post_edge(out, surf)
         res[state] = (out, surf, a, em)
     res = grade(res)
@@ -668,7 +917,27 @@ def unlit_zone(lit):
     return buf.getvalue()
 
 
+def ask():
+    """la matière du mur du bout demandée au modèle d'image (la clé d'OpenRouter dans ~/.config/openrouter/key ; environ
+    0,25 $), de son seul texte (tools/src/edits/arcback_prompt.txt) ; sa réponse arcback_draft.webp (le mur est fait de la
+    réponse gardée, jamais d'un nouvel appel)"""
+    import base64
+    import urllib.request
+    key = open(os.path.expanduser('~/.config/openrouter/key')).read().strip()
+    content = [{"type": "text", "text": open(os.path.join(EDITS, 'arcback_prompt.txt'), encoding='utf-8').read().strip()}]
+    body = {"model": MODEL, "modalities": ["image", "text"], "usage": {"include": True}, "messages": [{"role": "user", "content": content}]}
+    req = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', data=json.dumps(body).encode(),
+                                 headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
+    d = json.loads(urllib.request.urlopen(req, timeout=900).read())
+    url = d['choices'][0]['message']['images'][0]['image_url']['url']
+    Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).save(WALL_DRAFT, 'WEBP', lossless=True, quality=100, method=6)
+    print('arcback_draft.webp', Image.open(WALL_DRAFT).size, '; coût', d.get('usage', {}).get('cost'), '$')
+
+
 def main():
+    if '--ask' in sys.argv:
+        ask()
+        return
     theta = float(sys.argv[sys.argv.index('--theta') + 1]) if '--theta' in sys.argv else THETA
     configure(theta)
     img = smooth_src()
