@@ -296,7 +296,7 @@ ZONES = {
                   ([(1121, 616), (1152, 616), (1152, 655), (1121, 655)], (0, 54))])]),
     # the right pole's concrete (the owner: "texture poto"): a near black green column with a lit stripe, an outline, an
     # orange rim with gaps and a stack of smeared bands, now a concrete cylinder in the painter's light (its lit side
-    # round from the left, its shade the night's navy, his rim continuous, a fine even grain on its own surface), its
+    # round from the left, its shade the night's navy, his rim continuous, weathered cast concrete wrapped on it), its
     # bands, bolt and conduits crisp; its cap and its foot's shape kept, its sign gone ("vire le truc Uchiha"). Drawn by tools/pole_texture.py, after
     # pole, bfloor, bwall and polefoot (it overlaps them); it also writes the rim's sun mask (assets/street_sun.webp)
     'poletex': dict(box=(1005, 44, 1070, 757), tool='pole_texture'),

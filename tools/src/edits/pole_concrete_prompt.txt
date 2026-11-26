@@ -1,0 +1,8 @@
+pole_concrete_src.webp: the left panel (x 12..505, y 12..1011) of tools/src/edits/arcwall_draft.webp as committed in
+e352bd3 (a sheet painted on 24/11 for the strip by the arcade's door; that strip was turned down for its tiles, the right
+panel, which is not kept here). No new call: the same bytes, cropped. Its wall runs from row 0 to 967, the pavement under
+it. The paragraph of that sheet's prompt (arcwall_prompt.txt in e352bd3) that painted this panel:
+
+Both panels are photographs of a wall taken square on (orthographic, no perspective, the camera parallel to the wall), in soft, even, overcast daylight: no shadow cast across them, no light falloff, no vignette, no reflection of anything recognisable, nothing in front of them. Photographic, sharp, high detail. No text, no logo, no watermark, no frame.
+
+LEFT PANEL: a strip of the side wall of a small old reinforced-concrete shop building in a Tokyo back street, about 1.5 m wide and 3 m tall, from just under the roof's eave down to the pavement. Plain grey cast concrete with a thin cement skim, weathered by decades of rain: soft blotchy mottling of slightly lighter and darker grey, faint darker rain streaks (amadare) running straight down from the top in long thin vertical stains, a few hairline cracks, a little efflorescence, the bottom 30 cm darker and damp from the rain splashing up. No form-tie holes, no formwork joints, no pipes, no windows, no signs, no graffiti, no plants.

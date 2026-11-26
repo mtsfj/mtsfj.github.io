@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""The right pole's concrete, redrawn: a cylinder in the painter's light, its fine grain even, its bands, bolt and
-conduits clean (the owner: "texture poto").
+"""The right pole's concrete, redrawn: a cylinder in the painter's light, weathered cast concrete wrapped on it, its
+bands, bolt and conduits clean (the owner: "texture poto").
 
     (a module: tools/redraw_zones.py's zone 'poletex' calls draw() on the street as the zones before it leave it;
      then its zone 'polelamp', tools/pole_lamp.py, the street lamp it carries)
@@ -25,8 +25,17 @@ every pixel shaded from the normal of the surface it shows:
 - its rim: the painter's light on its right edge (his columns 1059..1063, gaps filled, smoothed): the low sun's warm
   line on its upper part, the night's cool one under it; the street's sun mask (street_sun.webp) follows it, warm
   where it is warm, so the night turns it cool as before;
-- its grain: concrete's, fine and even: one noise drawn on the pole's own surface (its arc, not its columns: finer
-  toward the turning edges as they foreshorten), a few pores, a few percent of the light; no streaks, no stains;
+- its concrete: a generated photograph of weathered cast concrete, square on in overcast light (tools/src/edits/
+  pole_concrete_src.webp, the left panel of the sheet painted on 24/11 for the arcade's strip, its prompt beside it:
+  pole_concrete_prompt.txt), wrapped on the cylinder at the pole's true scale (the street's camera: f 960 px, the foot
+  8.89 m away, 108 px a metre, the pole 0.39 m across; the photograph 3.07 mm a pixel): u round the visible half (each
+  pixel the mean of the photograph over the arc it shows, wider toward the limbs), v down its height, the rain streaks
+  straight down it, and its finest grain (what that mean averages away) at the pixel's centre, as the painting keeps a
+  grain; only its relative light (its luminance over its own mean: the damp foot as it is; the mottling, the streaks
+  and the hairline cracks half as much again, to read in the night's light) multiplies the pole's own light, in the pole's own hue (one tone per plane). Three takes up the
+  pole so nothing repeats, each from other columns of the photograph (the top one mirrored), each seam under a band:
+  the foot's from the sidewalk to the band at 423 (the photograph's whole height, its damp foot on the sidewalk), then
+  to the band at 268 and to the cap, each from the photograph's top (its streaks run down from under the band);
 - no outline: the limbs are the cylinder's own, the lit one bright against the wall, the far one dark (R12);
 - its cap (tools/pole_cut.py's, inside its own outline): the same concrete, its dome lit from above by the sky;
 - its hardware, crisp: a band under the cap; the street lamp's two bands (its bracket and arm: tools/pole_lamp.py);
@@ -48,7 +57,7 @@ import os
 import sys
 import numpy as np
 from PIL import Image
-from scipy.ndimage import gaussian_filter, median_filter
+from scipy.ndimage import gaussian_filter, median_filter, uniform_filter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EDITS = os.path.join(ROOT, 'tools', 'src', 'edits')
@@ -74,7 +83,18 @@ BANDS = [(80, 3), (183, 4), (215, 4), (268, 3), (313, 3), (423, 3)]   # (top row
 BOLT = (1032.5, 329.5, 2.6)                     # the bolt (the painter's pink ring): its centre, radius (px)
 CONDUITS = [(1038, 1040), (1052, 1054)]         # two small pipes up its face (their columns)
 CONDUIT_TOP = 83                                # (they start under the band below the cap)
-GRAIN = dict(seed=1044, mul=0.055, add=1.0, pores=0.010, pore_k=0.82)
+TEX = os.path.join(EDITS, 'pole_concrete_src.webp')   # the concrete (494 x 1000: its wall rows 0..967, the pavement under)
+TEX_FOOT = 968                                  # (its wall's foot: the pavement from there)
+TEX_MEAN = (100, 600)                           # (its mean light measured over these rows: dry, under the eave's band)
+TEX_M = 0.00307                                 # its metres a pixel (1.5 m x 3 m over 494 x 968)
+POLE_M = 8.89 / 960.0                           # the pole's metres a pixel (tools/pole_foot.py: ZP / FOC)
+Y_GROUND = 615.0 + 960.0 * (1.41 - 0.15) / 8.89 # (its axis's foot on the sidewalk, the row: the photograph's foot there)
+TEX_K = 1.5                                     # its mottling and streaks, half as much again (to read at night); its
+                                                # light down the wall (the damp foot) and its grain as they are
+GRAIN_K = 1.0                                   # its grain kept (the painting's grain: the photograph's own, at its pixel)
+TAKES = [(61, 267, 'top', 4, 148, True),        # (scene rows, the take's anchor, the photograph's row there, its first
+         (271, 422, 'top', 4, 297, False),      #  column, mirrored): under the cap, between the bands at 268 and 423,
+         (426, 760, 'foot', TEX_FOOT, 0, False)]  # and from that band to the sidewalk
 LUMA = np.array([0.299, 0.587, 0.114])
 
 
@@ -145,20 +165,46 @@ def ambient(u):
     return (0.7 + 0.3 * np.sqrt(np.clip(1 - u * u, 0, 1))) * (1 - SHADE_SIDE * t * t * (3 - 2 * t))
 
 
-def grain_field(H, W):
-    """Concrete's grain on the pole's surface: a noise in (arc, row) at half a pixel, softened a little; and its pores."""
-    rng = np.random.default_rng(GRAIN['seed'])
-    n = gaussian_filter(rng.standard_normal((2 * H, 2 * W + 8)), 0.7)
-    pores = rng.random((H, W)) < GRAIN['pores']
-    return n / n.std(), pores
+class Concrete:
+    """The photograph's relative light, wrapped on the pole: at(y, u0, u1, r) is the mean of the photograph over the arc
+    (u0..u1, -1 the left limb) and the row y of the pole shows, over its own mean."""
+    def __init__(self):
+        a = np.asarray(Image.open(TEX).convert('RGB')).astype(float)[:TEX_FOOT]
+        L = a @ LUMA
+        L /= L[TEX_MEAN[0]:TEX_MEAN[1]].mean()
+        self.h, self.w = L.shape
+        self.T = gaussian_filter(L.mean(1), 20, mode='nearest')   # (its light down the wall: the damp foot, as it is)
+        M = L / self.T[:, None]                 # (and over it, its mottling and streaks)
+        self.S = np.zeros((self.h + 1, self.w + 1)); self.S[1:, 1:] = M.cumsum(0).cumsum(1)
+        self.k = POLE_M / TEX_M                 # (the photograph's pixels in one of the pole's)
+        n = int(round(self.k))                  # its grain: what the mean over one of the pole's pixels averages away
+        self.F = L - uniform_filter(L, n, mode='reflect')
 
+    def _I(self, r, c):                         # (the summed table at fractional r, c: bilinear)
+        r = np.clip(r, 0, self.h); c = np.clip(c, 0, self.w)
+        r0 = np.minimum(np.floor(r).astype(int), self.h - 1); c0 = np.minimum(np.floor(c).astype(int), self.w - 1)
+        fr, fc = r - r0, c - c0; S = self.S
+        return ((1 - fr) * (1 - fc) * S[r0, c0] + (1 - fr) * fc * S[r0, c0 + 1] + fr * (1 - fc) * S[r0 + 1, c0]
+                + fr * fc * S[r0 + 1, c0 + 1])
 
-def grain(u0, u1, y, r, field):
-    """The grain over one pixel: the field averaged over the arc the pixel shows (wider near the limbs)."""
-    s0, s1 = r * np.arcsin(np.clip(u0, -1, 1)), r * np.arcsin(np.clip(u1, -1, 1))
-    ss = np.linspace(s0, s1, 6)[1:-1] + r * np.pi / 2 + 2      # (arc length from the left limb, px)
-    v = field[2 * y:2 * y + 2, np.clip(np.round(2 * ss).astype(int), 0, field.shape[1] - 1)]
-    return v.mean()
+    def at(self, y, u0, u1, r):
+        for a, b, anchor, row, col, mirror in TAKES:
+            if a <= y <= b: break
+        else: return np.ones_like(np.asarray(u0, float))
+        if anchor == 'top': r0 = row + (y - a) * self.k
+        else: r0 = row - (Y_GROUND - y) * self.k
+        r0 = np.clip(r0, 0, self.h - self.k); r1 = r0 + self.k
+        arc = lambda u: r * POLE_M * (np.arcsin(np.clip(u, -1, 1)) + np.pi / 2) / TEX_M   # (photograph px from the left limb)
+        s0, s1 = arc(np.asarray(u0, float)), arc(np.asarray(u1, float))
+        if mirror: c0, c1 = col + np.pi * r * POLE_M / TEX_M - s1, col + np.pi * r * POLE_M / TEX_M - s0
+        else: c0, c1 = col + s0, col + s1
+        c1 = np.maximum(c1, c0 + 0.5)
+        tot = self._I(r1, c1) - self._I(r0, c1) - self._I(r1, c0) + self._I(r0, c0)
+        rc = np.clip(np.round(0.5 * (r0 + r1)).astype(int), 0, self.h - 1)
+        cc = np.clip(np.round(0.5 * (c0 + c1)).astype(int), 0, self.w - 1)
+        g = self.F[rc, cc] * GRAIN_K / np.sqrt(np.maximum(1.0, (c1 - c0) / self.k))   # (finer toward the limbs)
+        m = np.maximum(1.0 + TEX_K * (tot / ((r1 - r0) * (c1 - c0)) - 1.0), 0.2)
+        return self.T[rc] * m + g
 
 
 class Light:
@@ -195,7 +241,7 @@ def steel(L, u, y, glint):
     return c + g * glint
 
 
-def draw_pole(arr, unlit, field, pores, glint, sun=None):
+def draw_pole(arr, unlit, tex, glint, sun=None):
     """One layer (arr, whole-scene RGBA floats, changed in place); unlit: the power cut (its lit side sets the shade).
     Returns the mask of what changed (whole scene)."""
     from pole_foot import front_row, FOOT, TOP as FOOT_TOP
@@ -213,9 +259,8 @@ def draw_pole(arr, unlit, field, pores, glint, sun=None):
             xs = xs[keep]
         u = (xs + 0.5 - cx) / r
         c = L.shade(u, y)
-        g = np.array([grain((x - cx) / r, (x + 1 - cx) / r, y, r, field) for x in xs])
-        c = c * (1 + GRAIN['mul'] * g[:, None]) + GRAIN['add'] * g[:, None]
-        c[pores[y, xs]] *= GRAIN['pore_k']
+        if y == int(BOLT[1]): plain = dict(zip(xs, c.copy()))   # (the bolt takes the concrete's light, not its stains)
+        c = c * tex.at(y, (xs - cx) / r, (xs + 1 - cx) / r, r)[:, None]
         # the conduits: small pipes on its face, lit on their left, a thin shadow right of them where the pole is lit
         if y >= CONDUIT_TOP:
             for a, b in CONDUITS:
@@ -254,7 +299,7 @@ def draw_pole(arr, unlit, field, pores, glint, sun=None):
     # the bolt: a round head on a square washer, lit upper left (stepped), its shadow lower right on the concrete
     bx, by, br = BOLT
     E = L.at(int(by))[0]
-    C = arr[int(by), int(bx), :3].copy()                     # (the concrete there: the bolt in its light)
+    C = plain[int(bx)]                                        # (the concrete there: the bolt in its light)
     tones = [C * 0.45, C * 1.0, C * 1.45 + 8, E * 1.2 + 10]   # (dark, mid, lit, its glint)
     for y in range(int(by - br - 2), int(by + br + 3)):
         for x in range(int(bx - br - 2), int(bx + br + 3)):
@@ -302,12 +347,11 @@ def sun_layer():
 
 
 def draw_layers(city, unlit, box=BOX):
-    H, W = city.shape[:2]
-    field, pores = grain_field(H, W)
+    tex = Concrete()
     unlit0 = unlit.copy()
     sun = sun_layer(); sm = sun[..., 0].copy()
-    ch = draw_pole(city, unlit0, field, pores, np.array([26.0, 20.0, 18.0]), sm)
-    ch |= draw_pole(unlit, unlit0, field, pores, np.array([10.0, 11.0, 16.0]))
+    ch = draw_pole(city, unlit0, tex, np.array([26.0, 20.0, 18.0]), sm)
+    ch |= draw_pole(unlit, unlit0, tex, np.array([10.0, 11.0, 16.0]))
     sun[..., 0] = sun[..., 1] = sun[..., 2] = sm
     return ch, sun
 
