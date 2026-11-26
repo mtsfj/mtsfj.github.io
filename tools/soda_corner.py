@@ -11,6 +11,8 @@ edge to the bench, laid out in 3D first, then painted from that layout by the im
                                                          colours) and print FIT[V] (paste it below)
     python3 tools/soda_corner.py --preview DIR           the zone off, lit, in the stutter, before and after (nothing
                                                          in the repository changes)
+    python3 tools/soda_corner.py --ask-win               the display windows' sheet asked of the image API, once
+                                                         (tools/src/edits/soda_win_prompt.txt -> soda_win_draft.webp)
 
 1. The layout (layout(V)), in the street's camera as the dagashi-ya next door has it (tools/dagashi_interior.py: F 1400
    px, VP (700, 615), the eye 1.5 m over the sidewalk; X across, left negative; Y up from the sidewalk; Z along the
@@ -28,7 +30,8 @@ edge to the bench, laid out in 3D first, then painted from that layout by the im
    under Kirua's bay, a giant screen (its box, frame, bolts; its clips: SCREEN_CLIPS says how to change
    them); the house's boards round it the painter's own; then a grain pass over the machines, the panel, the canopy
    and the ground at their feet (EDIT: generated from the corner as composed here, laid on those parts only), the
-   machines brought into the painting's range (MACH_TONE), their headers backlit drinks banners (heads(), HEADS);
+   machines brought into the painting's range (MACH_TONE), their headers backlit drinks banners (heads(), HEADS),
+   their display windows rows of dummy drinks over price strips and lit buttons, cast in 3D from a sheet (windows(), WIN);
    the house's whole front from under Kirua's bay down to the canopy, round and behind the screen, the dagashi-ya's
    own boards carried along their lines (face_boards(), FACE_*: one building, one plane, one material and tone, R29).
 2. The takes (tools/src/soda_<V>_lit.webp, soda_<V>_off.webp; R28): the street around the corner at 22 h and the
@@ -1254,6 +1257,8 @@ def build(v, city, unlit, box=BOX):
     if v not in EDIT:                          # (B's grain pass paints its displays and its perks' headers)
         displays(v, off, lit, box)
         shields(v, off, lit, box)
+    else:                                      # (B: its display windows redrawn over the grain pass's, windows())
+        windows(v, off, lit, box)
     new = city[y0:y1, x0:x1, :3].copy(); new[m] = off[m]
     unew = unlit[y0:y1, x0:x1, :3].copy(); unew[m] = off[m]
     return new, unew, lit, off, m, what
@@ -1270,6 +1275,197 @@ LED = ((24, 30, 56), (96, 156, 196))
 PROD = [(47, 86, 140), (86, 160, 193), (90, 120, 159), (61, 119, 174), (104, 88, 146), (62, 66, 94), (214, 104, 146),
         (190, 62, 68), (76, 168, 100), (222, 150, 74), (226, 208, 168)]
 PROD_W = np.array([6, 6, 6, 6, 5, 4, 6, 6, 5, 5, 4], float)
+
+
+# B's display windows (26/11: the grain pass had left them soft smeared stripes of colour, blurry at x3; the owner turned
+# a blurry sign down with « bizarre, pas précis »): what a Japanese drinks machine shows behind its glass, rows of dummy
+# cans and PET bottles, a strip of price tags and a row of lit selection buttons under each, crisp on the pixel grid at
+# their true scale. Their texture is the image API's (R28): one straight-on, evenly lit sheet of four generic display
+# windows, no brand and no text (tools/src/edits/soda_win_prompt.txt, its answer WIN_DRAFT; --ask-win): cold drinks
+# for Speed Cola's green machine, hot ones for Double Tap's (coffee cans, the orange caps Japanese makers give the bottles
+# sold hot), colas and sodas for Juggernog's (WIN_PANELS; the fourth panel spare). Read off it (win_sheet()): its
+# shelves (by the tags' blue or red bands), each shelf's dummies (their columns, their outline row by row, the parts
+# down them where their colour steps: cap or rim, shoulder, label, body) and the strip under them (each tag, price bar
+# and button a part). Laid in each window in the street's camera (windows()): the panel on the window (WIN: u along the
+# front, Y up), each dummy an upright solid of its outline, its front WIN_GAP behind the glass, the back panel WIN_DEPTH
+# in, the strip on the glass; WIN_SS x WIN_SS rays a pixel, each pixel the part most of them meet (a dummy's top part
+# counted WIN_CAP times, so its lit cap or rim holds), its colour their mean: at 16 degrees to the front, each dummy shows
+# a side 1 to 2 px wide behind the one before it, the nearest one whole. Then into the windows' light as it was
+# (WIN_TONE: the machines' share of grey; the three windows' mean per channel kept, lit and off, the backlight's cool
+# cast with it; their spread in lightness never over what it was: no contrast added). Only the pixels the window covers
+# most of are redrawn: the frame, the header, the bezel and the body as they were.
+WIN_DRAFT = 'soda_win_draft.webp'
+WIN = (0.08, 0.92, 1.02, HEAD_RIM)
+WIN_PANELS = [(6, 4, 505, 506), (519, 4, 1019, 506), (6, 520, 505, 1019)]
+WIN_SS = 8
+WIN_CAP = 1.7
+WIN_BAND = (90.0, 2.0)                         # (a tag's coloured band, so saturated: counted so many times, so it holds)
+WIN_GAP, WIN_DEPTH = 0.005, 0.12
+WIN_SEG = (40.0, 5)                            # (a new part down a dummy where its colour steps so much, RGB summed; its
+                                               #  parts at least so many sheet rows)
+WIN_BG = 28.0                                  # (the sheet's back panel: within so much of its colour, RGB summed; that
+WIN_BGS, WIN_EDGE = 8.0, 14                    #  colour its light pixels smoothed so much; the panel's side frames, px)
+WIN_TONE = 1.0                                 # (the new windows' chroma so much of the old ones' at the same rank)
+
+def win_sheet(j):
+    """Panel j of the sheet (WIN_PANELS) read: its rows' span (y0, y1) and its dummies' (x0, x1), each sheet row's back
+    colour and whether it is a strip's, the strip's parts (a label a part, 0 its rail), the dummies (centre, half-width,
+    each row's half-width and part)."""
+    from scipy import ndimage as ndi
+    a = np.asarray(Image.open(os.path.join(EDITS, WIN_DRAFT)).convert('RGB')).astype(float)
+    px0, py0, px1, py1 = WIN_PANELS[j]
+    a = a[py0:py1, px0:px1]; H, W = a.shape[:2]
+    sat_ = a.max(-1) - a.min(-1); lum = a @ [0.299, 0.587, 0.114]
+    cand = ((lum > 185) & (sat_ < 22)).astype(float)                # (the back panel: its light, smooth over the sheet)
+    nb = gaussian_filter(cand, WIN_BGS)
+    bgf = np.dstack([gaussian_filter(a[..., q] * cand, WIN_BGS) for q in range(3)]) / np.maximum(nb, 1e-3)[..., None]
+    bgf = np.where((nb > 0.05)[..., None], bgf, np.median(a[cand > 0], 0))
+    dum = (np.abs(a - bgf).sum(-1) > WIN_BG) | (sat_ > 30)
+    dum[:, :WIN_EDGE] = False; dum[:, W - WIN_EDGE:] = False         # (the panel's own side frames)
+    blue = (a[..., 2] > a[..., 0] + 60) & (a[..., 2] > a[..., 1] + 25)
+    red = (a[..., 0] > a[..., 1] + 70) & (a[..., 0] > a[..., 2] + 50)
+    br = (blue | red).mean(1) > 0.5
+
+    def runs(b):
+        r, s = [], None
+        for y, t in enumerate(list(b) + [False]):
+            if t and s is None: s = y
+            if not t and s is not None: r.append((s, y)); s = None
+        return r
+    bands = [r for r in runs(br) if r[1] - r[0] <= 14]
+    fr = dum.mean(1)
+    clear = lambda y: all(fr[y + q] < 0.08 for q in range(3) if y + q < H)
+    top = next(y for y in range(H) if clear(y))
+    shelves = []
+    for t0, t1 in bands:
+        yb = t0
+        while yb > top and fr[yb - 1] < 0.25: yb -= 1             # (the tags' white panel up to the dummies' feet)
+        ye = t1
+        while ye < H and not clear(ye): ye += 1                     # (the strip down to the next shelf's back panel)
+        shelves.append((top, yb, ye)); top = ye
+    y0, y1 = shelves[0][0], min(shelves[-1][2], H)
+    strip = np.zeros(H, bool); lab = np.zeros((H, W), int); n_ = 0
+    dummies = []
+    for s, (st, yb, ye) in enumerate(shelves):
+        strip[yb:ye] = True
+        med = np.median(a[yb:ye], 1)
+        sal = np.abs(a[yb:ye] - med[:, None]).sum(-1) > 30
+        l_, n = ndi.label(sal); lab[yb:ye] = np.where(l_ > 0, l_ + n_, 0); n_ += n
+        col = dum[st:yb].mean(0)
+        rr = [r for r in runs(col > 0.12) if r[1] - r[0] >= 10]
+        wmed = np.median([r[1] - r[0] for r in rr])
+        sp = []
+        for xa, xb in rr:                       # (two dummies touching: split at the pitch)
+            k = max(1, int(round((xb - xa) / wmed)))
+            sp += [(xa + (xb - xa) * q / k, xa + (xb - xa) * (q + 1) / k) for q in range(k)]
+        for xa, xb in sp:
+            xc, hw0 = (xa + xb) / 2, (xb - xa) / 2
+            ca, cb = int(max(np.floor(xa) - 3, 0)), int(min(np.ceil(xb) + 3, W))
+            hw = np.zeros(H); part = np.zeros(H, int)
+            for y in range(st, yb):
+                xs = np.nonzero(dum[y, ca:cb])[0]
+                if len(xs) >= 2: hw[y] = min((xs.max() - xs.min() + 1) / 2, hw0 + 1)
+            rows = np.nonzero(hw >= 3)[0]
+            if not len(rows): continue
+            yt = rows.min()
+            for y in range(yt, yb):              # (a clear bottle's see-through rows: the outline carried down)
+                if hw[y] < 2: hw[y] = hw[y - 1]
+            hw[st:yb] = ndi.median_filter(hw[st:yb], 5)
+            hw[:yt] = 0
+            c_ = slice(int(xc - 0.3 * hw0), int(xc + 0.3 * hw0) + 1)
+            prof = a[:, c_].mean(1)
+            p, mu, n0 = 0, prof[yt].copy(), 1
+            for y in range(yt + 1, yb):
+                if np.abs(prof[y] - mu).sum() > WIN_SEG[0] and n0 >= WIN_SEG[1]:
+                    p += 1; mu = prof[y].copy(); n0 = 1
+                else:
+                    mu = (mu * n0 + prof[y]) / (n0 + 1); n0 += 1
+                part[y] = p
+            dummies.append(dict(xc=xc, hw0=hw0, hw=hw, part=part, shelf=s))
+    xs0 = min(d['xc'] - d['hw0'] for d in dummies); xs1 = max(d['xc'] + d['hw0'] for d in dummies)
+    gap = np.median([q['xc'] - q['hw0'] - (p['xc'] + p['hw0']) for p, q in zip(dummies, dummies[1:]) if p['shelf'] == q['shelf']])
+    return dict(a=a, y0=y0, y1=y1, x0=xs0 - gap / 2, x1=xs1 + gap / 2, bg=bgf, strip=strip, lab=lab, dummies=dummies,
+                shelves=shelves)
+
+
+def samp(a, x, y):
+    """a (H, W, 3) at (x, y) (pixel units, centres at .5), bilinear, clamped to its edges."""
+    H, W = a.shape[:2]
+    x = np.clip(x - 0.5, 0, W - 1.001); y = np.clip(y - 0.5, 0, H - 1.001)
+    i, j = np.floor(y).astype(int), np.floor(x).astype(int); fy, fx = (y - i)[..., None], (x - j)[..., None]
+    return (a[i, j] * (1 - fx) + a[i, j + 1] * fx) * (1 - fy) + (a[i + 1, j] * (1 - fx) + a[i + 1, j + 1] * fx) * fy
+
+
+def win_cast(b, S):
+    """Machine b's window (its front at X = b[1]) cast from the sheet's panel S: the street pixels it covers most of,
+    and their colours (the sheet's, evenly lit)."""
+    u0, u1, h0, h1 = WIN; Xf = b[1]
+    za, zb = b[4] + u0 * (b[5] - b[4]), b[4] + u1 * (b[5] - b[4])
+    xa, ya, xb, yb = bbox([P(Xf, Y, Z) for Y in (h0, h1) for Z in (za, zb)])
+    ss = WIN_SS; ny, nx = yb - ya, xb - xa
+    SX, SY = np.meshgrid(xa + (np.arange(nx * ss) + 0.5) / ss, ya + (np.arange(ny * ss) + 0.5) / ss)
+    dx, dy = (SX - VX) / F, -(SY - VY) / F
+    Zf = Xf / dx; Yf = EYE + dy * Zf
+    inside = (Zf >= za) & (Zf < zb) & (Yf >= h0) & (Yf < h1)
+    a = S['a']; H = a.shape[0]; mpp = (zb - za) / (S['x1'] - S['x0'])
+    xs = S['x0'] + (Zf - za) / mpp
+    vs = S['y0'] + (h1 - Yf) / (h1 - h0) * (S['y1'] - S['y0'])
+    ri = np.clip(vs.astype(int), 0, H - 1)
+    ids = np.full(SX.shape, -1); rgb = np.zeros(SX.shape + (3,)); wt = np.ones(SX.shape); zh = np.full(SX.shape, np.inf)
+    for k, d in enumerate(S['dummies']):
+        hw = d['hw'][ri]; on = inside & (hw > 0.5)
+        if not on.any(): continue
+        R = hw * mpp; Zc = za + (d['xc'] - S['x0']) * mpp; Xc = Xf - WIN_GAP - d['hw0'] * mpp
+        A_ = dx * dx + 1; B_ = -2 * (dx * Xc + Zc); C_ = Xc * Xc + Zc * Zc - R * R
+        disc = B_ * B_ - 4 * A_ * C_
+        Zh = (-B_ - np.sqrt(np.maximum(disc, 0))) / (2 * A_)
+        hit = on & (disc >= 0) & (Zh < zh)
+        if not hit.any(): continue
+        sphi = np.clip((Zh - Zc) / np.maximum(R, 1e-9), -1, 1)
+        c = samp(a, d['xc'] + sphi * hw, vs)
+        p_ = d['part'][ri]
+        zh[hit] = Zh[hit]; ids[hit] = 1000 * (k + 1) + p_[hit]; rgb[hit] = c[hit]; wt[hit] = np.where(p_[hit] == 0, WIN_CAP, 1.0)
+    back = inside & ~np.isfinite(zh)                   # (between and over them: the back panel, or the far side's wall)
+    side = back & ((Xf - WIN_DEPTH) / dx > zb)
+    rgb[back] = samp(S['bg'], xs, vs)[back] * np.where(side[back], 0.8, 1.0)[:, None]; ids[back] = np.where(side[back], 2, 1)
+    st = inside & S['strip'][ri]                       # (the strip on the glass: tags, price bars, buttons)
+    lb = S['lab'][ri, np.clip(xs.astype(int), 0, a.shape[1] - 1)]
+    sc = samp(a, xs, vs); band = (sc.max(-1) - sc.min(-1)) > WIN_BAND[0]       # (a tag's blue or red band)
+    rgb[st] = sc[st]; ids[st] = np.where(lb[st] > 0, 100000 + lb[st], 3); wt[st] = np.where(band[st], WIN_BAND[1], 1.0)
+    out_xy, out_c = [], []
+    for py in range(ny):
+        for px in range(nx):
+            sl = (slice(py * ss, py * ss + ss), slice(px * ss, px * ss + ss))
+            m_ = inside[sl]
+            if m_.sum() * 2 <= ss * ss: continue
+            i_, w_, c_ = ids[sl][m_], wt[sl][m_], rgb[sl][m_]
+            u_ = np.unique(i_)
+            best = u_[np.argmax([w_[i_ == q].sum() for q in u_])]
+            out_xy.append((xa + px, ya + py)); out_c.append(c_[i_ == best].mean(0))
+    return np.array(out_xy), np.array(out_c)
+
+
+def windows(v, off, lit, box):
+    """B's display windows (off and lit in place, street pixels over box): each machine's cast from its panel
+    (win_cast), brought into the windows' light as it was (WIN_TONE)."""
+    x0, y0 = box[:2]
+    xy, cs = [], []
+    for i, b in enumerate(layout(v)['mach']):
+        p_, c_ = win_cast(b, win_sheet(i)); xy.append(p_); cs.append(c_)
+    xy = np.concatenate(xy); new = np.concatenate(cs)
+    iy, ix = xy[:, 1] - y0, xy[:, 0] - x0
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import regrain as RG
+    ln = RG.oklab(new); q = np.linspace(0, 100, 101)
+    dn = ln[:, 1:] - ln[:, 1:].mean(0); cn = np.hypot(*dn.T)
+    for a in (lit, off):                       # (OKLab: each pixel's lightness the old windows' at its rank, and its
+        lo = RG.oklab(a[iy, ix])               #  colour's distance from their mean, in its own hue; their mean the old's:
+        t = ln.copy()                          #  the backlight's cast)
+        t[:, 0] = np.interp(ln[:, 0], np.percentile(ln[:, 0], q), np.percentile(lo[:, 0], q))
+        co = np.hypot(*(lo[:, 1:] - lo[:, 1:].mean(0)).T)
+        ct = WIN_TONE * np.interp(cn, np.percentile(cn, q), np.percentile(co, q))
+        t[:, 1:] = dn * (ct / np.maximum(cn, 1e-6))[:, None] + lo[:, 1:].mean(0)
+        a[iy, ix] = np.clip(RG.from_oklab(t), 0, 255)
 
 
 def hsh(*a):
@@ -1332,6 +1528,24 @@ def displays(v, off, lit, box, ss=3):
             Ya, Xa = ya - y0, xa - x0
             dst = arr[Ya:Ya + (yb - ya), Xa:Xa + (xb - xa)]
             dst[...] = dst * (1 - n_[..., None]) + avg * n_[..., None]
+
+
+def ask_win():
+    """The display windows' sheet asked of the image API (once: python3 tools/soda_corner.py --ask-win; its prompt
+    tools/src/edits/soda_win_prompt.txt, no input image; the answer tools/src/edits/soda_win_draft.webp, which windows()
+    reads, never a new call)."""
+    import base64, io, urllib.request
+    key = open(os.path.expanduser('~/.config/openrouter/key')).read().strip()
+    content = [{"type": "text", "text": open(os.path.join(EDITS, 'soda_win_prompt.txt')).read().strip()}]
+    body = {"model": 'openai/gpt-5.4-image-2', "modalities": ["image", "text"], "usage": {"include": True},
+            "messages": [{"role": "user", "content": content}]}
+    req = urllib.request.Request('https://openrouter.ai/api/v1/chat/completions', data=json.dumps(body).encode(),
+                                 headers={'Authorization': 'Bearer ' + key, 'Content-Type': 'application/json'})
+    d = json.loads(urllib.request.urlopen(req, timeout=900).read())
+    url = d['choices'][0]['message']['images'][0]['image_url']['url']
+    im = Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).convert('RGB')
+    im.save(os.path.join(EDITS, WIN_DRAFT), 'WEBP', lossless=True, quality=100, method=6)
+    print(WIN_DRAFT, im.size, 'saved; cost', d.get('usage', {}).get('cost'), '$')
 
 
 def shields(v, off, lit, box):
@@ -1766,6 +1980,8 @@ if __name__ == '__main__':
         i = sys.argv.index('--fit'); fit(sys.argv[i + 1], sys.argv[i + 2])
     elif '--preview' in sys.argv:
         i = sys.argv.index('--preview'); preview(sys.argv[i + 1], sys.argv[i + 2] if len(sys.argv) > i + 2 else None)
+    elif '--ask-win' in sys.argv:
+        ask_win()
     elif '--ask-clip' in sys.argv:
         i = sys.argv.index('--ask-clip'); ask_clip(sys.argv[i + 1], sys.argv[i + 2] if len(sys.argv) > i + 2 else None)
     else:
