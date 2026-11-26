@@ -107,6 +107,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # zone farend)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'farend_{_tag}.webp', 600, 642))
+# the road's white lines, the edge lines and the stop line in worn thermoplastic (tools/lane_lines.py, by
+# tools/redraw_zones.py's zone lanes); last (its box reaches the zones round the road's foot, unchanged there)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'lanes_{_tag}.webp', 376, 678))
 
 
 def main():

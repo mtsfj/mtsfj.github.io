@@ -564,6 +564,15 @@ ZONES = {
     # road mirrors, built in the street's camera, is street.js's wet pass (tools/far_end.py); last: footO's box reaches it,
     # unchanged there (its before copies are footO's there)
     'farend': dict(box=(600, 642, 800, 658), tool='far_end'),
+    # the road's white lines, the two edge lines and the stop line before the far crossing (three near-flat lavender bands,
+    # stickers next to the worn 止まれ, under the name on a phone): the same old thermoplastic as 止まれ, its texture the
+    # same top-down sheet (tools/src/edits/tomare_draft.webp: chipped off the wheels, worn through in the wheel paths)
+    # laid on each line's own ground, their shapes and places the painter's (the edge lines rays through the vanishing
+    # point, 15 cm), crisp; worn more where cars brake on the stop line, lightly on the edge lines; the paint the
+    # painter's in each layer and in the ground lights that carry it, a little less of a mirror, the puddles left as they
+    # are (tools/lane_lines.py); last: its box reaches footO's, footB's, tomare's, hallBwalk's, polefoot's and others',
+    # unchanged there but on the lines' own pixels (its before copies are theirs there)
+    'lanes': dict(box=(376, 678, 1024, 816), tool='lane_lines'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
