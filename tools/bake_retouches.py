@@ -111,6 +111,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # tools/redraw_zones.py's zone lanes); last (its box reaches the zones round the road's foot, unchanged there)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'lanes_{_tag}.webp', 376, 678))
+# the road's bare asphalt, its grain (tools/asphalt_grain.py, by tools/redraw_zones.py's zone asphalt); last, after lanes
+# (its box holds lanes' and reaches tomare's, polefoot's, footB's and others', unchanged there)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer].append((f'asphalt_{_tag}.webp', 300, 680))
 
 
 def main():

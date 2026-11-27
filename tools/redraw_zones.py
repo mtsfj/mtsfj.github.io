@@ -573,6 +573,14 @@ ZONES = {
     # are (tools/lane_lines.py); last: its box reaches footO's, footB's, tomare's, hallBwalk's, polefoot's and others',
     # unchanged there but on the lines' own pixels (its before copies are theirs there)
     'lanes': dict(box=(376, 678, 1024, 816), tool='lane_lines'),
+    # the road's bare asphalt between the kerbs, from the stop line down (its last smooth surface, large parts nearly flat,
+    # next to the worn 止まれ and lines, under the name on a phone): the grain of old wet asphalt, its fine aggregate from the
+    # asphalt between the paint of the same top-down sheet (tools/src/edits/tomare_draft.webp), laid on the road's ground,
+    # each pixel the exact mean of the ground it covers (the far rows smooth, the near ones showing the chips); the painter's
+    # value times 1 + a low share of it, in each layer and in the ground lights on the asphalt; the kerbs, the lines,
+    # 止まれ, the puddles and the painter's cracks left as they are (tools/asphalt_grain.py); last: after lanes, whose box
+    # it holds, and tomare (its before copies are the painter's pixels there)
+    'asphalt': dict(box=(300, 680, 1100, 816), tool='asphalt_grain'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
