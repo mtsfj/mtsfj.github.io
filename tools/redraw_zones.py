@@ -590,6 +590,12 @@ ZONES = {
     # polefoot's and others', unchanged there but on the kerbs' own pixels (their before copies are theirs there)
     'kerbL': dict(box=(224, 650, 600, 816), tool='kerb_stones'),
     'kerbR': dict(box=(800, 650, 1176, 816), tool='kerb_stones'),
+    # the balcony door of B's top storey, left of the pole (window_depth's B_TOP, the comp win_z1_top: one room switched
+    # fully on or off), lived in as the top window right of the pole is (ctop), another household: the ceiling lamp in the
+    # evening, as painted; late, a desk lamp alone, low behind the sheer, the room the painted one relit in code (its
+    # ceiling lamp's light taken out, the desk lamp's put in); its late frame added beside the comp winB gives back
+    # (COMP_OUT), street.js a 'home' choosing it (tools/btop_room.py); the layers as they are; last: after winB
+    'btop': dict(box=(963, 222, 1006, 363), tool='btop_room'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
