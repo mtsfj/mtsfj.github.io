@@ -115,6 +115,10 @@ for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unl
 # (its box holds lanes' and reaches tomare's, polefoot's, footB's and others', unchanged there)
 for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
     LAYERS[_layer].append((f'asphalt_{_tag}.webp', 300, 680))
+# the two near kerbs, precast concrete kerb stones (tools/kerb_stones.py, by tools/redraw_zones.py's zones kerbL and
+# kerbR); last (their boxes reach lanes' and the zones round the road's foot: all cut from the same finished layers)
+for _layer, _tag in (('layer_city_off.webp', 'city'), ('street_unlit.webp', 'unlit')):
+    LAYERS[_layer] += [(f'kerbL_{_tag}.webp', 224, 650), (f'kerbR_{_tag}.webp', 800, 650)]
 
 
 def main():

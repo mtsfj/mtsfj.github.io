@@ -581,6 +581,15 @@ ZONES = {
     # 止まれ, the puddles and the painter's cracks left as they are (tools/asphalt_grain.py); last: after lanes, whose box
     # it holds, and tomare (its before copies are the painter's pixels there)
     'asphalt': dict(box=(300, 680, 1100, 816), tool='asphalt_grain'),
+    # the two near kerbs along the road (a lit row over a dark band, each one value from end to end: concrete with no
+    # concrete in it): precast kerb stones, the face at |X| 2.80 m, 0.15 m high, the top 0.17 m deep, the painter's
+    # joints every metre kept; the weathered cast concrete already generated for the pole (tools/src/edits/
+    # pole_concrete_src.webp) unfolded over each stone at its true scale, its relative light only on each plane's tone
+    # (the painter's, his lit arris where the lights reach it), in both layers, the ground lights on the kerbs and the
+    # top's wetness (tools/kerb_stones.py); last: their boxes reach lanes', footL's, footO's, footB's, hallBwalk's,
+    # polefoot's and others', unchanged there but on the kerbs' own pixels (their before copies are theirs there)
+    'kerbL': dict(box=(224, 650, 600, 816), tool='kerb_stones'),
+    'kerbR': dict(box=(800, 650, 1176, 816), tool='kerb_stones'),
 }
 SHOP_OFF = dict(src='shop_off_before.webp', out='shop_off.webp', at=(1112, 448), grow_top=28,   # (grown upward: the transom)
                 clear=[(1128, 438), (1258, 398), (1258, 470), (1128, 498)],   # the old eave's and vent's lit strips, the dashes
