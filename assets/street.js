@@ -3986,6 +3986,48 @@
       if (y1 > y0) ag.fillRect(x * AK, y0 * AK, AK, (y1 - y0) * AK);
     }
   }
+  // the game centre's roller shutter: a Japanese game centre shuts at night (its hours, NHOURS.arcade) and its staff roll the
+  // shutter down over the doorway, up again in the morning. The painter's own shutter is still in the street's layer under the
+  // room: once the room is dark (HRS.k.arcade out) it comes down in about six seconds, its slats and its bottom bar moving with
+  // it (each column of the doorway its own height: the wall recedes), and goes up as the arcade opens, before its tubes catch.
+  // Its pixels the layer's, graded as the street (the cut leaves that wall as it is). While it is down: no room, no light on the
+  // sill or the sidewalk, its machines and its fuse box out of reach (the grey box on the Center's pier still cuts the power).
+  // As the hour finds it at load; still under reduced motion ----
+  const ARSH = { s: -1, mesh: null, g: null, tex: null, im: null, drawn: -1, sb: null };
+  function stepArcShutter(dt) {
+    const S = ARSH, want = HRS.k.arcade < 0.01 ? 1 : 0;
+    if (!S.mesh) {                                   // (once, when the layer's image is in)
+      const im = city.material.map && city.material.map.image; if (!im || !im.complete || !im.naturalWidth) return;
+      const c = document.createElement('canvas'); c.width = ARC.w; c.height = ARC.h; S.g = c.getContext('2d'); S.im = im;
+      S.tex = new THREE.CanvasTexture(c); S.tex.magFilter = S.tex.minFilter = THREE.NearestFilter; S.tex.generateMipmaps = false;
+      S.mesh = new THREE.Mesh(new THREE.PlaneGeometry(ARC.w, ARC.h), new THREE.MeshBasicMaterial({ map: S.tex, transparent: true, depthWrite: false }));
+      S.mesh.position.set(ARC.x + ARC.w / 2, -(ARC.y + ARC.h / 2), 0.83); S.mesh.visible = false; scene.add(S.mesh); gradeSprite(S.mesh.material, 'street');
+      S.sb = [];                                     // its bottom bar, column by column: the darkest of the rows over the sill
+      try {
+        S.g.drawImage(im, -ARC.x, -ARC.y); const d = S.g.getImageData(0, 0, ARC.w, ARC.h).data;
+        for (let lx = 0; lx < ARC.w; lx++) {
+          const bot = Math.min(ARC.h, Math.round(botAt(lx + 0.5))); let best = bot, bl = 1e9;
+          for (let y = bot - 9; y < bot; y++) { const o = (y * ARC.w + lx) * 4, L = d[o] + d[o + 1] + d[o + 2]; if (L < bl) { bl = L; best = y + 1; } }
+          S.sb.push(best);
+        }
+      } catch (e) { S.sb = null; }
+    }
+    if (S.s < 0 || reduced || FADE.t0 < 0) S.s = want;   // (the hour found at load, the street not shown yet, or still: no motion)
+    else if (S.s !== want) S.s = want ? Math.min(1, S.s + dt / 6) : Math.max(0, S.s - dt / 5);
+    const e = Math.round(S.s * 400) / 400;
+    if (e !== S.drawn) {                              // the shutter's rows: the layer's, from its bottom bar up, as far down as it is
+      S.drawn = e; const g = S.g; g.clearRect(0, 0, ARC.w, ARC.h);
+      for (let lx = 0; lx < ARC.w; lx++) {
+        const top = Math.round(topAt(lx + 0.5)), bot = Math.min(ARC.h, Math.round(botAt(lx + 0.5))), sb = S.sb ? S.sb[lx] : bot, k = Math.round(e * (sb - top));
+        if (k > 0) g.drawImage(S.im, ARC.x + lx, ARC.y + sb - k, 1, k, lx, top, 1, k);
+        if (e >= 1 && bot > sb) g.drawImage(S.im, ARC.x + lx, ARC.y + sb, 1, bot - sb, lx, sb, 1, bot - sb);   // (landed: on its sill)
+      }
+      S.tex.needsUpdate = true;
+      if (e >= 1 || S.drawn === 0) drawArcade();
+    }
+    S.mesh.visible = e > 0;
+  }
+  FEAT.push(stepArcShutter);
   function drawArcade() {
     ag.clearRect(0, 0, ACW, ACH);
     ag.imageSmoothingEnabled = false;
@@ -4015,6 +4057,7 @@
     ag.strokeStyle = 'rgba(200,190,230,' + 0.1 * pw + ')'; ag.lineWidth = 1;
     for (let k = 0; k < 18; k++) { const rx = ((k * 37 + Math.floor(arcS.t * 40) * 3) % ARC.w) * AK, ry = (30 + (k * 53) % 300) * AK; ag.beginPath(); ag.moveTo(rx, ry); ag.lineTo(rx - 2, ry + 14 * AK); ag.stroke(); }
     ag.restore();
+    if (ARSH.s >= 1) ag.clearRect(0, 0, ACW, 360 * AK);   // (the shutter down: nothing of the room)
     // the threshold and the wet pavement before the door, painted at scene pixels (build_arcade_sill.py): the stone sill seen
     // from above, its riser in its own shade, the sidewalk's wet tiles; then the room's light on them, as much as the room has
     // (its power: dark in a power cut; its hours: the screens' glow alone once it shuts). Never a stroke, never a gradient
@@ -4022,7 +4065,7 @@
       ag.imageSmoothingEnabled = false;
       ag.drawImage(ARC_SILL, 0, 0, ARC.w, 26, 0, 360 * AK, ARC.w * AK, 26 * AK);
       let ak = 1; try { ak = openK('arcade'); } catch (e) {}                   // (it is first drawn before the hours' table exists)
-      const kl = pw * (0.3 + 0.7 * ak);
+      const kl = pw * (0.3 + 0.7 * ak) * (1 - Math.max(0, ARSH.s));   // (none through the shutter)
       if (kl > 0.004) {
         ag.globalCompositeOperation = 'lighter'; ag.globalAlpha = Math.min(1, kl);
         ag.drawImage(ARC_SILL, 0, 26, ARC.w, 26, 0, 360 * AK, ARC.w * AK, 26 * AK);
@@ -4166,7 +4209,7 @@
     const x = camera.left + u * (camera.right - camera.left), y = -(camera.top + v * (camera.bottom - camera.top)), lx = x - ARC.x, ly = y - ARC.y;
     if (x >= FZG[0] && x <= FZG[0] + FZG[2] && y >= FZG[1] && y <= FZG[1] + FZG[3]) return true;
     const [bx, by, bw, bh] = ARC_PINS.box;
-    return lx >= bx - 2 && lx <= bx + bw + 2 && ly >= by - 2 && ly <= by + bh + 2;
+    return ARSH.s < 0.5 && lx >= bx - 2 && lx <= bx + bw + 2 && ly >= by - 2 && ly <= by + bh + 2;   // (behind the shutter when it is down)
   }
   // ---- the machines' games: a click on a cabinet (its screen and its body around it in the room's picture) or on what the far
   // post leaves of the claw machine opens that machine's game (assets/arcade.js and arcade.css, loaded at the first open: the
@@ -4177,7 +4220,7 @@
   // top, its glass, its base); a finger's box grown to 44 CSS px, a mouse's to 24 (the nearest machine when two meet) ----
   const ARC_MACH = [[19, 164, 51, 300], [51, 164, 83, 300], [83, 164, 100, 300], [7, 122, 19, 302]];
   function arcAt(ev) {
-    if (PW.on) return -1;
+    if (PW.on || ARSH.s > 0.5) return -1;   // (the power cut; the shutter down)
     const r = canvas.getBoundingClientRect(), u = (ev.clientX - r.left) / r.width, v = (ev.clientY - r.top) / r.height;
     const lx = camera.left + u * (camera.right - camera.left) - ARC.x, ly = -(camera.top + v * (camera.bottom - camera.top)) - ARC.y;
     const [bx, by, bw, bh] = ARC_PINS.box;
@@ -4713,7 +4756,7 @@
     const L = HRL(), k = HRS.k.oden, ks = HRS.ks; HRS.keep.length = 0;
     for (const [o, off, sg] of L) { HRS.keep.push(o.material.opacity, o.visible); const kk = sg ? ks : k; if (kk >= 0.999) continue;
       if (off) { if (1 - kk > o.material.opacity) { o.material.opacity = 1 - kk; o.visible = true; } } else o.material.opacity *= kk; }
-    HRS.spill = spill.material.opacity; spill.material.opacity *= 0.25 + 0.75 * HRS.k.arcade;
+    HRS.spill = spill.material.opacity; spill.material.opacity *= (0.25 + 0.75 * HRS.k.arcade) * (1 - Math.max(0, ARSH.s));
   });
   LGT.done.push(() => { HRL().forEach(([o], i) => { o.material.opacity = HRS.keep[i * 2]; o.visible = HRS.keep[i * 2 + 1]; }); spill.material.opacity = HRS.spill; });
   LGT.pre.push(() => { for (const [m] of LAY) if (!m.material.userData.nrk) gradeSprite(m.material, 'self'); });
@@ -10740,7 +10783,7 @@
     const C = R6C, M = C.m;
     if (!M.base.visible) { if (!LATE.ready.r6) return; M.base.visible = true; r6Kb.hidden = false; }   // (and the keyboard's way in to its screen)
     const pz = PW.on ? pwShade.material.uniforms.uPow.value[0] : 1;   // (the arcade's circuit: the fuses' cut, the finale's dying lights)
-    const arc = spill.material.opacity * (0.25 + 0.75 * HRS.k.arcade);   // (the arcade's light now: its flicker, its power, its hours)
+    const arc = spill.material.opacity * (0.25 + 0.75 * HRS.k.arcade) * (1 - Math.max(0, ARSH.s));   // (the arcade's light now: its flicker, its power, its hours)
     M.rim.material.opacity = Math.min(1, arc); M.rim.visible = arc > 0.01;
     C.out = pz < 0.5 && (FINS.t < 0 || FIN.dawn >= 0) ? C.out + dt : 0;
     C.bat = C.out > 2 ? Math.min(1, C.bat + dt / 1.2) : Math.max(0, C.bat - dt * 3);
