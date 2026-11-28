@@ -4759,6 +4759,21 @@
     HRS.spill = spill.material.opacity; spill.material.opacity *= (0.25 + 0.75 * HRS.k.arcade) * (1 - Math.max(0, ARSH.s));
   });
   LGT.done.push(() => { HRL().forEach(([o], i) => { o.material.opacity = HRS.keep[i * 2]; o.visible = HRS.keep[i * 2 + 1]; }); spill.material.opacity = HRS.spill; });
+  // the dojo takes its noren in once it has shut (暖簾をしまう: a curtain out says open), a little after its lights are out, and
+  // hangs it out again as it opens: over its door while it is dark, its doorway with the curtain gone as the unlit street has
+  // it (tools/dojo_noren.py: the two doors run up to the lintel, the painter's own panels one rail up), graded as the street.
+  // As the hour finds it at load; still under reduced motion ----
+  const DNOR = { m: plane('assets/dojo_noren_in.webp?v=1', 0, 452, 84, 110, 0.013), in: null, wait: 0 };
+  DNOR.m.visible = false;
+  function stepDojoNoren(dt) {
+    const D = DNOR, shut = HRS.k.dojo < 0.01;
+    if (!D.m.material.userData.nrk) gradeSprite(D.m.material, 'street');
+    if (D.in === null || reduced || FADE.t0 < 0) D.in = shut;
+    else if (shut !== D.in && (D.wait += dt) > (shut ? 15 : 0)) { D.in = shut; D.wait = 0; }   // (taken in a while after closing; out at opening)
+    if (shut === D.in) D.wait = 0;
+    D.m.visible = D.in && hrShade.visible;           // (the unlit picture there: the dojo dark)
+  }
+  FEAT.push(stepDojoNoren);
   LGT.pre.push(() => { for (const [m] of LAY) if (!m.material.userData.nrk) gradeSprite(m.material, 'self'); });
   LGT.post.push(() => { for (const [m, src, f] of LAY) { const o = src ? src.material.opacity * f() : 0; m.material.opacity = o; m.visible = !!src && src.visible && o > 0.004; } });
   LGT.pre.push(() => { HEAL.keep = busShop ? busShop.material.opacity : 1; });   // the healing machine: on the Center's power (its shop's, as
