@@ -4774,6 +4774,16 @@
     D.m.visible = D.in && hrShade.visible;           // (the unlit picture there: the dojo dark)
   }
   FEAT.push(stepDojoNoren);
+  // the oden's bench lamp (its green shade over the bench, its pool on the wall) is the oden's: it goes out as the oden shuts,
+  // at the zone's own level, the part of its light left of the zone with it (tools/oden_bench_lamp.py: the unlit street there),
+  // no longer half a pool cut along the zone's edge all night ----
+  const OBL = plane('assets/oden_bench_off.webp?v=1', 352, 576, 48, 124, 0.013, { opacity: 0 });
+  OBL.visible = false;
+  function stepBenchLamp() {
+    if (!OBL.material.userData.nrk) gradeSprite(OBL.material, 'street');
+    OBL.material.opacity = 1 - HRS.k.oden; OBL.visible = hrShade.visible && HRS.k.oden < 0.999;
+  }
+  FEAT.push(stepBenchLamp);
   LGT.pre.push(() => { for (const [m] of LAY) if (!m.material.userData.nrk) gradeSprite(m.material, 'self'); });
   LGT.post.push(() => { for (const [m, src, f] of LAY) { const o = src ? src.material.opacity * f() : 0; m.material.opacity = o; m.visible = !!src && src.visible && o > 0.004; } });
   LGT.pre.push(() => { HEAL.keep = busShop ? busShop.material.opacity : 1; });   // the healing machine: on the Center's power (its shop's, as
